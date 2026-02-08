@@ -3,8 +3,7 @@
 Property of Bogo Solutions  
 Contributors:  
 Syed Essam Uddin Khawaja  
-Vini Godoy de Melo  
-(NAME)  
+Vini Godoy de Melo
 
 ## Table of Contents ##
 
