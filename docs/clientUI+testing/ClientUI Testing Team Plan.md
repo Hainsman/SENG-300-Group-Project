@@ -67,11 +67,17 @@ Variable Names must be descriptive and follow conventions outlined below
 
 TO DO:
 - High level Architecture
-  - Define Testing Strategy
-  - Define Integration Strategy
+  - Define Testing Strategy - Jarod
+  - Define Integration Strategy - Morgan
   - Define UI Components
-- Sub Team Planning Docs
-- Class Diagram
+    - Main Menu - Kade
+    - Chess - Morgan
+    - Blackjack - Morgan
+    - Settings - Hamnah
+    - Login page - Hamnah
+    - Profile Dashboard - Kade
+- Sub Team Planning Docs - Kade
+- Class Diagram - Jarod?
 - If time, Brainstorm Use Cases
 
 
