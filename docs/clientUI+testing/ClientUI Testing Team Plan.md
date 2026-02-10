@@ -67,15 +67,23 @@ Variable Names must be descriptive and follow conventions outlined below
 
 TO DO:
 - High level Architecture
+  - Define Testing Strategy
+  - Define Integration Strategy
+  - Define UI Components
 - Sub Team Planning Docs
 - Class Diagram
-- Define Testing Strategy
-- Define Integration Strategy
-- Define UI Components
+- If time, Brainstorm Use Cases
+
 
 ## 5. Milestones ##
 
 **Iteration 1:**
+- Team plan complete
+- High level Architecture complete
+- Class diagrams complete
+- Use case Diagrams complete
+- UI diagrams complete
+- Tutorial Presentation Complete
 
 **Iteration 2:**
 
