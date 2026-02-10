@@ -46,3 +46,10 @@ Kade Peters
 - Do your best to maintain a work log
 - Be prepared to explain your contribution to the project during presentations
 
+## 3. Conventions ##
+
+Variable Names must be descriptive and follow conventions outlined below
+
+- Variable Names use camelCase Ex: variableName
+- JavaFX Label Names follow camelCase: nameTextField
+
