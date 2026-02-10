@@ -53,3 +53,25 @@ Variable Names must be descriptive and follow conventions outlined below
 - Variable Names use camelCase Ex: variableName
 - JavaFX Label Names follow camelCase: nameTextField
 
+## 4. Workflow Overview and Proposed Deadlines ##
+
+**Requirements for Iteration 1:**
+
+- Planning document(s)
+- Structure (class) diagram (class_diagram.png or .svg)
+- Use case diagram and descriptions (use_case_descriptions.pdf)
+- Any additional diagrams or documentation used to support the design
+- Tutorial Presentation
+
+**Sprint 1 (Feb 5th - 13th) Outline:**
+
+TO DO:
+- High level Architecture
+- Sub Team Planning Docs
+- Class Diagram
+- Define Testing Strategy
+- Define Integration Strategy
+- Define UI Components
+
+
+
