@@ -19,5 +19,3 @@ Use case diagrams illustrate how a player interacts with the system through the 
 ### Sequence Diagrams ###
 
 Sequence diagrams describe how components interact over time to complete a specific task, such as logging in, joining a game, making a move, or ending a game. They highlight the order of messages between the GUI, platform services, and game logic. These diagrams are particularly useful for validating responsibilities and ensuring that state changes flow through the correct components. The provided sequences are representative, not exhaustive.
-
-test if pushing works (erik)
