@@ -37,6 +37,7 @@ The `Game` abstraction represents a single running match of any game type.
 * Accept player actions
 * Validate actions before applying them
 * Maintain and expose game state
+* Send just the changes(updates) instead of whole game state to the client
 * Determine when the game has ended
 
 ### Conceptual Interface (Java-oriented)
@@ -47,6 +48,7 @@ Game
  ├── handleAction(PlayerAction action)
  ├── validateAction(PlayerAction action)
  ├── getGameState()
+ ├── getGameUpdate()
  └── isGameOver()
 ```
 
@@ -79,12 +81,15 @@ Validation logic is separated from game flow logic using a shared **RuleValidato
 * Determine whether a proposed action is legal
 * Enforce turn order and game-specific constraints
 * Prevent invalid state transitions
+* Upon failure of validation a reason should be sent of why it failed instead of the mere boolean
+* Provide a list of valid moves to the client since they should be known anyways for validating client input
 
 ### Conceptual Structure
 
 ```text
 RuleValidator
  ├── validate(PlayerAction action, GameState state)
+ └── getValidActions()
 ```
 
 Each game provides its own implementation of this validator.
