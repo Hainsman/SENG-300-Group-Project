@@ -81,7 +81,6 @@ Communication:
 - Respond to Discord polls when a team decision is needed
 - Participate in Scrum Daily standup 10am-12pm (Monday/Wednesday/Friday)
 - Be proactive and provide solutions/feedback in decisions that involve the team
-- Contribute to the integration and cohesion of the project by reaching out to other subteams when necessary
 
 Work:
 - Develop code in branches
@@ -91,5 +90,13 @@ Work:
 - Be prepared to explain your contribution to the project during presentations
 
 ## Sub-Team Leader Responsibilities ##
+
+- Make sure the subteam's designs stay on course with the group's vision of the project
+- Keep the team focused on the "big picture" as opposed to specific features of the design
+- Reach out to other subteams whenever necessary in order to maintain cohesion across the project
+- Try your best to delegate tasks to subteam members in a fair way
+- Be prepared to take the lead in demos and presentations
+- Monitor the subteam's issue board and keep it up to date
+- Support subteam members in solving conflicts and clearing roadblocks
 
 ## Workflow Overview ##
