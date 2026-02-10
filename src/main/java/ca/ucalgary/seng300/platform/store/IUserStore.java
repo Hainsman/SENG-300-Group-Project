@@ -7,7 +7,4 @@ public interface IUserStore {
     void create(User user);
     void delete(User user);
     void updater(User user);
-    void writeToCSV(User user);
-    void readFromCSV(User user);
-
 }

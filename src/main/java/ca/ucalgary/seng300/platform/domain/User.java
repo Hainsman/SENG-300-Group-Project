@@ -19,7 +19,7 @@ public class User {
         return this.login;
     }
 
-    public String passwordHash(){
+    public String getPasswordHash(){
         return this.passwordHash;
     }
 
