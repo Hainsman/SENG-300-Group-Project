@@ -64,6 +64,8 @@ All player inputs are represented as a **generic action object** that is interpr
 * Action type (e.g., MOVE, HIT, STAND)
 * Action payload (game-specific data)
 
+The format of the action payload will necessarily be quite different between games so this object will be an abstraction implemented separately for each game.
+
 The platform does not interpret the contents of actions; it only routes them to the correct game instance.
 
 ---
@@ -96,8 +98,9 @@ Each game provides its own implementation of this validator.
 **Components**:
 
 * `BlackjackGame` (implements Game)
+* `BlackjackPlayerAction` (contains whether to hit or stand, as well as splitting and possibly the initial bet)
 * `BlackjackRuleValidator`
-* `BlackjackGameState`
+* `BlackjackGameState` (Deck, player and house hands, current bets)
 
 **Responsibilities**:
 
@@ -112,8 +115,9 @@ Each game provides its own implementation of this validator.
 **Components**:
 
 * `ChessGame` (implements Game)
+* `ChessPlayerAction` (contains move information, promotion, etc.)
 * `ChessRuleValidator`
-* `ChessGameState`
+* `ChessGameState` (Board positions, captures, checks)
 
 **Responsibilities**:
 
