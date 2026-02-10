@@ -1,6 +1,6 @@
-MEETING NOTES
+# MEETING NOTES
 
-FEB 5TH
+## FEB 5TH
 
 Design platform core:
 - Three rounds for design (for feb)
@@ -33,7 +33,7 @@ General notes:
 - possibly notion for documentation management
 
 
-FEB 10TH
+## FEB 10TH
 
 Rules and Validation:
 
