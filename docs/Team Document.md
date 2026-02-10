@@ -77,7 +77,7 @@ Vini Godoy de Melo
 
 Communication:
 - Ask questions when necessary, as well as be polite when communicating with other team members
-- Try to respond to messages on Discord within 24h
+- Respond to messages on Discord within 24h
 - Respond to Discord polls when a team decision is needed
 - Participate in Scrum Daily standup 10am-12pm (Monday/Wednesday/Friday)
 - Be proactive and provide solutions/feedback in decisions that involve the team
@@ -98,5 +98,3 @@ Work:
 - Be prepared to take the lead in demos and presentations
 - Monitor the subteam's issue board and keep it up to date
 - Support subteam members in solving conflicts and clearing roadblocks
-
-## Workflow Overview ##
