@@ -44,4 +44,43 @@ The purpose of this document is to outline the structure of the game logic of Bl
 * The cards are then discarded and another round is played. The deck is only restocked and reshuffled when it has reached the reshuffle point determined earlier.
 
 ## Architecture
-*
+### Overview
+Blackjack will inherit from the general Game abstractions and interpret BlackjackActions and update the corresponding GameState accordingly.
+
+### BlackjackGame
+This class will implement Game and is responsible for handling game logic, i.e. making changes and calling methods on BlackjackGameState based on incoming BlackjackActions.
+
+#### Structure
+* BlackjackGameState: gameState
+* BlackjackRuleValidator: validator
+
+### BlackjackGameState
+This class will implement GameState and is responsible for storing and handling changes to properties such as the current deck, each player's hands, active bets, and hand totals.
+
+#### Structure
+* Type*: deck
+* Type*: hands
+* Type*: bets
+* handTotal(Hand hand)
+* hit(Hand hand)
+* splitPairs(Hand: hand)
+* shuffle(Deck deck)
+* isEnded()
+* getWinner(Type* hands)
+* 
+
+\* = TBD
+
+### BlackjackRuleValidator
+This class will implement RuleValidator and is responsible for making checks on incoming BlackjackActions to determine whether they are valid and should be applied to BlackjackGameState.
+
+#### Structure
+* validate(BlackjackAction action, BlackjackGameState gameState)
+
+### BlackjackAction
+This class will implement PlayerAction and will contain properties for the player ID that made the move, an enum for the type of move, and the data in the payload for the specifics of the move.
+
+#### Structure
+* Type*: playerID
+* BlackjackMoveType: moveType
+* Type*: payload
