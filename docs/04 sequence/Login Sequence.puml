@@ -1,0 +1,42 @@
+@startuml
+title Sequence - Login -> Game Dashboard
+
+actor Player
+participant "GUI (Welcome/Login)" as GUI
+participant "PlatformCore" as Core
+database "CredentialsStore (stub)" as Store
+
+Player -> GUI : enter username/password\nclick Login
+activate GUI
+
+GUI -> Core : login(username, password)
+activate Core
+
+Core -> Store : verifyCredentials(username, password)
+activate Store
+Store --> Core : AuthResult(isValid, userID?)
+deactivate Store
+
+alt credentials valid
+  Core --> GUI : loginSuccess(sessionToken, userID)
+  deactivate Core
+  GUI -> GUI : store session data
+  GUI -> GUI : transition to Game Dashboard
+  GUI --> Player : display dashboard
+else credentials invalid
+  Core --> GUI : loginFailed("Invalid credentials")
+  deactivate Core
+  GUI -> GUI : display error message
+  GUI --> Player : show error on login screen
+end
+
+deactivate GUI
+
+note right of Store
+  Stub implementation:
+  - Contains hardcoded test accounts
+  - Returns mock validation results
+  - No actual database connection
+end note
+
+@enduml
