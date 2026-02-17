@@ -1,39 +1,46 @@
-# Login and reach dashboard #
-
-**Description:**
-To update the existing file, I basically decided to expand on a lot of the actual technical processes we will need. For now, the main thing that needs to be discussed is the user credential validation when trying to log in.
-
-**New UML:**
-```uml
 @startuml
-title Sequence - Login -> Game Dashboard
+title Sequence - Login
 
 actor Player
 participant "GUI (Welcome/Login)" as GUI
 participant "PlatformCore" as Core
+participant "SessionManager" as SM
 database "CredentialsStore (stub)" as Store
 
 Player -> GUI : enter username/password\nclick Login
 activate GUI
 
+GUI -> GUI : display loading state
 GUI -> Core : login(username, password)
 activate Core
 
-Core -> Store : verifyCredentials(username, password)
+Core -> Store : verifyCredentials(username, bcrypt(password))
 activate Store
 Store --> Core : AuthResult(isValid, userID?)
 deactivate Store
 
 alt credentials valid
+  Core -> SM : createSession(userID)
+  activate SM
+  SM --> Core : sessionToken
+  deactivate SM
+
   Core --> GUI : loginSuccess(sessionToken, userID)
   deactivate Core
-  GUI -> GUI : store session data
+
+  GUI -> GUI : hide loading state
+  GUI -> SM : storeSessionLocally(sessionToken, userID)
+  activate SM
+  deactivate SM
+
   GUI -> GUI : transition to Game Dashboard
   GUI --> Player : display dashboard
+
 else credentials invalid
-  Core --> GUI : loginFailed("Invalid credentials")
+  Core --> GUI : loginFailed("Invalid credentials.")
   deactivate Core
-  GUI -> GUI : display error message
+
+  GUI -> GUI : hide loading state
   GUI --> Player : show error on login screen
 end
 
@@ -42,9 +49,8 @@ deactivate GUI
 note right of Store
   Stub implementation:
   - Contains hardcoded test accounts
-  - Returns mock validation results
+  - Passwords stored as bcrypt hashes
   - No actual database connection
 end note
 
 @enduml
-```
