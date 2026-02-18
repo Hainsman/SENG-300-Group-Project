@@ -31,9 +31,14 @@
       <groupId>jakarta.platform</groupId>
       <artifactId>jakarta.jakartaee-api</artifactId>
       <version>10.0.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.eclipse.parsson</groupId>
+      <artifactId>parsson</artifactId>
+      <version>1.1.5</version>
+      <!-- No scope = compile (default) -->
+    </dependency>
   </dependencies>
 
   <build>

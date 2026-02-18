@@ -2,10 +2,8 @@ package ca.ucalgary.seng300.platform.store;
 
 import ca.ucalgary.seng300.platform.domain.User;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonWriter;
+import jakarta.json.*;
+import jakarta.json.stream.JsonGenerator;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,18 +23,19 @@ public class UserStoreFile implements IUserStore {
 
     @Override
     public User find(String username) {
-//        for (int i = 0; i < users.size(); i++) {
-//            User userSearch = users.get(i);
-//            if (userSearch.getlogin().equals(username)){
-//                return userSearch; // if user found return user object
-//            }
-//        }
+        for (int i = 0; i < userMap.size(); i++) {
+            User userSearch = userMap.get(i);
+            if (userSearch.getlogin().equals(username)){
+                return userSearch;
+            }
+        }
         return null; //user not found
     }
 
     @Override
     public void create(User user) {
         userMap.put(user.getID(), user);
+        System.out.println("Condition Reached");
         saveAll();
     }
 
@@ -71,10 +70,17 @@ public class UserStoreFile implements IUserStore {
             job.add(id.toString(), userJson);
 
         }
-        JsonObject json = job.build();
+        JsonObject root = Json.createObjectBuilder()
+                .add("users", job.build())
+                .build();
 
-        try(JsonWriter jw = Json.createWriter(new FileWriter("Users.txt"))){
-            jw.writeObject(json);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JsonGenerator.PRETTY_PRINTING, true);
+        JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+
+        try(FileWriter fw = new FileWriter("users.txt", false);
+            JsonWriter jw = writerFactory.createWriter(fw)) {
+            jw.writeObject(root);
         } catch (IOException e){
             e.printStackTrace();
         }
