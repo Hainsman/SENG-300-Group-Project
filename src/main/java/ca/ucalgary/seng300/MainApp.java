@@ -19,21 +19,19 @@ public class MainApp extends Application {
         stage.setTitle("Starter");
         stage.show();
         UserStoreFile usf = new UserStoreFile();
-        usf.create(new User(1, "Daniel", "123"));
-        usf.create(new User(2, "Alex", "456"));
-        usf.create(new User(3, "John", "789"));
-        User Paul = new User(4, "Paul", "101112");
-        usf.create(Paul);
-        usf.delete(Paul);
-    }
-
-    public void addUser(){
-
+//        usf.create(new User(1, "Daniel", "123"));
+//        usf.create(new User(2, "Alex", "456"));
+//        usf.create(new User(3, "John", "789"));
+//        User Paul = new User(4, "Paul", "101112");
+//        usf.create(Paul);
+//        usf.delete(Paul);
+        for (Integer id: userMap.keySet()){
+            User user = userMap.get(id);
+            System.out.println("ID: " + id + ", User: " + user.getlogin() + ", Password: " + user.getPasswordHash());
+        }
     }
 
     public static void main(String[] args) {
         launch(args);
-
-
     }
 }

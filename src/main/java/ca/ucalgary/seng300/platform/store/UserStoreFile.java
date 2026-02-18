@@ -4,17 +4,16 @@ import ca.ucalgary.seng300.platform.domain.User;
 
 import jakarta.json.*;
 import jakarta.json.stream.JsonGenerator;
-
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class UserStoreFile implements IUserStore {
-//    public ArrayList<User> users = new ArrayList<User>(){{
-//        new User(1, "Daniel", "123");
-//        new User(2, "John", "456");
-//        new User(3, "Alex", "789");
-//    }};
+
     public static Map<Integer, User> userMap = new HashMap<Integer, User>();
 
     public UserStoreFile() {
@@ -52,12 +51,34 @@ public class UserStoreFile implements IUserStore {
     }
 
     private void loadAll() {
+        Path path = Paths.get("users.txt");
 
+        if (!Files.exists(path)){
+            System.out.println("user file not found");
+            return;
+        }
+
+        try (JsonReader reader = Json.createReader(Files.newBufferedReader(path))){
+            JsonObject root = reader.readObject();
+            JsonObject usersJson = root.getJsonObject("users");
+
+            userMap.clear();
+
+            for (String idStr : usersJson.keySet()){
+                JsonObject userJson = usersJson.getJsonObject(idStr);
+
+                String login = userJson.getString("Login");
+                String password = userJson.getString("Password");
+                int userID = Integer.parseInt(idStr);
+                userMap.put(userID, new User(userID, login, password));
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     private void saveAll() {
         JsonObjectBuilder job = Json.createObjectBuilder();
-
         for (Map.Entry<Integer, User> entry : userMap.entrySet()){
             Integer id = entry.getKey();
             User user = entry.getValue();
@@ -66,7 +87,6 @@ public class UserStoreFile implements IUserStore {
                     .add("Login", user.getlogin())
                     .add("Password", user.getPasswordHash())
                     .build();
-
             job.add(id.toString(), userJson);
 
         }

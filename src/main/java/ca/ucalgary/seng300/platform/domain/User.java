@@ -11,28 +11,14 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public int getID(){
-        return this.id;
-    }
+    //getters
+    public int getID(){return this.id;}
+    public String getlogin(){return this.login;}
+    public String getPasswordHash(){return this.passwordHash;}
 
-    public String getlogin(){
-        return this.login;
-    }
-
-    public String getPasswordHash(){
-        return this.passwordHash;
-    }
-
-    public void setID(int id){
-        this.id = id;
-    }
-
-    public void setlogin(String login){
-        this.login = login;
-    }
-
-    public void setPasswordHash(String passwordHash){
-        this.login = passwordHash;
-    }
+    //setters
+    public void setID(int id){this.id = id;}
+    public void setlogin(String login){this.login = login;}
+    public void setPasswordHash(String passwordHash){this.login = passwordHash;}
 
 }
