@@ -1,100 +1,323 @@
-# Client UI / Testing Team Plan Document #
+# Sub-Team Planning Document
 
-Property of Bogo Solutions  
-Contributors:  
-Kade Peters
+**Sub-Team Name:** Client UI / Testing 
+**Product Owner (TA):** Mahboobe Shakeri  
+**Team Members:** Kade Peters 30252567 
+Jarod Rideout
+Hamnah Suleman 30254434
+Morgan Lee 30208363
 
-## Table of Contents ##
+---
 
-1. Team Responsibilities 
-2. Member Responsibilities
-3. Conventions
-4. Workflow Overview and Proposed Deadlines
-5. Milestones
+## Executive Summary
 
-## 1. Team Responsibilities (From Team Document) ##
+**Sub-Team Responsibility:** Our team is responsible for designing and building all the UI aspects of this project. Screens for each game and menu. Also, responsible for creating testing strategies and methods of testing for the project. 
 
-**Primary Focus:** User-facing experience, usability, and quality assurance
+**Key Integration Points:** We need to coordinate closely with both Rules + validation for the design of the games and also Platform Core for the Main menu screens.
 
-**Responsibilities:**
+**Current Status:** Design Phase
 
-- Design and implement the client-side application (UI/UX)
-- Build interfaces for interacting with the multiplayer game platform
-- Ensure accessibility, clarity, and consistency across all screens
-- Translate game and platform requirements into intuitive user flows
-- Develop and execute testing plans (unit, integration, and system testing)
-- Identify, document, and track bugs and usability issues
-- Verify that completed features meet functional and non-functional requirements
-- Collaborate closely with Platform Core and Rules + Validation to test end-to-end functionality
+---
 
-## 2. Member Responsibilities (From Team Document) ##
+## Design Phase (Iterations 1 & 2)
 
-**Communication:**
+### Problem Statement
 
-- Ask questions when necessary, as well as be polite when communicating with other team members
-- Try to respond to messages on Discord within 24h
-- Respond to Discord polls when a team decision is needed
-- Participate in Scrum Daily standup 10am-12pm (Monday/Wednesday/Friday)
-- Be proactive and provide solutions/feedback in decisions that involve the team
-- Contribute to the integration and cohesion of the project by reaching out to other subteams when necessary
+We are currently addressing the specifics of UI design and how our UI components are going to work together.
 
-**Work:**
+### Design Solution Overview
 
-- Develop code in branches
-- Commit to 3hr of work weekly outside of tutorial and lecture hours
-- Commit to git regularly and provide informative comments/notes
-- Do your best to maintain a work log
-- Be prepared to explain your contribution to the project during presentations
+We are currently creating UI Mock up designs as well as use cases and class diagrams for our UI components to address how they will all look, work together, and function individually.
 
-## 3. Conventions ##
+### Architecture & Design Decisions
 
-Variable Names must be descriptive and follow conventions outlined below
+#### Key Components
 
-- Variable Names use camelCase Ex: variableName
-- JavaFX Label Names follow camelCase: nameTextField
+| Component Name | Responsibility | Interfaces With |
+|----------------|----------------|-----------------|
+| [Component 1] | [What it does] | [Other components/teams] |
+| [Component 2] | [What it does] | [Other components/teams] |
 
-## 4. Workflow Overview and Proposed Deadlines ##
+#### Design Patterns Used
 
-**Requirements for Iteration 1:**
+- **[Pattern Name]:** [Why this pattern fits your solution]
+- **[Pattern Name]:** [Why this pattern fits your solution]
 
-- Planning document(s)
-- Structure (class) diagram (class_diagram.png or .svg)
-- Use case diagram and descriptions (use_case_descriptions.pdf)
-- Any additional diagrams or documentation used to support the design
-- Tutorial Presentation
+### Integration Strategy
 
-**Sprint 1 (Feb 5th - 13th) Outline:**
+#### Dependencies on Other Sub-Teams
 
-TO DO:
-- High level Architecture
-  - Define Testing Strategy - Jarod
-  - Define Integration Strategy - Morgan
-  - Define UI Components
-    - Main Menu - Kade
-    - Chess - Morgan
-    - Blackjack - Morgan
-    - Settings - Hamnah
-    - Login page - Hamnah
-    - Profile Dashboard - Kade
-- Sub Team Planning Docs - Kade
-- Class Diagram - Jarod?
-- If time, Brainstorm Use Cases
+| Dependency | Sub-Team | Interface/Contract | Status |
+|------------|----------|-------------------|--------|
+| [What you need] | [Team name] | [API/method signature] | [Defined/In Progress/Complete] |
 
+#### Services Provided to Other Sub-Teams
 
-## 5. Milestones ##
+| Service | Sub-Team Using It | Interface/Contract | Status |
+|---------|-------------------|-------------------|--------|
+| [What you provide] | [Team name] | [API/method signature] | [Defined/In Progress/Complete] |
 
-**Iteration 1:**
-- Team plan complete
-- High level Architecture complete
-- Class diagrams complete
-- Use case Diagrams complete
-- UI diagrams complete
-- Tutorial Presentation Complete
+### Database & Server Stubs
 
-**Iteration 2:**
+[Describe where database and server integration points will be located in your code. These should be clearly marked stubs.]
 
-**Iteration 3:**
+**Database Stub Locations:**
+- [File/Class name] - [Purpose]
+- [File/Class name] - [Purpose]
 
+**Server Communication Stub Locations:**
+- [File/Class name] - [Purpose]
+- [File/Class name] - [Purpose]
 
+### Design Artifacts
 
+#### Structure (Class) Diagram
 
+[Include or link to your class diagram. Focus on core platform classes and their relationships.]
+
+**Diagram Location:** [class_diagram.png in /diagrams folder]
+
+**Key Classes:**
+- **[ClassName]:** [Responsibility and key methods]
+- **[ClassName]:** [Responsibility and key methods]
+
+#### Use Cases
+
+| Use Case ID | Use Case Name | Actor | Priority |
+|-------------|---------------|-------|----------|
+| UC-[##] | [Name] | [User/System] | [High/Medium/Low] |
+
+**Detailed Use Case Descriptions:** [Link to use_case_descriptions.pdf]
+
+#### State Machines
+
+[Describe any important state transitions in your components]
+
+**Example: Game Room Lifecycle**
+- WAITING → STARTING → IN_PROGRESS → COMPLETED
+- [Describe transition conditions]
+
+### Design Trade-offs & Assumptions
+
+**Key Assumptions:**
+1. [Assumption 1 - e.g., "Maximum 4 players per game room"]
+2. [Assumption 2]
+3. [Assumption 3]
+
+**Trade-offs Made:**
+1. **[Decision]:** [Why we chose option A over option B]
+2. **[Decision]:** [Why we chose option A over option B]
+
+### Design Changes from Iteration 1 to Iteration 2
+
+[Document any significant changes to the design during the design phase]
+
+| Original Design | Revised Design | Reason for Change |
+|-----------------|----------------|-------------------|
+| [What it was] | [What it became] | [Why we changed it] |
+
+---
+
+## Implementation Phase (Iteration 3)
+
+### Implementation Status
+
+**Overall Progress:** [X]% Complete
+
+| Feature/Component | Status | Assignee | Notes |
+|-------------------|--------|----------|-------|
+| [Feature name] | [Not Started/In Progress/Complete/Testing] | [Name] | [Any blockers or notes] |
+
+### Code Organization
+
+**Package Structure:**
+```
+src/
+├── [package name]/
+│   ├── [sub-package]/
+│   │   ├── [Class].java
+│   │   └── [Class].java
+│   └── [sub-package]/
+└── test/
+    └── [package name]/
+```
+
+**Key Files:**
+- **[Filename]:** [Purpose]
+- **[Filename]:** [Purpose]
+
+### Testing Strategy
+
+#### Unit Tests
+
+[Describe your unit testing approach]
+
+**Test Coverage Target:** [X]%
+
+**Key Test Classes:**
+- [TestClass] - [What it tests]
+- [TestClass] - [What it tests]
+
+#### Integration Tests
+
+[Describe how you're testing integration with other sub-teams]
+
+**Integration Test Scenarios:**
+1. [Scenario 1]
+2. [Scenario 2]
+
+### Implementation Challenges & Resolutions
+
+| Challenge | Impact | Resolution | Status |
+|-----------|--------|------------|--------|
+| [What went wrong] | [High/Medium/Low] | [How we fixed it] | [Resolved/In Progress] |
+
+### Integration Issues
+
+[Document any problems discovered during integration with other sub-teams]
+
+**Open Integration Issues:**
+- [ ] [Issue description] - Blocked by [Sub-team name]
+- [ ] [Issue description] - Waiting for [Component/API]
+
+**Resolved Integration Issues:**
+- [x] [Issue description] - Resolved by [Solution]
+
+### Code Review Notes
+
+[Track feedback from TA code reviews]
+
+**Review Date:** [Date]  
+**Reviewer:** [TA Name]  
+**Status:** [Approved / Revisions Requested]
+
+**Feedback Summary:**
+1. [Feedback item 1]
+2. [Feedback item 2]
+
+**Action Items:**
+- [ ] [Action item from review]
+- [ ] [Action item from review]
+
+---
+
+## Iteration Planning & Task Breakdown
+
+### Iteration 1 Tasks (Design - Initial)
+
+| Task | Assignee | Estimated Hours | Status | Actual Hours |
+|------|----------|-----------------|--------|--------------|
+| Create architecture overview | [Name] | [#] | [ ] | [#] |
+| Design class diagram | [Name] | [#] | [ ] | [#] |
+| Write use case descriptions | [Name] | [#] | [ ] | [#] |
+| Create state machine diagrams | [Name] | [#] | [ ] | [#] |
+| Prepare design presentation | [Name] | [#] | [ ] | [#] |
+
+### Iteration 2 Tasks (Implementation & Integration)
+
+| Task | Assignee | Estimated Hours | Status | Actual Hours |
+|------|----------|-----------------|--------|--------------|
+| Complete core functionality | [Name] | [#] | [ ] | [#] |
+| Implement validation logic | [Name] | [#] | [ ] | [#] |
+| Integration testing with [Sub-team] | [Name] | [#] | [ ] | [#] |
+| Complete test coverage | [Name] | [#] | [ ] | [#] |
+| Bug fixes and refinements | [Name] | [#] | [ ] | [#] |
+| Documentation updates | [Name] | [#] | [ ] | [#] |
+| Record technical demo videos | [Name] | [#] | [ ] | [#] |
+
+---
+
+## Team Contribution Tracking
+
+### Individual Worklogs
+
+[Link to individual Kanban/Scrum boards]
+
+**Weekly Contribution Summary:**
+
+| Team Member | Week of [Date] | Hours Logged | Key Contributions |
+|-------------|----------------|--------------|-------------------|
+| [Name] | [Date] | [#] | [Brief description] |
+| [Name] | [Date] | [#] | [Brief description] |
+
+### Git Activity Summary
+
+[Track meaningful commits and merge requests]
+
+**Branch Strategy:** [e.g., feature branches merged to dev, then to main]
+
+**Recent Merges:**
+- [Date] - [Branch name] - [Description] - [Author]
+- [Date] - [Branch name] - [Description] - [Author]
+
+---
+
+## Presentation Materials
+
+### Iteration 1 Design Presentation
+
+**Presentation Date:** [Date]  
+**Presenters:** [Names]  
+**Duration:** [X] minutes
+
+**Key Slides:**
+1. Problem statement and scope
+2. Proposed solution architecture
+3. Class diagram walkthrough
+4. Integration points
+5. Key design decisions
+
+**Feedback Received:**
+- [Feedback point 1]
+- [Feedback point 2]
+
+### Iteration 3 Final Demonstration
+
+**Video Submission:** [Link to group showcase video]  
+**Timestamp File:** [Link to timestamps document]
+
+**Demo Coverage:**
+- [ ] Setup and execution instructions
+- [ ] Core functionality demonstration
+- [ ] Integration with other sub-teams
+- [ ] Testing demonstration
+- [ ] Design evolution explanation
+
+---
+
+## Appendix
+
+### Meeting Notes
+
+**[Date] - Design Planning Meeting**
+- **Attendees:** [Names]
+- **Decisions Made:** [List key decisions]
+- **Action Items:** [List follow-ups]
+
+**[Date] - Integration Sync with [Other Sub-team]**
+- **Attendees:** [Names]
+- **Decisions Made:** [List key decisions]
+- **Action Items:** [List follow-ups]
+
+### References
+
+- [Link to project specification]
+- [Link to shared platform documentation]
+- [Link to GitLab repository]
+- [Link to design artifacts folder]
+
+---
+
+## Document Change History
+
+| Date | Version | Author | Changes |
+|------|---------|--------|---------|
+| [Date] | 1.0 | [Name] | Initial document creation |
+| [Date] | 1.1 | [Name] | Updated after Iteration 1 feedback |
+| [Date] | 2.0 | [Name] | Added Iteration 2 implementation details |
+| [Date] | 3.0 | [Name] | Final updates for Iteration 3 |
+
+---
+
+**Last Updated:** [Date]  
+**Document Owner:** [Primary contact name and UCID]
