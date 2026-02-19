@@ -1,0 +1,70 @@
+@startuml
+title Sequence - Sign Up
+
+actor Player
+participant "GUI (Welcome/Register)" as GUI
+participant "PlatformCore" as Core
+participant "SessionManager" as SM
+database "CredentialsStore (stub)" as Store
+
+Player -> GUI : enter username/password/email\nclick Sign Up
+activate GUI
+
+GUI -> GUI : display loading state
+GUI -> Core : register(username, password, email)
+activate Core
+
+Core -> Store : checkUsernameAvailable(username)
+activate Store
+Store --> Core : AvailabilityResult(isAvailable)
+deactivate Store
+
+alt username already taken
+  Core --> GUI : registerFailed("Username already in use.")
+  deactivate Core
+  GUI -> GUI : hide loading state
+  GUI --> Player : show error on register screen
+
+else username available
+
+  Core -> Store : createAccount(username, bcrypt(password), email)
+  activate Store
+  Store --> Core : CreateResult(success, userID)
+  deactivate Store
+
+  alt account created successfully
+    Core -> SM : createSession(userID)
+    activate SM
+    SM --> Core : sessionToken
+    deactivate SM
+
+    Core --> GUI : registerSuccess(sessionToken, userID)
+    deactivate Core
+
+    GUI -> GUI : hide loading state
+    GUI -> SM : storeSessionLocally(sessionToken, userID)
+    activate SM
+    deactivate SM
+
+    GUI -> GUI : transition to Game Dashboard
+    GUI --> Player : display dashboard
+
+  else creation failed
+    Core --> GUI : registerFailed("An error occurred. Please try again.")
+    deactivate Core
+    GUI -> GUI : hide loading state
+    GUI --> Player : show error on register screen
+  end
+
+end
+
+deactivate GUI
+
+note right of Store
+  Stub implementation:
+  - Checks against hardcoded test accounts
+  - Stores passwords as bcrypt hashes
+  - No actual database connection
+end note
+
+@enduml
