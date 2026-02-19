@@ -1,16 +1,17 @@
 {
-    "users": {
-        "1": {
-            "Login": "Daniel",
-            "Password": "123"
-        },
-        "2": {
-            "Login": "Alex",
-            "Password": "456"
-        },
-        "3": {
-            "Login": "John",
-            "Password": "789"
-        }
-    }
+  "1": {
+    "id": 1,
+    "login": "Daniel",
+    "passwordHash": "123"
+  },
+  "2": {
+    "id": 2,
+    "login": "Alex",
+    "passwordHash": "456"
+  },
+  "3": {
+    "id": 3,
+    "login": "John",
+    "passwordHash": "789"
+  }
 }

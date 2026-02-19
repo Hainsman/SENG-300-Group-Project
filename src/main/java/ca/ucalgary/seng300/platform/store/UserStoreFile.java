@@ -1,20 +1,18 @@
 package ca.ucalgary.seng300.platform.store;
 
 import ca.ucalgary.seng300.platform.domain.User;
-
-import jakarta.json.*;
-import jakarta.json.stream.JsonGenerator;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import com.google.gson.GsonBuilder;
 
 public class UserStoreFile implements IUserStore {
 
-    public static Map<Integer, User> userMap = new HashMap<Integer, User>();
+    public Map<Integer, User> userMap = new HashMap<Integer, User>();
 
     public UserStoreFile() {
         loadAll();
@@ -34,7 +32,6 @@ public class UserStoreFile implements IUserStore {
     @Override
     public void create(User user) {
         userMap.put(user.getID(), user);
-        System.out.println("Condition Reached");
         saveAll();
     }
 
@@ -51,58 +48,18 @@ public class UserStoreFile implements IUserStore {
     }
 
     private void loadAll() {
-        Path path = Paths.get("users.txt");
-
-        if (!Files.exists(path)){
-            System.out.println("user file not found");
-            return;
-        }
-
-        try (JsonReader reader = Json.createReader(Files.newBufferedReader(path))){
-            JsonObject root = reader.readObject();
-            JsonObject usersJson = root.getJsonObject("users");
-
-            userMap.clear();
-
-            for (String idStr : usersJson.keySet()){
-                JsonObject userJson = usersJson.getJsonObject(idStr);
-
-                String login = userJson.getString("Login");
-                String password = userJson.getString("Password");
-                int userID = Integer.parseInt(idStr);
-                userMap.put(userID, new User(userID, login, password));
-            }
-        } catch (IOException e){
-            e.printStackTrace();
+        try (FileReader fr = new FileReader("users.txt")) {
+            userMap = new Gson().fromJson(fr,  new TypeToken<Map<Integer, User>>(){}.getType());
+        } catch (IOException e) {
+            System.err.println("Failed to load from users file");
         }
     }
 
     private void saveAll() {
-        JsonObjectBuilder job = Json.createObjectBuilder();
-        for (Map.Entry<Integer, User> entry : userMap.entrySet()){
-            Integer id = entry.getKey();
-            User user = entry.getValue();
-
-            JsonObject userJson = Json.createObjectBuilder()
-                    .add("Login", user.getlogin())
-                    .add("Password", user.getPasswordHash())
-                    .build();
-            job.add(id.toString(), userJson);
-
-        }
-        JsonObject root = Json.createObjectBuilder()
-                .add("users", job.build())
-                .build();
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(JsonGenerator.PRETTY_PRINTING, true);
-        JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
-
-        try(FileWriter fw = new FileWriter("users.txt", false);
-            JsonWriter jw = writerFactory.createWriter(fw)) {
-            jw.writeObject(root);
-        } catch (IOException e){
-            e.printStackTrace();
+        try (FileWriter fw = new FileWriter("users.txt")){
+            new GsonBuilder().setPrettyPrinting().create().toJson(userMap, fw);
+        } catch (IOException e) {
+            System.err.println("Failed to write to users file");
         }
     }
 }

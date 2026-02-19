@@ -6,9 +6,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import jakarta.json.JsonValue;
-
-import static ca.ucalgary.seng300.platform.store.UserStoreFile.userMap;
 
 public class MainApp extends Application {
     @Override
@@ -19,15 +16,16 @@ public class MainApp extends Application {
         stage.setTitle("Starter");
         stage.show();
         UserStoreFile usf = new UserStoreFile();
-//        usf.create(new User(1, "Daniel", "123"));
-//        usf.create(new User(2, "Alex", "456"));
-//        usf.create(new User(3, "John", "789"));
-//        User Paul = new User(4, "Paul", "101112");
-//        usf.create(Paul);
-//        usf.delete(Paul);
-        for (Integer id: userMap.keySet()){
-            User user = userMap.get(id);
-            System.out.println("ID: " + id + ", User: " + user.getlogin() + ", Password: " + user.getPasswordHash());
+        usf.create(new User(1, "Daniel", "123"));
+        usf.create(new User(2, "Alex", "456"));
+        usf.create(new User(3, "John", "789"));
+        User Paul = new User(4, "Paul", "101112");
+        usf.create(Paul);
+        usf.delete(Paul);
+        for (var id: usf.userMap.keySet()){
+            System.out.println(id);
+            User user = usf.userMap.get(id);
+            System.out.println("ID: " + id.toString() + ", User: " + user.getlogin() + ", Password: " + user.getPasswordHash());
         }
     }
 
