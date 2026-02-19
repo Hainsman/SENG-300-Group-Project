@@ -1,0 +1,17 @@
+{
+  "1": {
+    "gameID": 1,
+    "timeID": 1,
+    "id": 1
+  },
+  "2": {
+    "gameID": 2,
+    "timeID": 2,
+    "id": 2
+  },
+  "3": {
+    "gameID": 3,
+    "timeID": 3,
+    "id": 3
+  }
+}

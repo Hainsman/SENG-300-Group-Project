@@ -1,0 +1,17 @@
+{
+  "1": {
+    "login": "Daniel",
+    "passwordHash": "123",
+    "id": 1
+  },
+  "2": {
+    "login": "Alex",
+    "passwordHash": "456",
+    "id": 2
+  },
+  "3": {
+    "login": "John",
+    "passwordHash": "789",
+    "id": 3
+  }
+}
