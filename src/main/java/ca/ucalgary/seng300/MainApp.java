@@ -37,7 +37,6 @@ public class MainApp extends Application {
         gameHistoryStorage.create(new GameHistory(3, 3, 3));
         GameHistory gameHistory1 = new GameHistory(4,4, 4);
         gameHistoryStorage.create(gameHistory1);
-        gameHistoryStorage.delete(gameHistory1);
 
         for (var id: gameHistoryStorage.records.keySet()){
             System.out.println(id);
@@ -45,9 +44,13 @@ public class MainApp extends Application {
             System.out.println("Game History ID: " + gameHistory.getID() + ", GameID: " + gameHistory.getGameID() + ", TimeID: " + gameHistory.getTimeID());
 
         }
+
+        var identicalGH = gameHistoryStorage.find( rec -> rec.getGameID() == 3);
+        System.out.println(identicalGH.get(0).toString());
     }
 
     public static void main(String[] args) {
         launch(args);
     }
+
 }

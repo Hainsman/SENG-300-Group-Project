@@ -11,7 +11,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Store<T extends Record> {
     public Map<Integer, T> records = new HashMap<Integer, T>();
@@ -20,6 +23,15 @@ public class Store<T extends Record> {
     public Store(String filePath){
         this.filePath = filePath;
         loadAll();
+    }
+
+    public List<T> find(Predicate<T> condition) {
+        var res = records
+                .values()
+                .stream()
+                .filter(condition);
+        
+        return res.toList();
     }
 
     public void create(T record) {
