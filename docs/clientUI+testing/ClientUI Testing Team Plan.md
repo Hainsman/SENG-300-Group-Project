@@ -33,11 +33,15 @@ We are currently creating UI Mock up designs as well as use cases and class diag
 
 #### Key Components
 
-| Component Name | Responsibility | Interfaces With |
-|----------------|----------------|-----------------|
-| [Component 1] | [What it does] | [Other components/teams] |
-| [Component 2] | [What it does] | [Other components/teams] |
-
+| Component Name    | Responsibility                                                                                                                      | Interfaces With                                                  |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| Blackjack UI      | Display for running the blackjack game                                                                                              | Game Dashboard, Settings                                         |
+| Chess UI          | Display for running the Chess game                                                                                                  | Game Dashboard, Settings                                         |
+| Game Dashboard    | Dashboard for displaying game joining options                                                                                       | Settings, Chess UI, Blackjack UI, Lobby?                         |
+| Settings          | Settings screen for user to change account settings                                                                                 | Menu Dashboard, Game Dashboard, Chess UI, BlackJack UI, settings |
+| Menu Dashboard    | Display Menu items, Allows user to look at other player's profiles, their own profile, go to the games dashboard and check settings | Game Dashboard, Settings, Profile Dashboard, login               |
+| Profile Dashboard | Allows player's to check their own stats as well as look at other player's stats                                                    | Settings, Menu Dashboard                                         |
+| Login             | Login to check player's credentials and load their profiles                                                                         | Menu Dashboard                                                   |
 #### Design Patterns Used
 
 - **[Pattern Name]:** [Why this pattern fits your solution]
@@ -47,35 +51,24 @@ We are currently creating UI Mock up designs as well as use cases and class diag
 
 #### Dependencies on Other Sub-Teams
 
-| Dependency | Sub-Team | Interface/Contract | Status |
-|------------|----------|-------------------|--------|
-| [What you need] | [Team name] | [API/method signature] | [Defined/In Progress/Complete] |
-
+| Dependency                                           | Sub-Team           | Interface/Contract | Status  |
+|------------------------------------------------------|--------------------|--------------------|---------|
+| Rules for games and logic behind them                | Rules + Validation | ?                  | Defined |
+| Logic for platform core in menus and player profiles | Platform Core      | ?                  | Defined |
 #### Services Provided to Other Sub-Teams
 
-| Service | Sub-Team Using It | Interface/Contract | Status |
-|---------|-------------------|-------------------|--------|
-| [What you provide] | [Team name] | [API/method signature] | [Defined/In Progress/Complete] |
+| Service         | Sub-Team Using It | Interface/Contract                     | Status  |
+|-----------------|-------------------|----------------------------------------|---------|
+| Testing methods | All Teams         | Various methods within a testing class | Defined |
 
-### Database & Server Stubs
-
-[Describe where database and server integration points will be located in your code. These should be clearly marked stubs.]
-
-**Database Stub Locations:**
-- [File/Class name] - [Purpose]
-- [File/Class name] - [Purpose]
-
-**Server Communication Stub Locations:**
-- [File/Class name] - [Purpose]
-- [File/Class name] - [Purpose]
 
 ### Design Artifacts
 
 #### Structure (Class) Diagram
 
-[Include or link to your class diagram. Focus on core platform classes and their relationships.]
+![UI Class Diagram](docs/clientUI+testing/UI_Class_Diagram.drawio.xml)
 
-**Diagram Location:** [class_diagram.png in /diagrams folder]
+**Diagram Location:** docs/clientUI+testing/UI_Class_Diagram.drawio.xml
 
 **Key Classes:**
 - **[ClassName]:** [Responsibility and key methods]
@@ -91,7 +84,7 @@ We are currently creating UI Mock up designs as well as use cases and class diag
 
 #### State Machines
 
-[Describe any important state transitions in your components]
+There will need to be important state changes when users and opponents makes moves in the games. The state will have to change to reflect those changes. There will also need to be State changes for updates in player's profile stats as well as changes in other's profiles stats that the user can see.
 
 **Example: Game Room Lifecycle**
 - WAITING → STARTING → IN_PROGRESS → COMPLETED
