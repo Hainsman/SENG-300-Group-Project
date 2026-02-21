@@ -1,0 +1,54 @@
+# Criticisms
+- Why is `WaitingForState` different from `WaitingForTurn`?
+- Why does `GameStateUpdate` have so much responsibility? (Violation of Single Responsibility Principle.)
+- Why is so little detail given when it comes to what a lobby or a game room is?
+- Why can the user log out inside the game?
+- Terminology of "room" (opp. Lobby?) is confusing. 
+# Summary of improvements:
+- Simplified game state logic.
+- Clarified ambiguous/confusing domain language.
+	- Note: we have a Lobby system which should allow the system to be more adaptable to very natural feature additions. Also, if we just leave this unimplemented, then ranked should still work fine. This should allow a very nice way of thinking about these systems with domain language (since it now matches the traditional way that these are implemented in multiplayer games.)
+- User can only log out from `Home` (previously, the "Browsing" state.)
+# Future considerations
+- I don't like that we're considering profile stuff here -- we should maybe have another diagram specifically for `Home` states. (Probably UI focused.)
+- Internally we can invisibly (to the user) put players in a Lobby even for Ranked, which would probably simplify things. Ultimately I would wait until implementation to see if this is a good idea.
+
+```uml
+LoggedIn --> Home : enterHome
+Home --> ViewingProfile : viewProfile
+ViewingProfile --> Home : back
+ViewingProfile --> InLobby : join(friend)
+
+Home --> InQueue : enqueue(RANKED)
+Home --> InLobby : enqueue(UNRANKED)
+Home --> LoggedOut : logout
+InQueue --> Home : leaveQueue
+InQueue --> MatchFound : matchAssigned
+
+InLobby --> EnteringGame : everyone is ready
+MatchFound --> EnteringGame : accept/auto-join
+EnteringGame --> InGame : gameReady
+
+state InGame {
+  [*] --> WaitingForTurn
+  [*] --> YourTurn
+  YourTurn --> ProcessingMove : play(move)
+  ProcessingMove --> WaitingForTurn : endTurn()
+  ProcessingMove --> YourTurn : ValidationError or NetworkError
+  ProcessingMove --> GameEnded : your turn ends game
+  
+
+  WaitingForTurn --> GameEnded : other player's turn ends game
+  WaitingForTurn --> YourTurn : yourTurn()
+}
+
+InGame --> Home : exitToHome (after GameEnded)
+
+' Key platform idea:
+note right of InGame
+Platform Core should be able to send notifications regardless of state.
+end note
+
+@enduml
+
+```
