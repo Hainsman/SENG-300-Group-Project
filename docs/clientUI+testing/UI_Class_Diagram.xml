@@ -1,0 +1,194 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+  <diagram name="UI Class Diagram" id="ui-class-diagram-cleaned">
+    <mxGraphModel dx="2135" dy="948" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="2200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="label-home" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontStyle=1;fontColor=#1a73e8;" value="— HomePage" vertex="1">
+          <mxGeometry height="30" width="200" x="60" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="label-gamemenu" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontStyle=1;fontColor=#e67c00;" value="— GameMenu" vertex="1">
+          <mxGeometry height="30" width="200" x="60" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="label-login" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontStyle=1;fontColor=#6a1b9a;" value="— Login" vertex="1">
+          <mxGeometry height="30" width="200" x="60" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="label-profile" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontSize=13;fontStyle=1;fontColor=#2e7d32;" value="— ProfileDashboard" vertex="1">
+          <mxGeometry height="30" width="240" x="60" y="1680" as="geometry" />
+        </mxCell>
+        <mxCell id="class-RecordSummary" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;RecordSummary&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerID: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ username: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ totalGamesPlayed: int&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ totalWins: int&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ totalLosses: int&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="130" width="300" x="1300" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="class-GameStatistics" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;GameStatistics&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ gameType: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ wins: int&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ losses: int&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ draws: int&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="120" width="300" x="410" y="1710" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-HomeNav" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&#39;margin:0;text-align:center;&#39;&gt;&lt;b&gt;HomeNavigationOption&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;VIEW_RECORDS&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;VIEW_OTHER_RECORDS&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;CHOOSE_GAME&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;OPEN_SETTINGS&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="300" x="640" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-GameMenuNav" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&#39;margin:0;text-align:center;&#39;&gt;&lt;b&gt;GameMenuNavigationOption&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;DISPLAY_GAMES&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;CHOOSE_GAME&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;VIEW_PROFILE&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;VIEW_LEADERBOARD&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="300" x="640" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-LoginStatus" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&#39;margin:0;text-align:center;&#39;&gt;&lt;b&gt;LoginStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;SUCCESS&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;ERROR&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;PENDING&lt;/p&gt;" vertex="1">
+          <mxGeometry height="100" width="300" x="680" y="1230" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-LoginAction" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&#39;margin:0;text-align:center;&#39;&gt;&lt;b&gt;LoginActionType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;SUBMIT&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;CREATE_NEW_PLAYER&lt;/p&gt;" vertex="1">
+          <mxGeometry height="90" width="300" x="750" y="1090" as="geometry" />
+        </mxCell>
+        <mxCell id="class-HomePage" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;lt;&amp;lt;Abstract&amp;gt;&amp;gt;&lt;/b&gt;&lt;i&gt;&lt;b&gt;&lt;/b&gt;&lt;/i&gt;&lt;/p&gt;&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;i&gt;HomePage&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ initialize(data: HomePageViewData): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ handleHomeAction(action: HomePageAction): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ getHomeState(): HomeState&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ shutdown(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="130" width="300" x="60" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="class-HomePageAction" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;HomePageAction&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerID: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ actionType: HomeNavigationOption&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ optionalActionPayload: String&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="300" x="60" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="class-HomeState" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;HomeState&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerRecordSummary: RecordSummary&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ otherPlayerRecordSummary: List&amp;lt;RecordSummary&amp;gt;&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ availableNavigationOptions: List&amp;lt;HomeNavigationOption&amp;gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="360" x="440" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="class-HomePageViewData" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;HomePageViewData&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerRecordSummary: RecordSummary&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ otherPlayerRecordSummary: List&amp;lt;RecordSummary&amp;gt;&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ availableNavigationOptions: List&amp;lt;HomeNavigationOption&amp;gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="360" x="880" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="class-GameMenu" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b style=&quot;&quot;&gt;&amp;lt;&amp;lt;Abstract&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;i&gt;GameMenu&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ initialize(data: GameMenuViewData): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ handleMenuAction(action: GameMenuAction): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ getMenuState(): GameMenuState&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ shutdown(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="130" width="300" x="60" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="class-GameMenuAction" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;GameMenuAction&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerID: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ actionType: GameMenuNavigationOption&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ optionalActionPayload: String&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="300" x="60" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="class-GameMenuState" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;GameMenuState&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ availableGames: List&amp;lt;String&amp;gt;&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ selectedGame: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ availableNavigationOptions: List&amp;lt;GameMenuNavigationOption&amp;gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="360" x="440" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="class-GameMenuViewData" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;GameMenuViewData&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ availableGames: List&amp;lt;String&amp;gt;&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ availableNavigationOptions: List&amp;lt;GameMenuNavigationOption&amp;gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="360" x="880" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="class-Login" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;lt;&amp;lt;Abstract&amp;gt;&amp;gt;&lt;/b&gt;&lt;i&gt;&lt;b&gt;&lt;/b&gt;&lt;/i&gt;&lt;/p&gt;&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b style=&quot;&quot;&gt;&lt;i&gt;Login&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ initialize(data: LoginViewData): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ handleLoginAction(action: LoginAction): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ getLoginState(): LoginState&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ shutdown(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="130" width="300" x="60" y="1170" as="geometry" />
+        </mxCell>
+        <mxCell id="class-LoginAction" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;LoginAction&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerID: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ actionType: LoginActionType&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ username: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ password: String&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="110" width="300" x="60" y="1370" as="geometry" />
+        </mxCell>
+        <mxCell id="class-LoginState" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;LoginState&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ username: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ password: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ loginStatus: LoginStatus&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ feedbackMessage: String&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="110" width="360" x="440" y="1370" as="geometry" />
+        </mxCell>
+        <mxCell id="class-LoginViewData" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;LoginViewData&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ feedbackMessage: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ loginStatus: LoginStatus&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ availableActions: List&amp;lt;LoginActionType&amp;gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="110" width="360" x="880" y="1370" as="geometry" />
+        </mxCell>
+        <mxCell id="class-ProfileDashboard" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;lt;&amp;lt;Abstract&amp;gt;&amp;gt;&lt;/b&gt;&lt;i&gt;&lt;b&gt;&lt;/b&gt;&lt;/i&gt;&lt;/p&gt;&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;&lt;b&gt;ProfileDashboard&lt;/b&gt;&lt;/i&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ initialize(data: ProfileViewData): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ handleProfileAction(action: ProfileAction): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ getProfileDashboardState(): ProfileDashboardState&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ refresh(): void&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;+ shutdown(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="150" width="300" x="60" y="1730" as="geometry" />
+        </mxCell>
+        <mxCell id="class-ProfileAction" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;ProfileAction&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerID: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ actionType: String&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="90" width="300" x="60" y="1960" as="geometry" />
+        </mxCell>
+        <mxCell id="class-ProfileDashboardState" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;ProfileDashboardState&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerUsername: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ recordSummary: RecordSummary&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ gameStatistics: GameStatistics&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="360" x="440" y="1960" as="geometry" />
+        </mxCell>
+        <mxCell id="class-ProfileViewData" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;ProfileViewData&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerID: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ username: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ gameStatistics: GameStatistics&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;" vertex="1">
+          <mxGeometry height="100" width="360" x="880" y="1960" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-hp-action" edge="1" parent="1" source="class-HomePage" style="dashed=1;endArrow=open;endFill=0;" target="class-HomePageAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-hp-state" edge="1" parent="1" source="class-HomePage" style="dashed=1;endArrow=open;endFill=0;" target="class-HomeState">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-hp-viewdata" edge="1" parent="1" source="class-HomePage" style="dashed=1;endArrow=open;endFill=0;" target="class-HomePageViewData">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-hpaction-nav" edge="1" parent="1" source="class-HomePageAction" style="dashed=1;endArrow=open;endFill=0;" target="enum-HomeNav">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-homestate-nav" edge="1" parent="1" source="class-HomeState" style="dashed=1;endArrow=open;endFill=0;" target="enum-HomeNav">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-homeviewdata-nav" edge="1" parent="1" source="class-HomePageViewData" style="dashed=1;endArrow=open;endFill=0;" target="enum-HomeNav">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-homestate-record" edge="1" parent="1" source="class-HomeState" style="dashed=0;endArrow=open;endFill=0;" target="class-RecordSummary">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-homestate-record-mult" connectable="0" parent="rel-homestate-record" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1..*" vertex="1">
+          <mxGeometry relative="1" x="0.8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-homeviewdata-record" edge="1" parent="1" source="class-HomePageViewData" style="dashed=0;endArrow=open;endFill=0;" target="class-RecordSummary">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-homeviewdata-record-mult" connectable="0" parent="rel-homeviewdata-record" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1..*" vertex="1">
+          <mxGeometry relative="1" x="0.8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-gm-action" edge="1" parent="1" source="class-GameMenu" style="dashed=1;endArrow=open;endFill=0;" target="class-GameMenuAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-gm-state" edge="1" parent="1" source="class-GameMenu" style="dashed=1;endArrow=open;endFill=0;" target="class-GameMenuState">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-gm-viewdata" edge="1" parent="1" source="class-GameMenu" style="dashed=1;endArrow=open;endFill=0;" target="class-GameMenuViewData">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-gmaction-nav" edge="1" parent="1" source="class-GameMenuAction" style="dashed=1;endArrow=open;endFill=0;" target="enum-GameMenuNav">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-gmstate-nav" edge="1" parent="1" source="class-GameMenuState" style="dashed=1;endArrow=open;endFill=0;" target="enum-GameMenuNav">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-gmviewdata-nav" edge="1" parent="1" source="class-GameMenuViewData" style="dashed=1;endArrow=open;endFill=0;" target="enum-GameMenuNav">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-login-action" edge="1" parent="1" source="class-Login" style="dashed=1;endArrow=open;endFill=0;" target="class-LoginAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-login-state" edge="1" parent="1" source="class-Login" style="dashed=1;endArrow=open;endFill=0;" target="class-LoginState">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-login-viewdata" edge="1" parent="1" source="class-Login" style="dashed=1;endArrow=open;endFill=0;" target="class-LoginViewData">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-loginaction-type" edge="1" parent="1" source="class-LoginAction" style="dashed=1;endArrow=open;endFill=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="enum-LoginAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-loginstate-status" edge="1" parent="1" source="class-LoginState" style="dashed=1;endArrow=open;endFill=0;" target="enum-LoginStatus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-loginviewdata-status" edge="1" parent="1" source="class-LoginViewData" style="dashed=1;endArrow=open;endFill=0;" target="enum-LoginStatus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-loginviewdata-actiontype" edge="1" parent="1" source="class-LoginViewData" style="dashed=1;endArrow=open;endFill=0;entryX=0.832;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" target="enum-LoginAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pd-action" edge="1" parent="1" source="class-ProfileDashboard" style="dashed=1;endArrow=open;endFill=0;" target="class-ProfileAction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pd-state" edge="1" parent="1" source="class-ProfileDashboard" style="dashed=1;endArrow=open;endFill=0;" target="class-ProfileDashboardState">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pd-viewdata" edge="1" parent="1" source="class-ProfileDashboard" style="dashed=1;endArrow=open;endFill=0;" target="class-ProfileViewData">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pdstate-record" edge="1" parent="1" source="class-ProfileDashboardState" style="dashed=0;endArrow=open;endFill=0;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="class-RecordSummary">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pdstate-record-mult" connectable="0" parent="rel-pdstate-record" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-pdstate-stats" edge="1" parent="1" source="class-ProfileDashboardState" style="dashed=0;endArrow=open;endFill=0;" target="class-GameStatistics">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pdstate-stats-mult" connectable="0" parent="rel-pdstate-stats" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-pdviewdata-stats" edge="1" parent="1" source="class-ProfileViewData" style="dashed=0;endArrow=open;endFill=0;" target="class-GameStatistics">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pdviewdata-stats-mult" connectable="0" parent="rel-pdviewdata-stats" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
