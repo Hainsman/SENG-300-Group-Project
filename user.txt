@@ -1,17 +1,17 @@
 {
   "1": {
     "login": "Daniel",
-    "passwordHash": "123",
+    "passwordHash": "B5D445C3F466FA91FE2CC6ABE79232A1A57CDF14F7A26E716EA1E2789DF78",
     "id": 1
   },
   "2": {
     "login": "Alex",
-    "passwordHash": "456",
+    "passwordHash": "967C5A5B7E2FBBE38AC5CEFEA7C279570B16AE8465525538BC3B115267A45",
     "id": 2
   },
   "3": {
     "login": "John",
-    "passwordHash": "789",
+    "passwordHash": "B5D445C3F466FA91FE2CC6ABE79232A1A57CDF14F7A26E716EA1E2789DF78",
     "id": 3
   }
 }

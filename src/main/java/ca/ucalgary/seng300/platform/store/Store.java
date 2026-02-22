@@ -5,7 +5,6 @@ import ca.ucalgary.seng300.platform.domain.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Store<T extends Record> {
@@ -30,7 +28,7 @@ public class Store<T extends Record> {
                 .values()
                 .stream()
                 .filter(condition);
-        
+
         return res.toList();
     }
 
