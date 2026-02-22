@@ -6,10 +6,18 @@ import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.Store;
 import ca.ucalgary.seng300.platform.utils.Helper;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 public class MainAppTest {
     public static void main(String[] args) {
 //        launch(args);
+        LocalDateTime now = LocalDateTime.now(); //local time mountain
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+
+
         Store<User> userStorage = new Store<User>(Constants.USERFILEPATH);
         userStorage.create(new User(1, "Daniel", Helper.hashPassword("ABC", Constants.HASHALGORITHM)));
         userStorage.create(new User(2, "Alex", Helper.hashPassword("DEF", Constants.HASHALGORITHM)));
@@ -26,16 +34,16 @@ public class MainAppTest {
         }
 
         Store<GameHistory> gameHistoryStorage = new Store<GameHistory>(Constants.GAMEFILEPATH);
-        gameHistoryStorage.create(new GameHistory(1, 1, 1));
-        gameHistoryStorage.create(new GameHistory(2, 2, 2));
-        gameHistoryStorage.create(new GameHistory(3, 3, 3));
-        GameHistory gameHistory1 = new GameHistory(4,4, 4);
+        gameHistoryStorage.create(new GameHistory(1, 1, now.format(formatter)));
+        gameHistoryStorage.create(new GameHistory(2, 2, now.format(formatter)));
+        gameHistoryStorage.create(new GameHistory(3, 3, now.format(formatter)));
+        GameHistory gameHistory1 = new GameHistory(4,4, now.format(formatter));
         gameHistoryStorage.create(gameHistory1);
 
         for (var id: gameHistoryStorage.records.keySet()){
             System.out.println(id);
             GameHistory gameHistory = gameHistoryStorage.records.get(id);
-            System.out.println("Game History ID: " + gameHistory.getID() + ", GameID: " + gameHistory.getGameID() + ", TimeID: " + gameHistory.getTimeID());
+            System.out.println("Game History ID: " + gameHistory.getID() + ", GameID: " + gameHistory.getGameID() + ", TimeID: " + gameHistory.getTime());
 
         }
 
