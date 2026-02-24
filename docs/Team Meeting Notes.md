@@ -1,0 +1,64 @@
+# MEETING NOTES
+
+## FEB 5TH
+
+Design platform core:
+- Three rounds for design (for feb)
+- first round done by next Friday
+- Dylan will decide which diagrams to be made and assign them
+- use Steve's diagrams as starting points and modify them  if need be
+- make sure to think object oriented
+
+Client/UI team:
+- Use deadlines outlined in doc
+- Work on outlining UI components
+- next step: clarify integration strategy and assign tasks to team members
+
+Rules and validation:
+- main task is to design the game
+	- start brainstorming ideas
+- figure out hard rules to code
+- ideas for games (settled on 2-player games)
+	- battleship?
+	- chess?
+- come up with a list of maybe 10 games and the design for two of them.
+
+Integration:
+- maintain communication between different teams
+- connect the pieces when things are ready
+- will be working mostly with the platform core subgroup for the upcoming week
+
+General notes:
+- we’ll be using trello for assigning tasks
+- possibly notion for documentation management
+
+
+## FEB 10TH
+
+Rules and Validation:
+
+- main abstraction finished
+- blackjack rules are done, chess still needs work
+- UML class diagrams need to be finalized by thursday
+
+Client/UI team:
+
+- subteam has to meet to coordinate planning
+- possible topics for planning doc: standards, milestones.
+- high level architecture needs to be figured out still
+- try to visualize the goal and break it down into classes. Try to keep in mind "can this be generalized?".
+- UML class diagrams will also be done by thursday
+
+Platform Core:
+
+- subteam is working on combining the work that was done individually by members
+- rough UML diagram will be finished by thursday
+- members should not work on code before design diagrams are done
+
+Integration Team
+- Will be working on a blueprint for all subteam planning docs
+
+General Notes:
+
+- TA meeting time slot poll will close tonight, option with most votes will be final
+- Went over Member and Sub-team Leader responsibilities in the Team Document

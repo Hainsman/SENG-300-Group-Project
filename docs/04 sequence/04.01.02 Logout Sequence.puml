@@ -1,0 +1,26 @@
+@startuml
+title Sequence - Logout
+
+actor Player
+participant "GUI (Dashboard)" as GUI
+participant "SessionManager" as SM
+
+Player -> GUI : click Logout
+activate GUI
+
+GUI -> SM : clearSession(sessionToken)
+activate SM
+SM --> GUI : sessionCleared
+deactivate SM
+
+GUI -> GUI : transition to Welcome/Login screen
+GUI --> Player : display login screen
+deactivate GUI
+
+note right of SM
+  SessionManager responsibilities:
+  - Invalidates session token server-side
+  - Clears any locally stored session data
+end note
+
+@enduml
