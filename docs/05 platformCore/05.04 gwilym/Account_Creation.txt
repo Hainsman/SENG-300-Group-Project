@@ -1,0 +1,65 @@
+title Full Login Process
+
+participant User Interface
+participant Main Client
+
+participant Client I/O
+
+
+
+
+participant Server I/O
+
+participant Server
+
+participant Database
+
+User Interface->Main Client:request account creation\nenter username
+activate Main Client
+Main Client->Client I/O:format account creation request
+activate Client I/O
+Client I/O->Server I/O:send message
+deactivate Client I/O
+activate Server I/O
+Server I/O->Server:parse format\ngive server new account request
+deactivate Server I/O
+activate Server
+Server->Database:check username is available
+
+Server<--Database: status of available/not
+
+
+Server I/O<-Server:format reply
+deactivate Server
+activate Server I/O
+Client I/O<-Server I/O:send message
+activate Client I/O
+deactivate Server I/O
+Main Client<-Client I/O:get status and pass to main Client
+deactivate Client I/O
+alt status is unavailable
+User Interface<-Main Client:tell user the name is taken\nask if they want to use another username\nrepeat the first segment if they do
+
+end
+User Interface<-Main Client:tell user the name is available\nprompt for a password
+User Interface->Main Client:get the password
+Main Client->Client I/O:verify password is valid\nhash the password?\nformat username + password 
+activate Client I/O
+Client I/O->Server I/O:send message
+deactivate Client I/O
+activate Server I/O
+Server I/O->Server:pass new user info to the server
+deactivate Server I/O
+activate Server
+Server->Database:add the new user to the DB
+Server<--Database:confirmation
+Server I/O<-Server:Assign User ID\nget the lobby info\nformat confirmation message
+activate Server I/O
+deactivate Server
+Client I/O<-Server I/O:send message
+deactivate Server I/O
+activate Client I/O
+Main Client<-Client I/O:save user ID\nformat lobby info for display
+deactivate Client I/O
+User Interface<-Main Client:give user confirmation message\ndisplay the main lobby
+deactivate Main Client
