@@ -1,0 +1,33 @@
+title This is a title
+
+participant Client
+participant Server
+participant Game lobby
+
+participant Game Session
+note over Server,Client:This diagram hides the I/O mechanisms since they just clutter up the\nchart. Any communication to and from Client is going through Client\nI/O and Server I/O, and Server I/O routes it to the appropriate\nthread from there.\nThis diagram assumes that the user has already connected.
+Client->Server:request to join a game
+
+Server->Game lobby:add user ID to the game lobby\nadd user to the queue
+Server<--Game lobby:confirm join.\nremove the user from the\nmain lobby.
+
+note over Server:all messages from this point go\ndirectly to / from the game lobby
+Client<--Game lobby:send user confirmation of joining the lobby.\nsend user the game lobby info for display
+
+Game lobby->Game lobby:wait in game lobby for a match.\nsend chat messages from other users to user.\nsend chat messages from user to other users.
+Client<-Game lobby:When a game is found, ask user if they\nwant to join the game
+Client-->Game lobby:user replies yes or no
+Game lobby-->*Game Session:Create a new game session thread.\nadd both users.
+Game lobby<--Game Session:send confirmation to lobby, remove\nusers from the lobby
+Client<--Game Session:send confirmation and game information to users\ndisplay game for the user
+Client->Game Session:User makes a move, Client verifies and sends it.\nGame session receives and validates the move.
+Client<--Game Session:send the updated game state to all users.\nask next user for their move.
+Game Session->Game Session:Repeat until game over
+Client<-Game Session:send the final game state and \nany other information to the user.
+Game lobby<-Game Session:move the user back to the game lobby
+
+Client<-Game lobby:send the user the lobby info for display\nafter the game is finished on their end
+space -2
+Server(3)<-Game Session:update the information for the users (asynch)
+Server-->Game Session:confirm update, then close the session
+destroy Game Session
