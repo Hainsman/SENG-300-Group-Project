@@ -1,0 +1,99 @@
+@startuml
+
+' ─────────────────────────────
+' UI Layer
+' ─────────────────────────────
+class LoginPage
+class WelcomePage
+class HomePage
+class MainGameDashboard
+class PlayGame
+class GameGUI
+class ChatboxGUI
+class ProfileDashboard
+class Settings
+
+class ClientCore
+class ServerCore
+
+LoginPage --> ClientCore
+WelcomePage --> ClientCore
+HomePage --> ClientCore
+MainGameDashboard --> ClientCore
+PlayGame --> ClientCore
+GameGUI --> ClientCore
+ChatboxGUI --> ClientCore
+ProfileDashboard --> ClientCore
+Settings --> ClientCore
+
+ClientCore --> ServerCore : TCP
+
+' ─────────────────────────────
+' Platform Core
+' ─────────────────────────────
+class PlatformCore
+class GameSessionManager
+class MatchMaking
+class Leaderboard
+class EventBus
+class Chat
+class Lobby
+class SessionManager
+
+ServerCore --> PlatformCore
+
+PlatformCore *-- GameSessionManager
+PlatformCore *-- MatchMaking
+PlatformCore *-- Leaderboard
+PlatformCore *-- EventBus
+PlatformCore *-- Chat
+PlatformCore *-- Lobby
+PlatformCore *-- SessionManager
+
+' ─────────────────────────────
+' Game Layer
+' ─────────────────────────────
+interface Game
+interface RuleValidator
+abstract class PlayerAction
+
+class TicTacToeGame
+class ConnectFourGame
+
+TicTacToeGame ..|> Game
+ConnectFourGame ..|> Game
+
+GameSessionManager --> Game : manages
+
+' ─────────────────────────────
+' Player & Stats
+' ─────────────────────────────
+class Player
+class GeneralStats
+class PlayerStats
+class SettingsModel
+enum Rank
+
+Player "1" *-- "1" GeneralStats
+PlayerStats --> GeneralStats
+GeneralStats --> Rank
+SettingsModel --> Player
+
+PlatformCore --> Player
+Leaderboard --> GeneralStats
+SessionManager --> Player : authenticates
+
+' ─────────────────────────────
+' External Systems
+' ─────────────────────────────
+class Database
+class Networking
+class CredentialsDatabase
+class GameServer
+
+PlatformCore --> Database
+SessionManager --> CredentialsDatabase
+GameSessionManager --> GameServer
+Networking --> PlatformCore
+
+@enduml
