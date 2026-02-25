@@ -14,20 +14,26 @@ abstract Game <<abstract>> {
 }
 
 abstract RuleValidator <<abstract>> {
-+validateMove(state, move): boolean
-+getValidMoves(state)
++validateMove(GameState: state, PlayerAction: move): boolean
++getValidMoves(GameState: state)
 }
 
 class PlayerAction {
--player
+-player: Player
 -move
 }
 
 abstract GameState {
 -board: Array2D
--playerTurn
+-playerTurn: Player
 -state: State
 +applyAction(PlayerAction: action): boolean
+}
+
+enum Player {
++PLAYER_1
++PLAYER_2
++EMPTY
 }
 
 enum State {
@@ -40,7 +46,8 @@ enum State {
 Game --> RuleValidator
 Game --> GameState
 Game o-- PlayerAction
-GameState o-- State
+GameState *-- State
+GameState *-- Player
 
 
 @enduml
