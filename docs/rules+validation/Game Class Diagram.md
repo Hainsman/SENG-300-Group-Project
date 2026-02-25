@@ -39,8 +39,8 @@ enum State {
 
 Game --> RuleValidator
 Game --> GameState
-Game --o PlayerAction
-GameState --* State
+Game o-- PlayerAction
+GameState o-- State
 
 
 @enduml
