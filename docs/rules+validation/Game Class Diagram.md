@@ -31,16 +31,16 @@ abstract GameState {
 }
 
 enum Player {
-+PLAYER_1
-+PLAYER_2
-+EMPTY
+PLAYER_1
+PLAYER_2
+EMPTY
 }
 
 enum State {
-+IN_PROGRESS
-+TIE
-+P1_WIN
-+P2_WIN
+IN_PROGRESS
+TIE
+P1_WIN
+P2_WIN
 }
 
 Game --> RuleValidator
