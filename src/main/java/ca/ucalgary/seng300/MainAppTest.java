@@ -50,6 +50,9 @@ public class MainAppTest {
         var identicalGH = gameHistoryStorage.find( rec -> rec.getGameID() == 3);
         System.out.println(identicalGH.get(0).toString());
 
+        //show that email addresses are true and legit:
+            System.out.println(Helper.isEmailValid("daniel.maximov@ucalgary.ca", Constants.EMAILREGEX));
+            System.out.println(Helper.isEmailValid("\"john.doe\"@example.com", Constants.EMAILREGEX));
+            System.out.println(Helper.isEmailValid("user=name@example.com", Constants.EMAILREGEX));
     }
-
 }
