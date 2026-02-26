@@ -1,0 +1,22 @@
+{
+  "1": {
+    "globallyUniqueSessionIdentifier": "1f2a8e43-58c8-42f6-8c73-3500ed17b82f",
+    "id": 1,
+    "miliSecondsSinceEpoch": 1772095761970
+  },
+  "2": {
+    "globallyUniqueSessionIdentifier": "1128edba-2df6-4ecb-90f9-49a9ff8ee427",
+    "id": 2,
+    "miliSecondsSinceEpoch": 1772095762001
+  },
+  "3": {
+    "globallyUniqueSessionIdentifier": "958809f5-0b28-40b1-aa46-45c4d4927168",
+    "id": 3,
+    "miliSecondsSinceEpoch": 1772095762004
+  },
+  "4": {
+    "globallyUniqueSessionIdentifier": "ee3516da-f1fc-4555-b3d7-7f6755c4c051",
+    "id": 4,
+    "miliSecondsSinceEpoch": 1772095762008
+  }
+}

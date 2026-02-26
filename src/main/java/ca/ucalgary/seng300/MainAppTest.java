@@ -2,6 +2,7 @@ package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.GameHistory;
+import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.Store;
 import ca.ucalgary.seng300.platform.utils.Helper;
@@ -34,11 +35,11 @@ public class MainAppTest {
         }
 
         Store<GameHistory> gameHistoryStorage = new Store<GameHistory>(Constants.GAMEFILEPATH);
-        gameHistoryStorage.create(new GameHistory(1, 1));
-        gameHistoryStorage.create(new GameHistory(2, 2));
-        gameHistoryStorage.create(new GameHistory(3, 3));
-        GameHistory gameHistory1 = new GameHistory(4,4);
-        gameHistoryStorage.create(gameHistory1);
+//        gameHistoryStorage.create(new GameHistory(1, 1, 1));
+//        gameHistoryStorage.create(new GameHistory(2, 2, 2));
+//        gameHistoryStorage.create(new GameHistory(3, 3, 3));
+//        GameHistory gameHistory1 = new GameHistory(4,4, 1);
+//        gameHistoryStorage.create(gameHistory1);
 
         for (var id: gameHistoryStorage.records.keySet()){
             System.out.println(id);
@@ -47,12 +48,22 @@ public class MainAppTest {
 
         }
 
+
         var identicalGH = gameHistoryStorage.find( rec -> rec.getGameID() == 3);
         System.out.println(identicalGH.get(0).toString());
 
         //show that email addresses are true and legit:
-            System.out.println(Helper.isEmailValid("daniel.maximov@ucalgary.ca", Constants.EMAILREGEX));
-            System.out.println(Helper.isEmailValid("\"john.doe\"@example.com", Constants.EMAILREGEX));
-            System.out.println(Helper.isEmailValid("user=name@example.com", Constants.EMAILREGEX));
+        System.out.println(Helper.isEmailValid("daniel.maximov@ucalgary.ca", Constants.EMAILREGEX));
+        System.out.println(Helper.isEmailValid("\"john.doe\"@example.com", Constants.EMAILREGEX));
+        System.out.println(Helper.isEmailValid("user=name@example.com", Constants.EMAILREGEX));
+
+        Store<SessionHistory> SessionHistoryStorage = new Store<SessionHistory>(Constants.SESSIONFILEPATH);
+        SessionHistoryStorage.create(new SessionHistory(1));
+        SessionHistoryStorage.create(new SessionHistory(2));
+        SessionHistoryStorage.create(new SessionHistory(3));
+        SessionHistoryStorage.create(new SessionHistory(4));
+
+
+
     }
 }
