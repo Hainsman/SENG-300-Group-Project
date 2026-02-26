@@ -1,0 +1,32 @@
+@startuml profile_stats_settings_use_cases
+left to right direction
+skinparam packageStyle rectangle
+skinparam ActorBorderColor #1a3a5c
+skinparam UsecaseBorderColor #2a5f8f
+skinparam UsecaseBackgroundColor #e8f4fd
+skinparam ArrowColor #555555
+
+actor Player
+
+rectangle "Profile, Stats & Settings" {
+    usecase "UC-PS-01\nView Own Profile & Stats"     as ViewOwn
+    usecase "UC-PS-02\nView Other Player Profile"    as ViewOther
+    usecase "UC-PS-03\nView Leaderboard"             as ViewLeaderboard
+    usecase "UC-PS-04\nChange Username"              as ChangeUsername
+    usecase "UC-PS-05\nChange Email"                 as ChangeEmail
+    usecase "UC-PS-06\nChange Password"              as ChangePassword
+    usecase "UC-PS-07\nDelete Account"               as DeleteAccount
+}
+
+Player --> ViewOwn
+Player --> ViewOther
+Player --> ViewLeaderboard
+Player --> ChangeUsername
+Player --> ChangeEmail
+Player --> ChangePassword
+Player --> DeleteAccount
+
+ChangeUsername ..> ViewOwn : <<extend>>
+ChangeEmail    ..> ViewOwn : <<extend>>
+ChangePassword ..> ViewOwn : <<extend>>
+@enduml
