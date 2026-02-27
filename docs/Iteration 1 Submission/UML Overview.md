@@ -7,7 +7,7 @@ This document provides a structured overview of the four class diagrams designed
 
 ## Diagram 01 — Platform Core & Services
 
-**File:** `02_01_Platform_Core_and_Services.png`  
+**File:** `02.01_Platform_Core_and_Services.png`  
 ![02.01_Platform_Core_and_Services.png](All%20Images/UML/02.01_Platform_Core_and_Services.png)
 
 ### Purpose
@@ -135,10 +135,10 @@ The rules-and-validation contract for all game logic. Stateless — receives a m
 
 ## Diagram 02 — Player, Profiles, Stats & Persistence
 
-**File:** `02_02_-_Player__Profiles__Stats__Persistence__Modified.png`  
+**File:** `02.02 - Player, Profiles, Stats, Persistence, Modified.png`  
 **Note from diagram:** Plans to use either HashMap or file load/unload. No external DB required.
 
-![02.02 - Player, Profiles, Stats, Persistence, Modified.png](All%20Images/UML/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
+![02.02 - Player, Profiles, Stats,Persistence, Modified.png](All%20Images/UML/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
 
 ### Purpose
 This diagram defines all persistent player data, account management, and statistics tracking. It covers the Player domain model, per-game statistics, ranking, and the account settings/credential management system.
@@ -239,7 +239,7 @@ BRONZE → SILVER → GOLD → PLATINUM → DIAMOND → MASTER → GRANDMASTER
 
 ## Diagram 03 — Game Layer
 
-**File:** `Game_Class_Diagram.png`
+**File:** `Game Class Diagram.png`
 ![Game Class Diagram.png](All%20Images/UML/Game%20Class%20Diagram.png)
 
 **File:** `02.03 - Tic Tac Toe Class Diagram.png`
