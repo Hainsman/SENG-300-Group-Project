@@ -8,7 +8,7 @@ This document provides a structured overview of all state machines defined for t
 ## Diagram 01 — Player Session State Machine
 
 **File:** `01_03_Player_SM.png`
-![01.03 Player SM.png](../01%20state/01.03%20Player%20SM.png)
+![01.03 Player SM.png](All%20Images/State/01.03%20Player%20SM.png)
 
 ### Purpose
 Tracks the full lifecycle of a single player's interaction with the platform from first launch through authentication, navigation, matchmaking, and gameplay. This is the primary client-side session model.
@@ -65,7 +65,7 @@ Tracks the full lifecycle of a single player's interaction with the platform fro
 ## Diagram 02 — Platform Player Session State Machine
 
 **File:** `01_01_Platform_SM.png`  
-![01.01_Platform_SM.png](../05%20platformCore/05.04%20gwilym/01.01_Platform_SM.png)
+![01.01_Platform_SM.png](All%20Images/State/01.01_Platform_SM.png)
 
 ### Purpose
 A more detailed version of the Player Session SM from the platform's architectural perspective. This diagram emphasizes that `GameSession` emits `GameStateUpdate` events and that `PlatformCore` routes notifications to wherever the player currently is — lobby, home, dashboard, or in-game view — regardless of which screen the player is on.
@@ -104,7 +104,7 @@ This is the key platform-first principle: notifications are platform-owned, not 
 ## Diagram 03 — Abstract Game State Machine
 
 **File:** `Game SM.png`
-![Game SM.png](../rules%2Bvalidation/Game%20SM.png)
+![Game SM.png](All%20Images/State/Game%20SM.png)
 
 ### Purpose
 Defines the complete state model shared by all concrete game implementations. Updated from the original simplified diagram to follow the full session lifecycle structure of the Game Session SM (Diagram 03) and to reference exact method and field names from the `Game`, `RuleValidator`, `GameState`, `PlayerAction`, `Player`, and `State` class diagrams.
@@ -181,7 +181,7 @@ Every transition emits a `GameStateUpdate` to `PlatformCore` containing:
 ## Diagram 04 — Connect Four State Machine
 
 **File:** `Connect 4 SM.png`
-![Connect 4 SM.png](../rules%2Bvalidation/Erik/Connect%204%20SM.png)
+![Connect 4 SM.png](All%20Images/State/Connect%204%20SM.png)
 
 ### Purpose
 Concrete state machine for the Connect Four game implementation. Updated to include the full session lifecycle (matching Diagrams 03 and 04) and to reference exact class diagram method names. Extends the abstract structure with Connect Four-specific terminal conditions and board initialization.
@@ -240,7 +240,7 @@ Concrete state machine for the Connect Four game implementation. Updated to incl
 ## Diagram 05 — Tic-Tac-Toe State Machine
 
 **File:** `02.03 - Tic Tac Toe SM Diagram.png`
-![02.03 - Tic Tac Toe SM Diagram.png](../rules%2Bvalidation/roman/02.03%20-%20Tic%20Tac%20Toe%20SM%20Diagram.png)
+![02.03 - Tic Tac Toe SM Diagram.png](All%20Images/State/02.03%20-%20Tic%20Tac%20Toe%20SM%20Diagram.png)
 
 ### Purpose
 Concrete state machine for the Tic-Tac-Toe game implementation. Updated to include the full session lifecycle, use consistent `State` enum naming (`P1_WIN`/`P2_WIN`/`TIE` instead of the original `WIN`/`DRAW`), and reference exact class diagram method names. Retains the `moveCount` tracking from the original as a game-specific initialization detail.
