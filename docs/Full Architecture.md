@@ -84,15 +84,83 @@ The UI layer is the player-facing surface. It is passive: it **subscribes** to `
 
 ### 4.2 Platform Core & Services
 
-This is the central nervous system of the platform. All game events and player notifications are routed through here. It sits behind a TCP network layer: `ClientCore` on the client side communicates with `ServerCore`, which owns `PlatformCore` and all its services.
+This is the central nervous system of the platform. All game events and player notifications are routed through here. The architecture is split across a **client-side** and a **server-side** separated by a TCP network stub. The `ClientCore` handles all local requests and client-side communication; `ServerCore` is the main functional component on the server side and routes all traffic between services.
 
-#### `PlatformCore` *(service)*
-Central dispatcher. Owns `EventBus`, `MatchMaking`, `GameSessionManager`, `Leaderboard`, `Chat`, and `Lobby`.
-- **`dispatch(event)`** — receives `GameStateUpdate` events from `EventBus`; routes notifications to the correct players regardless of what screen they are on
-- **`notifyPlayer(playerId, msg)`** — delivers notification (lobby banner, badge, in-game update)
-- **`submitMove(sessionId, move)`** — proxies move submission from UI to `GameSessionManager`
-- **`joinQueue(gameType)`** — proxies ranked queue entry from UI to `MatchMaking`
-- **`joinLobby(playerId, gameType)`** — proxies unranked lobby entry from UI to `Lobby`
+> **Class diagrams:** See [§10.1.1](#1011-rough-design--platform-core--services-sub-team-draft) (rough design), [§10.1.2](#1012-simplified-platform-core-diagram-for-other-sub-teams) (simplified, for other sub-teams), and [§10.1.3](#1013-detailed-platform-core-class-diagram) (detailed). Images: `02_01_Platform_Core_and_Services.png`, `2_01_Platform_Core_Simplified.png`, `2_01PlatformCore_drawio_2_.png`
+
+---
+
+#### Client-Side Components
+
+##### `ClientUI` *(interface)*
+The full UI & navigation layer (owned by the Client/UI sub-team). All user interaction flows through this interface.
+- `send(request)` — sends a user action to `ClientCore`
+- `receive(update)` — receives updates from `ClientCore` and renders them
+
+##### `clientGame` *(interface)*
+Client-side instance of the game validation logic (owned by the Rules & Validation sub-team). `ClientCore` uses this to do a lightweight local check before sending a move to the server, reducing unnecessary network round trips.
+- `validate(move): Bool` — returns whether a move is locally valid
+
+##### `ClientCore` *(service)*
+Handles all local requests from the user, communicates with `ServerCore` for remote requests, stores local information for the UI, and checks moves are valid before sending to the server.
+- `send(message): String` — serialises and sends a request over `NETWORK`
+- `receive(String): message` — receives and deserialises server responses
+- `check(move)` — calls `clientGame.validate(move)` before forwarding to server
+
+> **Note:** The exact distribution of functions between the main program thread and the listener thread will be determined when coding starts. This split is not final.
+
+##### `ClientReceiver` *(service)*
+Listens for incoming messages from the server, determines the type of update, and acts on it.
+- `receiveMessage(message): getUpdate`
+- `getUpdate(message): update`
+- `sendUpdate(update): void`
+
+---
+
+#### Network Layer
+
+##### `NETWORK` *(stub)*
+Messages are sent and received over the network by TCP. For communicating between threads and different programs, using actual networking (same IP, different ports) is the chosen solution. The `NETWORK` stub is the boundary point between client and server.
+
+> Dotted lines from `Chat`, `GameLobby`, and `Game` back to the client represent events sent via `ServerCore` to the user; these are separated out in the diagram for clarity.
+
+---
+
+#### Server-Side Components
+
+##### `ServerCore` *(service)*
+The main functional component of Platform Core. All communication between services is handled here. `ServerCore` receives messages from any client, routes user actions to the correct service, hosts the 'main' lobby for global chat, and handles new connections.
+- `send(ID, message): String` — sends a message to a specific client
+- `receive(ID, String): ID, message` — receives and routes an incoming client message
+- `routeContent(content): void` — dispatches content to the appropriate service
+
+##### `Database` *(stub)*
+Stub for all persistence. Returns login boolean, handles scoreboard updating, and provides the interface that a real database implementation will conform to.
+- `storeData(): void`
+- `retrieveData(): void`
+
+##### `GameLobby` *(service)*
+Provides a separate chat and UI context from the main lobby. Displays game info and handles the entry point to matchmaking.
+- `receiveContent(content): void`
+- `requestJoin()` — triggers the matchmaking flow
+
+##### `matchmaking` *(service)*
+Puts users in the queue. When a match is found, routes the join request via `GameLobby`; if accepted, creates a new `Game` instance and moves both players into it.
+
+##### `Chat` *(service)*
+Sends chat messages to all users on its list. Maintains `List<int> users` (user IDs) and `List<int>` user IP addresses.
+- `receiveContent(content)` → `sendMessage(content, users)` — broadcasts content to the channel
+- `sendMessage(content, users)` — delivers the chat message to everyone on the list
+
+##### `Game` *(service)*
+Sends and receives turn updates, checks the validity of moves, sends the updated game state to both players, provides a local chat instance, and allows users to return to the lobby or quit.
+
+##### `GameEngine` *(interface)*
+The rules and validation contract. `Game` delegates all move legality and state-transition logic to this interface.
+- `validateMove(move): Boolean`
+- `updateGame(move)` — returns the new game state and next turn value
+
+---
 
 #### `GameSessionManager` *(service)*
 Owns the move pipeline. Calls `Game` interface methods; emits `GameStateUpdate` on move accepted/rejected, turn changes, and game end.
@@ -120,35 +188,11 @@ The canonical message passed between game layer and platform layer.
 #### `GameStatus` *(enum)*
 `LOBBY → MATCHMAKING → STARTING → IN_PROGRESS → GAME_OVER`
 
-#### `GameState`
-Server-side snapshot of a running session.
-
-| Field | Description |
-|---|---|
-| `sessionId` | Identifies the session |
-| `gameType` | Which game is being played |
-| `status` | Current `GameStatus` |
-| `activePlayerId` | Player whose turn it is |
-| `board` | Current board representation |
-
 #### `MatchMaking` *(service)*
 Handles ranked queue management by `gameType` with skill-based player matching.
 - `addPlayerToQueue(playerId, gameType)` — adds player to ranked queue
 - `removePlayer(playerId)` — dequeues player
 - `matchPlayers(gameType): List<String>` — returns matched player IDs; triggers `PlatformCore` when match is found
-
-#### `Lobby` *(service)*
-Handles unranked match creation and discovery. Players in a lobby can chat while waiting.
-- `createLobby(): String` — creates a new lobby; returns lobbyId
-- `getAvailableLobbies(): List` — returns joinable lobbies
-- `addPlayerToLobby(lobbyId, playerId)` — adds a player to a lobby
-
-> `Lobby.players` is encapsulated — external code cannot enumerate who is in a lobby.
-
-#### `Chat` *(service)*
-Per-lobby messaging. Encapsulates the player list for privacy.
-- `sendMessage(msg)` — broadcasts a message to lobby members
-- `filterMessage(msg)` *(optional)* — content filtering hook called by `PlatformCore`
 
 #### `Leaderboard` *(service)*
 - `logGameResult(sessionId)` — records result after game ends
@@ -159,6 +203,12 @@ Backed by `Database` (stub).
 
 #### `SessionManager`
 Manages authentication sessions: creates session tokens on login, invalidates them on logout, stores session data locally.
+
+#### Platform Core — Class Diagrams
+
+**Simplified Design (for other sub-teams)**
+
+![2.01_Platform_Core_Simplified.png](05%20platformCore/05.04%20gwilym/2.01_Platform_Core_Simplified.png)
 
 ---
 
@@ -215,6 +265,8 @@ Validation logic is separated from game flow logic. Each game provides its own i
 | `validate(PlayerAction action, GameState state)` | Returns validation result with failure reason if invalid |
 | `getValidActions()` | Returns the list of currently legal actions |
 
+![Game Class Diagram.png](rules%2Bvalidation/Game%20Class%20Diagram.png)
+
 #### Tic-Tac-Toe Implementation
 
 **Components:**
@@ -223,6 +275,8 @@ Validation logic is separated from game flow logic. Each game provides its own i
 - `TicTacToeRuleValidator` (implements `RuleValidator`)
 - `TicTacToeGameState` (board positions, current player)
 
+![02.03 - Tic Tac Toe Class Diagram.png](rules%2Bvalidation/roman/02.03%20-%20Tic%20Tac%20Toe%20Class%20Diagram.png)
+
 #### Connect Four Implementation
 
 **Components:**
@@ -230,6 +284,8 @@ Validation logic is separated from game flow logic. Each game provides its own i
 - `ConnectFourPlayerAction` (concrete `PlayerAction`)
 - `ConnectFourRuleValidator` (implements `RuleValidator`)
 - `ConnectFourGameState` (board positions, current player)
+
+![Connect4ClassDiagram.png](rules%2Bvalidation/Erik/Connect4ClassDiagram.png)
 
 #### Interaction Flow (Game Layer)
 
@@ -274,6 +330,7 @@ Account management operations (change username/email/password, delete account, l
 In-memory `HashMap<String, Player>` store. Provides:
 - `usernameLookup`, `addNewPlayer`, `deleteExistingPlayer`
 - `findPlayerByUsername`, `saveDatabase(filename)`, `loadDatabase(filename)`
+
 
 > Plan: HashMap or file load/unload. No external DB required for the stub.
 
