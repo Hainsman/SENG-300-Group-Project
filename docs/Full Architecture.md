@@ -334,6 +334,8 @@ In-memory `HashMap<String, Player>` store. Provides:
 
 > Plan: HashMap or file load/unload. No external DB required for the stub.
 
+![02.02 - Player, Profiles, Stats, Persistence, Modified.png](02%20structure/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
+
 ---
 
 ## 5. State Machines
