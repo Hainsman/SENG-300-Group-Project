@@ -8,7 +8,7 @@ This document provides a structured overview of the four class diagrams designed
 ## Diagram 01 — Platform Core & Services
 
 **File:** `02_01_Platform_Core_and_Services.png`  
-![02.01_Platform_Core_and_Services.png](../05%20platformCore/05.04%20gwilym/02.01_Platform_Core_and_Services.png)
+![02.01_Platform_Core_and_Services.png](All%20Images/UML/02.01_Platform_Core_and_Services.png)
 
 ### Purpose
 This diagram defines the networking backbone and server-side service architecture of the platform. It specifies how clients communicate with the server, how server-side services are routed, and where game session management, matchmaking, chat, and data persistence connect.
@@ -138,7 +138,7 @@ The rules-and-validation contract for all game logic. Stateless — receives a m
 **File:** `02_02_-_Player__Profiles__Stats__Persistence__Modified.png`  
 **Note from diagram:** Plans to use either HashMap or file load/unload. No external DB required.
 
-![02.02 - Player, Profiles, Stats, Persistence, Modified.png](../02%20structure/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
+![02.02 - Player, Profiles, Stats, Persistence, Modified.png](All%20Images/UML/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
 
 ### Purpose
 This diagram defines all persistent player data, account management, and statistics tracking. It covers the Player domain model, per-game statistics, ranking, and the account settings/credential management system.
@@ -240,9 +240,13 @@ BRONZE → SILVER → GOLD → PLATINUM → DIAMOND → MASTER → GRANDMASTER
 ## Diagram 03 — Game Layer
 
 **File:** `Game_Class_Diagram.png`
-![Game Class Diagram.png](../rules%2Bvalidation/Game%20Class%20Diagram.png)
-![02.03 - Tic Tac Toe Class Diagram.png](../rules%2Bvalidation/roman/02.03%20-%20Tic%20Tac%20Toe%20Class%20Diagram.png)
-![Connect4ClassDiagram.png](../rules%2Bvalidation/Erik/Connect4ClassDiagram.png)
+![Game Class Diagram.png](All%20Images/UML/Game%20Class%20Diagram.png)
+
+**File:** `02.03 - Tic Tac Toe Class Diagram.png`
+![02.03 - Tic Tac Toe Class Diagram.png](All%20Images/UML/02.03%20-%20Tic%20Tac%20Toe%20Class%20Diagram.png)
+
+**File:** `Connect4ClassDiagram.png`
+![Connect4ClassDiagram.png](All%20Images/UML/Connect4ClassDiagram.png)
 
 ### Purpose
 Defines the abstract game framework that all sample games (Tic-Tac-Toe, Connect Four, etc.) must implement. Enforces a clean separation between platform-level session management and game-specific logic, ensuring games are interchangeable within the platform's turn engine.
@@ -332,7 +336,7 @@ Represents the outcome or progression status of a game session.
 ## Diagram 04 — UI Class Diagram
 
 **File:** `UI_Class_Diagram.png`
-![img.png](All%20Images/UML/img.png)
+![UI_Class_Diagram.png](All%20Images/UML/UI_Class_Diagram.png)
 
 ### Purpose
 Defines the client-side view layer architecture for all major screens of the platform. Each screen follows a consistent pattern: an abstract view class, a view data input object, an action object, and a state output object. This pattern enforces clean separation between the UI rendering concern and the data/logic layers.
