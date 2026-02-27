@@ -1,21 +1,83 @@
-@startuml
-title Tic Tac Toe - State Machine
+@startuml TicTacToe_SM
+title Tic-Tac-Toe — State Machine
 
-[*] --> ACTIVE : TicTacToeGame\ncreated
+skinparam state {
+  BackgroundColor #E8F4FD
+  BorderColor #2A5F8F
+  FontSize 12
+  ArrowColor #333333
+  StartColor #1a3a5c
+  EndColor #1a3a5c
+  CompositeBackgroundColor #F5FAFF
+  CompositeBorderColor #2A5F8F
+}
 
-ACTIVE --> ACTIVE : handleAction(PlayerAction)\n[validateAction() passes,\nno winner, board not full]\n/ activePlayerId switches (X ↔ O)\n/ moveCount++
+' ─── Session Lifecycle ───────────────────────────────────
+[*] --> Created
 
-ACTIVE --> WIN : handleAction(PlayerAction)\n[3 in a row detected]
+Created --> WaitingForPlayers : roomOpen
 
-ACTIVE --> DRAW : handleAction(PlayerAction)\n[moveCount == 9,\nno winner]
+WaitingForPlayers --> ReadyToStart : minPlayersReached\n[players.size() == 2]
 
-WIN --> [*] : getGameUpdate()\n[GameStatus.WIN]
-DRAW --> [*] : getGameUpdate()\n[GameStatus.DRAW]
+ReadyToStart --> Starting : startGame
 
-note right of ACTIVE
-  handleAction() is rejected if
-  validateAction() returns
-  ValidationResult { valid: false }
+Starting --> TurnSelect : initialStateBuilt\n/ Game.createInitialState(players)\n/ GameState.state = IN_PROGRESS\n/ GameState.playerTurn = PLAYER_1 (X)\n/ moveCount = 0
+
+' ─── Turn Loop (composite) ───────────────────────────────
+state TurnSelect {
+  [*] --> DetermineActivePlayer
+
+  DetermineActivePlayer --> AwaitingMove : activePlayerChosen\n/ emit GameStateUpdate(\n    activePlayerId,\n    allowedActions = RuleValidator.getValidMoves(gameState),\n    board,\n    status = YOUR_TURN\n  )
+
+  AwaitingMove --> ValidatingMove : moveSubmitted\n/ PlayerAction(player=GameState.playerTurn, move=cell[row,col])
+
+  ValidatingMove --> AwaitingMove : invalidMove\n[RuleValidator.validateMove(gameState, action) == false]\n  e.g. cell already occupied, out of bounds\n/ emit ValidationResult { valid: false, reason }\n/ emit GameStateUpdate(status=YOUR_TURN)
+
+  ValidatingMove --> ApplyMove : validMove\n[RuleValidator.validateMove(gameState, action) == true]
+
+  ApplyMove --> CheckEndConditions : stateMutated\n/ GameState.applyAction(action)\n  marks cell with active player symbol (X or O)\n/ moveCount++
+
+  CheckEndConditions --> DetermineActivePlayer : notEnded\n[Game.isGameOver(gameState) == false]\n/ GameState.playerTurn switches\n  PLAYER_1 (X) ↔ PLAYER_2 (O)\n/ emit GameStateUpdate(\n    activePlayerId,\n    allowedActions,\n    board,\n    status = WAITING\n  )
+
+  CheckEndConditions --> Ended : winOrDraw\n[Game.isGameOver(gameState) == true]
+}
+
+' ─── Terminal Conditions ─────────────────────────────────
+state Ended {
+  state "GameState.state = P1_WIN" as P1Win : 3 in a row — PLAYER_1 (X)
+  state "GameState.state = P2_WIN" as P2Win : 3 in a row — PLAYER_2 (O)
+  state "GameState.state = TIE"   as Tie   : moveCount == 9, no winner
+}
+
+TurnSelect --> Ended
+
+' ─── Reporting ───────────────────────────────────────────
+Ended --> ReportingResults : persistStub / StatsManager.recordResult()\n/ emit GameStateUpdate(\n    status = ENDED,\n    board,\n    result = GameState.state\n  )
+
+ReportingResults --> [*] : closeSession\n/ PlatformCore.returnToDashboard()
+
+note right of TurnSelect
+  Every transition emits a GameStateUpdate to PlatformCore:
+  - activePlayerId: String
+  - allowedActions: RuleValidator.getValidMoves(gameState)
+  - board: GameState.board (Array2D — 3×3 snapshot)
+  - status: YOUR_TURN | WAITING | ENDED
+end note
+
+note right of Starting
+  Game.createInitialState(players) sets:
+  - GameState.board = empty 3×3 Array2D (all EMPTY)
+  - GameState.playerTurn = PLAYER_1
+  - GameState.state = IN_PROGRESS
+  - moveCount = 0
+end note
+
+note bottom of CheckEndConditions
+  isGameOver() checks:
+  1. Any row, column, or diagonal fully owned by one player → WIN
+  2. moveCount == 9 with no winner → TIE
+  handleAction() is a no-op if validateMove() returns false
+  (state unchanged, moveCount unchanged, turn unchanged)
 end note
 
 @enduml
