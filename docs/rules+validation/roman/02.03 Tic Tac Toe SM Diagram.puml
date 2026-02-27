@@ -1,0 +1,21 @@
+@startuml
+title Tic Tac Toe - State Machine
+
+[*] --> ACTIVE : TicTacToeGame\ncreated
+
+ACTIVE --> ACTIVE : handleAction(PlayerAction)\n[validateAction() passes,\nno winner, board not full]\n/ activePlayerId switches (X ↔ O)\n/ moveCount++
+
+ACTIVE --> WIN : handleAction(PlayerAction)\n[3 in a row detected]
+
+ACTIVE --> DRAW : handleAction(PlayerAction)\n[moveCount == 9,\nno winner]
+
+WIN --> [*] : getGameUpdate()\n[GameStatus.WIN]
+DRAW --> [*] : getGameUpdate()\n[GameStatus.DRAW]
+
+note right of ACTIVE
+  handleAction() is rejected if
+  validateAction() returns
+  ValidationResult { valid: false }
+end note
+
+@enduml
