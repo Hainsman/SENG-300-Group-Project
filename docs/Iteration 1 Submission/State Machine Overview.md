@@ -7,7 +7,7 @@ This document provides a structured overview of all state machines defined for t
 
 ## Diagram 01 — Player Session State Machine
 
-**File:** `01_03_Player_SM.png`
+**File:** `01.03 Player SM.png`
 ![01.03 Player SM.png](All%20Images/State/01.03%20Player%20SM.png)
 
 ### Purpose
@@ -64,7 +64,7 @@ Tracks the full lifecycle of a single player's interaction with the platform fro
 
 ## Diagram 02 — Platform Player Session State Machine
 
-**File:** `01_01_Platform_SM.png`  
+**File:** `01.01_Platform_SM.png`  
 ![01.01_Platform_SM.png](All%20Images/State/01.01_Platform_SM.png)
 
 ### Purpose
