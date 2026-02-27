@@ -31,7 +31,7 @@ Maps to UC-04 (View Dashboard) and `HomePage` from the UI class diagram.
 
 ## Screen 3 — Game Menu / Game Select
 
-**File:** `game_dashboard_ui_mockup.png`
+**File:** `game dashboard ui mockup.png`
 ![game dashboard ui mockup.png](All%20Images/UI%20Mockups/game%20dashboard%20ui%20mockup.png)
 
 A left-panel navigation layout with the platform logo (**Bogo Solutions**), **Games** and **Profile** links, and bottom-anchored **Settings**, **Info**, and **Exit** actions. The main area shows a **Multiplayer Games** header and game cards (Checkers, Connect 4). A right panel shows the current player's username and a **Friends** list. Maps to UC-01 (View Game List) and `GameMenu` from the UI class diagram.
@@ -40,7 +40,7 @@ A left-panel navigation layout with the platform logo (**Bogo Solutions**), **Ga
 
 ## Screen 4 — Connect Four In-Game
 
-**File:** `connect4_ui_in_game.png`
+**File:** `connect4 ui in game.png`
 ![connect4 ui in game.png](All%20Images/UI%20Mockups/connect4%20ui%20in%20game.png)
 
 Dark navy game view with three zones:
