@@ -34,7 +34,7 @@ A use case diagram shows what a system does from the user's perspective, not how
 
 ## Subsystem 01 — Platform Use Cases
 **Diagram:** `03_01_Platform_UC_Diagram.png`
-![03.01 Platform UC Diagram.png](../03%20useCases/03.01%20Platform%20UC%20Diagram.png)
+![03.01 Platform UC Diagram.png](All%20Images/Use%20Case/03.01%20Platform%20UC%20Diagram.png)
 This diagram defines the top-level use cases available on the platform. It represents the broadest view of what players can do and serves as the entry point that connects to all other subsystems.
 
 ### Use Cases
@@ -70,7 +70,7 @@ This diagram defines the top-level use cases available on the platform. It repre
 ## Subsystem 02 — Authentication Use Cases
 
 **Diagram:** `03_02_Authentication_UC_Diagram.png`
-![03.02 Authentication UC Diagram.png](../03%20useCases/03.02%20Authentication%20UC%20Diagram.png)
+![03.02 Authentication UC Diagram.png](All%20Images/Use%20Case/03.02%20Authentication%20UC%20Diagram.png)
 
 This subsystem defines how players prove their identity, how sessions are managed, and how protected data is accessed. All multiplayer actions depend on an active authenticated session validated by AUTH-06.
 
@@ -108,7 +108,7 @@ This subsystem defines how players prove their identity, how sessions are manage
 ## Subsystem 03 — Matchmaking & Lobby Use Cases
 
 **Diagram:** `03_03_Matchmaking_Lobby_UC.png`
-![03.03 Matchmaking Lobby UC.png](../03%20useCases/03.03%20Matchmaking%20Lobby%20UC.png)
+![03.03 Matchmaking Lobby UC.png](All%20Images/Use%20Case/03.03%20Matchmaking%20Lobby%20UC.png)
 
 This subsystem defines how players get into a game — either through the ranked matchmaking queue or through manually created/joined lobbies. UC-ML-07 is the critical bridge between this subsystem and the Game Session subsystem.
 
@@ -143,7 +143,7 @@ This subsystem defines how players get into a game — either through the ranked
 ## Subsystem 04 — Game Session Use Cases
 
 **Diagram:** `03_04_GameSession_UC.png`
-![03.04 GameSession UC.png](../03%20useCases/03.04%20GameSession%20UC.png)
+![03.04 GameSession UC.png](All%20Images/Use%20Case/03.04%20GameSession%20UC.png)
 
 This subsystem covers everything that happens inside an active game: joining, viewing the board, submitting moves, receiving turn notifications, and seeing the result. It maps directly onto the platform's core turn engine and event-bus architecture.
 
@@ -175,7 +175,7 @@ This subsystem covers everything that happens inside an active game: joining, vi
 ---
 
 ## Subsystem 05 — Profile, Stats & Settings Use Cases
-![03.05 Profile Stats Settings UC.png](../03%20useCases/03.05%20Profile%20Stats%20Settings%20UC.png)
+![03.05 Profile Stats Settings UC.png](All%20Images/Use%20Case/03.05%20Profile%20Stats%20Settings%20UC.png)
 
 **Diagram:** `03_05_Profile_Stats_Settings_UC.png`
 
