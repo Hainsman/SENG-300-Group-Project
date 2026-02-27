@@ -2,7 +2,7 @@
 
 ## Complete User Flow — End to End
 
-![01.03 Player SM.png](../../01%20state/01.03%20Player%20SM.png)
+![01.03 Player SM.png](All%20Images/State/01.03%20Player%20SM.png)
 
 ---
 
@@ -23,7 +23,8 @@
    - GUI stores session locally, transitions to Game Dashboard
 5. **[invalid]** → `loginFailed("Invalid credentials.")` → GUI shows error, player retries
 
-![04.01.01 Login Sequence.png](../04%20sequence/04.01.01%20Login%20Sequence.png)
+![04.01.01 Login Sequence.png](All%20Images/Sequence/04.01.01%20Login%20Sequence.png)
+
 ### Logout
 
 > **Diagram:** [`../04.01.02 Logout Sequence.png`](../04.01.02%20Logout%20Sequence.png) — shows that logout is handled entirely by `SessionManager` with no involvement from `PlatformCore`, and that both server-side token invalidation and local session data clearance happen in the same step.
@@ -33,7 +34,7 @@
 3. Session invalidated server-side + local data cleared
 4. GUI transitions back to Welcome/Login screen
 
-![04.01.02 Logout Sequence.png](../04%20sequence/04.01.02%20Logout%20Sequence.png)
+![04.01.02 Logout Sequence.png](All%20Images/Sequence/04.01.02%20Logout%20Sequence.png)
 
 ### Sign Up
 
@@ -47,7 +48,7 @@
      - **[success]** → `SessionManager.createSession(userID)` → auto-login → Dashboard
      - **[failure]** → generic error shown
 
-![04.01.03 Sign In Sequence.png](../04%20sequence/04.01.03%20Sign%20In%20Sequence.png)
+![04.01.03 Sign In Sequence.png](All%20Images/Sequence/04.01.03%20Sign%20In%20Sequence.png)
 
 **Key design note:** Sign Up skips the Login step — a session is created immediately on success to reduce friction. Passwords are always stored as bcrypt hashes. The `CredentialsStore` is currently a stub with hardcoded test accounts and no live database connection.
 
@@ -73,7 +74,7 @@
 8. `GameSessionManager` → `GameServer.createSession(players, gameType)` → receives `sessionId`
 9. `PlatformCore` → `GUI.openJoinGame(sessionId)` → Join Game Page shown
 
-![04.02.01 Join Game Sequence (player meets requirements) Diagram.png](../04%20sequence/04.02.01%20Join%20Game%20Sequence%20%28player%20meets%20requirements%29%20Diagram.png)
+![04.02.01 Join Game Sequence (player meets requirements) Diagram.png](All%20Images/Sequence/04.02.01%20Join%20Game%20Sequence%20%28player%20meets%20requirements%29%20Diagram.png)
 
 ### Player Does Not Meet Requirements
 
@@ -86,7 +87,7 @@
 5. GUI displays the reason to the player
 6. Player remains on Dashboard
 
-![04.02.02 Join Game Sequence (player does not meet requirements) Diagram.png](../04%20sequence/04.02.02%20Join%20Game%20Sequence%20%28player%20does%20not%20meet%20requirements%29%20Diagram.png)
+![04.02.02 Join Game Sequence (player does not meet requirements) Diagram.png](All%20Images/Sequence/04.02.02%20Join%20Game%20Sequence%20%28player%20does%20not%20meet%20requirements%29%20Diagram.png)
 
 **Key design note:** PlatformCore acts as the eligibility gatekeeper before any matchmaking call is made. The error message must always include the reason for rejection.
 
@@ -114,7 +115,7 @@
 6. EventBus → PlatformCore → GUI
 7. GUI re-renders the board, enables/disables input based on whose turn it is
 
-![04.03 submit move sequence diagram.png](../04%20sequence/04.03%20submit%20move%20sequence%20diagram.png)
+![04.03 submit move sequence diagram.png](All%20Images/Sequence/04.03%20submit%20move%20sequence%20diagram.png)
 
 **Key design note:** `GameSessionManager` is the single source of truth. No state mutation occurs until `validateMove` returns valid. The optional `clientStateVersion` supports optimistic concurrency control to prevent stale move submissions.
 
@@ -141,7 +142,7 @@ This sequence answers: *what happens when it becomes P1's turn but P1 is not cur
      → banner or badge displayed
    - **[P1 is already on Game Page]** → route `GameStateUpdate` directly to P1's GameGUI → board updates normally
 
-![04.04 Turn Notification Sequence Diagram.png](../04%20sequence/04.04%20Turn%20Notification%20Sequence%20Diagram.png)
+![04.04 Turn Notification Sequence Diagram.png](All%20Images/Sequence/04.04%20Turn%20Notification%20Sequence%20Diagram.png)
 
 **Key design note:** `stateVersion` in the alert lets the UI verify it is not displaying a stale notification. PlatformCore must track each player's active UI context to route correctly and avoid duplicate alerts.
 
@@ -167,7 +168,7 @@ This sequence answers: *what happens when it becomes P1's turn but P1 is not cur
    - GUI displays: win / lose / tie outcome + updated player rank
 10. Player clicks return → `GUI.returnToDashboard()` → `PlatformCore.openDashboard()`
 
-![04.05 Game Ends Sequence Diagram (updated).png](../04%20sequence/04.05%20Game%20Ends%20Sequence%20Diagram%20%28updated%29.png)
+![04.05 Game Ends Sequence Diagram (updated).png](All%20Images/Sequence/04.05%20Game%20Ends%20Sequence%20Diagram%20%28updated%29.png)
 
 **Key design note:** `StatsManager` is a dedicated module separate from `GameSessionManager` because scoring and stat aggregation can grow in complexity independent of session lifecycle logic. Stats are stored per game type, enabling the per-game breakdown in sequence 04.06.
 
@@ -187,7 +188,7 @@ This sequence answers: *what happens when it becomes P1's turn but P1 is not cur
 4. PlatformCore returns updated data to GUI
 5. GUI displays statistics separated by game type
 
-![04.06 Update Player Statistics Sequence Diagram.png](../04%20sequence/04.06%20Update%20Player%20Statistics%20Sequence%20Diagram.png)
+![04.06 Update Player Statistics Sequence Diagram.png](All%20Images/Sequence/04.06%20Update%20Player%20Statistics%20Sequence%20Diagram.png)
 
 **Key design note:** This is a pure read-only fetch. Stats are already computed and persisted by `StatsManager` at game-end time (04.05), so this sequence involves no game logic.
 
