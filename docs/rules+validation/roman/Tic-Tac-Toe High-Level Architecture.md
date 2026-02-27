@@ -12,7 +12,7 @@ The system was designed as a modular, object-oriented game engine. `Game` contro
 
 - `TicTacToeGame`: implements the interface `Game` and works as the game engine. It holds the current game state and delegates validation to the `RuleValidator`. It also processes moves and ouputs `GameUpdate` objects.
 - `TicTacToeGameState`: is the container that implements `GameState`. It stores the `board` (the 3x3 grid), the `activePlayerId`, `moveCount`, and the current `GameStatus` (ACTIVE, DRAW OR WIN).
-- `TicTacToeRuleValidator`: implements `RuleValidator` and essentially runs the logic. It take a `PlayerAction` (a move), checks against the `GameState` and returns a `ValidationResult` that indicates whether the move is legal or not.
+- `TicTacToeRuleValidator`: implements `RuleValidator` and essentially runs the logic. It takes a `PlayerAction` (a move), checks against the `GameState` and returns a `ValidationResult` that indicates whether the move is legal or not.
 
 ## State Machine
 
