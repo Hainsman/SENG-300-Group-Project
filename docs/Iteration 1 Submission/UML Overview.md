@@ -331,8 +331,8 @@ Represents the outcome or progression status of a game session.
 
 ## Diagram 04 — UI Class Diagram
 
-**File:** `UI_Class_Diagram.pdf`
-![img.png](img.png)
+**File:** `UI_Class_Diagram.png`
+![img.png](All%20Images/UML/img.png)
 
 ### Purpose
 Defines the client-side view layer architecture for all major screens of the platform. Each screen follows a consistent pattern: an abstract view class, a view data input object, an action object, and a state output object. This pattern enforces clean separation between the UI rendering concern and the data/logic layers.
