@@ -86,7 +86,7 @@ The UI layer is the player-facing surface. It is passive: it **subscribes** to `
 
 This is the central nervous system of the platform. All game events and player notifications are routed through here. The architecture is split across a **client-side** and a **server-side** separated by a TCP network stub. The `ClientCore` handles all local requests and client-side communication; `ServerCore` is the main functional component on the server side and routes all traffic between services.
 
-> **Class diagrams:** See `02_01_Platform_Core_and_Services.png` (rough design), `2_01_Platform_Core_Simplified.png` (simplified, for other sub-teams), and `2.01PlatformCore_and_Services.png` (detailed). 
+> **Class diagrams:** See `02_01_Platform_Core_and_Services.png` (rough design), `2_01_Platform_Core_Simplified.png` (simplified, for other sub-teams), and `2.01PlatformCore_and_services.png` (detailed). 
 
 ---
 
