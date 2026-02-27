@@ -1,23 +1,96 @@
-@startuml
-title Abstract Game - State Machine
+@startuml Abstract_Game_SM
+title Abstract Game — State Machine
 
-[*] --> IN_PROGRESS : createInitialState(players)
+skinparam state {
+  BackgroundColor #E8F4FD
+  BorderColor #2A5F8F
+  FontSize 12
+  ArrowColor #333333
+  StartColor #1a3a5c
+  EndColor #1a3a5c
+  CompositeBackgroundColor #F5FAFF
+  CompositeBorderColor #2A5F8F
+}
 
-IN_PROGRESS --> IN_PROGRESS : handleAction(PlayerAction)\n[validateMove() == true,\nisGameOver() == false]\n/ playerTurn switches
+' ─── Session Lifecycle ───────────────────────────────────
+[*] --> Created
 
-IN_PROGRESS --> P1_WIN : handleAction(PlayerAction)\n[isGameOver() == true,\nPLAYER_1 wins]
+Created --> WaitingForPlayers : roomOpen
 
-IN_PROGRESS --> P2_WIN : handleAction(PlayerAction)\n[isGameOver() == true,\nPLAYER_2 wins]
+WaitingForPlayers --> ReadyToStart : minPlayersReached\n[players.size() >= minRequired]
 
-IN_PROGRESS --> TIE : handleAction(PlayerAction)\n[isGameOver() == true,\nno winner]
+ReadyToStart --> Starting : startGame
 
-note right of IN_PROGRESS
-  handleAction() is a no-op if
-  validateMove() returns false
+Starting --> TurnSelect : initialStateBuilt\n/ Game.createInitialState(players)\n/ GameState.state = IN_PROGRESS\n/ GameState.playerTurn = PLAYER_1
+
+' ─── Turn Loop (composite) ───────────────────────────────
+state TurnSelect {
+  [*] --> DetermineActivePlayer
+
+  DetermineActivePlayer --> AwaitingMove : activePlayerChosen\n/ emit GameStateUpdate(\n    activePlayerId = GameState.playerTurn,\n    allowedActions = RuleValidator.getValidMoves(gameState),\n    board = GameState.board,\n    status = YOUR_TURN\n  )
+
+  AwaitingMove --> ValidatingMove : moveSubmitted\n/ PlayerAction(player=GameState.playerTurn, move)
+
+  ValidatingMove --> AwaitingMove : invalidMove\n[RuleValidator.validateMove(gameState, action) == false]\n/ handleAction() is a no-op — state unchanged\n/ playerTurn unchanged, no side effects\n/ emit error reason to active player\n/ emit GameStateUpdate(status=YOUR_TURN)
+
+  ValidatingMove --> ApplyMove : validMove\n[RuleValidator.validateMove(gameState, action) == true]
+
+  ApplyMove --> CheckEndConditions : stateMutated\n/ GameState.applyAction(action)
+
+  CheckEndConditions --> DetermineActivePlayer : notEnded\n[Game.isGameOver(gameState) == false]\n/ GameState.playerTurn switches\n  PLAYER_1 ↔ PLAYER_2\n/ emit GameStateUpdate(\n    activePlayerId = GameState.playerTurn,\n    allowedActions = RuleValidator.getValidMoves(gameState),\n    board = GameState.board,\n    status = WAITING\n  )
+
+  CheckEndConditions --> Ended : winOrDraw\n[Game.isGameOver(gameState) == true]\n/ GameState.state set to P1_WIN | P2_WIN | TIE
+}
+
+TurnSelect --> Ended
+
+' ─── Terminal States ─────────────────────────────────────
+state Ended {
+  state "GameState.state = P1_WIN" as P1Win : Game.isGameOver() == true\nPLAYER_1 wins
+  state "GameState.state = P2_WIN" as P2Win : Game.isGameOver() == true\nPLAYER_2 wins
+  state "GameState.state = TIE"   as Tie   : Game.isGameOver() == true\nno winner
+}
+
+' ─── Reporting ───────────────────────────────────────────
+Ended --> ReportingResults : persistStub / StatsManager.recordResult()\n/ GeneralStats.win() | lose() | tie()\n/ GeneralStats.updateMMR(win)\n/ GeneralStats.updateRank()\n/ emit GameStateUpdate(\n    status = ENDED,\n    board = GameState.board,\n    result = GameState.state\n  )
+
+ReportingResults --> [*] : closeSession\n/ PlatformCore.returnToDashboard()\n/ PlayerSession → Browsing
+
+note right of TurnSelect
+  Every transition emits a GameStateUpdate to PlatformCore:
+  - activePlayerId: String  (GameState.playerTurn)
+  - allowedActions: RuleValidator.getValidMoves(gameState)
+  - board: GameState.board  (Array2D snapshot or delta)
+  - status: YOUR_TURN | WAITING | ENDED
+
+  GameSession emits — PlatformCore routes to:
+  - In-game view if player is on game screen
+  - Lobby/Home/Dashboard banner if player is elsewhere
 end note
 
-P1_WIN --> [*]
-P2_WIN --> [*]
-TIE --> [*]
+note right of Starting
+  Game.createInitialState(players) — implemented by subclass:
+  - Initialises GameState.board (game-specific Array2D)
+  - Sets GameState.playerTurn = PLAYER_1
+  - Sets GameState.state = IN_PROGRESS
+  - Any game-specific setup (e.g. moveCount = 0)
+end note
+
+note bottom of ValidatingMove
+  RuleValidator is abstract — subclass supplies game rules.
+  validateMove(GameState state, PlayerAction move): boolean
+  getValidMoves(GameState state): collection of valid moves
+  Both receive the full GameState so rules have
+  complete board and turn context.
+end note
+
+note bottom of CheckEndConditions
+  Game.isGameOver(GameState state): boolean — implemented by subclass.
+  Inspects GameState.state which applyAction() sets to:
+    IN_PROGRESS  →  game continues
+    P1_WIN       →  PLAYER_1 won
+    P2_WIN       →  PLAYER_2 won
+    TIE          →  draw / no winner possible
+end note
 
 @enduml

@@ -54,7 +54,7 @@ The **Multiplayer Game Platform** is a turn-based online multiplayer game platfo
 ## 3. Top-Level Component Map
 
 
-![Full_Architecture.png](../Full_Architecture.png)
+![Full_Architecture.png](All%20Images/UML/Full_Architecture.png)
 
 ---
 
@@ -86,7 +86,7 @@ The UI layer is the player-facing surface. It is passive: it **subscribes** to `
 
 This is the central nervous system of the platform. All game events and player notifications are routed through here. The architecture is split across a **client-side** and a **server-side** separated by a TCP network stub. The `ClientCore` handles all local requests and client-side communication; `ServerCore` is the main functional component on the server side and routes all traffic between services.
 
-> **Class diagrams:** See [§10.1.1](#1011-rough-design--platform-core--services-sub-team-draft) (rough design), [§10.1.2](#1012-simplified-platform-core-diagram-for-other-sub-teams) (simplified, for other sub-teams), and [§10.1.3](#1013-detailed-platform-core-class-diagram) (detailed). Images: `02_01_Platform_Core_and_Services.png`, `2_01_Platform_Core_Simplified.png`, `2_01PlatformCore_drawio_2_.png`
+> **Class diagrams:** See `02_01_Platform_Core_and_Services.png` (rough design), `2_01_Platform_Core_Simplified.png` (simplified, for other sub-teams), and `2.01PlatformCore_and_services.png` (detailed). 
 
 ---
 
@@ -208,8 +208,7 @@ Manages authentication sessions: creates session tokens on login, invalidates th
 
 **Simplified Design (for other sub-teams)**
 
-![2.01_Platform_Core_Simplified.png](../05%20platformCore/05.04%20gwilym/2.01_Platform_Core_Simplified.png)
-
+![2.01_Platform_Core_Simplified.png](All%20Images/UML/2.01_Platform_Core_Simplified.png)
 ---
 
 ### 4.3 Game Engine Layer
@@ -265,7 +264,7 @@ Validation logic is separated from game flow logic. Each game provides its own i
 | `validate(PlayerAction action, GameState state)` | Returns validation result with failure reason if invalid |
 | `getValidActions()` | Returns the list of currently legal actions |
 
-![Game Class Diagram.png](../rules+validation/Game%20Class%20Diagram.png)
+![Game Class Diagram.png](All%20Images/UML/Game%20Class%20Diagram.png)
 
 #### Tic-Tac-Toe Implementation
 
@@ -275,7 +274,7 @@ Validation logic is separated from game flow logic. Each game provides its own i
 - `TicTacToeRuleValidator` (implements `RuleValidator`)
 - `TicTacToeGameState` (board positions, current player)
 
-![02.03 - Tic Tac Toe Class Diagram.png](../rules+validation/roman/02.03%20-%20Tic%20Tac%20Toe%20Class%20Diagram.png)
+![02.03 - Tic Tac Toe Class Diagram.png](All%20Images/UML/02.03%20-%20Tic%20Tac%20Toe%20Class%20Diagram.png)
 
 #### Connect Four Implementation
 
@@ -285,7 +284,7 @@ Validation logic is separated from game flow logic. Each game provides its own i
 - `ConnectFourRuleValidator` (implements `RuleValidator`)
 - `ConnectFourGameState` (board positions, current player)
 
-![Connect4ClassDiagram.png](../rules+validation/Erik/Connect4ClassDiagram.png)
+![Connect4ClassDiagram.png](All%20Images/UML/Connect4ClassDiagram.png)
 
 #### Interaction Flow (Game Layer)
 
@@ -334,7 +333,7 @@ In-memory `HashMap<String, Player>` store. Provides:
 
 > Plan: HashMap or file load/unload. No external DB required for the stub.
 
-![02.02 - Player, Profiles, Stats, Persistence, Modified.png](../02%20structure/02.02%20-%20Player,%20Profiles,%20Stats,%20Persistence,%20Modified.png)
+![02.02 - Player, Profiles, Stats, Persistence, Modified.png](All%20Images/UML/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
 
 ---
 
@@ -344,7 +343,7 @@ In-memory `HashMap<String, Player>` store. Provides:
 
 This machine tracks a single player's lifecycle across the entire platform.
 
-![01.03 Player SM.png](../01%20state/01.03%20Player%20SM.png)
+![01.03 Player SM.png](All%20Images/State/01.03%20Player%20SM.png)
 
 **Key constraints:**
 - Logout is only permitted from `Browsing` — never mid-game
@@ -372,49 +371,49 @@ This machine tracks a single game session (game-agnostic).
 
 ### 6.1 Login
 
-![04.01.01 Login Sequence.png](../04%20sequence/04.01.01%20Login%20Sequence.png)
+![04.01.01 Login Sequence.png](All%20Images/Sequence/04.01.01%20Login%20Sequence.png)
 
 ---
 
 ### 6.2 Sign Up
 
-![04.01.03 Sign In Sequence.png](../04%20sequence/04.01.03%20Sign%20In%20Sequence.png)
+![04.01.03 Sign In Sequence.png](All%20Images/Sequence/04.01.03%20Sign%20In%20Sequence.png)
 
 ---
 
 ### 6.3 Logout
 
-![04.01.02 Logout Sequence.png](../04%20sequence/04.01.02%20Logout%20Sequence.png)
+![04.01.02 Logout Sequence.png](All%20Images/Sequence/04.01.02%20Logout%20Sequence.png)
 
 ---
 
 ### 6.4 Join Game (Requirements Met)
 
-![04.02.01 Join Game Sequence (player meets requirements) Diagram.png](../04%20sequence/04.02.01%20Join%20Game%20Sequence%20(player%20meets%20requirements)%20Diagram.png)
+![04.02.01 Join Game Sequence (player meets requirements) Diagram.png](All%20Images/Sequence/04.02.01%20Join%20Game%20Sequence%20%28player%20meets%20requirements%29%20Diagram.png)
 
 ---
 
 ### 6.5 Join Game (Requirements Not Met)
 
-![04.02.02 Join Game Sequence (player does not meet requirements) Diagram.png](../04%20sequence/04.02.02%20Join%20Game%20Sequence%20(player%20does%20not%20meet%20requirements)%20Diagram.png)
+![04.02.02 Join Game Sequence (player does not meet requirements) Diagram.png](All%20Images/Sequence/04.02.02%20Join%20Game%20Sequence%20%28player%20does%20not%20meet%20requirements%29%20Diagram.png)
 
 ---
 
 ### 6.6 Turn Notification in Lobby/Dashboard
 
-![04.04 Turn Notification Sequence Diagram.png](../04%20sequence/04.04%20Turn%20Notification%20Sequence%20Diagram.png)
+![04.04 Turn Notification Sequence Diagram.png](All%20Images/Sequence/04.04%20Turn%20Notification%20Sequence%20Diagram.png)
 
 ---
 
 ### 6.7 Game Over → Update Stats → Return to Dashboard
 
-![04.05 Game Ends Sequence Diagram (updated).png](../04%20sequence/04.05%20Game%20Ends%20Sequence%20Diagram%20(updated).png)
+![04.05 Game Ends Sequence Diagram (updated).png](All%20Images/Sequence/04.05%20Game%20Ends%20Sequence%20Diagram%20%28updated%29.png)
 
 ---
 
 ### 6.8 View Player Statistics
 
-![04.06 Update Player Statistics Sequence Diagram.png](../04%20sequence/04.06%20Update%20Player%20Statistics%20Sequence%20Diagram.png)
+![04.06 Update Player Statistics Sequence Diagram.png](All%20Images/Sequence/04.06%20Update%20Player%20Statistics%20Sequence%20Diagram.png)
 
 ---
 

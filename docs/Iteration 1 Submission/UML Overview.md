@@ -7,8 +7,8 @@ This document provides a structured overview of the four class diagrams designed
 
 ## Diagram 01 — Platform Core & Services
 
-**File:** `02_01_Platform_Core_and_Services.png`  
-![02.01_Platform_Core_and_Services.png](../05%20platformCore/05.04%20gwilym/02.01_Platform_Core_and_Services.png)
+**File:** `02.01_Platform_Core_and_Services.png`  
+![02.01_Platform_Core_and_Services.png](All%20Images/UML/02.01_Platform_Core_and_Services.png)
 
 ### Purpose
 This diagram defines the networking backbone and server-side service architecture of the platform. It specifies how clients communicate with the server, how server-side services are routed, and where game session management, matchmaking, chat, and data persistence connect.
@@ -135,10 +135,10 @@ The rules-and-validation contract for all game logic. Stateless — receives a m
 
 ## Diagram 02 — Player, Profiles, Stats & Persistence
 
-**File:** `02_02_-_Player__Profiles__Stats__Persistence__Modified.png`  
+**File:** `02.02 - Player, Profiles, Stats, Persistence, Modified.png`  
 **Note from diagram:** Plans to use either HashMap or file load/unload. No external DB required.
 
-![02.02 - Player, Profiles, Stats, Persistence, Modified.png](../02%20structure/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
+![02.02 - Player, Profiles, Stats,Persistence, Modified.png](All%20Images/UML/02.02%20-%20Player%2C%20Profiles%2C%20Stats%2C%20Persistence%2C%20Modified.png)
 
 ### Purpose
 This diagram defines all persistent player data, account management, and statistics tracking. It covers the Player domain model, per-game statistics, ranking, and the account settings/credential management system.
@@ -239,8 +239,14 @@ BRONZE → SILVER → GOLD → PLATINUM → DIAMOND → MASTER → GRANDMASTER
 
 ## Diagram 03 — Game Layer
 
-**File:** `Game_Class_Diagram.png`
-![Game Class Diagram.png](../rules%2Bvalidation/Game%20Class%20Diagram.png)
+**File:** `Game Class Diagram.png`
+![Game Class Diagram.png](All%20Images/UML/Game%20Class%20Diagram.png)
+
+**File:** `02.03 - Tic Tac Toe Class Diagram.png`
+![02.03 - Tic Tac Toe Class Diagram.png](All%20Images/UML/02.03%20-%20Tic%20Tac%20Toe%20Class%20Diagram.png)
+
+**File:** `Connect4ClassDiagram.png`
+![Connect4ClassDiagram.png](All%20Images/UML/Connect4ClassDiagram.png)
 
 ### Purpose
 Defines the abstract game framework that all sample games (Tic-Tac-Toe, Connect Four, etc.) must implement. Enforces a clean separation between platform-level session management and game-specific logic, ensuring games are interchangeable within the platform's turn engine.
@@ -329,8 +335,8 @@ Represents the outcome or progression status of a game session.
 
 ## Diagram 04 — UI Class Diagram
 
-**File:** `UI_Class_Diagram.pdf`
-![img.png](img.png)
+**File:** `UI_Class_Diagram.png`
+![UI_Class_Diagram.png](All%20Images/UML/UI_Class_Diagram.png)
 
 ### Purpose
 Defines the client-side view layer architecture for all major screens of the platform. Each screen follows a consistent pattern: an abstract view class, a view data input object, an action object, and a state output object. This pattern enforces clean separation between the UI rendering concern and the data/logic layers.
@@ -438,34 +444,3 @@ Displays a player's complete profile including their record summary and per-game
 **`ProfileViewData`** carries `playerID`, `username`, and `GameStatistics` needed to render the screen.
 
 ---
-
-### Multiplicity Notes
-
-- One `HomePage` is associated with 1..* `RecordSummary` entries (one per player visible on screen)
-- One `ProfileDashboard` is associated with 1..* `GameStatistics` entries (one per game type played)
-
----
-
-## Cross-Diagram Relationships
-
-| Concept | Diagram 01 | Diagram 02 | Diagram 03 | Diagram 04 |
-|---|---|---|---|---|
-| Player data model | — | `Player` class | `Player` enum (game slot) | `RecordSummary`, `GameStatistics` (display) |
-| Rank / stats | — | `GeneralStats`, `Rank` | `State` enum (game outcome) | `GameStatistics` (aggregated display) |
-| Game session | `Game` service | — | `Game` abstract class | — |
-| Validation | `GameEngine` interface | — | `RuleValidator` abstract | — |
-| Persistence | `Database` stub, `NETWORK` stub | `CredentialsDatabase` stub | — | — |
-| Authentication | `ServerCore` routes login | `CredentialsDatabase` validates | — | `Login` screen, `LoginStatus` |
-| UI contract | `ClientUI` interface | `Settings` (UI-facing) | — | All four abstract screen classes |
-
----
-
-## Architectural Notes
-
-1. **Stub pattern used consistently.** `Database`, `NETWORK`, and `CredentialsDatabase` are all clearly marked as stubs with defined interfaces, enabling the database team to swap in real implementations without structural changes.
-
-2. **Abstract screens enforce a consistent UI contract.** All four UI screens (`HomePage`, `GameMenu`, `Login`, `ProfileDashboard`) follow the same initialize/action/state/shutdown pattern, making it straightforward to implement concrete UI classes in JavaFX or Swing.
-
-3. **Game layer is fully decoupled from the platform.** The `Game`/`RuleValidator`/`GameState`/`PlayerAction` abstractions in Diagram 03 have no direct dependencies on networking, persistence, or UI. New game types can be added by extending these abstract classes only.
-
-4. **Two distinct `Player` concepts exist across diagrams.** The `Player` class in Diagram 02 is the full domain object (credentials, stats, rank). The `Player` enum in Diagram 03 is a lightweight game-slot identifier (PLAYER_1/PLAYER_2/EMPTY). These serve different purposes and operate at different layers — care should be taken not to conflate them during implementation.
