@@ -8,13 +8,13 @@
 
 ## Sequence 04.01 — Authentication (Login / Logout / Sign Up)
 
-> [`../04.01 Auth Sequence.md`](../04.01%20Auth%20Sequence.md) — full descriptions and PlantUML source for all three auth flows.
+> `../04.01 Auth Sequence.md` — full descriptions and PlantUML source for all three auth flows.
 
 **Participants:** Player, GUI (Welcome/Login/Register), PlatformCore, SessionManager, CredentialsStore (stub)
 
 ### Login
 
-> **Diagram:** [`../04.01.01 Login Sequence.png`](../04.01.01%20Login%20Sequence.png) — shows the full login flow including the `alt` block for valid vs. invalid credentials, the `SessionManager` session creation path, and the local session storage step before the dashboard transition.
+> **Diagram:** `../04.01.01 Login Sequence.png` — shows the full login flow including the `alt` block for valid vs. invalid credentials, the `SessionManager` session creation path, and the local session storage step before the dashboard transition.
 
 1. Player enters username + password, clicks Login
 2. GUI shows loading state, calls `PlatformCore.login(username, password)`
@@ -27,7 +27,7 @@
 
 ### Logout
 
-> **Diagram:** [`../04.01.02 Logout Sequence.png`](../04.01.02%20Logout%20Sequence.png) — shows that logout is handled entirely by `SessionManager` with no involvement from `PlatformCore`, and that both server-side token invalidation and local session data clearance happen in the same step.
+> **Diagram:** `../04.01.02 Logout Sequence.png` — shows that logout is handled entirely by `SessionManager` with no involvement from `PlatformCore`, and that both server-side token invalidation and local session data clearance happen in the same step.
 
 1. Player clicks Logout from Dashboard
 2. GUI calls `SessionManager.clearSession(sessionToken)` directly — no PlatformCore needed
@@ -38,7 +38,7 @@
 
 ### Sign Up
 
-> **Diagram:** [`../04.01.03 Sign In Sequence.png`](../04.01.03%20Sign%20In%20Sequence.png) — shows the two-stage `alt` block: first checking username availability, then attempting account creation, with the auto-login session creation on success.
+> **Diagram:** `../04.01.03 Sign In Sequence.png` — shows the two-stage `alt` block: first checking username availability, then attempting account creation, with the auto-login session creation on success.
 
 1. Player enters username + password + email, clicks Sign Up
 2. GUI calls `PlatformCore.register(username, password, email)`
@@ -60,9 +60,9 @@
 
 ### Player Meets Requirements
 
-> **Diagram:** [`../04.02.01 Join Game Sequence (player meets requirements) Diagram.png`](../04.02.01%20Join%20Game%20Sequence%20%28player%20meets%20requirements%29%20Diagram.png) — shows the full happy path: the DB eligibility check, the `enqueue` call, the async `findMatch()` loop, and the chain from `GameSessionManager` to `GameServer` that produces a `sessionId` before the GUI is told to open the Join Game Page. The note on `PlatformCore` highlights what the requirements check covers (score, ban status, etc.).
+> **Diagram:** `../04.02.01 Join Game Sequence (player meets requirements) Diagram.png` — shows the full happy path: the DB eligibility check, the `enqueue` call, the async `findMatch()` loop, and the chain from `GameSessionManager` to `GameServer` that produces a `sessionId` before the GUI is told to open the Join Game Page. The note on `PlatformCore` highlights what the requirements check covers (score, ban status, etc.).
 >
-> For the full PlantUML description, see [`../04.02.01 Join Game Sequence (player meets requirements).md`](../04.02.01%20Join%20Game%20Sequence%20%28player%20meets%20requirements%29.md).
+> For the full PlantUML description, see `../04.02.01 Join Game Sequence (player meets requirements).md`.
 
 1. Player selects a game type and clicks Queue
 2. GUI calls `PlatformCore.joinQueue(playerId, gameType)`
@@ -78,9 +78,9 @@
 
 ### Player Does Not Meet Requirements
 
-> **Diagram:** [`../04.02.02 Join Game Sequence (player does not meet requirements) Diagram.png`](../04.02.02%20Join%20Game%20Sequence%20%28player%20does%20not%20meet%20requirements%29%20Diagram.png) — shows the short-circuit path where the DB check immediately returns a failure, `PlatformCore` returns an error to the GUI, and no matchmaking call is ever made. The note emphasises that the error message must include the specific reason.
+> **Diagram:** `../04.02.02 Join Game Sequence (player does not meet requirements) Diagram.png` — shows the short-circuit path where the DB check immediately returns a failure, `PlatformCore` returns an error to the GUI, and no matchmaking call is ever made. The note emphasises that the error message must include the specific reason.
 >
-> For the full PlantUML description, see [`../04.02.02 Join Game Sequence (player does not meet requirements).md`](../04.02.02%20Join%20Game%20Sequence%20%28player%20does%20not%20meet%20requirements%29.md).
+> For the full PlantUML description, see `../04.02.02 Join Game Sequence (player does not meet requirements).md`.
 
 1–3. Same as above
 4. **[ineligible]** → DB returns failure → PlatformCore returns error with reason to GUI
@@ -95,9 +95,9 @@
 
 ## Sequence 04.03 — Submit Move → Validate → Update Board
 
-> **Diagram:** [`../04.03 Submit Move Sequence Diagram.png`](../04.03%20Submit%20Move%20Sequence%20Diagram.png) — shows the full move pipeline: the upfront `ack` from PlatformCore, the `validateMove` call to GameEngine, the `alt` block splitting the invalid and valid paths, the `applyMove` + `evaluateEnd` chain on the valid path, and the EventBus publish step that fans out to the GUI.
+> **Diagram:** `../04.03 Submit Move Sequence Diagram.png` — shows the full move pipeline: the upfront `ack` from PlatformCore, the `validateMove` call to GameEngine, the `alt` block splitting the invalid and valid paths, the `applyMove` + `evaluateEnd` chain on the valid path, and the EventBus publish step that fans out to the GUI.
 >
-> For the detailed write-up and PlantUML source, see [`../04.03 Submit Move Sequence.md`](../04.03%20Submit%20Move%20Sequence.md) and [`../04.03 Submit Move Sequence.puml`](../04.03%20Submit%20Move%20Sequence.puml).
+> For the detailed write-up and PlantUML source, see `../04.03 Submit Move Sequence.md` and `../04.03 Submit Move Sequence.puml`.
 
 **Participants:** Player, GUI (Game Page), PlatformCore, GameSessionManager, GameEngine, EventBus
 
@@ -123,9 +123,9 @@
 
 ## Sequence 04.04 — Turn Notification (Cross-Page Awareness)
 
-> **Diagram:** [`../04.04 Turn Notification Sequence Diagram.png`](../04.04%20Turn%20Notification%20Sequence%20Diagram.png) — shows the flow from Other Player's move submission through to the `alt` block that splits on P1's current UI context: the `NotificationService` push path when P1 is on the Lobby/Dashboard, versus the direct `GameStateUpdate` route when P1 is already on the Game Page. The `stateVersion=V` in the event is visible in the diagram.
+> **Diagram:** `../04.04 Turn Notification Sequence Diagram.png` — shows the flow from Other Player's move submission through to the `alt` block that splits on P1's current UI context: the `NotificationService` push path when P1 is on the Lobby/Dashboard, versus the direct `GameStateUpdate` route when P1 is already on the Game Page. The `stateVersion=V` in the event is visible in the diagram.
 >
-> For the detailed write-up and PlantUML source, see [`../04.04 Turn Notification Sequence.md`](../04.04%20Turn%20Notification%20Sequence.md) and [`../04.04 Turn Notification Sequence.puml`](../04.04%20Turn%20Notification%20Sequence.puml).
+> For the detailed write-up and PlantUML source, see `../04.04 Turn Notification Sequence.md` and `../04.04 Turn Notification Sequence.puml`.
 
 **Participants:** Other Player (P2), GUI (Game Page), PlatformCore, GameSessionManager, EventBus, NotificationService, GUI (Lobby/Dashboard)
 
@@ -150,9 +150,9 @@ This sequence answers: *what happens when it becomes P1's turn but P1 is not cur
 
 ## Sequence 04.05 — Game Ends → Update Stats → Return to Dashboard
 
-> **Diagram:** [`../04.05 Game Ends Sequence Diagram (updated).png`](../04.05%20Game%20Ends%20Sequence%20Diagram%20%28updated%29.png) — shows how a terminal `evaluateEnd` result triggers `StatsManager.recordResult`, the DB write, and the `EventBus.publish(GameStateUpdate(status=GAME_OVER, result))` that brings the result back to PlatformCore. The diagram also shows PlatformCore fetching the updated ranking from DB before calling `showResult` on the GUI, and the final `returnToDashboard` / `openDashboard` round-trip. The note on `StatsManager` explains why it is a separate module.
+> **Diagram:** `../04.05 Game Ends Sequence Diagram (updated).png` — shows how a terminal `evaluateEnd` result triggers `StatsManager.recordResult`, the DB write, and the `EventBus.publish(GameStateUpdate(status=GAME_OVER, result))` that brings the result back to PlatformCore. The diagram also shows PlatformCore fetching the updated ranking from DB before calling `showResult` on the GUI, and the final `returnToDashboard` / `openDashboard` round-trip. The note on `StatsManager` explains why it is a separate module.
 >
-> For the full description, see [`../04.05 Game Ends Sequence.md`](../04.05%20Game%20Ends%20Sequence.md).
+> For the full description, see `../04.05 Game Ends Sequence.md`.
 
 **Participants:** Player, GUI (Game Page), PlatformCore, GameSessionManager, GameEngine, StatsManager, DB (stub), EventBus
 
@@ -176,9 +176,9 @@ This sequence answers: *what happens when it becomes P1's turn but P1 is not cur
 
 ## Sequence 04.06 — View Updated Player Statistics
 
-> **Diagram:** [`../04.06 Update Player Statistics Sequence Diagram.png`](../04.06%20Update%20Player%20Statistics%20Sequence%20Diagram.png) — shows a minimal three-participant flow: the GUI requests the dashboard page from PlatformCore, PlatformCore fetches statistics data from the DB, and the returned data is displayed on the player home page separated by game type. This diagram confirms this sequence is a pure read — no game logic or session involvement.
+> **Diagram:** `../04.06 Update Player Statistics Sequence Diagram.png` — shows a minimal three-participant flow: the GUI requests the dashboard page from PlatformCore, PlatformCore fetches statistics data from the DB, and the returned data is displayed on the player home page separated by game type. This diagram confirms this sequence is a pure read — no game logic or session involvement.
 >
-> For the full description, see [`../04.06 Update Player Statistics Sequence.md`](../04.06%20Update%20Player%20Statistics%20Sequence.md).
+> For the full description, see `../04.06 Update Player Statistics Sequence.md`.
 
 **Participants:** Player, GUI (Player Home Page), PlatformCore, DB (stub)
 
