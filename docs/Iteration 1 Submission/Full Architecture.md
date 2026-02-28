@@ -431,13 +431,13 @@ All move submissions pass through the same pipeline regardless of game type:
 
 ```
 UI.submitMove()
-  → PlatformCore.submitMove()
-    → GameSessionManager.submitMove()
-      → Game.validateAction()          [game-specific, returns reason on failure]
-      → Game.handleAction()            [game-specific]
-      → Game.isGameOver()              [game-specific]
-      → publish(GameStateUpdate)       [platform-level]
-        → EventBus → PlatformCore → notify recipients
+ -> PlatformCore.submitMove()
+    -> GameSessionManager.submitMove()
+      -> Game.validateAction()          [game-specific, returns reason on failure]
+      -> Game.handleAction()            [game-specific]
+      -> Game.isGameOver()              [game-specific]
+      -> publish(GameStateUpdate)       [platform-level]
+        -> EventBus → PlatformCore → notify recipients
 ```
 
 ### Authentication & Session Management
