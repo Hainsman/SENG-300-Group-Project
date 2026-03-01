@@ -40,7 +40,6 @@ Sprint 1 builds the foundation. Sprint 2 implements the core platform features. 
 | `ServerCore` skeleton — method stubs only (`send`, `receive`, `routeContent`) | SERVER-01 |
 | `GameStateUpdate` event class (`sessionId`, `recipients`, `status`, `activePlayerId`, `payload`) | EVENTS-01 |
 | `GameStatus` enum (`LOBBY`, `MATCHMAKING`, `STARTING`, `IN_PROGRESS`, `GAME_OVER`) | EVENTS-01 |
-| `EventBus` skeleton — `publish` and `subscribe` stubs | EVENTS-01 |
 
 ---
 
@@ -151,19 +150,19 @@ Sprint 1 builds the foundation. Sprint 2 implements the core platform features. 
 
 ## Sprint 3 — Integration, Notifications & Demo (Week 3)
 
-**Goal:** Complete the move pipeline and notification system end-to-end (`GameSessionManager` → `EventBus` → `ServerCore` → `ClientReceiver` → UI). Close out game-over handling, stats, leaderboard, and all remaining UI. Verify and deliver the demo.
+**Goal:** Complete the move pipeline and notification system end-to-end (`GameSessionManager` → `ServerCore` → `ClientReceiver` → UI). Close out game-over handling, stats, leaderboard, and all remaining UI. Verify and deliver the demo.
 
 ---
 
 ### Platform Core
 
-| Task | Backlog ID |
-|---|---|
-| `GameSessionManager` — full move pipeline (`validateMove` → `updateGame` → check end conditions → publish `GameStateUpdate`) | SESSION-02 |
+| Task                                                                                                                                | Backlog ID |
+|-------------------------------------------------------------------------------------------------------------------------------------|---|
+| `GameSessionManager` — full move pipeline (`validateMove` → `updateGame` → check end conditions → publish `GameStateUpdate`)        | SESSION-02 |
 | `Game` service — full implementation (move pipeline, state broadcast to both players via `ServerCore`, local chat, return-to-lobby) | SESSION-02 |
-| `EventBus` — full wiring (`GameSessionManager` publishes, `ServerCore` subscribes and routes to `ClientReceiver`) | SESSION-02 |
-| `StatsManager` (aggregates `GeneralStats` + `Rank`, persists via `Database` stub after game-over) | STATS-01 |
-| `Leaderboard` service — full implementation (`getTopPlayersByRank`, MMR recalculation in `updatePlayer`) | STATS-01 |
+| `Event Management` — full wiring (`GameSessionManager` publishes, `ServerCore` subscribes and routes to `ClientReceiver`)           | SESSION-02 |
+| `StatsManager` (aggregates `GeneralStats` + `Rank`, persists via `Database` stub after game-over)                                   | STATS-01 |
+| `Leaderboard` service — full implementation (`getTopPlayersByRank`, MMR recalculation in `updatePlayer`)                            | STATS-01 |
 
 ---
 
@@ -198,7 +197,7 @@ Sprint 1 builds the foundation. Sprint 2 implements the core platform features. 
 | Task | Backlog ID |
 |---|---|
 | Final README, architecture doc final revision, stub documentation | QA-05 |
-| Unit tests: `GameSessionManager`, `EventBus`, `StatsManager` | QA-06 |
+| Unit tests: `GameSessionManager`, `StatsManager` | QA-06 |
 | Unit tests: win detection (Tic-Tac-Toe, Connect Four) | QA-06 |
 | Integration test: full game flow (lobby → game start → turns → game over) | QA-06 |
 | Integration test: turn notification (`GameStateUpdate` routed to correct player's screen) | QA-06 |
@@ -219,7 +218,7 @@ Sprint 1 builds the foundation. Sprint 2 implements the core platform features. 
 | `LOBBY-01` (`GameLobby`) | `SERVER-02`, `MATCH-01` |
 | `MATCH-01` (`matchmaking`) | `MODEL-01` (Player), `STUBS-01` (Database) |
 | `CHAT-01` (`Chat`) | `LOBBY-01` |
-| `SESSION-01` (`Game` service + `GameEngine`) | `GAME-01` (Game interface), `EVENTS-01` (EventBus, GameStateUpdate) |
+| `SESSION-01` (`Game` service + `GameEngine`) | `GAME-01` (Game interface), `EVENTS-01` (GameStateUpdate) |
 | `GAME-02`, `GAME-03` | `GAME-01` (Game, RuleValidator, PlayerAction) |
 | `UI-02`, `UI-03`, `UI-04` | `UI-01`, `MODEL-01` (Player), `EVENTS-01` (GameStateUpdate) |
 | `LEADER-01` (skeleton) | `MODEL-01` (GeneralStats, Rank), `STUBS-01` (Database) |
@@ -244,7 +243,7 @@ Each ID = one feature branch (`ID/short-description`) = one merge request into `
 |---|---|---|---|---|
 | INFRA-01 | `INFRA-01/project-setup` | Package structure, GitLab repo, README, branching conventions | High | QT&I / Platform Core |
 | STUBS-01 | `STUBS-01/network-db-stubs` | `NETWORK` stub (TCP), `Database` stub, `CredentialsDatabase` stub | High | Platform Core |
-| EVENTS-01 | `EVENTS-01/game-state-update` | `GameStateUpdate`, `GameStatus` enum, `EventBus` skeleton | High | Platform Core |
+| EVENTS-01 | `EVENTS-01/game-state-update` | `GameStateUpdate`, `GameStatus` enum | High | Platform Core |
 | CLIENT-01 | `CLIENT-01/client-core-skeleton` | `ClientCore` skeleton + `ClientReceiver` skeleton (stubs only) | High | Platform Core |
 | SERVER-01 | `SERVER-01/server-core-skeleton` | `ServerCore` skeleton (stubs only) | High | Platform Core |
 | GAME-01 | `GAME-01/game-interfaces` | `Game`, `RuleValidator`, `PlayerAction`, `clientGame` interfaces & abstractions | High | Rules & Validation |
@@ -275,16 +274,16 @@ Each ID = one feature branch (`ID/short-description`) = one merge request into `
 
 ### Sprint 3 — Integration & Demo
 
-| ID | Branch | Feature Scope | Priority | Sub-Team |
-|---|---|---|---|---|
-| SESSION-02 | `SESSION-02/move-pipeline` | `GameSessionManager` full pipeline + `Game` service full impl + `EventBus` full wiring | High | Platform Core |
-| STATS-01 | `STATS-01/stats-leaderboard` | `StatsManager` + `Leaderboard` full implementation (MMR, `getTopPlayersByRank`) | Medium | Platform Core |
-| GAME-04 | `GAME-04/ttt-win-detection` | TTT win detection + `clientGame` impl + `ValidationResult` failure propagation | High | Rules & Validation |
-| GAME-05 | `GAME-05/c4-win-detection` | Connect Four win detection + `clientGame` impl + failure propagation | High | Rules & Validation |
-| UI-05 | `UI-05/turn-alerts` | Turn alert display + win/loss/tie result screen | High | Client/UI |
-| UI-06 | `UI-06/ui-polish` | `Settings` UI + player stats view + leaderboard view + full navigation wiring | Medium | Client/UI |
-| QA-05 | `QA-05/final-docs` | Final README + architecture doc revision + stub documentation | High | QT&I |
-| QA-06 | `QA-06/sprint3-tests` | Integration tests (full game flow, notifications, stats) + remaining unit tests | High | QT&I |
+| ID | Branch | Feature Scope                                                                      | Priority | Sub-Team |
+|---|---|------------------------------------------------------------------------------------|---|---|
+| SESSION-02 | `SESSION-02/move-pipeline` | `GameSessionManager` full pipeline + `Game` service full impl + full event wiring  | High | Platform Core |
+| STATS-01 | `STATS-01/stats-leaderboard` | `StatsManager` + `Leaderboard` full implementation (MMR, `getTopPlayersByRank`)    | Medium | Platform Core |
+| GAME-04 | `GAME-04/ttt-win-detection` | TTT win detection + `clientGame` impl + `ValidationResult` failure propagation     | High | Rules & Validation |
+| GAME-05 | `GAME-05/c4-win-detection` | Connect Four win detection + `clientGame` impl + failure propagation               | High | Rules & Validation |
+| UI-05 | `UI-05/turn-alerts` | Turn alert display + win/loss/tie result screen                                    | High | Client/UI |
+| UI-06 | `UI-06/ui-polish` | `Settings` UI + player stats view + leaderboard view + full navigation wiring      | Medium | Client/UI |
+| QA-05 | `QA-05/final-docs` | Final README + architecture doc revision + stub documentation                      | High | QT&I |
+| QA-06 | `QA-06/sprint3-tests` | Integration tests (full game flow, notifications, stats) + remaining unit tests    | High | QT&I |
 | QA-07 | `QA-07/demo-release` | Final merge into `develop` → `main`, demo script verification, end-to-end demo run | High | QT&I |
 
 ---
