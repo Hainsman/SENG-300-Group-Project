@@ -1,0 +1,22 @@
+{
+  "1": {
+    "globallyUniqueSessionIdentifier": "34cba66e-783b-4547-9dfb-214c9bcb55fc",
+    "id": 1,
+    "timeCreated": 1772344026090
+  },
+  "2": {
+    "globallyUniqueSessionIdentifier": "de94f1a0-8e9c-47cb-b80c-903d1cec53d9",
+    "id": 2,
+    "timeCreated": 1772344026120
+  },
+  "3": {
+    "globallyUniqueSessionIdentifier": "7ef4011c-e8a9-4b69-abde-a7a20ddceaa9",
+    "id": 3,
+    "timeCreated": 1772344026128
+  },
+  "4": {
+    "globallyUniqueSessionIdentifier": "6e3cbb26-2d74-40db-8f64-4f413ac92ee6",
+    "id": 4,
+    "timeCreated": 1772344026133
+  }
+}
