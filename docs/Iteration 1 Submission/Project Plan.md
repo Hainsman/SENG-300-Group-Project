@@ -288,4 +288,41 @@ Each ID = one feature branch (`ID/short-description`) = one merge request into `
 
 ---
 
+## Repo Structure:
+
+```
+seng300-202601-pg-5/
+├── .mvn/
+│   └── wrapper/
+├── docs/
+├── src/
+│   ├── main/
+│   │   └── java/ca/ucalgary/seng300/
+│   │       ├── platform/
+│   │       │   ├── stubs/
+│   │       │   ├── client/
+│   │       │   ├── server/
+│   │       │   └── services/
+│   │       ├── model/
+│   │       ├── game/
+│   │       │   ├── core/
+│   │       │   ├── tictactoe/
+│   │       │   └── connect4/
+│   │       └── ui/
+│   │           ├── auth/
+│   │           ├── main/
+│   │           └── game/
+│   └── test/
+│       └── java/ca/ucalgary/seng300/
+│           ├── platform/
+│           ├── model/
+│           ├── game/
+│           └── ui/
+├── .gitignore
+├── README.md
+├── pom.xml
+├── mvnw
+└── mvnw.cmd
+```
+
 *Plan version: aligned with architecture document v1.1.0 (updated Platform Core design). Adjust task assignments to individual team members at the start of each sprint. No backlog ID spans more than one sprint.*
