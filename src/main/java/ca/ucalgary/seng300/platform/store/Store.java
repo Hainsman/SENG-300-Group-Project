@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class Store<T extends Record> {
-    public Map<Integer, T> records = new HashMap<Integer, T>();
+    private Map<Integer, T> records = new HashMap<Integer, T>();
     String filePath;
 
     public Store(String filePath){
@@ -30,6 +30,9 @@ public class Store<T extends Record> {
                 .filter(condition);
 
         return res.toList();
+    }
+    public T get(int id) {
+        return records.get(id);
     }
 
     public void create(T record) {
@@ -47,7 +50,9 @@ public class Store<T extends Record> {
 
     private void loadAll(){
         try (FileReader fr = new FileReader(filePath)) {
-            records = new Gson().fromJson(fr,  new TypeToken<Map<Integer, User>>(){}.getType());
+            Map<Integer, T> fileData = new Gson().fromJson(fr,  new TypeToken<Map<Integer, User>>(){}.getType());
+            if (fileData != null)
+                records = fileData;
         }
         catch (FileNotFoundException e) {
             records = new HashMap<Integer, T>();

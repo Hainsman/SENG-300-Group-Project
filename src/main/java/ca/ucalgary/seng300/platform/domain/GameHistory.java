@@ -2,7 +2,7 @@ package ca.ucalgary.seng300.platform.domain;
 public class GameHistory extends Record{
     private int gameID;
 
-    public GameHistory(int id, int gamdID){
+    public GameHistory(int id, int gameID){
         super(id);
         this.gameID = gameID;
     }
