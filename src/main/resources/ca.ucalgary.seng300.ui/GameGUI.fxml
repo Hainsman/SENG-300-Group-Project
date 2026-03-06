@@ -8,7 +8,8 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ca.ucalgary.seng300.ui.GameGUI"
+            fx:controller="ca.ucalgary.seng300.ui.GameGUIController"
             prefHeight="400.0" prefWidth="600.0">
-
+            <fx:include fx:id="connect4View" source="Connect4.fxml" />
+            <fx:include fx:id="ticTacToeView" source="TicTacToe.fxml" />
 </AnchorPane>
