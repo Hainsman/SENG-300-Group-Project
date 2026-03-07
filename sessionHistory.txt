@@ -1,22 +1,26 @@
 {
   "1": {
-    "globallyUniqueSessionIdentifier": "43ba1e44-0930-4815-8526-9279a146956c",
+    "globallyUniqueSessionIdentifier": "64ccd166-2237-401c-a9b2-ea0ac6c149f2",
+    "type": "sessionHistory",
     "id": 1,
-    "timeCreated": 1772686423259
+    "timeCreated": 1772863649622
   },
   "2": {
-    "globallyUniqueSessionIdentifier": "9c4d1ad9-24c6-49a5-9323-d4085c652436",
+    "globallyUniqueSessionIdentifier": "10d8ecd4-eef6-4454-9652-820f24ae6d04",
+    "type": "sessionHistory",
     "id": 2,
-    "timeCreated": 1772686423285
+    "timeCreated": 1772863649646
   },
   "3": {
-    "globallyUniqueSessionIdentifier": "af4b9e57-03db-49df-bc88-3bd54a523ed8",
+    "globallyUniqueSessionIdentifier": "77a95660-9f8e-4b20-8758-5db10c70d735",
+    "type": "sessionHistory",
     "id": 3,
-    "timeCreated": 1772686423287
+    "timeCreated": 1772863649648
   },
   "4": {
-    "globallyUniqueSessionIdentifier": "12b0c5e8-e712-4c2e-8109-a768ffab1db3",
+    "globallyUniqueSessionIdentifier": "677e6cb9-650e-4f0e-9075-1cb76d302ced",
+    "type": "sessionHistory",
     "id": 4,
-    "timeCreated": 1772686423288
+    "timeCreated": 1772863649649
   }
 }

@@ -1,9 +1,6 @@
 package ca.ucalgary.seng300.platform.utils;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Rank;
-import ca.ucalgary.seng300.platform.domain.GameHistory;
-import ca.ucalgary.seng300.platform.domain.Participants;
-import ca.ucalgary.seng300.platform.store.Store;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,23 +28,7 @@ public class Helper {
         return matcher.matches();
     }
 
-    public static Rank scoreToRank(Store<Participants> storeParticipants, Store<GameHistory> storeGameHistory, int gameID, int userID){
-        int totalRoundsPlayed= 0;
-        double score = 0;
-
-        List<Participants> participantsList = storeParticipants.find(rec -> rec.getUserID() == userID); //returns list with corresponding userID
-
-        for (Participants participant : participantsList) {
-            GameHistory gh = storeGameHistory.get(participant.getGameHistoryID());
-            if (gh.getGameID() == gameID){
-                totalRoundsPlayed++;
-                score += participant.getScore();
-            }
-        }
-        return getRank(totalRoundsPlayed, score);
-    }
-
-    private static Rank getRank(int totalRoundsPlayed, double score){
+    public static Rank getRank(int totalRoundsPlayed, double score){
         if (totalRoundsPlayed < Constants.TOTAL_ROUNDS_NEEDED_FOR_BRONZE || score < Constants.BRONZE_SCORE_MAX_THRESHOLD)
             return Rank.BRONZE;
 

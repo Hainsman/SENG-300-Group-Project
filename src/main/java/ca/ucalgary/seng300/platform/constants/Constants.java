@@ -7,6 +7,7 @@ public class Constants {
     public static final String GAME_FILE_PATH = "gameHistory.txt";
     public static final String SESSION_FILE_PATH = "sessionHistory.txt";
     public static final String PARTICIPANTS_FILE_PATH = "participants.txt";
+    public static final String PLAYER_STATS_FILE_PATH = "playerStats.txt";
 
     //password hashing algorithm
     public static final String HASH_ALGORITHM = "SHA-256";

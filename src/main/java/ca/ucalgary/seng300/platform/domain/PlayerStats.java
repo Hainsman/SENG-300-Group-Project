@@ -1,0 +1,27 @@
+package ca.ucalgary.seng300.platform.domain;
+
+public class PlayerStats extends Record{
+    private int gameID;
+    private int userID;
+    private int counter = 0;
+    private double score = 0;
+    private String type;
+
+    public PlayerStats(int id, int gameID, int userID) {
+        super(id);
+        this.gameID = gameID;
+        this.userID = userID;
+        this.type = "playerStats";
+    }
+
+    //getters
+    public int getGameID(){return this.gameID;}
+    public int getUserID(){return this.userID;}
+    public int getGameCounter(){return this.counter;}
+    public double getScore(){return this.score;}
+
+    public void updateStats(double score) {
+        this.score += score;
+        this.counter ++;
+    }
+}

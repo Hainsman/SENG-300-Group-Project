@@ -3,70 +3,80 @@
     "gameHistoryID": 1,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 1,
-    "timeCreated": 1772686423318
+    "timeCreated": 1772866410594
   },
   "2": {
     "gameHistoryID": 2,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 2,
-    "timeCreated": 1772686423320
+    "timeCreated": 1772866410599
   },
   "3": {
     "gameHistoryID": 3,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 3,
-    "timeCreated": 1772686423322
+    "timeCreated": 1772866410604
   },
   "4": {
     "gameHistoryID": 4,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 4,
-    "timeCreated": 1772686423323
+    "timeCreated": 1772866410606
   },
   "5": {
     "gameHistoryID": 5,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 5,
-    "timeCreated": 1772686423325
+    "timeCreated": 1772866410608
   },
   "6": {
     "gameHistoryID": 6,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 6,
-    "timeCreated": 1772686423326
+    "timeCreated": 1772866410611
   },
   "7": {
     "gameHistoryID": 7,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 7,
-    "timeCreated": 1772686423328
+    "timeCreated": 1772866410613
   },
   "8": {
     "gameHistoryID": 8,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 8,
-    "timeCreated": 1772686423333
+    "timeCreated": 1772866410615
   },
   "9": {
     "gameHistoryID": 9,
     "userID": 1,
     "score": 1,
+    "type": "participant",
     "id": 9,
-    "timeCreated": 1772686423334
+    "timeCreated": 1772866410617
   },
   "10": {
     "gameHistoryID": 10,
     "userID": 1,
     "score": 80,
+    "type": "participant",
     "id": 10,
-    "timeCreated": 1772686423336
+    "timeCreated": 1772866410619
   }
 }
