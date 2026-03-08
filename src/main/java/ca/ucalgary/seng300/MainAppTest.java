@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.*;
+import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.utils.Helper;
 
@@ -68,15 +69,28 @@ public class MainAppTest {
         PlayerStats playerTwo = new PlayerStats(2, Game.TICK_TACK_TOE, 2);
         PlayerStats playerThree = new PlayerStats(3, Game.TICK_TACK_TOE, 3);
         PlayerStats playerFour = new PlayerStats(4, Game.TICK_TACK_TOE, 4);
-        playerOne.updateStats(10);
-        playerTwo.updateStats(20);
-        playerThree.updateStats(30);
-        playerFour.updateStats(40);
+
+        for (int i = 0; i < 10; i++){
+            playerOne.updateStats(5.0);
+        }
+
+        for (int i = 0; i < 10; i++){
+            playerTwo.updateStats(3.0);
+        }
+
+        for (int i = 0; i < 20; i++){
+            playerThree.updateStats(1.5);
+        }
+
+        for (int i = 0; i < 10; i++){
+            playerFour.updateStats(1.0);
+        }
+
+
         playerStatsStore.create(playerOne);
         playerStatsStore.create(playerTwo);
         playerStatsStore.create(playerThree);
         playerStatsStore.create(playerFour);
-        playerOne.updateStats(10);
         playerStatsStore.create(playerOne);
 //
         List<PlayerStats> listOfPlayers = playerStatsStore.findPlayersByGameID(Game.TICK_TACK_TOE);
@@ -92,7 +106,14 @@ public class MainAppTest {
         System.out.println(listOfUsers.getFirst().getlogin());
         System.out.println(listOfGames.size());
         System.out.println(listOfSessions.getFirst().getGloballyUniqueSessionIdentifier());
-        System.out.println(listOfParticipants.getFirst().getUserID());
+        LeaderBoardService lbs = new LeaderBoardService();
+
+        List<PlayerStats> sortedPlayers = lbs.getLeaderBoard(false, 1, 4, playerStatsStore);
+
+        for (int i = 0; i < sortedPlayers.size(); i++){
+            System.out.println(sortedPlayers.get(i).getUserID());
+            System.out.println(Helper.getRank(sortedPlayers.get(i).getGameCounter(), sortedPlayers.get(i).getScore()).getDisplayName());
+        }
 //
 
     }

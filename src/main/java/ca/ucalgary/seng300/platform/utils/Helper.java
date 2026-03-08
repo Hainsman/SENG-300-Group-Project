@@ -29,24 +29,14 @@ public class Helper {
     }
 
     public static Rank getRank(int totalRoundsPlayed, double score){
-        if (totalRoundsPlayed < Constants.TOTAL_ROUNDS_NEEDED_FOR_BRONZE || score < Constants.BRONZE_SCORE_MAX_THRESHOLD)
+        if (totalRoundsPlayed < Constants.TOTAL_ROUNDS_NEEDED_FOR_BRONZE)
             return Rank.BRONZE;
 
-        if (score < Constants.SILVER_SCORE_MAX_THRESHOLD)
-            return Rank.SILVER;
-
-        if (score < Constants.GOLD_SCORE_MAX_THRESHOLD)
-            return Rank.GOLD;
-
-        if (score < Constants.PLATINUM_SCORE_MAX_THRESHOLD)
-            return Rank.PLATINUM;
-
-        if (score < Constants.DIAMOND_SCORE_MAX_THRESHOLD)
-            return Rank.DIAMOND;
-
-        if (score < Constants.MASTER_SCORE_MAX_THRESHOLD)
-            return Rank.MASTER;
-
+        for (Rank rank: Rank.values()){
+            if (score >= rank.getMinScoreThreshold() && score < rank.getMaxScoreThreshold()){
+                return rank;
+            }
+        }
         return Rank.GRAND_MASTER;
     }
 

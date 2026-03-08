@@ -2,37 +2,37 @@
   "1": {
     "gameID": 1,
     "userID": 1,
-    "counter": 2,
-    "score": 20.0,
+    "counter": 10,
+    "score": 50.0,
     "type": "playerStats",
     "id": 1,
-    "timeCreated": 1772866410629
+    "timeCreated": 1773011630527
   },
   "2": {
     "gameID": 1,
     "userID": 2,
-    "counter": 1,
-    "score": 20.0,
+    "counter": 10,
+    "score": 30.0,
     "type": "playerStats",
     "id": 2,
-    "timeCreated": 1772866410629
+    "timeCreated": 1773011630527
   },
   "3": {
     "gameID": 1,
     "userID": 3,
-    "counter": 1,
+    "counter": 20,
     "score": 30.0,
     "type": "playerStats",
     "id": 3,
-    "timeCreated": 1772866410629
+    "timeCreated": 1773011630527
   },
   "4": {
     "gameID": 1,
     "userID": 4,
-    "counter": 1,
-    "score": 40.0,
+    "counter": 10,
+    "score": 10.0,
     "type": "playerStats",
     "id": 4,
-    "timeCreated": 1772866410629
+    "timeCreated": 1773011630527
   }
 }
