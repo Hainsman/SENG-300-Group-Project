@@ -19,7 +19,7 @@ public interface GameState {
     /**
      * Returns the current board variable. Useful for validation and UI implementations.
      *
-     * @return
+     * @return Current board state
      */
     ArrayList<Player> getBoard();
 }

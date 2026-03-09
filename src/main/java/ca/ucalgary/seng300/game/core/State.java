@@ -4,5 +4,5 @@ public enum State {
     IN_PROGRESS,
     TIE,
     PLAYER_1_WIN,
-    PLAYER_2_WIN;
+    PLAYER_2_WIN
 }

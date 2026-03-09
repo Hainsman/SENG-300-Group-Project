@@ -10,7 +10,7 @@ public interface RuleValidator {
      *
      * @param state The current GameState to reference for move validation
      * @param action The action to verify against the GameState
-     * @return
+     * @return True if valid
      */
     boolean validateMove(GameState state, PlayerAction action);
 
@@ -18,7 +18,7 @@ public interface RuleValidator {
      * Returns a generated list of PlayerActions that would be considered valid based on the current GameState
      *
      * @param state The current GameState.
-     * @return
+     * @return List of valid actions
      */
     List<PlayerAction> getValidActions(GameState state);
 }
