@@ -1,9 +1,12 @@
 package ca.ucalgary.seng300.platform.domain;
 
+import java.util.List;
+
 public class User extends Record {
     private String login;
     private String email;
     private String passwordHash;
+    private String type;
     private boolean isActive;
 
     public User(int id, String login, String email, String passwordHash){
@@ -12,6 +15,7 @@ public class User extends Record {
         this.email = email;
         this.passwordHash = passwordHash;
         this.isActive = true;
+        this.type = "user";
     }
 
     //getters
@@ -25,5 +29,4 @@ public class User extends Record {
     public void setEmail(String email){this.email = email;}
     public void setPasswordHash(String passwordHash){this.login = passwordHash;}
     public void setIsActive(boolean isActive){this.isActive = isActive;}
-
 }
