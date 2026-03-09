@@ -1,15 +1,14 @@
 package ca.ucalgary.seng300;
 import java.io.*;
 import java.net.Socket;
-import java.time.LocalDateTime;
 
 public class ClientHandler extends Thread {
     // socket variable
     private Socket socket;
     // main server variable
-    private projectServer serv;
+    private PlatformCore serv;
 
-    public ClientHandler(Socket socket, projectServer serv) {
+    public ClientHandler(Socket socket, PlatformCore serv) {
         //set socket and main server to the arguments
         this.socket = socket;
         this.serv = serv;
