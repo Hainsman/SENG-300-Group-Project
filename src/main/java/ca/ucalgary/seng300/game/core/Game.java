@@ -6,22 +6,18 @@ public interface Game {
     //variables in an interface have to be final
     //and the things implementing this interface will have different
     //versions of both RuleValidator and GameState
-//    RuleValidator validator;
-//
-//    Object gameState;
+    GameState gameState = null;
+    RuleValidator validator = null;
 
 
     //probably returns the whole GameState class like getGameState,
     //but it has to create it first rather than just using what is in GameState
     //probably also does things like set the correct RuleValidator
     //also probably does some of the functions of a constructor
-    Object startGame(Object Player1, Object Player2);
+    GameState startGame(Object Player1, Object Player2);
 
-    //would alter gameState based on the action it is given
+    //would validate then apply an action to gameState
     void handleAction(PlayerAction playerAction);
-
-    //would use validator to validate the action
-    boolean validateAction(PlayerAction playerAction);
 
     //will probably return the whole GameState class type
     Object getGameState();
