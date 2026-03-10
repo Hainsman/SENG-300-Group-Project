@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.platform;
+package ca.ucalgary.seng300;
 
 public class platformDB {
     public Boolean authenticateorsmth(String s){

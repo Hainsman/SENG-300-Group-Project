@@ -3,13 +3,33 @@ package ca.ucalgary.seng300;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 // debug Server first, then as many clients as you want
 // the server will close once the last client has sent "exit"
 
-public class projectServer{
+public class PlatformCore {
     // client id number
     private int clientNumber = 1;
+
+    // Database
+    public platformDB database;
+
+    // list of clients that are connected but not logged in
+    List<Integer> connected;
+
+    // list of connections for users currently logged in
+    List<pClientHandler> users;
+
+    public void cMsg (int i, String s){
+        for(pClientHandler h : users){
+            if(h.ID == i){
+                h.cSend(s);
+            }
+        }
+
+    }
+
 
     // return the current client number and increase it by 1 for the next client
     public int getClientNumber() {
@@ -17,14 +37,19 @@ public class projectServer{
     }
     private int cActive = 0;
 
-    public projectServer() throws IOException, InterruptedException {
+    public PlatformCore() throws IOException, InterruptedException {
+        // Initialise database
+        // PLACEHOLDER (including the names)
+        database = new platformDB();
+        database.updateorsmth("something");
+
         // Max clients
         int ClientMax = 3;
         // how many clients have connected in total
         int CCount = 0;
         // how many clients are active
         // list of threads
-        ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>();
+        users = new ArrayList<pClientHandler>();
 
         // Create a server socket listening on port 2020
         ServerSocket serverSocket = new ServerSocket();
@@ -45,8 +70,8 @@ public class projectServer{
                 wait = false;
                 if(cActive < ClientMax) {
                     // Create a new thread to handle the connected client
-                    threads.add(CCount, new ClientHandler(socket, this));
-                    threads.get(CCount).start();
+                    users.add(CCount, new pClientHandler(socket, this));
+                    users.get(CCount).start();
                     cActive ++;
                     CCount++;
                 }
@@ -55,14 +80,14 @@ public class projectServer{
                 }
             }
             catch(Exception e) {
-                // lets the while check happen instead of blocking on accept when it time out
+                // lets the while check happen instead of blocking on accept when it times out
             }
         }
         while(cActive != 0 || wait);
         // close the servers socket
         serverSocket.close();
         // join all of the threads if they exist
-        for(Thread thread : threads) {
+        for(Thread thread : users) {
             thread.join();
         }
         System.out.println("Server Closed");
@@ -72,7 +97,7 @@ public class projectServer{
     public static void main(String[] args) {
 
         try {
-            new projectServer(); // Start the server
+            new PlatformCore(); // Start the server
 
         } catch (Exception e) {
             e.printStackTrace();
