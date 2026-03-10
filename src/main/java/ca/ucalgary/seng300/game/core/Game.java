@@ -20,7 +20,7 @@ public interface Game {
     void handleAction(PlayerAction playerAction);
 
     //will probably return the whole GameState class type
-    Object getGameState();
+    GameState getGameState();
 
     //not sure what this should return
     Object getGameUpdate();
