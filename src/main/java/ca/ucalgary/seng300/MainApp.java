@@ -15,7 +15,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) {
         Label label = new Label("JavaFX 25 + JDK 25 OK");
-        Scene scene = new Scene(label, 600, 400);
+        Scene scene = new Scene(label, 1020, 680);
         stage.setScene(scene);
         stage.setTitle("Starter");
         stage.show();
