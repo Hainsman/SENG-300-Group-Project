@@ -47,7 +47,7 @@
         </GridPane>
 
         <!-- Reset button -->
-        <Button fx:id="resetButton" onAction="#resetClick" style="-fx-font-size:16px; -fx-background-color:#4CAF50; -fx-text-fill:white;" text="Reset Board" />
+        <Button fx:id="resetButton" onAction="#resetClick" style="-fx-font-size: 16px; -fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-text-fill: white; -fx-font-weight: Bold;" text="Reset Board" />
 
     </VBox>
 

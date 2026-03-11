@@ -13,11 +13,11 @@
    <children>
       <SplitPane dividerPositions="0.31107491856677527, 0.7345276872964169" prefHeight="680.0" prefWidth="1020.0" style="-fx-background-color: #23283F;">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="194.0" style="-fx-background-color: #23283F;">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="194.0" style="-fx-background-color: #23283f;">
                <children>
-                  <Button id="menuButton" layoutX="116.0" layoutY="511.0" mnemonicParsing="false" text="Menu" />
-                  <Button id="settingsButton" layoutX="111.0" layoutY="580.0" mnemonicParsing="false" text="Settings" />
-                  <Label layoutX="35.0" layoutY="40.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f73b1e;" text="CONNECT 4" visible="false">
+                  <Button id="menuButton" layoutX="68.0" layoutY="464.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="145.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 25; -fx-border-color: white; -fx-border-radius: 10px;" text="ⓘ      Info" />
+                  <Button id="settingsButton" layoutX="40.0" layoutY="528.0" mnemonicParsing="false" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 25; -fx-border-color: white; -fx-border-radius: 10px;" text="⚙      Settings" />
+                  <Label layoutX="44.0" layoutY="129.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f73b1e;" text="CONNECT 4" visible="false">
                      <effect>
                         <DropShadow>
                            <color>
@@ -26,7 +26,7 @@
                         </DropShadow>
                      </effect>
                   </Label>
-                  <Label layoutX="39.0" layoutY="39.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f7b21e;" text="TIC TAC TOE">
+                  <Label layoutX="40.0" layoutY="155.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: linear-gradient(from 0px 0px to 50px 50px, #38e5eb, #2acbeb);" text="TIC TAC TOE">
                      <effect>
                         <DropShadow>
                            <color>
@@ -35,6 +35,9 @@
                         </DropShadow>
                      </effect>
                   </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="13.0" layoutY="11.0" prefHeight="117.0" prefWidth="286.0" style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-text-fill: White; -fx-font-size: 40; -fx-font-weight: Bold; -fx-background-insets: -10; -fx-background-radius: 10px; -fx-font-family: Tahoma;" text="Bogo Solutions" textAlignment="CENTER" wrapText="true" />
+                  <Button layoutX="47.0" layoutY="401.0" mnemonicParsing="false" style="-fx-background-color: #23283f; -fx-font-size: 25; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;" text="✕      Forfeit" />
+                  <Button layoutX="77.0" layoutY="593.0" mnemonicParsing="false" style="-fx-background-color: #23283f; -fx-text-fill: white; -fx-font-size: 25; -fx-border-color: white; -fx-border-radius: 10px;" text="🚪      Exit" />
                </children></AnchorPane>
             <AnchorPane id="gamePane" prefHeight="456.0" prefWidth="270.0" style="-fx-background-color: #23283F;">
                <SplitPane dividerPositions="0.08191653786707882, 0.9057187017001546" orientation="VERTICAL" prefHeight="678.0" prefWidth="430.0" style="-fx-background-color: #23283F;">
@@ -52,7 +55,7 @@
             </AnchorPane>
             <AnchorPane prefHeight="413.0" prefWidth="200.0" style="-fx-background-color: #23283F;">
                <children>
-                  <Label id="matchHistoryLabel" alignment="CENTER" graphicTextGap="7.0" layoutX="70.0" layoutY="159.0" style="-fx-background-color: #4CAF50; -fx-font-size: 22; -fx-text-fill: white; -fx-background-radius: 5px; -fx-background-insets: -5;" text="Match History" textAlignment="CENTER" />
+                  <Label id="matchHistoryLabel" alignment="CENTER" graphicTextGap="7.0" layoutX="60.0" layoutY="157.0" style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-font-size: 22; -fx-text-fill: white; -fx-background-radius: 5px; -fx-background-insets: -5; -fx-font-weight: Bold;" text="Match History" textAlignment="CENTER" />
                 <AnchorPane id="matchHistoryPane" layoutX="34.0" layoutY="213.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #888e8f;">
                      <children>
                         <ScrollPane hbarPolicy="NEVER" prefHeight="206.0" prefWidth="206.0" style="-fx-background-color: #888e8f;" />
