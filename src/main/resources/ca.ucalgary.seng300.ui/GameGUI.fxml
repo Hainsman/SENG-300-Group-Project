@@ -4,38 +4,58 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1020.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <SplitPane dividerPositions="0.31107491856677527, 0.7345276872964169" prefHeight="680.0" prefWidth="1020.0">
+      <SplitPane dividerPositions="0.31107491856677527, 0.7345276872964169" prefHeight="680.0" prefWidth="1020.0" style="-fx-background-color: #23283F;">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="194.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="194.0" style="-fx-background-color: #23283F;">
                <children>
-                  <Button id="menuButton" layoutX="75.0" layoutY="270.0" mnemonicParsing="false" text="Menu" />
-                  <Button id="settingsButton" layoutX="73.0" layoutY="307.0" mnemonicParsing="false" text="Settings" />
+                  <Button id="menuButton" layoutX="116.0" layoutY="511.0" mnemonicParsing="false" text="Menu" />
+                  <Button id="settingsButton" layoutX="111.0" layoutY="580.0" mnemonicParsing="false" text="Settings" />
+                  <Label layoutX="35.0" layoutY="40.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f73b1e;" text="CONNECT 4" visible="false">
+                     <effect>
+                        <DropShadow>
+                           <color>
+                              <Color red="0.7599999904632568" green="0.21279999613761902" blue="0.31823644042015076" />
+                           </color>
+                        </DropShadow>
+                     </effect>
+                  </Label>
+                  <Label layoutX="39.0" layoutY="39.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f7b21e;" text="TIC TAC TOE">
+                     <effect>
+                        <DropShadow>
+                           <color>
+                              <Color red="0.31044408679008484" green="0.8881579041481018" blue="0.8496436476707458" />
+                           </color>
+                        </DropShadow>
+                     </effect>
+                  </Label>
                </children></AnchorPane>
-            <AnchorPane id="gamePane" prefHeight="456.0" prefWidth="270.0">
-               <SplitPane dividerPositions="0.08191653786707882, 0.9057187017001546" orientation="VERTICAL" prefHeight="678.0" prefWidth="430.0">
+            <AnchorPane id="gamePane" prefHeight="456.0" prefWidth="270.0" style="-fx-background-color: #23283F;">
+               <SplitPane dividerPositions="0.08191653786707882, 0.9057187017001546" orientation="VERTICAL" prefHeight="678.0" prefWidth="430.0" style="-fx-background-color: #23283F;">
                  <items>
-                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
-                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="527.0" prefWidth="367.0">
+                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: #23283F;" />
+                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="527.0" prefWidth="367.0" style="-fx-background-color: #23283F;">
                         <children>
 <!--                            <fx:include fx:id="connect4View" source="Connect4.fxml" />-->
                             <fx:include fx:id="ticTacToeView" layoutX="-30.0" scaleX="0.95" source="TicTacToe.fxml" />
                         </children>
                      </AnchorPane>
-                     <AnchorPane prefHeight="92.0" prefWidth="428.0" />
+                     <AnchorPane prefHeight="92.0" prefWidth="428.0" style="-fx-background-color: #23283F;" />
                  </items>
                </SplitPane>
             </AnchorPane>
-            <AnchorPane prefHeight="413.0" prefWidth="200.0">
+            <AnchorPane prefHeight="413.0" prefWidth="200.0" style="-fx-background-color: #23283F;">
                <children>
-                  <Label id="matchHistoryLabel" layoutX="96.0" layoutY="164.0" text="Match History" />
-                <AnchorPane id="matchHistoryPane" layoutX="53.0" layoutY="207.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                  <Label id="matchHistoryLabel" alignment="CENTER" graphicTextGap="7.0" layoutX="70.0" layoutY="159.0" style="-fx-background-color: #4CAF50; -fx-font-size: 22; -fx-text-fill: white; -fx-background-radius: 5px; -fx-background-insets: -5;" text="Match History" textAlignment="CENTER" />
+                <AnchorPane id="matchHistoryPane" layoutX="34.0" layoutY="213.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #888e8f;">
                      <children>
-                        <ScrollPane hbarPolicy="NEVER" layoutX="-14.0" layoutY="-1.0" prefHeight="206.0" prefWidth="200.0" />
+                        <ScrollPane hbarPolicy="NEVER" prefHeight="206.0" prefWidth="206.0" style="-fx-background-color: #888e8f;" />
                      </children>
                   </AnchorPane>
                </children></AnchorPane>
