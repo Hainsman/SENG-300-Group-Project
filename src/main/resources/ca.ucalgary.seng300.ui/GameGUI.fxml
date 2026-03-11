@@ -61,7 +61,7 @@
                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: #23283F;" />
                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="527.0" prefWidth="367.0" style="-fx-background-color: #23283F;">
                         <children>
-<!--                            <fx:include fx:id="connect4View" source="Connect4.fxml" />-->
+                            <fx:include fx:id="connect4View" source="Connect4.fxml" />
                             <fx:include fx:id="ticTacToeView" layoutX="-30.0" scaleX="0.95" source="TicTacToe.fxml" />
                         </children>
                      </AnchorPane>
