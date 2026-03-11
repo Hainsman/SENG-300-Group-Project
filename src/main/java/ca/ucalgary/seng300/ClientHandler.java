@@ -2,7 +2,7 @@ package ca.ucalgary.seng300;
 import java.io.*;
 import java.net.Socket;
 
-public class pClientHandler extends Thread {
+public class ClientHandler extends Thread {
     // socket variable
     private Socket socket;
     // main server variable
@@ -10,7 +10,8 @@ public class pClientHandler extends Thread {
     public PrintWriter outServ;
     public  Integer ID;
 
-    public pClientHandler(Socket socket, PlatformCore serv) {
+
+    public ClientHandler(Socket socket, PlatformCore serv) {
         //set socket and main server to the arguments
         this.socket = socket;
         this.serv = serv;
