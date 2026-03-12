@@ -4,9 +4,109 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.event.ActionEvent;
-
 
 public class Connect4Controller {
 
+    @FXML
+    private GridPane gridPane;
+    private Circle[][] circles = new Circle[6][7];
+    private int rows = 6;
+    private int cols = 7;
+
+    private final Color P1 = Color.web("#dd3030ff");
+    private final Color P2 = Color.web("#fad44aff");
+
+    @FXML
+    public void initialize() {
+        buildBoard();
+    }
+
+    private void buildBoard() {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 7; col++) {
+                Circle circle = new Circle(40);
+                circle.setFill(Color.WHITE);
+                circles[row][col] = circle;
+
+                final int c = col;
+                circle.setOnMouseClicked(e -> dropPiece(c));
+
+                gridPane.add(circle, col, row);
+            }
+        }
+    }
+
+    private int currentPlayer = 1;
+
+    private void dropPiece(int col) {
+        for (int row = 5; row >= 0; row--) {
+            if (circles[row][col].getFill().equals(Color.WHITE)) {
+                Color playerColor;
+                if (currentPlayer == 1) {
+                    playerColor = P1;
+                } else {
+                    playerColor = P2;
+                }
+                circles[row][col].setFill(playerColor);
+
+                if (checkWin(row, col, playerColor)) {
+                    System.out.println("Player " + currentPlayer + " Wins!");
+                    disableBoard();
+                } else if (isBoardFull()) {
+                    System.out.println("It's a Draw!");
+                } else {
+                    if (currentPlayer == 1) {
+                        currentPlayer = 2;
+                    } else {
+                        currentPlayer = 1;
+                    }
+                    System.out.println("Player " + currentPlayer + "'s Turn");
+                }
+                return;
+            }
+        }
+    }
+
+    private boolean checkWin(int row, int col, Color color) {
+        return checkDirection(row, col, color, 1, 0) // horizontal
+                || checkDirection(row, col, color, 0, 1) // vertical
+                || checkDirection(row, col, color, 1, 1) // diagonal ↘
+                || checkDirection(row, col, color, 1, -1); // diagonal ↙
+    }
+
+    private boolean checkDirection(int row, int col, Color color, int dr, int dc) {
+        int count = 1;
+        count += countFrom(row, col, color, dr, dc);
+        count += countFrom(row, col, color, -dr, -dc);
+        return count >= 4;
+    }
+
+    private int countFrom(int row, int col, Color color, int dr, int dc) {
+        int count = 0;
+        int r = row + dr;
+        int c = col + dc;
+        while (r >= 0 && r < rows && c >= 0 && c < cols
+                && circles[r][c].getFill().equals(color)) {
+            count++;
+            r += dr;
+            c += dc;
+        }
+        return count;
+    }
+
+    private boolean isBoardFull() {
+        for (int col = 0; col < cols; col++)
+            if (circles[0][col].getFill().equals(Color.WHITE))
+                return false;
+        return true;
+    }
+
+    private void disableBoard() {
+        for (int row = 0; row < rows; row++)
+            for (int col = 0; col < cols; col++)
+                circles[row][col].setOnMouseClicked(null);
+    }
 }
