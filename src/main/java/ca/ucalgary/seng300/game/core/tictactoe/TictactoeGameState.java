@@ -18,8 +18,8 @@ public class TictactoeGameState implements GameState {
         int row = TTTaction.getActionPayload().row();
         int col = TTTaction.getActionPayload().col();
 
-        //if board is not null then we can update it
-        if (board != null) {
+        //if board is not null then we can update it, but moves should only happen if the state in "IN_PROGRESS"
+        if (board != null && state == State.IN_PROGRESS) {
             board[row][col] = playerTurn;
             //switch the turn
             if (playerTurn == Player.PLAYER_1) {
