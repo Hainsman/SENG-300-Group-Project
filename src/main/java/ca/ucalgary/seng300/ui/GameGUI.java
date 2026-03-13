@@ -1,6 +1,12 @@
 package ca.ucalgary.seng300.ui;
 
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.control.Label;
 
 // parent class for both Connect 4 and Tic Tac Toe GUI
 
@@ -24,73 +30,70 @@ public abstract class GameGUI {
         QUIT,
     }
 
-
     //
     public static class GameViewData {
-        public final String   playerID;
-        public final String   opponentID;
-        public final String   gameType;
-        public final int      rows;
-        public final int      cols;
+        public final String playerID;
+        public final String opponentID;
+        public final String gameType;
+        public final int rows;
+        public final int cols;
         public final String[] availableActions;
 
         public GameViewData(String playerID, String opponentID,
-                            String gameType, int rows, int cols,
-                            String[] availableActions) {
-            this.playerID         = playerID;
-            this.opponentID       = opponentID;
-            this.gameType         = gameType;
-            this.rows             = rows;
-            this.cols             = cols;
+                String gameType, int rows, int cols,
+                String[] availableActions) {
+            this.playerID = playerID;
+            this.opponentID = opponentID;
+            this.gameType = gameType;
+            this.rows = rows;
+            this.cols = cols;
             this.availableActions = availableActions;
         }
     }
 
     /** Carries a player's move and actionType. */
     public static class GameAction {
-        public final String         playerID;
+        public final String playerID;
         public final GameGUI.GameActionType actionType;
-        public final int            row;
-        public final int            col;
-        public final String         optionalPayload;
+        public final int row;
+        public final int col;
+        public final String optionalPayload;
 
         public GameAction(String playerID, GameGUI.GameActionType actionType,
-                          int row, int col, String optionalPayload) {
-            this.playerID        = playerID;
-            this.actionType      = actionType;
-            this.row             = row;
-            this.col             = col;
+                int row, int col, String optionalPayload) {
+            this.playerID = playerID;
+            this.actionType = actionType;
+            this.row = row;
+            this.col = col;
             this.optionalPayload = optionalPayload;
         }
     }
 
     /** Look at the game state; returned by getGameState(). */
     public static class GameState {
-        public final String     currentPlayerID;
-        public final char[][]   board;        // board[row][col]
+        public final String currentPlayerID;
+        public final char[][] board; // board[row][col]
         public final GameGUI.GameStatus status;
-        public final String     statusMessage;
-        public final int        moveCount;
+        public final String statusMessage;
+        public final int moveCount;
 
         public GameState(String currentPlayerID, char[][] board,
-                         GameGUI
-                                 .GameStatus status, String statusMessage, int moveCount) {
+                GameGUI.GameStatus status, String statusMessage, int moveCount) {
             this.currentPlayerID = currentPlayerID;
-            this.board           = board;
-            this.status          = status;
-            this.statusMessage   = statusMessage;
-            this.moveCount       = moveCount;
+            this.board = board;
+            this.status = status;
+            this.statusMessage = statusMessage;
+            this.moveCount = moveCount;
         }
     }
 
-
     // Internal current setup
     protected GameGUI.GameViewData viewData;
-    protected char[][]     board;
+    protected char[][] board;
     protected GameGUI.GameStatus status;
-    protected String       currentPlayerID;
-    protected int          moveCount;
-    protected boolean      isInitialized;
+    protected String currentPlayerID;
+    protected int moveCount;
+    protected boolean isInitialized;
 
     /**
      * Set up the board render and update.
@@ -98,12 +101,12 @@ public abstract class GameGUI {
      * game-specific setup needed.
      */
     public void initialize(GameGUI.GameViewData data) {
-        this.viewData        = data;
-        this.board           = new char[data.rows][data.cols];
-        this.status          = GameGUI.GameStatus.WAITING;
+        this.viewData = data;
+        this.board = new char[data.rows][data.cols];
+        this.status = GameGUI.GameStatus.WAITING;
         this.currentPlayerID = data.playerID;
-        this.moveCount       = 0;
-        this.isInitialized   = true;
+        this.moveCount = 0;
+        this.isInitialized = true;
         // For child classes to establish.
         render();
         update();
@@ -117,10 +120,11 @@ public abstract class GameGUI {
     public void handleGameAction(GameGUI.GameAction action) {
         ensureInitialized();
         switch (action.actionType) {
-            case FORFEIT  -> restart();
-            case EXIT   -> status = GameGUI.GameStatus.QUIT;
+            case FORFEIT -> restart();
+            case EXIT -> status = GameGUI.GameStatus.QUIT;
             // child will handle other cases.
-            default       -> { }
+            default -> {
+            }
         }
         update();
     }
@@ -133,15 +137,14 @@ public abstract class GameGUI {
                 copyBoard(),
                 status,
                 createStatusMessage(),
-                moveCount
-        );
+                moveCount);
     }
 
     /** Complete shutdown sequence. */
     public void shutdown() {
         isInitialized = false;
-        board         = null;
-        viewData      = null;
+        board = null;
+        viewData = null;
     }
 
     /** Methods to be fleshed out by child classes */
@@ -170,16 +173,16 @@ public abstract class GameGUI {
 
     private String createStatusMessage() {
         return switch (status) {
-            case WAITING     -> "Waiting to start...";
+            case WAITING -> "Waiting to start...";
             case IN_PROGRESS -> "Player " + currentPlayerID + "'s turn";
-            case WIN         -> currentPlayerID + " wins!";
-            case LOSS        -> currentPlayerID + " lost.";
-            case DRAW        -> "Draw.";
-            case QUIT   -> "Game quit.";
+            case WIN -> currentPlayerID + " wins!";
+            case LOSS -> currentPlayerID + " lost.";
+            case DRAW -> "Draw.";
+            case QUIT -> "Game quit.";
         };
     }
 
-    private void restart(){
+    private void restart() {
         // reset board, render and update
         board = new char[viewData.rows][viewData.cols];
         status = GameStatus.WAITING;
@@ -188,8 +191,56 @@ public abstract class GameGUI {
         render();
         update();
     };
-}
 
+    // Game History
+
+    public static VBox historyBox;
+
+    public static void setHistoryBox(VBox box) {
+        historyBox = box;
+    }
+
+    /*
+     * addHistory() is the single method any game controller calls to log a move.
+     * It creates a colored dot + label entry and adds it to the historyBox.
+     *
+     * @param gameType "TicTacToe" or "Connect4"
+     * 
+     * @param player "X", "O", "Player 1", etc.
+     * 
+     * @param details "(1, 2)" or "Col 3" etc.
+     * 
+     * @param color dot color matching the player's piece
+     */
+    public static void addHistory(String gameType, String player, String details, Color color) {
+        if (historyBox == null) {
+            return;
+        }
+
+        HBox entry = new HBox(8);
+        entry.setAlignment(Pos.CENTER_LEFT);
+        entry.setStyle("-fx-padding: 4 8;");
+
+        Circle dot = new Circle(7);
+        dot.setFill(color);
+
+        Label label = new Label(gameType + "  |  " + player + "  →  " + details);
+        label.setStyle("-fx-text-fill: white; -fx-font-size: 12px;");
+
+        entry.getChildren().addAll(dot, label);
+        historyBox.getChildren().add(entry);
+    }
+
+    /*
+     * clearHistory() wipes the history panel.
+     * Call this when starting a new game or resetting one.
+     */
+    public static void clearHistory() {
+        if (historyBox != null) {
+            historyBox.getChildren().clear();
+        }
+    }
+}
 
 // TO ADD:
 // finish restart() method

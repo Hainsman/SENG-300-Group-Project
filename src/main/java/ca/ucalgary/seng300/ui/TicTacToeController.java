@@ -5,6 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
 public class TicTacToeController {
@@ -42,13 +43,15 @@ public class TicTacToeController {
     @FXML
     private Label turnLabel;
 
-
     @FXML
     private Button resetButton;
 
     private String[][] board = new String[3][3]; // stores "X", "O", or null
     private boolean xTurn = true; // X starts
     private int moves = 0;
+
+    private static final Color xColor = Color.web("#3B82F6");
+    private static final Color oColor = Color.web("#A855F7");
 
     private String checkWinner() {
         // Check rows
@@ -90,20 +93,27 @@ public class TicTacToeController {
 
         Integer row = GridPane.getRowIndex(clickedButton);
         Integer col = GridPane.getColumnIndex(clickedButton);
-        if (row == null) row = 0;
-        if (col == null) col = 0;
+        if (row == null)
+            row = 0;
+        if (col == null)
+            col = 0;
 
-        if (board[row][col] != null) return; // already filled
+        if (board[row][col] != null)
+            return; // already filled
 
         // Set X or O
         if (xTurn) {
             clickedButton.setText("X");
             clickedButton.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
             board[row][col] = "X";
+            GameGUI.addHistory("TicTacToe", "X",
+                    "(" + (row + 1) + ", " + (col + 1) + ")", xColor);
         } else {
             clickedButton.setText("O");
             clickedButton.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
             board[row][col] = "O";
+            GameGUI.addHistory("TicTacToe", "O",
+                    "(" + (row + 1) + ", " + (col + 1) + ")", oColor);
         }
 
         moves++;
@@ -134,12 +144,14 @@ public class TicTacToeController {
             }
         }
     }
+
     @FXML
     void resetClick(ActionEvent event) {
         board = new String[3][3];
         moves = 0;
         xTurn = true;
         turnLabel.setText("X's Turn");
+        GameGUI.clearHistory();
 
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button) {

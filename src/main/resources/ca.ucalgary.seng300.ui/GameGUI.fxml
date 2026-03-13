@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1020.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1020.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.GameGUIController">
    <children>
       <SplitPane dividerPositions="0.31107491856677527, 0.7345276872964169" prefHeight="680.0" prefWidth="1020.0" style="-fx-background-color: #23283F;">
         <items>
@@ -74,7 +74,9 @@
                   <Label id="matchHistoryLabel" alignment="CENTER" graphicTextGap="7.0" layoutX="60.0" layoutY="157.0" style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-font-size: 22; -fx-text-fill: white; -fx-background-radius: 5px; -fx-background-insets: -5; -fx-font-weight: Bold;" text="Match History" textAlignment="CENTER" />
                 <AnchorPane id="matchHistoryPane" layoutX="34.0" layoutY="213.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #888e8f;">
                      <children>
-                        <ScrollPane hbarPolicy="NEVER" prefHeight="206.0" prefWidth="206.0" style="-fx-background-color: #888e8f;" />
+                        <ScrollPane hbarPolicy="NEVER" prefHeight="206.0" prefWidth="206.0" style="-fx-background-color: #888e8f;">
+                              <VBox fx:id="historyBox" prefHeight="200.0" prefWidth="205.0" style="-fx-background-color: #4A90D9;" />
+                        </ScrollPane>
                      </children>
                   </AnchorPane>
                </children></AnchorPane>
