@@ -2,7 +2,7 @@ package ca.ucalgary.seng300.game.core.tictactoe;
 
 import ca.ucalgary.seng300.game.core.*;
 
-public class TictactoeGameState implements GameState {
+public class TTTGameState implements GameState {
 
     private Player[][] board = null;
     Player playerTurn = Player.PLAYER_1;
@@ -12,7 +12,7 @@ public class TictactoeGameState implements GameState {
     @Override
     public boolean applyAction(PlayerAction action) {
         boolean successful = false;
-        TictactoePlayerAction TTTaction = (TictactoePlayerAction) action;
+        TTTPlayerAction TTTaction = (TTTPlayerAction) action;
         int row = TTTaction.getActionPayload().row();
         int col = TTTaction.getActionPayload().col();
 

@@ -12,7 +12,7 @@ public class TTTRuleValidator extends RuleValidator {
         //reject an action that is:
         //1. not the right game type
         //2. not the right player's turn
-        boolean isTTT = action.getClass().equals(TictactoePlayerAction.class);
+        boolean isTTT = action.getClass().equals(TTTPlayerAction.class);
         boolean isCorrectTurn = true; //action.getPlayerID().equals(gameState.getTurn());
         boolean isInProgress = true; //gameState.getState()
         if (!isTTT || !isCorrectTurn) {
