@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 // Contributors: Kade Peters, Jarod Rideout
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -15,6 +16,16 @@ public class GameGUIController {
     @FXML
     private TicTacToeController TicTacToeViewController; // Injects the child's controller
     @FXML
+    private Label eloValue; // Value of elo to be displayed
+    @FXML
+    private Label winValue; // Elo change based on win
+    @FXML
+    private Label lossValue; // Elo change based on loss
+    @FXML
+    private Label drawValue; // Elo change based on draw
+    @FXML
+    private Label rankValue; // Elo description string
+    @FXML
     public VBox historyBox;
 
     @FXML
@@ -22,14 +33,18 @@ public class GameGUIController {
 
     @FXML
     public void initialize() {
-        // connect4ViewController.doSomething();
         GameGUI.setHistoryBox(historyBox);
+        GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
     }
-
 
     @FXML
     private void handleInfoButton(ActionEvent event) {
         CentralController.moveTo("Info.fxml");
 
+    }
+
+    @FXML
+    private void handleExitButton(ActionEvent event) {
+        Platform.exit();
     }
 }

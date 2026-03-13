@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -230,7 +231,6 @@ public abstract class GameGUI {
         entry.getChildren().addAll(dot, label);
         historyBox.getChildren().add(entry);
     }
-
     /*
      * clearHistory() wipes the history panel.
      * Call this when starting a new game or resetting one.
@@ -239,6 +239,40 @@ public abstract class GameGUI {
         if (historyBox != null) {
             historyBox.getChildren().clear();
         }
+    }
+
+    // Game Elo Labels + methods
+
+    public static Label eloLabel; // Value of elo to be displayed
+    public static Label winLabel; // Elo change based on win
+    public static Label lossLabel; // Elo change based on loss
+    public static Label drawLabel; // Elo change based on draw
+    public static Label rankLabel;
+
+    public static void setEloLabels(Label elo, Label win, Label loss, Label draw, Label rank) {
+        eloLabel = elo;
+        winLabel = win;
+        lossLabel = loss;
+        drawLabel = draw;
+        rankLabel = rank;
+    }
+
+    // backend can call with necessary data inputs
+    public static void displayElo(int elo, int win, int loss, int draw, String rank) {
+        if (eloLabel == null) return;
+        eloLabel.setText(String.valueOf(elo));
+        winLabel.setText(String.valueOf(win));
+        lossLabel.setText(String.valueOf(loss));
+        drawLabel.setText(String.valueOf(draw));
+        rankLabel.setText("PlaceHolder");
+
+        // RESOLVE PLEASE: Need to connect to backend constants / rank.java
+//        for (Rank rank : Rank.values()) {
+//            if (rank.isInRank(elo)) {
+//                rankLabel.setText(rank.getDisplayName());
+//                break;
+//            }
+//        }
     }
 }
 
