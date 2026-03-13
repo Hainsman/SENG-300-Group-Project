@@ -2,8 +2,6 @@ package ca.ucalgary.seng300.game.core.tictactoe;
 
 import ca.ucalgary.seng300.game.core.*;
 
-import java.util.ArrayList;
-
 public class TictactoeGameState implements GameState {
 
     private Player[][] board = null;
@@ -18,7 +16,7 @@ public class TictactoeGameState implements GameState {
         int row = TTTaction.getActionPayload().row();
         int col = TTTaction.getActionPayload().col();
 
-        //if board is not null then we can update it, but moves should only happen if the state in "IN_PROGRESS"
+        //if board is not null then we can update it, but moves should only happen if the state is "IN_PROGRESS"
         if (board != null && state == State.IN_PROGRESS) {
             board[row][col] = playerTurn;
             //switch the turn
@@ -47,5 +45,4 @@ public class TictactoeGameState implements GameState {
         //by this point the board should exist, so return it
         return this.board;
     }
-
 }
