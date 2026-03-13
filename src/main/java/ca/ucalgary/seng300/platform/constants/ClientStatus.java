@@ -1,7 +1,7 @@
 package ca.ucalgary.seng300.platform.constants;
 
 public enum ClientStatus {
-    LOBBY,
+    HOME,
     MATCHMAKING,
     STARTING,
     IN_PROGRESS,
