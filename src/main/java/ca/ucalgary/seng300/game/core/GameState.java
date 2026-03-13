@@ -3,7 +3,7 @@ package ca.ucalgary.seng300.game.core;
 import java.util.ArrayList;
 
 public interface GameState {
-    ArrayList<Player> board = null;
+    Player[][] board = null;
     Player playerTurn = Player.PLAYER_1;
     State state = State.IN_PROGRESS;
 
@@ -21,5 +21,5 @@ public interface GameState {
      *
      * @return Current board state
      */
-    ArrayList<Player> getBoard();
+    Player[][] getBoard();
 }
