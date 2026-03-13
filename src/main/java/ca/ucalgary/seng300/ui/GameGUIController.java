@@ -18,8 +18,18 @@ public class GameGUIController {
     public VBox historyBox;
 
     @FXML
+    private Button infoButton;
+
+    @FXML
     public void initialize() {
         // connect4ViewController.doSomething();
         GameGUI.setHistoryBox(historyBox);
+    }
+
+
+    @FXML
+    private void handleInfoButton(ActionEvent event) {
+        CentralController.moveTo("Info.fxml");
+
     }
 }
