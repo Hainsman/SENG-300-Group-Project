@@ -2,8 +2,8 @@ package ca.ucalgary.seng300.game.core.tictactoe;
 
 import ca.ucalgary.seng300.game.core.PlayerAction;
 
-public class TictactToePlayerAction extends PlayerAction {
-    public TictactToePlayerAction(String playerID, TictactoeActionType actionType, TictactoeActionPayload actionPayload) {
+public class TictactoePlayerAction extends PlayerAction {
+    public TictactoePlayerAction(String playerID, TictactoeActionType actionType, TictactoeActionPayload actionPayload) {
         super(playerID, actionType, actionPayload);
     }
 
