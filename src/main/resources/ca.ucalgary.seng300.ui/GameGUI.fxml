@@ -16,7 +16,7 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="194.0" style="-fx-background-color: #23283f;">
                <children>
-                  <Button id="menuButton" layoutX="49.0" layoutY="525.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="ⓘ      Info      ">
+                  <Button id="menuButton" fx:id="infoButton" layoutX="49.0" layoutY="525.0" mnemonicParsing="false" onAction="#handleInfoButton" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="ⓘ      Info      ">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets></Button>
