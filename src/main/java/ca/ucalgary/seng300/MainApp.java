@@ -5,7 +5,9 @@ import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.Store;
 import ca.ucalgary.seng300.platform.utils.Helper;
+import ca.ucalgary.seng300.ui.CentralController;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -13,11 +15,14 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
     @Override
-    public void start(Stage stage) {
-        Label label = new Label("JavaFX 25 + JDK 25 OK");
-        Scene scene = new Scene(label, 1020, 680);
+    public void start(Stage stage) throws Exception {
+        // load Root.fxml, an empty container to be used as base for moving through UI.
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/ca.ucalgary.seng300.ui/Root.fxml")
+        );
+        Scene scene = new Scene(loader.load(), 1020, 680);
         stage.setScene(scene);
-        stage.setTitle("Starter");
+        stage.setTitle("Bogo Solutions");
         stage.show();
     }
 

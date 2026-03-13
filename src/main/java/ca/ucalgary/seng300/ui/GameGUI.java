@@ -1,8 +1,10 @@
 package ca.ucalgary.seng300.ui;
 
+import javafx.scene.layout.Pane;
+
 // parent class for both Connect 4 and Tic Tac Toe GUI
 
-public abstract class GameGUIWIP {
+public abstract class GameGUI {
 
     // Enums
     public enum GameActionType {
@@ -47,12 +49,12 @@ public abstract class GameGUIWIP {
     /** Carries a player's move and actionType. */
     public static class GameAction {
         public final String         playerID;
-        public final GameGUIWIP.GameActionType actionType;
+        public final GameGUI.GameActionType actionType;
         public final int            row;
         public final int            col;
         public final String         optionalPayload;
 
-        public GameAction(String playerID, GameGUIWIP.GameActionType actionType,
+        public GameAction(String playerID, GameGUI.GameActionType actionType,
                           int row, int col, String optionalPayload) {
             this.playerID        = playerID;
             this.actionType      = actionType;
@@ -66,12 +68,12 @@ public abstract class GameGUIWIP {
     public static class GameState {
         public final String     currentPlayerID;
         public final char[][]   board;        // board[row][col]
-        public final GameGUIWIP.GameStatus status;
+        public final GameGUI.GameStatus status;
         public final String     statusMessage;
         public final int        moveCount;
 
         public GameState(String currentPlayerID, char[][] board,
-                         GameGUIWIP
+                         GameGUI
                                  .GameStatus status, String statusMessage, int moveCount) {
             this.currentPlayerID = currentPlayerID;
             this.board           = board;
@@ -83,9 +85,9 @@ public abstract class GameGUIWIP {
 
 
     // Internal current setup
-    protected GameGUIWIP.GameViewData viewData;
+    protected GameGUI.GameViewData viewData;
     protected char[][]     board;
-    protected GameGUIWIP.GameStatus status;
+    protected GameGUI.GameStatus status;
     protected String       currentPlayerID;
     protected int          moveCount;
     protected boolean      isInitialized;
@@ -95,10 +97,10 @@ public abstract class GameGUIWIP {
      * Child classes should call super.initialize(data) first, then add any
      * game-specific setup needed.
      */
-    public void initialize(GameGUIWIP.GameViewData data) {
+    public void initialize(GameGUI.GameViewData data) {
         this.viewData        = data;
         this.board           = new char[data.rows][data.cols];
-        this.status          = GameGUIWIP.GameStatus.WAITING;
+        this.status          = GameGUI.GameStatus.WAITING;
         this.currentPlayerID = data.playerID;
         this.moveCount       = 0;
         this.isInitialized   = true;
@@ -112,20 +114,21 @@ public abstract class GameGUIWIP {
      * Child classes override this for game-specific move logic, then call
      * super.handleGameAction(action) to let the parent handle FORFEIT or EXIT.
      */
-    public void handleGameAction(GameGUIWIP.GameAction action) {
+    public void handleGameAction(GameGUI.GameAction action) {
         ensureInitialized();
         switch (action.actionType) {
             case FORFEIT  -> restart();
-            case EXIT   -> status = GameGUIWIP.GameStatus.QUIT;
-            default       -> { /* child handles PLAYER_MOVE, REQUEST_DRAW, etc. */ }
+            case EXIT   -> status = GameGUI.GameStatus.QUIT;
+            // child will handle other cases.
+            default       -> { }
         }
         update();
     }
 
     /** Return an current game state info. */
-    public GameGUIWIP.GameState getGameState() {
+    public GameGUI.GameState getGameState() {
         ensureInitialized();
-        return new GameGUIWIP.GameState(
+        return new GameGUI.GameState(
                 currentPlayerID,
                 copyBoard(),
                 status,
@@ -146,7 +149,7 @@ public abstract class GameGUIWIP {
 
     public abstract void update();
 
-    // more to come
+    protected abstract void onGameCompletion();
 
     // Helpers
 
@@ -177,7 +180,13 @@ public abstract class GameGUIWIP {
     }
 
     private void restart(){
-        // add stuff here for restarting game.
+        // reset board, render and update
+        board = new char[viewData.rows][viewData.cols];
+        status = GameStatus.WAITING;
+        currentPlayerID = viewData.playerID;
+        moveCount = 0;
+        render();
+        update();
     };
 }
 
