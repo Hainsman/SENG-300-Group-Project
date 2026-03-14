@@ -11,6 +11,9 @@ import javafx.event.ActionEvent;
 public class TicTacToeController {
 
     @FXML
+    private StackPane boardPane;
+
+    @FXML
     private Button cell00;
 
     @FXML
@@ -161,5 +164,9 @@ public class TicTacToeController {
                 btn.setDisable(false);
             }
         }
+    }
+
+    public void setVisibility(Boolean status){
+        boardPane.setVisible(status);
     }
 }

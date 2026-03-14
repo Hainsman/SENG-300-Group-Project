@@ -14,7 +14,7 @@ public class GameGUIController {
     @FXML
     private Connect4Controller connect4ViewController; // Injects the child's controller
     @FXML
-    private TicTacToeController TicTacToeViewController; // Injects the child's controller
+    private TicTacToeController ticTacToeViewController; // Injects the child's controller
     @FXML
     private Label eloValue; // Value of elo to be displayed
     @FXML
@@ -27,7 +27,10 @@ public class GameGUIController {
     private Label rankValue; // Elo description string
     @FXML
     public VBox historyBox;
-
+    @FXML
+    private Label connect4Label;
+    @FXML
+    private Label tttLabel;
     @FXML
     private Button infoButton;
 
@@ -46,5 +49,23 @@ public class GameGUIController {
     @FXML
     private void handleExitButton(ActionEvent event) {
         Platform.exit();
+    }
+
+    public void hideGameScreens(GameGUI.GameViewData data){
+        String gameType = data.gameType.toUpperCase();
+
+        if(gameType.equals("TICTACTOE")){
+            ticTacToeViewController.setVisibility(true);
+            connect4ViewController.setVisibility(false);
+            tttLabel.setVisible(true);
+            connect4Label.setVisible(false);
+
+        } else if(gameType.equals("CONNECT4")) {
+            ticTacToeViewController.setVisibility(false);
+            connect4ViewController.setVisibility(true);
+            tttLabel.setVisible(false);
+            connect4Label.setVisible(true);
+        }
+
     }
 }

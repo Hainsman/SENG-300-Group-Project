@@ -21,7 +21,7 @@
                         <Insets />
                      </opaqueInsets></Button>
                   <Button id="settingsButton" layoutX="49.0" layoutY="578.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="⚙      Settings" />
-                  <Label layoutX="44.0" layoutY="129.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f73b1e;" text="CONNECT 4" visible="false">
+                  <Label fx:id="connect4Label" layoutX="44.0" layoutY="129.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f73b1e;" text="CONNECT 4" visible="false">
                      <effect>
                         <DropShadow>
                            <color>
@@ -30,7 +30,7 @@
                         </DropShadow>
                      </effect>
                   </Label>
-                  <Label layoutX="40.0" layoutY="155.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: linear-gradient(from 0px 0px to 50px 50px, #38e5eb, #2acbeb);" text="TIC TAC TOE">
+                  <Label fx:id="tttLabel" layoutX="40.0" layoutY="155.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: linear-gradient(from 0px 0px to 50px 50px, #38e5eb, #2acbeb);" text="TIC TAC TOE">
                      <effect>
                         <DropShadow>
                            <color>
@@ -41,7 +41,7 @@
                   </Label>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="13.0" layoutY="11.0" prefHeight="117.0" prefWidth="286.0" style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-text-fill: White; -fx-font-size: 40; -fx-font-weight: Bold; -fx-background-insets: -10; -fx-background-radius: 10px; -fx-font-family: Tahoma;" text="Bogo Solutions" textAlignment="CENTER" wrapText="true" />
                   <Button alignment="CENTER" layoutX="49.0" layoutY="472.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-font-size: 20; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;" text="✕      Forfeit  " />
-                   <Button layoutX="49.0" layoutY="631.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: white; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="🚪       Exit       " onAction="#handleExitButton" />
+                   <Button layoutX="49.0" layoutY="631.0" mnemonicParsing="false" onAction="#handleExitButton" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: white; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="🚪       Exit       " />
                    <VBox layoutX="29.0" layoutY="216.0" prefHeight="223.0" prefWidth="252.0" style="-fx-background-color: #36a9e3; -fx-border-color: white; -fx-border-width: 5px; -fx-border-radius: 5px;">
                        <children>
                            <AnchorPane prefHeight="200.0" prefWidth="200.0">

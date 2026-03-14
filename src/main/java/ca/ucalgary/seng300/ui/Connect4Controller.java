@@ -11,6 +11,9 @@ import javafx.event.ActionEvent;
 public class Connect4Controller {
 
     @FXML
+    private StackPane boardPane;
+
+    @FXML
     private GridPane gridPane;
     private Circle[][] circles = new Circle[6][7];
     private int rows = 6;
@@ -108,5 +111,9 @@ public class Connect4Controller {
         for (int row = 0; row < rows; row++)
             for (int col = 0; col < cols; col++)
                 circles[row][col].setOnMouseClicked(null);
+    }
+
+    public void setVisibility(Boolean status){
+        boardPane.setVisible(status);
     }
 }

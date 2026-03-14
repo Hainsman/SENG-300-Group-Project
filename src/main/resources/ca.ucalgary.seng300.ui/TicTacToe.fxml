@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="600" prefWidth="500" style="-fx-background-color:#1E2230;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.TicTacToeController">
+<StackPane fx:id="boardPane" prefHeight="600" prefWidth="500" style="-fx-background-color:#1E2230;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.TicTacToeController">
 
     <!-- Board + background container -->
     <VBox alignment="CENTER" spacing="20">

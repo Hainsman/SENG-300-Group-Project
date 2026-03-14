@@ -50,6 +50,7 @@ public abstract class GameGUI {
             this.cols = cols;
             this.availableActions = availableActions;
         }
+
     }
 
     /** Carries a player's move and actionType. */
@@ -192,6 +193,8 @@ public abstract class GameGUI {
         render();
         update();
     };
+
+
 
     // Game History
 
