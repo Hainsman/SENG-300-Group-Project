@@ -45,4 +45,12 @@ public class TTTGameState implements GameState {
         //by this point the board should exist, so return it
         return this.board;
     }
+
+    public Player getPlayerTurn() {
+        return this.playerTurn;
+    }
+
+    public State getState() {
+        return this.state;
+    }
 }

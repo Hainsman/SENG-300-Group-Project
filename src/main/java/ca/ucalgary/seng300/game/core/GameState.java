@@ -16,10 +16,10 @@ public interface GameState {
      */
     boolean applyAction(PlayerAction action);
 
-    /**
-     * Returns the current board variable. Useful for validation and UI implementations.
-     *
-     * @return Current board state
-     */
+    //-- Accessors --
     Player[][] getBoard();
+
+    Player getPlayerTurn();
+
+    State getState();
 }
