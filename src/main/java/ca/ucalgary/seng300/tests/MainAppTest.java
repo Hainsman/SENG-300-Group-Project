@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300;
+package ca.ucalgary.seng300.tests;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
