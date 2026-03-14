@@ -85,7 +85,7 @@
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
             <TextArea fx:id="chatWindow" editable="false" layoutX="14.0" layoutY="5.0" prefHeight="195.0" prefWidth="219.0" />
-            <TextField fx:id="messageBox" layoutX="25.0" layoutY="260.0" onAction="#messageSent" prefHeight="36.0" prefWidth="211.0" promptText="Send a message to your friends!" />
+            <TextField fx:id="messageBox" layoutX="14.0" layoutY="213.0" onAction="#messageSent" prefHeight="41.0" prefWidth="219.0" promptText="Send a message to your friends!" />
       </children>
     </AnchorPane>
   </children>
