@@ -1,8 +1,8 @@
-package ca.ucalgary.seng300.tests;
+package ca.ucalgary.seng300.demos;
 
 import ca.ucalgary.seng300.platform.domain.Client;
 
-public class ClientStateTest {
+public class ClientStateDemo {
     static void main() {
         Client me = new Client();
         me.joinMatchMakingQueue();
