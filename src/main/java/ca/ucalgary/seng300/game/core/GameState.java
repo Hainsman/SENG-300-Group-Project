@@ -1,7 +1,5 @@
 package ca.ucalgary.seng300.game.core;
 
-import java.util.ArrayList;
-
 public interface GameState {
     Player[][] board = null;
     Player playerTurn = Player.PLAYER_1;

@@ -9,8 +9,8 @@ public class TTTRuleValidator extends RuleValidator {
 
     public boolean validateMove(GameState gameState, PlayerAction action) {
         //Attempt to cast gameState and action to TTT types
-        TTTPlayerAction tttAction = null;
-        TTTGameState tttGameState = null;
+        TTTPlayerAction tttAction;
+        TTTGameState tttGameState;
         try {
             tttAction = (TTTPlayerAction) action;
             tttGameState = (TTTGameState) gameState;
@@ -50,7 +50,7 @@ public class TTTRuleValidator extends RuleValidator {
 
     public List<PlayerAction> getValidActions(GameState gameState) {
         //Check for correct gameState type
-        TTTGameState tttGameState = null;
+        TTTGameState tttGameState;
         try {
             tttGameState = (TTTGameState) gameState;
         } catch (ClassCastException e) {
@@ -58,7 +58,7 @@ public class TTTRuleValidator extends RuleValidator {
             return null;
         }
 
-        List<PlayerAction> validActions = new ArrayList<PlayerAction>();
+        List<PlayerAction> validActions = new ArrayList<>();
         if (tttGameState.getState() != State.IN_PROGRESS) {
             return validActions;
         }

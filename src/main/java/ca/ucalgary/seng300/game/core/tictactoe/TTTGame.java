@@ -17,7 +17,9 @@ public class TTTGame implements Game {
 
     @Override
     public void handleAction(PlayerAction playerAction) {
-
+        if (validator.validateMove(gameState, playerAction)) {
+            gameState.applyAction(playerAction);
+        }
     }
 
     @Override
