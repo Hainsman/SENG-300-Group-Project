@@ -1,62 +1,22 @@
 {
   "1": {
-    "gameID": 1,
-    "type": "gameHistory",
+    "gameID": 0,
     "id": 1,
-    "timeCreated": 1773011630479
+    "timeCreated": 1773365542580
   },
   "2": {
-    "gameID": 1,
-    "type": "gameHistory",
+    "gameID": 0,
     "id": 2,
-    "timeCreated": 1773011630481
+    "timeCreated": 1773365542581
   },
   "3": {
-    "gameID": 1,
-    "type": "gameHistory",
+    "gameID": 0,
     "id": 3,
-    "timeCreated": 1773011630484
+    "timeCreated": 1773365542582
   },
   "4": {
-    "gameID": 1,
-    "type": "gameHistory",
+    "gameID": 0,
     "id": 4,
-    "timeCreated": 1773011630486
-  },
-  "5": {
-    "gameID": 1,
-    "type": "gameHistory",
-    "id": 5,
-    "timeCreated": 1773011630486
-  },
-  "6": {
-    "gameID": 1,
-    "type": "gameHistory",
-    "id": 6,
-    "timeCreated": 1773011630487
-  },
-  "7": {
-    "gameID": 1,
-    "type": "gameHistory",
-    "id": 7,
-    "timeCreated": 1773011630489
-  },
-  "8": {
-    "gameID": 1,
-    "type": "gameHistory",
-    "id": 8,
-    "timeCreated": 1773011630491
-  },
-  "9": {
-    "gameID": 1,
-    "type": "gameHistory",
-    "id": 9,
-    "timeCreated": 1773011630492
-  },
-  "10": {
-    "gameID": 1,
-    "type": "gameHistory",
-    "id": 10,
-    "timeCreated": 1773011630493
+    "timeCreated": 1773365542583
   }
 }

@@ -1,14 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ca.ucalgary.seng300.ui.TicTacToeController"
-            prefHeight="200.0" prefWidth="200.0">
+<StackPane fx:id="boardPane" prefHeight="600" prefWidth="500" style="-fx-background-color:#1E2230;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.TicTacToeController">
 
-</AnchorPane>
+    <!-- Board + background container -->
+    <VBox alignment="CENTER" spacing="20">
+
+        <!-- Top label -->
+        <Label fx:id="turnLabel" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:white;" text="Waiting For Turn" />
+
+        <!-- Tic-Tac-Toe Grid -->
+        <GridPane fx:id="ticTacToeGrid" alignment="CENTER" hgap="10" vgap="10">
+
+            <!-- Row 0 -->
+            <Button fx:id="cell00" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" />
+            <Button fx:id="cell01" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.columnIndex="1" />
+            <Button fx:id="cell02" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.columnIndex="2" />
+
+            <!-- Row 1 -->
+            <Button fx:id="cell10" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.rowIndex="1" />
+            <Button fx:id="cell11" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="cell12" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+
+            <!-- Row 2 -->
+            <Button fx:id="cell20" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.rowIndex="2" />
+            <Button fx:id="cell21" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button fx:id="cell22" onAction="#handleClick" prefHeight="87.0" prefWidth="96.0" style="-fx-font-size:36; -fx-background-color:#23283F;" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+
+        </GridPane>
+
+        <!-- Reset button -->
+        <Button fx:id="resetButton" onAction="#resetClick" style="-fx-font-size: 16px; -fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-text-fill: white; -fx-font-weight: Bold;" text="Reset Board" />
+
+    </VBox>
+
+</StackPane>
