@@ -1,9 +1,13 @@
 package ca.ucalgary.seng300.ui;
 // Contributors: Kade Peters, Jarod Rideout
 
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.server.ServerMain;
+import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
@@ -38,6 +42,66 @@ public class GameGUIController {
     public void initialize() {
         GameGUI.setHistoryBox(historyBox);
         GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
+        ticTacToeViewController.setSession(new TicTacToeSession());
+    }
+
+    @FXML
+    private void handleHostGame(ActionEvent event) {
+        ClientCore client = new ClientCore("127.0.0.1", ServerMain.DEFAULT_PORT);   // Random IP address for now
+        if (!client.connect()) {
+            showAlert("Networking is currently a stub (matchmaking in progress). Platform core will implement connect() and session APIs later.");
+            return;
+        }
+        if (client.createSession(null) == null || client.getSessionId() == null) {
+            showAlert("Could not create session.");
+            return;
+        }
+        hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(), null, "TICTACTOE", 3, 3, new String[0]));
+        ticTacToeViewController.setSession(null);
+        ticTacToeViewController.setClientCore(client);
+        showCopyableSessionIdAlert(client.getSessionId());
+    }
+
+    @FXML
+    private void handleJoinGame(ActionEvent event) {
+        javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("");
+        dialog.setTitle("Join game");
+        dialog.setHeaderText("Enter session ID from the host:");
+        dialog.showAndWait().ifPresent(sessionId -> {
+            if (sessionId == null || sessionId.isBlank()) return;
+            ClientCore client = new ClientCore("127.0.0.1", ServerMain.DEFAULT_PORT);
+            if (!client.connect()) {
+                showAlert("Networking is currently a stub (matchmaking in progress). Platform core will implement connect() and session APIs later.");
+                return;
+            }
+            if (client.joinSession(sessionId.trim(), null) == null || client.getSessionId() == null) {
+                showAlert("Could not join session. Check the ID.");
+                return;
+            }
+            hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(), null, "TICTACTOE", 3, 3, new String[0]));
+            ticTacToeViewController.setSession(null);
+            ticTacToeViewController.setClientCore(client);
+        });
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(message);
+        alert.show();
+    }
+
+    private void showCopyableSessionIdAlert(String sessionId) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Session created");
+        alert.setHeaderText("Share this ID with player 2:");
+        TextField field = new TextField(sessionId);
+        field.setEditable(false);
+        field.setMinWidth(280);
+        field.selectAll();
+        VBox box = new VBox(8, field);
+        box.setPadding(new Insets(0, 0, 8, 0));
+        alert.getDialogPane().setContent(box);
+        alert.showAndWait();
     }
 
     @FXML
