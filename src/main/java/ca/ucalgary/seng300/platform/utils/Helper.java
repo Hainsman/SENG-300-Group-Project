@@ -1,6 +1,10 @@
 package ca.ucalgary.seng300.platform.utils;
+import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.constants.Rank;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -22,6 +26,18 @@ public class Helper {
         }
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    public static Rank getRank(int totalRoundsPlayed, double score){
+        if (totalRoundsPlayed < Constants.TOTAL_ROUNDS_NEEDED_FOR_BRONZE)
+            return Rank.BRONZE;
+
+        for (Rank rank: Rank.values()){
+            if (score >= rank.getMinScoreThreshold() && score < rank.getMaxScoreThreshold()){
+                return rank;
+            }
+        }
+        return Rank.GRAND_MASTER;
     }
 
     private static String bytesToHex(byte[] hash){

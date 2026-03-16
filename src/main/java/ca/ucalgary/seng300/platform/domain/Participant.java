@@ -1,15 +1,17 @@
 package ca.ucalgary.seng300.platform.domain;
 
-public class Participants extends Record{
+public class Participant extends Record{
     private int gameHistoryID;
     private int userID;
     private int score;
+    private String type;
 
-    public Participants(int id, int gameHistoryID, int userID, int score){
+    public Participant(int id, int gameHistoryID, int userID, int score){
         super(id);
         this.gameHistoryID = gameHistoryID;
         this.userID = userID;
         this.score = score;
+        this.type = "participant";
     }
 
     //getters

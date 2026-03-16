@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane id="boardPane" alignment="CENTER" prefHeight="600.0" prefWidth="740.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.Connect4Controller">
+
+
+   <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" style="-fx-background-color: #2979ff; -fx-padding: 16; -fx-background-radius: 12;" vgap="10" StackPane.alignment="CENTER">
+   </GridPane>
+
+
+</StackPane>

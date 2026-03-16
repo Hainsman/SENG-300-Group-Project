@@ -4,27 +4,27 @@
     "userID": 1,
     "score": 10,
     "id": 1,
-    "timeCreated": 1772344026138
+    "timeCreated": 1773365542627
   },
   "2": {
     "gameHistoryID": 1,
     "userID": 2,
     "score": 5,
     "id": 2,
-    "timeCreated": 1772344026140
+    "timeCreated": 1773365542629
   },
   "3": {
     "gameHistoryID": 1,
     "userID": 3,
     "score": 34,
     "id": 3,
-    "timeCreated": 1772344026142
+    "timeCreated": 1773365542629
   },
   "4": {
     "gameHistoryID": 1,
     "userID": 4,
     "score": 42,
     "id": 4,
-    "timeCreated": 1772344026144
+    "timeCreated": 1773365542630
   }
 }
