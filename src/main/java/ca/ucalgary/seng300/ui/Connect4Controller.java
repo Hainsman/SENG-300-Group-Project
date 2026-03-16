@@ -50,8 +50,12 @@ public class Connect4Controller {
                 Color playerColor;
                 if (currentPlayer == 1) {
                     playerColor = P1;
+                    GameGUI.addHistory("Connect4", "1",
+                            "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
                 } else {
                     playerColor = P2;
+                    GameGUI.addHistory("Connect4", "2",
+                            "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
                 }
                 circles[row][col].setFill(playerColor);
 
@@ -113,7 +117,7 @@ public class Connect4Controller {
                 circles[row][col].setOnMouseClicked(null);
     }
 
-    public void setVisibility(Boolean status){
+    public void setVisibility(Boolean status) {
         boardPane.setVisible(status);
     }
 }
