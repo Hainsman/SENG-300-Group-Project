@@ -11,5 +11,5 @@ public class PlayerStatsStore extends Store<PlayerStats> {
         super(filePath);
     }
     //returns users by gameID
-    public List<PlayerStats> findPlayersByGameID (int id){return find(rec -> rec.getGameID() == id);}
+    public static List<PlayerStats> findPlayersByGameID(int id){return find(rec -> rec.getGameID() == id);}
 }
