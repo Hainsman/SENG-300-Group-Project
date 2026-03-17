@@ -12,6 +12,11 @@ public class TTTGame implements Game {
         return null;
     }
 
+    /**
+     * Handles an action submitted to the game. Must be of type TTTPlayerAction.
+     * Will reject invalid actions if submitted.
+     * @param playerAction A PlayerAction object containing information about the player turn being submitted
+     */
     @Override
     public void handleAction(PlayerAction playerAction) {
         if (validator.validateMove(gameState, playerAction)) {

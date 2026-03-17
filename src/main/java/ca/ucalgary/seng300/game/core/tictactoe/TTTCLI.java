@@ -7,17 +7,17 @@ public class TTTCLI {
 
     public static void main(String[] args) {
         // Create the game
-        TTTGame game =new TTTGame();
+        TTTGame game = new TTTGame();
         TTTGameState state = (TTTGameState) game.getGameState();
-        state.getBoard(); // initialize the board 
+        state.getBoard(); // initialize the board
 
         Scanner scanner = new Scanner(System.in);
 
         while (!game.isGameOver()) {
              // get move from user
             System.out.print("Enter row col: ");
-            int row =scanner.nextInt();
-            int col =scanner.nextInt();
+            int row = scanner.nextInt();
+            int col = scanner.nextInt();
 
             // build and send action to game
             TTTPlayerAction action = new TTTPlayerAction(

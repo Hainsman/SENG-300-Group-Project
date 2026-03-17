@@ -43,6 +43,9 @@ public class TTTRuleValidator extends RuleValidator {
                 System.out.println("PlayerAction attempted to overwrite tile");
                 return false;
             }
+        } else {
+            System.out.println("Resigning not yet supported");
+            return false;
         }
 
         return true;

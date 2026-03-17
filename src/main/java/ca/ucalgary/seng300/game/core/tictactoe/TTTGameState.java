@@ -32,8 +32,8 @@ public class TTTGameState implements GameState {
         }
 
         //Check for win/game end
-        int row_check = row;
-        int col_check = col;
+        int row_check;
+        int col_check;
         //Check for possible win lines from placed token
         for (int r = -1; r < 2; r++) {
             row_check = row + r;
@@ -63,6 +63,7 @@ public class TTTGameState implements GameState {
                 for (Player p : r) {
                     if (p == Player.EMPTY) {
                         isBoardFull = false;
+                        break;
                     }
                 }
             }
