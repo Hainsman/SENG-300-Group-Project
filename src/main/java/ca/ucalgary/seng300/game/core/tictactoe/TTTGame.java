@@ -1,9 +1,6 @@
 package ca.ucalgary.seng300.game.core.tictactoe;
 
-import ca.ucalgary.seng300.game.core.Game;
-import ca.ucalgary.seng300.game.core.GameState;
-import ca.ucalgary.seng300.game.core.PlayerAction;
-import ca.ucalgary.seng300.game.core.RuleValidator;
+import ca.ucalgary.seng300.game.core.*;
 
 public class TTTGame implements Game {
 
@@ -34,6 +31,6 @@ public class TTTGame implements Game {
 
     @Override
     public boolean isGameOver() {
-        return false;
+        return gameState.getState() != State.IN_PROGRESS;
     }
 }
