@@ -19,10 +19,10 @@ public class PlatformCore {
     List<Integer> connected;
 
     // list of connections for users currently logged in
-    List<pClientHandler> users;
+    List<platformChannel> users;
 
     public void cMsg (int i, String s){
-        for(pClientHandler h : users){
+        for(platformChannel h : users){
             if(h.ID == i){
                 h.cSend(s);
             }
@@ -49,7 +49,7 @@ public class PlatformCore {
         int CCount = 0;
         // how many clients are active
         // list of threads
-        users = new ArrayList<pClientHandler>();
+        users = new ArrayList<platformChannel>();
 
         // Create a server socket listening on port 2020
         ServerSocket serverSocket = new ServerSocket();
@@ -70,7 +70,7 @@ public class PlatformCore {
                 wait = false;
                 if(cActive < ClientMax) {
                     // Create a new thread to handle the connected client
-                    users.add(CCount, new pClientHandler(socket, this));
+                    users.add(CCount, new platformChannel(socket, this));
                     users.get(CCount).start();
                     cActive ++;
                     CCount++;

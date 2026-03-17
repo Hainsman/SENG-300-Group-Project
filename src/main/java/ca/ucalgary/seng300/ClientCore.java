@@ -19,7 +19,7 @@ TCP is full duplex and is safe for multiple threads to be read/writing to it at 
 best practice is to try and limit it to one read and write thread at a time.
 ClientCore can send a message, Sock can receive a message.
 PlatformCore has 2 types of listener thread and sends messages
-pClientHandler listens to one specific client.
+platformChannel listens to one specific client.
 
  */
 public class ClientCore {
@@ -74,7 +74,7 @@ public class ClientCore {
         // set a 10 second interval to check if the client is being closed
         socket.setSoTimeout(10000);
         // Connection established, so hand everything off to the receiver Thread
-        clientSock receiver = new clientSock(this, socket, in_socket);
+        clientChannel receiver = new clientChannel(this, socket, in_socket);
         receiver.start();
 
         // Main loop

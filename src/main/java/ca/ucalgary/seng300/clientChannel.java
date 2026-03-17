@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class clientSock extends Thread{
+public class clientChannel extends Thread{
     Boolean devmode = false;
     private Socket socket;
     // main server variable
@@ -17,7 +17,7 @@ public class clientSock extends Thread{
     // username/user ID association table.
     public Map<Integer, String> chatID;
 
-    public clientSock(ClientCore cc, Socket sock, BufferedReader red) {
+    public clientChannel(ClientCore cc, Socket sock, BufferedReader red) {
         //set socket and main server to the arguments
         this.socket = sock;
         this.cliC = cc;
