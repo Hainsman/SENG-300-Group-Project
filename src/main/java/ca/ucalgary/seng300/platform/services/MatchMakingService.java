@@ -70,7 +70,16 @@ public class MatchMakingService {
     }
 
 
-    void removePlayer( String userId){}
+    void removePlayer(String userId) {
+        for (String gameType : queues.keySet()) {
+            List<userInQueue> gameList = queues.get(gameType);
+            for (int i = 0; i < gameList.size(); i++) {
+                if (gameList.get(i).userId.equals(userId)) {
+                    gameList.remove(i);
+                }
+            }
+        }
+    }
     List<String> matchPlayers (String gameType){
 
         List <String> matchedPlayers = List.of("Player 1", "Player 2");
