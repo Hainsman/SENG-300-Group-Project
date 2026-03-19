@@ -54,7 +54,7 @@ public class MatchMakingService {
         // retrieving userScore
         double userScore = 0.0;
         int gameId = validateGameId(gameType);
-        List<PlayerStats> statsForGame = PlayerStatsStore.findPlayersByGameID(gameId);
+        List<PlayerStats> statsForGame = PlayerStatsStore.getInstance().findPlayersByGameID(gameId);
 
         for (PlayerStats stats : statsForGame) {
             if (String.valueOf(stats.getUserID()).equals(userId)) {

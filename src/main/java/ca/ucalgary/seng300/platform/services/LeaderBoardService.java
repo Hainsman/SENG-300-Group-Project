@@ -3,21 +3,32 @@ package ca.ucalgary.seng300.platform.services;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
-
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LeaderBoardService {
-    static Map<Integer,List<PlayerStats>> cachedLeaderBoard = new HashMap<Integer,List<PlayerStats>>();
-    static Map<Integer, Long> cachedLeaderBoardTS = new HashMap<Integer, Long>();
+    private final Map<Integer,List<PlayerStats>> cachedLeaderBoard;
+    private final Map<Integer, Long> cachedLeaderBoardTS;
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private static final long TEN_MINUTES = 10*60*1000;
+    private static final long FORCE_RECALC_THRESHOLD = 15*1000; // if force recalc is called it will recalc if the timestamp is older than 15s
 
-    public List<PlayerStats> getLeaderBoard(boolean forceRecalc, int gameId, int count, PlayerStatsStore playerStatsStore) {
-        var ts = cachedLeaderBoardTS.get(gameId);
+    public LeaderBoardService(){
+        cachedLeaderBoard = new HashMap<>();
+        cachedLeaderBoardTS = new HashMap<>();
+    }
 
-        if(!cachedLeaderBoardTS.isEmpty() && (!forceRecalc || ts != null || System.currentTimeMillis() - ts < 10*60*1000))
-            return getSublistSafe(cachedLeaderBoard.get(gameId), count);
+    private static class LeaderBoardHolder{
+        private static final LeaderBoardService INSTANCE = new LeaderBoardService();
+    }
 
+    public static LeaderBoardService getInstance(){
+        return LeaderBoardHolder.INSTANCE;
+    }
+
+    private void buildLeaderBoard(int gameId){
+        PlayerStatsStore playerStatsStore = PlayerStatsStore.getInstance();
         List<PlayerStats> players = new ArrayList<>(playerStatsStore.findPlayersByGameID(gameId));
-
         players.sort(Comparator
                 .comparing((PlayerStats p) -> -Helper.getRank(p.getGameCounter(), p.getScore()).getRankValue()) //sort players by rank
                 .thenComparing(Comparator.comparingDouble(PlayerStats::getScore).reversed()) //then sort them by score in descending order
@@ -25,12 +36,42 @@ public class LeaderBoardService {
         );
         cachedLeaderBoard.put(gameId, players);
         cachedLeaderBoardTS.put(gameId, System.currentTimeMillis());
-        return getSublistSafe(cachedLeaderBoard.get(gameId), count);
+    }
+
+    private Long getTimeStampSafe(int gameId){
+        lock.readLock().lock();
+        try{
+            return cachedLeaderBoardTS.get(gameId);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public List<PlayerStats> getLeaderBoard(boolean forceRecalc, int gameId, int count) {
+        Long ts = getTimeStampSafe(gameId);
+        if(forceRecalc || ts == null || System.currentTimeMillis() - ts >= TEN_MINUTES){
+            //only one thread can write
+            lock.writeLock().lock();
+            try {
+                Long currentTs = cachedLeaderBoardTS.get(gameId);
+                if (currentTs == null || ((forceRecalc && System.currentTimeMillis() - currentTs >= FORCE_RECALC_THRESHOLD)
+                        || (System.currentTimeMillis() - currentTs >= TEN_MINUTES))) //is there still no cache? if so rebuilt it OR if the timestamp is too old
+                    buildLeaderBoard(gameId);
+            } finally{
+                lock.writeLock().unlock();
+            }
+        }
+        lock.readLock().lock();
+        try{
+            return getSublistSafe(cachedLeaderBoard.get(gameId), count);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     private static List<PlayerStats> getSublistSafe(List<PlayerStats> orig, int count) {
-        if (count < orig.size())
+        if (count > orig.size())
             count = orig.size();
-        return orig.subList(0, count);
+        return new ArrayList<>(orig.subList(0, count));
     }
 }
