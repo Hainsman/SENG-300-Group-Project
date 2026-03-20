@@ -6,7 +6,7 @@ public class Participant extends Record{
     private int score;
 
     public Participant(int id, int gameHistoryID, int userID, int score){
-        super(id, Type.PARTICIPANT.getTypeToString());
+        super(id, Participant.class.getSimpleName());
         this.gameHistoryID = gameHistoryID;
         this.userID = userID;
         this.score = score;

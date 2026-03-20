@@ -8,7 +8,7 @@ public abstract class Record {
     private long timeCreated = System.currentTimeMillis();
     private String type;
 
-    public Record(int id, String type){
+    protected Record(int id, String type){
         this.id = id;
         this.type = type;
     }

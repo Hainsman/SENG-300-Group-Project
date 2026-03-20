@@ -3,7 +3,7 @@ public class GameHistory extends Record{
     private int gameID;
 
     public GameHistory(int id, int gameID){
-        super(id, Type.GAME_HISTORY.getTypeToString());
+        super(id, GameHistory.class.getSimpleName());
         this.gameID = gameID;
     }
 

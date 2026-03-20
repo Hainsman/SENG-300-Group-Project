@@ -7,7 +7,7 @@ public class User extends Record {
     private boolean isActive;
 
     public User(int id, String login, String email, String passwordHash){
-        super(id, Type.USER.getTypeToString());
+        super(id, User.class.getSimpleName());
         this.login = login;
         this.email = email;
         this.passwordHash = passwordHash;

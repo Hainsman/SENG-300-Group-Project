@@ -7,7 +7,7 @@ public class PlayerStats extends Record{
     private double score = 0;
 
     public PlayerStats(int id, int gameID, int userID) {
-        super(id, Type.PLAYER_STATS.getTypeToString());
+        super(id, PlayerStats.class.getSimpleName());
         this.gameID = gameID;
         this.userID = userID;
     }
