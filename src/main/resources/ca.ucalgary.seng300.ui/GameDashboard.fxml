@@ -8,7 +8,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ca.ucalgary.seng300.ui.GameDashboard"
+            fx:controller="ca.ucalgary.seng300.ui.GameDashboardController"
             prefHeight="400.0" prefWidth="600.0">
 
 </AnchorPane>
