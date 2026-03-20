@@ -1,4 +1,8 @@
 package ca.ucalgary.seng300.game.core.connect4;
 
-public enum Connect4ActionType {
+import ca.ucalgary.seng300.game.core.ActionType;
+
+public enum Connect4ActionType implements ActionType {
+    MOVE,
+    RESIGN
 }
