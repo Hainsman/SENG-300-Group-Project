@@ -80,7 +80,7 @@ public class MatchMakingService {
      * @param gameType
      * @return list of matched player IDs, or null if no match found
      */
-    public List<String> matchPlayers(Integer gameType) {
+    public List<PlayerStats> matchPlayers(Integer gameType) {
 
         // get the queue for the given game type
         List<PlayerStats> gameList = queues.get(gameType);
@@ -100,7 +100,7 @@ public class MatchMakingService {
             for (int j = i + 1; j < gameList.size(); j++) {
 
                 // calculate the score difference between the two players
-                double diff = Math.abs(gameList.get(i).score - gameList.get(j).score);
+                double diff = Math.abs(gameList.get(i).getScore() - gameList.get(j).getScore());
 
                 // update the best pair if this difference is smaller than the current best
                 if (diff < bestDiff) {
@@ -116,11 +116,10 @@ public class MatchMakingService {
             return null;
         }
         // build the matched players list from the best pair
-        List<String> matchedPlayers = new ArrayList<>();
-        String player1 = gameList.get(bestI).userId;
-        String player2 = gameList.get(bestJ).userId;
-        matchedPlayers.add(player1);
-        matchedPlayers.add(player2);
+        List<PlayerStats> matchedPlayers = new ArrayList<>();
+        PlayerStats player1 = queues.get(gameType).get(bestI);
+        PlayerStats player2 = queues.get(gameType).get(bestJ);
+
 
         // remove higher index first to avoid index shifting when removing from list
         removePlayer(player1);
@@ -128,9 +127,5 @@ public class MatchMakingService {
 
         return matchedPlayers;
     }
-    public int getQueueSize(String gameType) {
-        List<userInQueue> gameList = queues.get(gameType);
-        if (gameList == null) return 0;
-        return gameList.size();
-    }
+
 }
