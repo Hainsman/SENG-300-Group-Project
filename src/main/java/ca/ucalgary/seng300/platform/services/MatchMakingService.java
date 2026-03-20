@@ -41,7 +41,7 @@ public class MatchMakingService {
 
 
     //Key is gameType, value is player id and score
-    static Map<String, List<userInQueue>> queues = new HashMap<>();
+    public static Map<String, List<userInQueue>> queues = new HashMap<>();
 
     /**
      * Add a player to machmaking queue for the given gameType
@@ -50,7 +50,7 @@ public class MatchMakingService {
      * @param gameType eg. "TicTacToe", "ConnectFour"
      **/
 
-    void addPlayerToQueue(String userId, String gameType) {
+    public void addPlayerToQueue(String userId, String gameType) {
         // retrieving userScore
         double userScore = 0.0;
         int gameId = validateGameId(gameType);
@@ -75,7 +75,7 @@ public class MatchMakingService {
     }
 
 
-    static void removePlayer(String userId) {
+    public static void removePlayer(String userId) {
         // searching for user in hash map
         for (String gameType : queues.keySet()) {
             List<userInQueue> gameList = queues.get(gameType);
@@ -88,7 +88,7 @@ public class MatchMakingService {
         }
     }
 
-    List<String> matchPlayers(String gameType) {
+    public List<String> matchPlayers(String gameType) {
 
         // get the queue for the given game type
         List<userInQueue> gameList = queues.get(gameType);
@@ -135,5 +135,10 @@ public class MatchMakingService {
         removePlayer(player2);
 
         return matchedPlayers;
+    }
+    public int getQueueSize(String gameType) {
+        List<userInQueue> gameList = queues.get(gameType);
+        if (gameList == null) return 0;
+        return gameList.size();
     }
 }
