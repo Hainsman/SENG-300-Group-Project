@@ -5,7 +5,7 @@ enum Type {
     GAME_HISTORY("GameHistory"),
     PARTICIPANT("Participant"),
     PLAYER_STATS("PlayerStats"),
-    SESSION_History("SessionHistory"),
+    SESSION_HISTORY("SessionHistory"),
     MESSAGE_HISTORY("MessageHistory"); //For adding type to MessageHistory
 
     private final String type;

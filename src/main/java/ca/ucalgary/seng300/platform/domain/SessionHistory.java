@@ -6,7 +6,7 @@ public class SessionHistory extends Record{
     private UUID globallyUniqueSessionIdentifier;
 
     public SessionHistory(int id, String type){
-        super(id, Type.SESSION_History.getTypeToString());
+        super(id, Type.SESSION_HISTORY.getTypeToString());
         this.globallyUniqueSessionIdentifier = UUID.randomUUID();
     }
     public UUID getGloballyUniqueSessionIdentifier(){return this.globallyUniqueSessionIdentifier;}
