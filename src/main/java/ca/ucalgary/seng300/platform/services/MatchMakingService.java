@@ -120,12 +120,21 @@ public class MatchMakingService {
         PlayerStats player1 = queues.get(gameType).get(bestI);
         PlayerStats player2 = queues.get(gameType).get(bestJ);
 
+        // adding players to list
+        matchedPlayers.add(player1);
+        matchedPlayers.add(player2);
+
 
         // remove higher index first to avoid index shifting when removing from list
         removePlayer(player1);
         removePlayer(player2);
 
         return matchedPlayers;
+    }
+    public int getQueueSize(Integer gameType) {
+        List<PlayerStats> gameList = queues.get(gameType);
+        if (gameList == null) return 0;
+        return gameList.size();
     }
 
 }

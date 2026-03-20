@@ -126,77 +126,110 @@ public class MainAppTest {
             System.out.println(Helper.getRank(sortedPlayers.get(i).getGameCounter(), sortedPlayers.get(i).getScore()).getDisplayName());
         }
 
+// ============================================================
 // MatchMakingService Tests
-        PlayerStatsStore mmStatsStore = PlayerStatsStore.getInstance();
+// ============================================================
         MatchMakingService matchMaking = new MatchMakingService();
 
-// create players with known scores for TicTacToe
-// player 101: score = 50.0 (10 updates of 5.0)
-// player 102: score = 53.0 (10 updates of 5.3)  <- closest to 101, diff = 3.0
-// player 103: score = 90.0 (10 updates of 9.0)  <- too far from 101 and 102
+// setting up players with known scores for TicTacToe
+// mmPlayer1: score = 50.0  (10 x 5.0)
+// mmPlayer2: score = 53.0  (10 x 5.3)  <- diff from player1 = 3.0
+// mmPlayer3: score = 90.0  (10 x 9.0)  <- too far from everyone
+// mmPlayer4: score = 35.0  (10 x 3.5)
+// mmPlayer5: score = 35.1  (10 x 3.51) <- closest pair overall, diff = 0.1
+// mmPlayer6: score = 34.0  (10 x 3.4)  <- diff from player5 = 1.1, diff from player4 = 1.0
         PlayerStats mmPlayer1 = new PlayerStats(101, Game.TICK_TACK_TOE, 101);
         PlayerStats mmPlayer2 = new PlayerStats(102, Game.TICK_TACK_TOE, 102);
         PlayerStats mmPlayer3 = new PlayerStats(103, Game.TICK_TACK_TOE, 103);
-        PlayerStats mmPlayer4 = new PlayerStats(104, Game.CONNECT_FOUR, 104);
-        PlayerStats mmPlayer5 = new PlayerStats(105, Game.CONNECT_FOUR, 105);
+        PlayerStats mmPlayer4 = new PlayerStats(104, Game.TICK_TACK_TOE, 104);
+        PlayerStats mmPlayer5 = new PlayerStats(105, Game.TICK_TACK_TOE, 105);
+        PlayerStats mmPlayer6 = new PlayerStats(106, Game.TICK_TACK_TOE, 106);
+        PlayerStats mmPlayer7 = new PlayerStats(107, Game.CONNECT_FOUR, 107);
+        PlayerStats mmPlayer8 = new PlayerStats(108, Game.CONNECT_FOUR, 108);
 
         for (int i = 0; i < 10; i++) mmPlayer1.updateStats(5.0);   // score = 50.0
         for (int i = 0; i < 10; i++) mmPlayer2.updateStats(5.3);   // score = 53.0
         for (int i = 0; i < 10; i++) mmPlayer3.updateStats(9.0);   // score = 90.0
-        for (int i = 0; i < 10; i++) mmPlayer4.updateStats(5.0);   // score = 50.0
-        for (int i = 0; i < 10; i++) mmPlayer5.updateStats(5.5);   // score = 55.0
-
-        mmStatsStore.create(mmPlayer1);
-        mmStatsStore.create(mmPlayer2);
-        mmStatsStore.create(mmPlayer3);
-        mmStatsStore.create(mmPlayer4);
-        mmStatsStore.create(mmPlayer5);
+        for (int i = 0; i < 10; i++) mmPlayer4.updateStats(3.5);   // score = 35.0
+        for (int i = 0; i < 10; i++) mmPlayer5.updateStats(3.51);  // score = 35.1
+        for (int i = 0; i < 10; i++) mmPlayer6.updateStats(3.4);   // score = 34.0
+        for (int i = 0; i < 10; i++) mmPlayer7.updateStats(5.0);   // score = 50.0
+        for (int i = 0; i < 10; i++) mmPlayer8.updateStats(5.5);   // score = 55.0
 
 // --- Test 1: addPlayerToQueue adds players correctly ---
         MatchMakingService.queues.clear();
-        matchMaking.addPlayerToQueue("101", "TicTacToe");
-        matchMaking.addPlayerToQueue("102", "TicTacToe");
-        matchMaking.addPlayerToQueue("103", "TicTacToe");
-        System.out.println("Test 1 - Queue size should be 3: " + matchMaking.getQueueSize("TicTacToe"));
+        matchMaking.addPlayerToQueue(mmPlayer1);
+        matchMaking.addPlayerToQueue(mmPlayer2);
+        matchMaking.addPlayerToQueue(mmPlayer3);
+        System.out.println("Test 1 - Queue size should be 3: " + matchMaking.getQueueSize(Game.TICK_TACK_TOE));
 
-// --- Test 2: removePlayer removes correctly ---
+// --- Test 2: removePlayer removes the correct player ---
         MatchMakingService.queues.clear();
-        matchMaking.addPlayerToQueue("101", "TicTacToe");
-        matchMaking.addPlayerToQueue("102", "TicTacToe");
-        MatchMakingService.removePlayer("102");
-        System.out.println("Test 2 - Queue size after remove should be 1: " + matchMaking.getQueueSize("TicTacToe"));
+        matchMaking.addPlayerToQueue(mmPlayer1);
+        matchMaking.addPlayerToQueue(mmPlayer2);
+        MatchMakingService.removePlayer(mmPlayer2);
+        System.out.println("Test 2 - Queue size after remove should be 1: " + matchMaking.getQueueSize(Game.TICK_TACK_TOE));
 
-// --- Test 3: matchPlayers returns the closest pair ---
+// --- Test 3: matchPlayers returns the closest pair (not just first pair found) ---
+// queue has 35.0, 35.1, 34.0 — closest pair is 35.0 and 35.1 (diff=0.1)
+// NOT 35.0 and 34.0 (diff=1.0) or 35.1 and 34.0 (diff=1.1)
         MatchMakingService.queues.clear();
-        matchMaking.addPlayerToQueue("101", "TicTacToe"); // score is 50
-        matchMaking.addPlayerToQueue("102", "TicTacToe"); // score is 53
-        matchMaking.addPlayerToQueue("103", "TicTacToe"); // score is 90
-        List<String> matched = matchMaking.matchPlayers("TicTacToe");
-        System.out.println("Test 3 - Matched players should be [101, 102] (diff=3, closest): " + matched);
+        matchMaking.addPlayerToQueue(mmPlayer4); // 35.0
+        matchMaking.addPlayerToQueue(mmPlayer5); // 35.1
+        matchMaking.addPlayerToQueue(mmPlayer6); // 34.0
+        List<PlayerStats> closestMatch = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        System.out.println("Test 3 - Closest pair should be players 104 and 105 (diff=0.1): " + closestMatch.get(0).getUserID() + " and " + closestMatch.get(1).getUserID());
 
-// --- Test 4: matched players are removed from queue after match ---
-        System.out.println("Test 4 - Queue size after match should be 1 (player 103 remains): " + matchMaking.getQueueSize("TicTacToe"));
+// --- Test 4: after match, only the unmatched player remains in queue ---
+        System.out.println("Test 4 - Queue size should be 1 (player 106 remains): " + matchMaking.getQueueSize(Game.TICK_TACK_TOE));
 
-// --- Test 5: no match when all score differences exceed 10 ---
+// --- Test 5: matched players are removed from the queue ---
         MatchMakingService.queues.clear();
-        matchMaking.addPlayerToQueue("101", "TicTacToe"); // score 50
-        matchMaking.addPlayerToQueue("103", "TicTacToe"); // score 90, diff = 40
-        List<String> noMatch = matchMaking.matchPlayers("TicTacToe");
-        System.out.println("Test 5 - No match when scores too far apart, should be null: " + noMatch);
+        matchMaking.addPlayerToQueue(mmPlayer1); // 50.0
+        matchMaking.addPlayerToQueue(mmPlayer2); // 53.0
+        List<PlayerStats> matched = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        System.out.println("Test 5 - Match should contain players 101 and 102: " + matched.get(0).getUserID() + " and " + matched.get(1).getUserID());
+        System.out.println("Test 5 - Queue should be empty after match: " + matchMaking.getQueueSize(Game.TICK_TACK_TOE));
 
-// --- Test 6: matchPlayers on empty queue returns null ---
+// --- Test 6: no match when score difference exceeds 10 ---
         MatchMakingService.queues.clear();
-        List<String> emptyMatch = matchMaking.matchPlayers("TicTacToe");
-        System.out.println("Test 6 - Match on empty queue should be null: " + emptyMatch);
+        matchMaking.addPlayerToQueue(mmPlayer1); // 50.0
+        matchMaking.addPlayerToQueue(mmPlayer3); // 90.0, diff = 40.0
+        List<PlayerStats> noMatch = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        System.out.println("Test 6 - No match when scores too far apart, should be null: " + noMatch);
 
-// --- Test 7: queues for different game types don't interfere ---
+// --- Test 7: matchPlayers on empty queue returns null ---
         MatchMakingService.queues.clear();
-        matchMaking.addPlayerToQueue("101", "TicTacToe");
-        matchMaking.addPlayerToQueue("104", "ConnectFour");
-        matchMaking.addPlayerToQueue("105", "ConnectFour");
-        System.out.println("Test 7 - TicTacToe queue size should be 1: " + matchMaking.getQueueSize("TicTacToe"));
-        System.out.println("Test 7 - ConnectFour queue size should be 2: " + matchMaking.getQueueSize("ConnectFour"));
+        List<PlayerStats> emptyMatch = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        System.out.println("Test 7 - Match on empty queue should be null: " + emptyMatch);
 
+// --- Test 8: single player in queue returns null ---
+        MatchMakingService.queues.clear();
+        matchMaking.addPlayerToQueue(mmPlayer1);
+        List<PlayerStats> singlePlayer = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        System.out.println("Test 8 - Single player in queue should return null: " + singlePlayer);
+
+// --- Test 9: different game type queues don't interfere ---
+        MatchMakingService.queues.clear();
+        matchMaking.addPlayerToQueue(mmPlayer1); // TicTacToe
+        matchMaking.addPlayerToQueue(mmPlayer7); // ConnectFour
+        matchMaking.addPlayerToQueue(mmPlayer8); // ConnectFour
+        System.out.println("Test 9 - TicTacToe queue size should be 1: " + matchMaking.getQueueSize(Game.TICK_TACK_TOE));
+        System.out.println("Test 9 - ConnectFour queue size should be 2: " + matchMaking.getQueueSize(Game.CONNECT_FOUR));
+
+// --- Test 10: removePlayer on unknown player does nothing ---
+        MatchMakingService.queues.clear();
+        matchMaking.addPlayerToQueue(mmPlayer1);
+        PlayerStats unknownPlayer = new PlayerStats(999, Game.TICK_TACK_TOE, 999);
+        MatchMakingService.removePlayer(unknownPlayer);
+        System.out.println("Test 10 - Queue size should still be 1 after removing unknown player: " + matchMaking.getQueueSize(Game.TICK_TACK_TOE));
+
+// --- Test 11: matching in ConnectFour queue works independently ---
+        MatchMakingService.queues.clear();
+        matchMaking.addPlayerToQueue(mmPlayer7); // ConnectFour score 50.0
+        matchMaking.addPlayerToQueue(mmPlayer8); // ConnectFour score 55.0, diff = 5.0
+        List<PlayerStats> connectFourMatch = matchMaking.matchPlayers(Game.CONNECT_FOUR);
+        System.out.println("Test 11 - ConnectFour match should contain players 107 and 108: " + connectFourMatch.get(0).getUserID() + " and " + connectFourMatch.get(1).getUserID());
 
     }
 }
