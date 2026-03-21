@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.game.core.tictactoe.TicTacToeRandomMoveGenerator;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
@@ -19,6 +20,11 @@ public class TicTacToeController {
     private TicTacToeSession session = null;
     /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
     private ClientCore clientCore = null;
+    /**
+     * When true and using {@link #session}, PLAYER_2 (O) is played automatically with a random legal move
+     * after the human (PLAYER_1 / X) moves.
+     */
+    private boolean randomOpponentEnabled = false;
 
     @FXML
     private StackPane boardPane;
@@ -118,12 +124,16 @@ public class TicTacToeController {
             return;
         }
         if (session != null) {
+            if (randomOpponentEnabled && session.getTurn() == Player.PLAYER_2) {
+                return; // bot's turn — human plays only as X (PLAYER_1)
+            }
             if (!session.submitMove(row, col)) return;
             // getTurn() is now the next player; the one who moved is the other
             String mover = session.getTurn() == Player.PLAYER_1 ? "O" : "X";
             Color moverColor = session.getTurn() == Player.PLAYER_1 ? oColor : xColor;
             GameGUI.addHistory("TicTacToe", mover, "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
             refreshFromSession();
+            playRandomOpponentMoveIfNeeded();
             return;
         }
 
@@ -180,6 +190,7 @@ public class TicTacToeController {
             session.startNewGame();
             GameGUI.clearHistory();
             refreshFromSession();
+            playRandomOpponentMoveIfNeeded();
             return;
         }
         board = new String[3][3];
@@ -219,7 +230,8 @@ public class TicTacToeController {
                     btn.setText("");
                     btn.setStyle("");
                 }
-                btn.setDisable(session.isGameOver());
+                boolean botTurn = randomOpponentEnabled && session.getTurn() == Player.PLAYER_2;
+                btn.setDisable(session.isGameOver() || botTurn);
             }
         }
         State st = session.getState();
@@ -229,9 +241,48 @@ public class TicTacToeController {
         else turnLabel.setText(session.getTurn() == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
     }
 
+    /**
+     * When enabled with an active session, O (PLAYER_2) is chosen randomly after each X move.
+     */
+    public void setRandomOpponentEnabled(boolean enabled) {
+        this.randomOpponentEnabled = enabled;
+        if (session != null) {
+            refreshFromSession();
+            playRandomOpponentMoveIfNeeded();
+        }
+    }
+
+    public boolean isRandomOpponentEnabled() {
+        return randomOpponentEnabled;
+    }
+
+    /** After human (P1) moves, if it is P2's turn and game continues, play one random legal move for O. */
+    private void playRandomOpponentMoveIfNeeded() {
+        if (session == null || !randomOpponentEnabled || session.isGameOver()) {
+            return;
+        }
+        if (session.getTurn() != Player.PLAYER_2) {
+            return;
+        }
+        int[] cell = TicTacToeRandomMoveGenerator.pickRandomEmptySlot(session.getBoard());
+        if (cell == null) {
+            return;
+        }
+        int r = cell[0];
+        int c = cell[1];
+        if (!session.submitMove(r, c)) {
+            return;
+        }
+        GameGUI.addHistory("TicTacToe", "O", "(" + (r + 1) + ", " + (c + 1) + ")", oColor);
+        refreshFromSession();
+    }
+
     public void setSession(TicTacToeSession s) {
         this.session = s;
-        if (s != null) refreshFromSession();
+        if (s != null) {
+            refreshFromSession();
+            playRandomOpponentMoveIfNeeded();
+        }
     }
 
     /** Use when in online mode: refresh grid and label from server update. */
