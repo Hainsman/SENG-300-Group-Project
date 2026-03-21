@@ -28,16 +28,16 @@ public class LoginController {
             return;
         }
 
-        // TODO: pass to backend auth service
+        // TODO: pass to backend auth service when user attempts to login
         // boolean success = authService.login(username, password, rememberMeBox.isSelected());
 
         // Placeholder: navigate to game screen on success
         CentralController.moveTo("GameGUI.fxml");
     }
 
+    // Move to NewUser screen when button is triggered.
     @FXML
     private void handleNewUser(ActionEvent event) {
-        // TODO: navigate to New User registration screen when built
         CentralController.moveTo("NewUser.fxml");
     }
 
