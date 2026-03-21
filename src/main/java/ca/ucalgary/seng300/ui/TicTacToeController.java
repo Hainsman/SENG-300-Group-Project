@@ -8,7 +8,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
-public class TicTacToeController {
+public class TicTacToeController extends GameGUI {
 
     @FXML
     private StackPane boardPane;
@@ -55,6 +55,44 @@ public class TicTacToeController {
 
     private static final Color xColor = Color.web("#3B82F6");
     private static final Color oColor = Color.web("#A855F7");
+
+    @FXML
+    public void initialize() {
+        status = GameStatus.IN_PROGRESS;
+    }
+
+    @Override
+    public void render() {
+        board = new String[3][3];
+        moves = 0;
+        xTurn = true;
+        for (Node node: ticTacToeGrid.getChildren()) {
+            if (node instanceof Button btn) {
+                btn.setText("");
+                btn.setStyle("");
+                btn.setDisable(false);
+            }
+        }
+        GameGUI.clearHistory();
+    }
+
+    @Override
+    public void update() {
+        if (turnLabel == null) {
+            return;
+        }
+        switch (status) {
+            case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
+            case DRAW -> turnLabel.setText("Draw!");
+            default -> {}
+        }
+    }
+
+    @Override
+    protected void onGameCompletion() {
+        disableBoard();
+    }
 
     private String checkWinner() {
         // Check rows
@@ -150,20 +188,9 @@ public class TicTacToeController {
 
     @FXML
     void resetClick(ActionEvent event) {
-        board = new String[3][3];
-        moves = 0;
-        xTurn = true;
-        turnLabel.setText("X's Turn");
-        GameGUI.clearHistory();
-
-        for (Node node : ticTacToeGrid.getChildren()) {
-            if (node instanceof Button) {
-                Button btn = (Button) node;
-                btn.setText("");
-                btn.setStyle("");
-                btn.setDisable(false);
-            }
-        }
+        status = GameStatus.IN_PROGRESS;
+        render();
+        update();
     }
 
     public void setVisibility(Boolean status){
