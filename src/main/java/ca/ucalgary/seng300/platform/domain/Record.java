@@ -6,8 +6,13 @@ import java.util.Date;
 public abstract class Record {
     private int id;
     private long timeCreated = System.currentTimeMillis();
+    private String type;
 
-    public Record(int id){this.id = id;}
+    protected Record(int id, String type){
+        this.id = id;
+        this.type = type;
+    }
+
     public int getID(){return this.id;}
     public long getTimeCreated() {return timeCreated;}
     public void setID(int id){this.id = id;}

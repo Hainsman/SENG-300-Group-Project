@@ -1,21 +1,17 @@
 package ca.ucalgary.seng300.platform.domain;
 
-import java.util.List;
-
 public class User extends Record {
     private String login;
     private String email;
     private String passwordHash;
-    private String type;
     private boolean isActive;
 
     public User(int id, String login, String email, String passwordHash){
-        super(id);
+        super(id, User.class.getSimpleName());
         this.login = login;
         this.email = email;
         this.passwordHash = passwordHash;
         this.isActive = true;
-        this.type = "user";
     }
 
     //getters

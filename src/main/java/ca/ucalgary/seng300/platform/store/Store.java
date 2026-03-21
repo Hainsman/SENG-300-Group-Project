@@ -79,11 +79,11 @@ class Store<T extends Record> {
 
     private static Gson createGson(){
         RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class,"type")
-                .registerSubtype(User.class, "user")
-                .registerSubtype(GameHistory.class, "gameHistory")
-                .registerSubtype(Participant.class, "participant")
-                .registerSubtype(SessionHistory.class, "sessionHistory")
-                .registerSubtype(PlayerStats.class, "playerStats");
+                .registerSubtype(User.class, "User")
+                .registerSubtype(GameHistory.class, "GameHistory")
+                .registerSubtype(Participant.class, "Participant")
+                .registerSubtype(SessionHistory.class, "SessionHistory")
+                .registerSubtype(PlayerStats.class, "PlayerStats");
 
         return new GsonBuilder()
                 .registerTypeAdapterFactory(entityAdapterFactory)
