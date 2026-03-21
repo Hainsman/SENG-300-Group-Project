@@ -1,32 +1,35 @@
 package ca.ucalgary.seng300.platform.messages;
 
+import java.util.UUID;
+
 /**
  * DTO for client -> server: request to submit a move in a game session.
  * Serialized with Gson for TCP wire format.
  */
-public class SubmitMove {
-    private String sessionId;
+public class SubmitMove extends Message{
+//    private String sessionId;
     private String playerId;
     private int row;
     private int col;
     private String gameType;
 
-    public SubmitMove() {}
+//    public SubmitMove() {}
+//
+//    public SubmitMove(String sessionId, String playerId, int row, int col) {
+//        this(sessionId, playerId, row, col, "TICTACTOE");
+//    }
 
-    public SubmitMove(String sessionId, String playerId, int row, int col) {
-        this(sessionId, playerId, row, col, "TICTACTOE");
-    }
-
-    public SubmitMove(String sessionId, String playerId, int row, int col, String gameType) {
-        this.sessionId = sessionId;
+    public SubmitMove(UUID globallyUniqueSessionId, String playerId, int row, int col, String gameType) {
+        super(globallyUniqueSessionId, SubmitMove.class.getSimpleName());
+//        this.sessionId = sessionId;
         this.playerId = playerId;
         this.row = row;
         this.col = col;
         this.gameType = gameType != null ? gameType : "TICTACTOE";
     }
 
-    public String getSessionId() { return sessionId; }
-    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
+//    public String getSessionId() { return sessionId; }
+//    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
     public String getPlayerId() { return playerId; }
     public void setPlayerId(String playerId) { this.playerId = playerId; }
     public int getRow() { return row; }

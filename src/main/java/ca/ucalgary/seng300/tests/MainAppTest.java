@@ -5,6 +5,8 @@ import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.*;
 import ca.ucalgary.seng300.platform.domain.Record;
+import ca.ucalgary.seng300.platform.messages.CreateOrJoinSession;
+import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.utils.Helper;
@@ -126,4 +128,7 @@ public class MainAppTest {
 
 
     }
+
+    CreateOrJoinSession createOrJoinSession = new CreateOrJoinSession("CREATE_SESSION", UUID.randomUUID(), "Dan", "TTT");
+//    GameStateUpdate gameStateUpdate = new GameStateUpdate(UUID.randomUUID(), [3][3], Player);
 }

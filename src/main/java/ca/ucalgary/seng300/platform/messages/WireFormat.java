@@ -33,20 +33,20 @@ public final class WireFormat {
         return GSON.fromJson(json, SessionCreated.class);
     }
 
-    public static SessionCreated toSessionCreated(String sessionId, String yourPlayer) {
-        return new SessionCreated(sessionId, yourPlayer);
-    }
-
-    public static GameStateUpdate fromGameState(GameState gs, String sessionId) {
-        Player[][] b = gs.getBoard();
-        String[][] board = new String[3][3];
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
-                board[i][j] = b[i][j].name();
-        String currentTurn = gs.getPlayerTurn().name();
-        String status = gs.getState().name();
-        return new GameStateUpdate(sessionId, board, currentTurn, status);
-    }
+//    public static SessionCreated toSessionCreated(String sessionId, String yourPlayer) {
+//        return new SessionCreated(sessionId, yourPlayer);
+//    }
+//
+//    public static GameStateUpdate fromGameState(GameState gs, String sessionId) {
+//        Player[][] b = gs.getBoard();
+//        String[][] board = new String[3][3];
+//        for (int i = 0; i < 3; i++)
+//            for (int j = 0; j < 3; j++)
+//                board[i][j] = b[i][j].name();
+//        String currentTurn = gs.getPlayerTurn().name();
+//        String status = gs.getState().name();
+//        return new GameStateUpdate(sessionId, board, currentTurn, status);
+//    }
 
     private WireFormat() {}
 }
