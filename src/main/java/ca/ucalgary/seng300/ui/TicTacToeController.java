@@ -92,6 +92,7 @@ public class TicTacToeController extends GameGUI {
     @Override
     protected void onGameCompletion() {
         disableBoard();
+        resetButton.setVisible(true);
     }
 
     private String checkWinner() {
@@ -163,19 +164,23 @@ public class TicTacToeController extends GameGUI {
         String winner = checkWinner();
         if (winner != null) {
             turnLabel.setText(winner + " Wins!");
-            disableBoard();
+            onGameCompletion();
             return;
         }
 
         // Check draw
         if (moves == 9) {
             turnLabel.setText("Draw!");
+            onGameCompletion();
             return;
         }
 
-        // Switch turn
-        xTurn = !xTurn;
-        turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+        else {
+            // Switch turn
+            xTurn = !xTurn;
+            turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+        }
+        update();
     }
 
     private void disableBoard() {
@@ -188,6 +193,7 @@ public class TicTacToeController extends GameGUI {
 
     @FXML
     void resetClick(ActionEvent event) {
+        resetButton.setVisible(false);
         status = GameStatus.IN_PROGRESS;
         render();
         update();
