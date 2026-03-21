@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.StackPane?>
 
 
-<StackPane fx:id="viewContainer" prefHeight="730.0" prefWidth="1020" stylesheets="@stylesheets/romas_stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.CentralController">
+<StackPane prefHeight="730.0" prefWidth="1020" stylesheets="@stylesheets/romas_stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.CentralController">
    <children>
-      <BorderPane prefHeight="200.0" prefWidth="200.0">
+      <BorderPane fx:id="viewContainer" prefHeight="200.0" prefWidth="200.0">
          <top>
             <BorderPane id="title-bar" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#handleTitleDraggedAction" onMousePressed="#handleTitlePressedAction" prefHeight="50.0" BorderPane.alignment="CENTER">
                <right>

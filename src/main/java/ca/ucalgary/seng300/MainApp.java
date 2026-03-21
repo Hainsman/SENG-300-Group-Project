@@ -13,6 +13,10 @@ import javafx.stage.Stage;
 
 
 public class MainApp extends Application {
+
+    public static final String TITLE = "I Swear I am not Gay.";
+    public static final String VERSION = "1.0";
+
     @Override
     public void start(Stage stage) throws Exception {
         // load Root.fxml, an empty container to be used as base for moving through UI.
