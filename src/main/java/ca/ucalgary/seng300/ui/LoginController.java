@@ -2,11 +2,7 @@ package ca.ucalgary.seng300.ui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class LoginController {
 
@@ -43,7 +39,10 @@ public class LoginController {
 
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        // TODO: navigate to forgot password screen when built
-        CentralController.moveTo("ForgotPassword.fxml");
+        Alert forgotPasswordAlert = new Alert(Alert.AlertType.INFORMATION);
+        forgotPasswordAlert.setTitle("Forgot Password");
+        forgotPasswordAlert.setHeaderText("Need to reset your password?");
+        forgotPasswordAlert.setContentText("Please contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
+        forgotPasswordAlert.showAndWait();
     }
 }
