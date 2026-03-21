@@ -10,6 +10,9 @@ import java.io.IOException;
 public class CentralController {
     private static CentralController instance;
 
+    public static final double WINDOW_MINIMUM_WIDTH = 1080;
+    public static final double WINDOW_MINIMUM_HEIGHT = 730;
+
     @FXML private StackPane viewContainer;
 
     @FXML

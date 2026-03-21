@@ -1,16 +1,11 @@
 package ca.ucalgary.seng300;
 
-import ca.ucalgary.seng300.platform.domain.GameHistory;
-import ca.ucalgary.seng300.platform.constants.Constants;
-import ca.ucalgary.seng300.platform.domain.User;
-import ca.ucalgary.seng300.platform.store.Store;
-import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 
 public class MainApp extends Application {
@@ -20,7 +15,14 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/ca.ucalgary.seng300.ui/Root.fxml")
         );
-        Scene scene = new Scene(loader.load(), 1020, 680);
+
+        // This is for custom window appearance
+        stage.initStyle(StageStyle.TRANSPARENT);
+
+        Scene scene = new Scene(
+                loader.load(),
+                CentralController.WINDOW_MINIMUM_WIDTH,
+                CentralController.WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
         stage.setTitle("Bogo Solutions");
         stage.show();
