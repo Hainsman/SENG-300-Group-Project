@@ -20,11 +20,20 @@ public class TTTGameState implements GameState {
         int col = TTTaction.getActionPayload().col();
 
         if (board != null && state == State.IN_PROGRESS) {
-            board[row][col] = playerTurn;
-            if (playerTurn == Player.PLAYER_1) {
-                playerTurn = Player.PLAYER_2;
+            Player whoMoved = playerTurn;
+            board[row][col] = whoMoved;
+
+            // Check if the move wins the game (3 in a row)
+            if (checkThreeInARow(row, col, whoMoved)) {
+                state = (whoMoved == Player.PLAYER_1) ? State.PLAYER_1_WIN : State.PLAYER_2_WIN;
+            } else if (isBoardFull()) {
+                state = State.TIE;
             } else {
-                playerTurn = Player.PLAYER_1;
+                if (playerTurn == Player.PLAYER_1) {
+                    playerTurn = Player.PLAYER_2;
+                } else {
+                    playerTurn = Player.PLAYER_1;
+                }
             }
             successful = true;
         }
@@ -50,5 +59,37 @@ public class TTTGameState implements GameState {
 
     public State getState() {
         return this.state;
+    }
+
+    /** Returns true if the given player has three in a row including (row, col). */
+    private boolean checkThreeInARow(int row, int col, Player player) {
+        // Row
+        if (board[row][0] == player && board[row][1] == player && board[row][2] == player) {
+            return true;
+        }
+        // Column
+        if (board[0][col] == player && board[1][col] == player && board[2][col] == player) {
+            return true;
+        }
+        // Main diagonal
+        if (row == col && board[0][0] == player && board[1][1] == player && board[2][2] == player) {
+            return true;
+        }
+        // Anti-diagonal
+        if (row + col == 2 && board[0][2] == player && board[1][1] == player && board[2][0] == player) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isBoardFull() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == Player.EMPTY) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

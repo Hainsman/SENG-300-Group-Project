@@ -1,5 +1,10 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
+import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -9,6 +14,11 @@ import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
 public class TicTacToeController {
+
+    /** When set, moves and state use the game core session; when null, existing local board logic is used. */
+    private TicTacToeSession session = null;
+    /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
+    private ClientCore clientCore = null;
 
     @FXML
     private StackPane boardPane;
@@ -93,13 +103,29 @@ public class TicTacToeController {
     @FXML
     private void handleClick(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-
         Integer row = GridPane.getRowIndex(clickedButton);
         Integer col = GridPane.getColumnIndex(clickedButton);
-        if (row == null)
-            row = 0;
-        if (col == null)
-            col = 0;
+        if (row == null) row = 0;
+        if (col == null) col = 0;
+
+        if (clientCore != null) {
+            GameStateUpdate update = clientCore.submitMoveSync(row, col);
+            if (update != null) {
+                GameGUI.addHistory("TicTacToe", "PLAYER_1".equals(update.getCurrentTurn()) ? "O" : "X",
+                        "(" + (row + 1) + ", " + (col + 1) + ")", "PLAYER_1".equals(update.getCurrentTurn()) ? oColor : xColor);
+                refreshFromGameStateUpdate(update);
+            }
+            return;
+        }
+        if (session != null) {
+            if (!session.submitMove(row, col)) return;
+            // getTurn() is now the next player; the one who moved is the other
+            String mover = session.getTurn() == Player.PLAYER_1 ? "O" : "X";
+            Color moverColor = session.getTurn() == Player.PLAYER_1 ? oColor : xColor;
+            GameGUI.addHistory("TicTacToe", mover, "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
+            refreshFromSession();
+            return;
+        }
 
         if (board[row][col] != null)
             return; // already filled
@@ -150,6 +176,12 @@ public class TicTacToeController {
 
     @FXML
     void resetClick(ActionEvent event) {
+        if (session != null) {
+            session.startNewGame();
+            GameGUI.clearHistory();
+            refreshFromSession();
+            return;
+        }
         board = new String[3][3];
         moves = 0;
         xTurn = true;
@@ -164,6 +196,83 @@ public class TicTacToeController {
                 btn.setDisable(false);
             }
         }
+    }
+
+    /** Updates grid and turn label from session state (only when session is set). */
+    private void refreshFromSession() {
+        if (session == null) return;
+        ca.ucalgary.seng300.game.core.Player[][] b = session.getBoard();
+        for (Node node : ticTacToeGrid.getChildren()) {
+            if (node instanceof Button) {
+                Button btn = (Button) node;
+                Integer r = GridPane.getRowIndex(btn);
+                Integer c = GridPane.getColumnIndex(btn);
+                if (r == null) r = 0;
+                if (c == null) c = 0;
+                if (b[r][c] == Player.PLAYER_1) {
+                    btn.setText("X");
+                    btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
+                } else if (b[r][c] == Player.PLAYER_2) {
+                    btn.setText("O");
+                    btn.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
+                } else {
+                    btn.setText("");
+                    btn.setStyle("");
+                }
+                btn.setDisable(session.isGameOver());
+            }
+        }
+        State st = session.getState();
+        if (st == State.PLAYER_1_WIN) turnLabel.setText("X Wins!");
+        else if (st == State.PLAYER_2_WIN) turnLabel.setText("O Wins!");
+        else if (st == State.TIE) turnLabel.setText("Draw!");
+        else turnLabel.setText(session.getTurn() == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
+    }
+
+    public void setSession(TicTacToeSession s) {
+        this.session = s;
+        if (s != null) refreshFromSession();
+    }
+
+    /** Use when in online mode: refresh grid and label from server update. */
+    public void refreshFromGameStateUpdate(GameStateUpdate update) {
+        if (update == null || update.getBoard() == null) return;
+        String[][] b = update.getBoard();
+        for (Node node : ticTacToeGrid.getChildren()) {
+            if (node instanceof Button) {
+                Button btn = (Button) node;
+                Integer r = GridPane.getRowIndex(btn);
+                Integer c = GridPane.getColumnIndex(btn);
+                if (r == null) r = 0;
+                if (c == null) c = 0;
+                String cell = r < b.length && c < b[r].length ? b[r][c] : "EMPTY";
+                if ("PLAYER_1".equals(cell)) {
+                    btn.setText("X");
+                    btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
+                } else if ("PLAYER_2".equals(cell)) {
+                    btn.setText("O");
+                    btn.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
+                } else {
+                    btn.setText("");
+                    btn.setStyle("");
+                }
+                boolean gameOver = !"IN_PROGRESS".equals(update.getStatus());
+                btn.setDisable(gameOver);
+            }
+        }
+        String status = update.getStatus();
+        if ("PLAYER_1_WIN".equals(status)) turnLabel.setText("X Wins!");
+        else if ("PLAYER_2_WIN".equals(status)) turnLabel.setText("O Wins!");
+        else if ("TIE".equals(status)) turnLabel.setText("Draw!");
+        else turnLabel.setText("PLAYER_1".equals(update.getCurrentTurn()) ? "X's Turn" : "O's Turn");
+        if (update.getMessage() != null && !update.getMessage().isEmpty()) {
+            turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");
+        }
+    }
+
+    public void setClientCore(ClientCore c) {
+        this.clientCore = c;
+        if (c != null && c.getLastUpdate() != null) refreshFromGameStateUpdate(c.getLastUpdate());
     }
 
     public void setVisibility(Boolean status){
