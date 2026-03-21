@@ -21,6 +21,9 @@ public class Connect4Controller extends GameGUI {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private Button resetButton;
+
     private final Color P1 = Color.web("#dd3030ff");
     private final Color P2 = Color.web("#fad44aff");
 
@@ -64,6 +67,7 @@ public class Connect4Controller extends GameGUI {
     @Override
     protected void onGameCompletion() {
         disableBoard();
+        resetButton.setVisible(true);
     }
 
     private int currentPlayer = 1;
@@ -85,9 +89,10 @@ public class Connect4Controller extends GameGUI {
 
                 if (checkWin(row, col, playerColor)) {
                     status = GameStatus.WIN;
-                    disableBoard();
+                    onGameCompletion();
                 } else if (isBoardFull()) {
                     status = GameStatus.DRAW;
+                    onGameCompletion();
                 } else {
                     status = GameStatus.IN_PROGRESS;
                     if (currentPlayer == 1) {
@@ -144,5 +149,14 @@ public class Connect4Controller extends GameGUI {
 
     public void setVisibility(Boolean status) {
         boardPane.setVisible(status);
+    }
+
+    @FXML
+    private void resetClick(ActionEvent event) {
+        resetButton.setVisible(false);
+        status = GameStatus.IN_PROGRESS;
+        currentPlayer = 1;
+        render();
+        update();
     }
 }
