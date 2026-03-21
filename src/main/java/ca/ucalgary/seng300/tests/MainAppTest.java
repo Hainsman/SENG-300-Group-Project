@@ -1,26 +1,31 @@
 package ca.ucalgary.seng300.tests;
 
+import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
+import ca.ucalgary.seng300.platform.constants.TypeSession;
 import ca.ucalgary.seng300.platform.domain.*;
 import ca.ucalgary.seng300.platform.domain.Record;
+import ca.ucalgary.seng300.platform.messages.CreateOrJoinSession;
+import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
+import ca.ucalgary.seng300.platform.messages.Message;
+import ca.ucalgary.seng300.platform.messages.SessionCreated;
+import ca.ucalgary.seng300.platform.messages.SubmitMove;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.services.MatchMakingService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.utils.Helper;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+
+import static ca.ucalgary.seng300.platform.messages.Message.toJson;
 
 
 public class MainAppTest {
     public static void main(String[] args) {
-//        launch(args);
-        LocalDateTime now = LocalDateTime.now(); //local time mountain
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         UserStore userStorage = UserStore.getInstance();
         userStorage.create(new User(1, "Daniel", "daniel.maximov@ucalgary.ca", Helper.hashPassword("ABC", Constants.HASH_ALGORITHM)));

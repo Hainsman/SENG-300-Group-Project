@@ -43,6 +43,7 @@ public class GameGUIController {
         GameGUI.setHistoryBox(historyBox);
         GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
         ticTacToeViewController.setSession(new TicTacToeSession());
+//        ticTacToeViewController.setRandomOpponentEnabled(true);
     }
 
     @FXML
