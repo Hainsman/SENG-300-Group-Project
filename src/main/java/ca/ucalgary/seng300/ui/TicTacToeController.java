@@ -67,16 +67,46 @@ public class TicTacToeController {
     private boolean xTurn = true; // X starts
     private int moves = 0;
 
-    private static final Color XColor = Color.web("#3B82F6");
-    private static final Color OColor = Color.web("#A855F7");
-    private static final int MAX_MOVES = 9;
-    private static final String O = "O";
-    private static final String X = "X";
-    private static final String O_TURN = "O's Turn";
-    private static final String X_TURN = "X's Turn";
-    private static final String X_WIN = "X Wins!";
-    private static final String O_WIN = "O Wins!";
-    private static final String DRAW = "Draw!";
+    private static final Color xColor = Color.web("#3B82F6");
+    private static final Color oColor = Color.web("#A855F7");
+
+    @FXML
+    public void initialize() {
+        status = GameStatus.IN_PROGRESS;
+    }
+
+    @Override
+    public void render() {
+        board = new String[3][3];
+        moves = 0;
+        xTurn = true;
+        for (Node node: ticTacToeGrid.getChildren()) {
+            if (node instanceof Button btn) {
+                btn.setText("");
+                btn.setStyle("");
+                btn.setDisable(false);
+            }
+        }
+        GameGUI.clearHistory();
+    }
+
+    @Override
+    public void update() {
+        if (turnLabel == null) {
+            return;
+        }
+        switch (status) {
+            case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
+            case DRAW -> turnLabel.setText("Draw!");
+            default -> {}
+        }
+    }
+
+    @Override
+    protected void onGameCompletion() {
+        disableBoard();
+    }
 
     private String checkWinner() {
         // Check rows
@@ -207,26 +237,9 @@ public class TicTacToeController {
 
     @FXML
     void resetClick(ActionEvent event) {
-        if (session != null) {
-            session.startNewGame();
-            GameGUI.clearHistory();
-            refreshFromSession();
-            return;
-        }
-        board = new String[3][3];
-        moves = 0;
-        xTurn = true;
-        turnLabel.setText(X_TURN);
-        GameGUI.clearHistory();
-
-        for (Node node : ticTacToeGrid.getChildren()) {
-            if (node instanceof Button) {
-                Button btn = (Button) node;
-                btn.setText("");
-                btn.setStyle("");
-                btn.setDisable(false);
-            }
-        }
+        status = GameStatus.IN_PROGRESS;
+        render();
+        update();
     }
 
     /**

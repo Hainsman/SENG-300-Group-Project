@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.event.ActionEvent;
 
-public class Connect4Controller {
+public class Connect4Controller extends GameGUI {
 
     @FXML
     private StackPane boardPane;
@@ -18,16 +18,23 @@ public class Connect4Controller {
     private Circle[][] circles = new Circle[6][7];
     private int rows = 6;
     private int cols = 7;
+    @FXML
+    private Label statusLabel;
 
     private final Color P1 = Color.web("#dd3030ff");
     private final Color P2 = Color.web("#fad44aff");
 
     @FXML
     public void initialize() {
-        buildBoard();
+        render();
     }
 
-    private void buildBoard() {
+
+
+    @Override
+    public void render() {
+        gridPane.getChildren().clear();
+        circles = new Circle[6][7];
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
                 Circle circle = new Circle(40);
@@ -40,6 +47,23 @@ public class Connect4Controller {
                 gridPane.add(circle, col, row);
             }
         }
+    }
+
+    @Override
+    public void update() {
+        if (statusLabel == null) return;
+        switch (status) {
+            case IN_PROGRESS -> statusLabel.setText("Player " + currentPlayer + "'s Turn");
+            case WIN         -> statusLabel.setText("Player " + currentPlayer + " Wins!");
+            case DRAW        -> statusLabel.setText("It's a Draw!");
+            default          -> {}
+        }
+
+    }
+
+    @Override
+    protected void onGameCompletion() {
+        disableBoard();
     }
 
     private int currentPlayer = 1;
@@ -60,18 +84,19 @@ public class Connect4Controller {
                 circles[row][col].setFill(playerColor);
 
                 if (checkWin(row, col, playerColor)) {
-                    System.out.println("Player " + currentPlayer + " Wins!");
+                    status = GameStatus.WIN;
                     disableBoard();
                 } else if (isBoardFull()) {
-                    System.out.println("It's a Draw!");
+                    status = GameStatus.DRAW;
                 } else {
+                    status = GameStatus.IN_PROGRESS;
                     if (currentPlayer == 1) {
                         currentPlayer = 2;
                     } else {
                         currentPlayer = 1;
                     }
-                    System.out.println("Player " + currentPlayer + "'s Turn");
                 }
+                update();
                 return;
             }
         }

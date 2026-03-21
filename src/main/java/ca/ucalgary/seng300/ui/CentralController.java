@@ -16,7 +16,7 @@ public class CentralController {
     public void initialize() {
         instance = this;
         // REPLACE WITH LOGIN ONCE CREATED!
-        loadView("GameGUI.fxml");
+        loadView("Login.fxml");
     }
 
     // call anytime to switch pages
