@@ -5,6 +5,8 @@ import ca.ucalgary.seng300.platform.messages.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.io.*;
+import java.net.*;
 
 /**
  * STUB: TCP server. Matchmaking is in progress; platform core will implement real networking.
@@ -17,15 +19,29 @@ public class ServerCore {
 
     private final int port;
     private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
+    private ServerSocket server;
+    private Socket client;
     private volatile boolean running;
+    private BufferedReader in;
+    private PrintWriter out;
 
     public ServerCore(int port) {
         this.port = port;
     }
 
-    /** Start the server. STUB: no-op; platform core will implement (e.g. ServerSocket accept loop). */
+    /** Start the server on specified port. **/
     public void start() throws IOException {
-        // STUB: platform core will implement (start accept thread, serveClient per connection)
+        server = new ServerSocket(port);
+        client = server.accept();
+
+        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+        out = new PrintWriter(client.getOutputStream(), true);
+
+        { // Probably remove this later, just a test.
+            String message = in.readLine();
+            System.out.println("Success! Client said: " + message);
+        }
+
         running = true;
     }
 
