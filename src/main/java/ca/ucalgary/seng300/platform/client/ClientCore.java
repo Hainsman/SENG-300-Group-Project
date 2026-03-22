@@ -97,7 +97,7 @@ public class ClientCore {
      * Submit a move. When implemented: send to server and run onGameStateUpdate on FX thread when response arrives.
      */
     public void submitMove(int row, int col) {
-        out.println(String.format("%d %d", row, col));
+        out.println(String.format("MOVE %s %s %d %d", sessionId, myPlayerId, row, col));
         // NOTE(Dylan): I have no idea how to do the onGameStateUpdate callback thing...
         // I think I'm just going to focus on single-threading for now?
     }
