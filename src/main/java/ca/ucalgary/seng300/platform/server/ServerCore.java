@@ -36,17 +36,31 @@ public class ServerCore {
 
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         out = new PrintWriter(client.getOutputStream(), true);
-
-        { // Probably remove this later, just a test.
-            String message = in.readLine();
-            System.out.println("Success! Client said: " + message);
-        }
-
         running = true;
+
+
+        while (running) {
+            String line = in.readLine();
+            if (line != null) {
+                handleLine(line);
+            }
+        }
     }
 
-    /** Stop the server. STUB: no-op; platform core will implement. */
     public void stop() {
+        while (server != null) {
+            try {
+                server.close();
+                server = null;
+            } catch (Exception _) {} // noop!
+        }
+
+        while (client != null) {
+            try {
+                client.close();
+                client = null;
+            } catch (Exception _) {}
+        }
         running = false;
     }
 
@@ -55,7 +69,14 @@ public class ServerCore {
      * Platform core will implement: parse CreateOrJoinSession or SubmitMove, dispatch to handleCreateOrJoin / handleSubmitMove, return response.
      */
     protected String handleLine(String line) {
-        // STUB: platform core will implement (WireFormat.fromJsonCreateOrJoin, fromJsonSubmitMove, route to handleCreateOrJoin, handleSubmitMove)
+        String[] spl = line.split(" ");
+        switch (line.split(" ")[0]) {
+            case "CREATE_SESSION", "JOIN_SESSION": handleCreateOrJoin(new CreateOrJoinSession(spl[0], spl[1], spl[2], spl[3]));
+            case "MOVE": handleSubmitMove(new SubmitMove(spl[1], spl[2], Integer.parseInt(spl[3]), Integer.parseInt(spl[4])));
+            default: out.println("ERROR: bad request.");
+        }
+
+        // TODO: JSON line?
         return null;
     }
 
@@ -63,7 +84,14 @@ public class ServerCore {
      * Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
      */
     protected String handleCreateOrJoin(CreateOrJoinSession req) {
-        // STUB: platform core will implement
+        // TODO: delete, testing
+        {
+            System.out.println("DEBUG: successfully got create or join request.");
+            System.out.println(req.getGameType());
+            System.out.println(req.getType());
+            System.out.println(req.getPlayerId());
+            System.out.println(req.getSessionId());
+        }
         return null;
     }
 
@@ -71,7 +99,14 @@ public class ServerCore {
      * Handle submit move request. Platform core will implement: resolve session, validate move, apply via game.handleAction, return GameStateUpdate JSON.
      */
     protected String handleSubmitMove(SubmitMove m) {
-        // STUB: platform core will implement
+        // TODO: delete, testing
+        {
+            System.out.println("DEBUG: successfully got move.");
+            System.out.println(m.getCol());
+            System.out.println(m.getRow());
+            System.out.println(m.getPlayerId());
+            System.out.println(m.getSessionId());
+        }
         return null;
     }
 }
