@@ -9,5 +9,7 @@ public class NetworkTestClient {
         // We can change the hostname later for fun...
         ClientCore c = new ClientCore("localhost", 9090);
         c.connect();
+        c.submitMove(6, 7); // six seven
+        c.disconnect();
     }
 }

@@ -12,5 +12,6 @@ public class NetworkTestServer {
         try { s.start(); } catch(IOException e) {
             System.err.println("ERROR: " + e.getMessage());
         }
+        s.stop();
     }
 }
