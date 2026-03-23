@@ -9,11 +9,14 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Screen;
@@ -24,16 +27,25 @@ import java.io.IOException;
 
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
+
     private static CentralController instance;
 
     public static final double WINDOW_MINIMUM_WIDTH = 1080;
     public static final double WINDOW_MINIMUM_HEIGHT = 730;
 
+    private static final int RESIZE_MARGIN = 6;
+    private static final int RESIZE_RIPPLE_MARGIN = 1;
+
+    @FXML private StackPane root;
     @FXML private BorderPane viewContainer;
+    @FXML private BorderPane titleBarPane;
     @FXML private Label titleLabel;
 
     private double xOffset = 0;
     private double yOffset = 0;
+    private double xBeforeDragging = 0;
+    private double yBeforeDragging = 0;
+    private boolean draggingWindow = false;
 
     private boolean maximized = false;
 
@@ -50,6 +62,10 @@ public class CentralController {
     @FXML
     public void initialize() {
         instance = this;
+
+        root.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
+        root.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
+        root.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
 
         titleLabel.setText(MainApp.TITLE + " v" + MainApp.VERSION);
 
@@ -77,48 +93,48 @@ public class CentralController {
 
     @FXML
     private void handleQuitAction(ActionEvent event) {
-        ((Stage) viewContainer.getScene().getWindow()).close();
+        ((Stage) root.getScene().getWindow()).close();
     }
 
-    @FXML
-    private void handleTitlePressedAction(MouseEvent event) {
-        xOffset = event.getSceneX();
-        yOffset = event.getSceneY();
-    }
+    private void handleMousePressed(MouseEvent event) {
+        if (!isOverControl(event)) {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
 
-    @FXML
-    private void handleTitleDraggedAction(MouseEvent event) {
-        Stage stage = (Stage) viewContainer.getScene().getWindow();
+            Point2D titleBarCoords = titleBarPane.localToScene(0, 0);
+            double xMin = titleBarCoords.getX();
+            double xMax = titleBarPane.getWidth() + xMin;
+            double yMin = titleBarCoords.getY();
+            double yMax = titleBarPane.getHeight() + yMin;
 
-        stage.setX(event.getScreenX() - xOffset);
-        stage.setY(Math.max(event.getScreenY() - yOffset, 0));
-
-        if (maximized) {
-            maximized = false;
-            unMaximizedX = stage.getX();
-            unMaximizedY = stage.getY();
+            if (xMin <= xOffset && xOffset <= xMax && yMin <= yOffset && yOffset <= yMax) {
+                Stage stage = (Stage) root.getScene().getWindow();
+                xBeforeDragging = stage.getX();
+                yBeforeDragging = stage.getY();
+                draggingWindow = true;
+            }
         }
-
-        if (event.getScreenY() < 1 && !shouldBeMaximizedOnRelease) {
-            createRipple(event.getSceneX(), event.getSceneY());
-            shouldBeMaximizedOnRelease = true;
-        }
-
-        if (event.getScreenY() > 10)
-            shouldBeMaximizedOnRelease = false;
     }
 
-    @FXML
-    private void handleTitleReleasedAction(MouseEvent event) {
+    private void handleMouseDragged(MouseEvent event) {
+        Stage stage = (Stage) root.getScene().getWindow();
+
+        if (draggingWindow)
+            dragWindow(event, stage);
+    }
+
+    private void handleMouseReleased(MouseEvent event) {
         if (shouldBeMaximizedOnRelease) {
             maximizeWindow();
             shouldBeMaximizedOnRelease = false;
         }
+
+        draggingWindow = false;
     }
 
     @FXML
     private void handleMinimizeAction(ActionEvent event) {
-        ((Stage) viewContainer.getScene().getWindow()).setIconified(true);
+        ((Stage) root.getScene().getWindow()).setIconified(true);
     }
 
     @FXML
@@ -129,8 +145,27 @@ public class CentralController {
             maximizeWindow();
     }
 
+    private void dragWindow(MouseEvent event, Stage stage) {
+        stage.setX(event.getScreenX() - xOffset);
+        stage.setY(Math.max(event.getScreenY() - yOffset, 0));
+
+        if (maximized) {
+            maximized = false;
+            unMaximizedX = stage.getX();
+            unMaximizedY = stage.getY();
+        }
+
+        if (event.getScreenY() < RESIZE_RIPPLE_MARGIN && !shouldBeMaximizedOnRelease) {
+            createRipple(event.getSceneX(), event.getSceneY());
+            shouldBeMaximizedOnRelease = true;
+        }
+
+        if (event.getScreenY() > RESIZE_MARGIN)
+            shouldBeMaximizedOnRelease = false;
+    }
+
     private void unMaximizeWindow() {
-        Stage stage = (Stage) viewContainer.getScene().getWindow();
+        Stage stage = (Stage) root.getScene().getWindow();
 
         stage.setWidth(unMaximizedWidth);
         stage.setHeight(unMaximizedHeight);
@@ -141,12 +176,12 @@ public class CentralController {
     }
 
     private void maximizeWindow() {
-        Stage stage = (Stage) viewContainer.getScene().getWindow();
+        Stage stage = (Stage) root.getScene().getWindow();
 
         unMaximizedWidth = stage.getWidth();
         unMaximizedHeight = stage.getHeight();
-        unMaximizedX = stage.getX();
-        unMaximizedY = stage.getY();
+        unMaximizedX = shouldBeMaximizedOnRelease ? xBeforeDragging : stage.getX();
+        unMaximizedY = shouldBeMaximizedOnRelease ? yBeforeDragging : stage.getY();
 
         Rectangle2D stageBounds = new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
 
@@ -187,11 +222,14 @@ public class CentralController {
     }
 
     private void createRipple(double x, double y) {
-        Circle ripple = new Circle(x, y, 0, Color.TRANSPARENT);
+        Circle ripple = new Circle(0, Color.TRANSPARENT);
         ripple.setStroke(Color.WHITE);
         ripple.setStrokeWidth(2);
+        ripple.setManaged(false);
+        ripple.setTranslateX(x);
+        ripple.setTranslateY(y);
 
-        viewContainer.getChildren().add(ripple);
+        root.getChildren().add(ripple);
 
         Timeline animation = new Timeline(
                 new KeyFrame(
@@ -206,7 +244,19 @@ public class CentralController {
                 )
         );
 
-        animation.setOnFinished(e -> viewContainer.getChildren().remove(ripple));
+        animation.setOnFinished(e -> root.getChildren().remove(ripple));
         animation.play();
+    }
+
+    private boolean isOverControl(MouseEvent event) {
+        Node node = (Node) event.getTarget();
+
+        while (node != null) {
+            if (node instanceof Button)
+                return true;
+            node = node.getParent();
+        }
+
+        return false;
     }
 }
