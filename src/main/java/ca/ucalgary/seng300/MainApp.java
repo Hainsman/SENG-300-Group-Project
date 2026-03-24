@@ -1,6 +1,6 @@
 package ca.ucalgary.seng300;
 
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.WindowManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -25,8 +25,8 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(
                 loader.load(),
-                CentralController.WINDOW_MINIMUM_WIDTH,
-                CentralController.WINDOW_MINIMUM_HEIGHT);
+                WindowManager.WINDOW_MINIMUM_WIDTH,
+                WindowManager.WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
         stage.setTitle("Bogo Solutions");
         stage.show();
