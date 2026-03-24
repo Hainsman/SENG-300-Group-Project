@@ -14,9 +14,9 @@
                <right>
                   <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="150.0" BorderPane.alignment="CENTER">
                      <children>
-                        <Button id="minimize-maximize-button" mnemonicParsing="false" onAction="#handleMinimizeAction" text="–" />
-                        <Button id="minimize-maximize-button" mnemonicParsing="false" onAction="#handleMaximizeAction" text="⬜" />
-                        <Button id="exit-button" mnemonicParsing="false" onAction="#handleQuitAction" text="❌" />
+                        <Button id="minimize-maximize-button" fx:id="minimizeButton" mnemonicParsing="false" text="–" />
+                        <Button id="minimize-maximize-button" fx:id="maximizeButton" mnemonicParsing="false" text="⬜" />
+                        <Button id="exit-button" fx:id="quitButton" mnemonicParsing="false" text="❌" />
                      </children>
                   </HBox>
                </right>
