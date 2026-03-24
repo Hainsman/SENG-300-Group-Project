@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,6 +29,40 @@ import java.io.IOException;
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
 
+    private enum Direction {
+        NW,
+        NE,
+        SW,
+        SE,
+        N,
+        S,
+        W,
+        E,
+        NONE;
+
+        public boolean isLeft() {
+            return  this == Direction.W ||
+                    this == Direction.NW ||
+                    this == Direction.SW;
+        }
+        public boolean isRight() {
+            return  this == Direction.E ||
+                    this == Direction.NE ||
+                    this == Direction.SE;
+        }
+        public boolean isTop() {
+            return  this == Direction.N ||
+                    this == Direction.NW ||
+                    this == Direction.NE;
+        }
+        public boolean isBottom() {
+            return  this == Direction.S ||
+                    this == Direction.SW ||
+                    this == Direction.SE;
+        }
+    }
+
+
     private static CentralController instance;
 
     public static final double WINDOW_MINIMUM_WIDTH = 1080;
@@ -40,12 +75,17 @@ public class CentralController {
     @FXML private BorderPane viewContainer;
     @FXML private BorderPane titleBarPane;
     @FXML private Label titleLabel;
+    private Stage stage;
 
     private double xOffset = 0;
     private double yOffset = 0;
+    private double lastX = 0;
+    private double lastY = 0;
     private double xBeforeDragging = 0;
     private double yBeforeDragging = 0;
     private boolean draggingWindow = false;
+    private boolean resizingWindow = false;
+    private Direction resizingDirection = Direction.NONE;
 
     private boolean maximized = false;
 
@@ -53,6 +93,7 @@ public class CentralController {
      * basically should the window maximize when the mouse left button is released
      * */
     private boolean shouldBeMaximizedOnRelease = false;
+    private boolean shouldBeResizedOnDrag = false;
 
     private double unMaximizedWidth;
     private double unMaximizedHeight;
@@ -63,9 +104,22 @@ public class CentralController {
     public void initialize() {
         instance = this;
 
+        root.addEventFilter(MouseEvent.MOUSE_MOVED, this::updateCursor);
+        root.addEventFilter(MouseEvent.MOUSE_ENTERED, this::updateCursor);
+        root.addEventFilter(MouseEvent.MOUSE_EXITED, this::updateCursor);
         root.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
         root.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
         root.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
+
+        root.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.windowProperty().addListener((obsWindow, oldWindow, newWindow) -> {
+                    if (newWindow != null) {
+                        this.stage = (Stage) newWindow;
+                    }
+                });
+            }
+        });
 
         titleLabel.setText(MainApp.TITLE + " v" + MainApp.VERSION);
 
@@ -93,13 +147,15 @@ public class CentralController {
 
     @FXML
     private void handleQuitAction(ActionEvent event) {
-        ((Stage) root.getScene().getWindow()).close();
+        stage.close();
     }
 
     private void handleMousePressed(MouseEvent event) {
         if (!isOverControl(event)) {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
+            lastX = event.getScreenX();
+            lastY = event.getScreenY();
 
             Point2D titleBarCoords = titleBarPane.localToScene(0, 0);
             double xMin = titleBarCoords.getX();
@@ -107,8 +163,16 @@ public class CentralController {
             double yMin = titleBarCoords.getY();
             double yMax = titleBarPane.getHeight() + yMin;
 
-            if (xMin <= xOffset && xOffset <= xMax && yMin <= yOffset && yOffset <= yMax) {
-                Stage stage = (Stage) root.getScene().getWindow();
+            if (!maximized && shouldBeResizedOnDrag &&
+                    (isNearLeftEdge(event) ||
+                            isNearRightEdge(event) ||
+                            isNearBottomEdge(event) ||
+                            isNearTopEdge(event))) {
+                resizingWindow = true;
+                resizingDirection = getResizingDirection(event);
+            }
+
+            else if (xMin <= xOffset && xOffset <= xMax && yMin <= yOffset && yOffset <= yMax) {
                 xBeforeDragging = stage.getX();
                 yBeforeDragging = stage.getY();
                 draggingWindow = true;
@@ -117,10 +181,11 @@ public class CentralController {
     }
 
     private void handleMouseDragged(MouseEvent event) {
-        Stage stage = (Stage) root.getScene().getWindow();
 
         if (draggingWindow)
-            dragWindow(event, stage);
+            dragWindow(event);
+        else if (resizingWindow)
+            resizeWindow(event);
     }
 
     private void handleMouseReleased(MouseEvent event) {
@@ -130,11 +195,12 @@ public class CentralController {
         }
 
         draggingWindow = false;
+        resizingWindow = false;
     }
 
     @FXML
     private void handleMinimizeAction(ActionEvent event) {
-        ((Stage) root.getScene().getWindow()).setIconified(true);
+        stage.setIconified(true);
     }
 
     @FXML
@@ -145,7 +211,7 @@ public class CentralController {
             maximizeWindow();
     }
 
-    private void dragWindow(MouseEvent event, Stage stage) {
+    private void dragWindow(MouseEvent event) {
         stage.setX(event.getScreenX() - xOffset);
         stage.setY(Math.max(event.getScreenY() - yOffset, 0));
 
@@ -164,9 +230,59 @@ public class CentralController {
             shouldBeMaximizedOnRelease = false;
     }
 
-    private void unMaximizeWindow() {
-        Stage stage = (Stage) root.getScene().getWindow();
+    private void resizeHorizontally(double dx) {
+        if (resizingDirection.isRight()) {
+            if (stage.getWidth() + dx >= WINDOW_MINIMUM_WIDTH)
+                stage.setWidth(stage.getWidth() + dx);
+            else
+                resizingWindow = false;
+        }
 
+        if (resizingDirection.isLeft()) {
+            if (stage.getWidth() - dx >= WINDOW_MINIMUM_WIDTH) {
+                stage.setX(stage.getX() + dx);
+                stage.setWidth(stage.getWidth() - dx);
+            }
+            else
+                resizingWindow = false;
+        }
+    }
+
+    private void resizeVertically(double dy) {
+        if (resizingDirection.isBottom()) {
+            if (stage.getHeight() + dy >= WINDOW_MINIMUM_HEIGHT)
+                stage.setHeight(stage.getHeight() + dy);
+            else
+                resizingWindow = false;
+        }
+
+        if (resizingDirection.isTop()) {
+            if (stage.getHeight() - dy >= WINDOW_MINIMUM_HEIGHT) {
+                stage.setY(stage.getY() + dy);
+                stage.setHeight(stage.getHeight() - dy);
+            }
+            else
+                resizingWindow = false;
+        }
+    }
+
+    private void resizeWindow(MouseEvent event) {
+        double mouseX = event.getScreenX();
+        double mouseY = Math.max(event.getScreenY(), 0);
+        double dx = mouseX - lastX;
+        double dy = mouseY - lastY;
+
+        resizeHorizontally(dx);
+        resizeVertically(dy);
+
+        if (!resizingWindow)
+            root.setCursor(Cursor.DEFAULT);
+
+        lastX = mouseX;
+        lastY = mouseY;
+    }
+
+    private void unMaximizeWindow() {
         stage.setWidth(unMaximizedWidth);
         stage.setHeight(unMaximizedHeight);
         stage.setX(unMaximizedX);
@@ -176,8 +292,6 @@ public class CentralController {
     }
 
     private void maximizeWindow() {
-        Stage stage = (Stage) root.getScene().getWindow();
-
         unMaximizedWidth = stage.getWidth();
         unMaximizedHeight = stage.getHeight();
         unMaximizedX = shouldBeMaximizedOnRelease ? xBeforeDragging : stage.getX();
@@ -248,6 +362,40 @@ public class CentralController {
         animation.play();
     }
 
+    private boolean isNearRightEdge(MouseEvent event) {
+        return event.getSceneX() >= stage.getWidth() - RESIZE_MARGIN;
+    }
+
+    private boolean isNearLeftEdge(MouseEvent event) {
+        return event.getSceneX() <= RESIZE_MARGIN;
+    }
+
+    private boolean isNearBottomEdge(MouseEvent event) {
+        return event.getSceneY() >= stage.getHeight() - RESIZE_MARGIN;
+    }
+
+    private boolean isNearTopEdge(MouseEvent event) {
+        return event.getSceneY() <= RESIZE_MARGIN;
+    }
+
+    private Direction getResizingDirection(MouseEvent event) {
+        boolean left = isNearLeftEdge(event);
+        boolean right = isNearRightEdge(event);
+        boolean up = isNearTopEdge(event);
+        boolean down = isNearBottomEdge(event);
+
+        if (up && left)         return Direction.NW;
+        else if (up && right)   return Direction.NE;
+        else if (down && left)  return Direction.SW;
+        else if (down && right) return Direction.SE;
+        else if (up)            return Direction.N;
+        else if (down)          return Direction.S;
+        else if (left)          return Direction.W;
+        else if (right)         return Direction.E;
+
+        return Direction.NONE;
+    }
+
     private boolean isOverControl(MouseEvent event) {
         Node node = (Node) event.getTarget();
 
@@ -258,5 +406,35 @@ public class CentralController {
         }
 
         return false;
+    }
+
+    private void updateCursor(MouseEvent event) {
+        Direction dir = getResizingDirection(event);
+
+        boolean overControl = isOverControl(event);
+
+        if (maximized || (overControl && dir != Direction.NONE))
+            root.setCursor(Cursor.DEFAULT);
+        else {
+            switch (dir) {
+                case NW, SE:
+                    root.setCursor(Cursor.NW_RESIZE);
+                    break;
+                case NE, SW:
+                    root.setCursor(Cursor.NE_RESIZE);
+                    break;
+                case N, S:
+                    root.setCursor(Cursor.N_RESIZE);
+                    break;
+                case W, E:
+                    root.setCursor(Cursor.E_RESIZE);
+                    break;
+                case NONE:
+                    root.setCursor(Cursor.DEFAULT);
+                    break;
+            }
+        }
+
+        shouldBeResizedOnDrag = !maximized && !(overControl && dir != Direction.NONE);
     }
 }
