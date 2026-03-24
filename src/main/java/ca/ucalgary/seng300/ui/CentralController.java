@@ -3,18 +3,43 @@ package ca.ucalgary.seng300.ui;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+
 import java.io.IOException;
 
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
+
     private static CentralController instance;
 
-    @FXML private StackPane viewContainer;
+    private WindowManager windowManager;
+
+    @FXML private StackPane root;
+    @FXML private BorderPane viewContainer;
+    @FXML private BorderPane titleBarPane;
+    @FXML private Label titleLabel;
+    @FXML private Button quitButton;
+    @FXML private Button minimizeButton;
+    @FXML private Button maximizeButton;
 
     @FXML
     public void initialize() {
         instance = this;
+
+        WindowManager.WindowControls controls = new WindowManager.WindowControls(
+                root,
+                titleBarPane,
+                titleLabel,
+                quitButton,
+                minimizeButton,
+                maximizeButton
+        );
+
+        windowManager = new WindowManager(controls);
+
         // REPLACE WITH LOGIN ONCE CREATED!
         loadView("Login.fxml");
     }
@@ -31,7 +56,7 @@ public class CentralController {
                     getClass().getResource("/ca.ucalgary.seng300.ui/" + fxml)
             );
             Node view = loader.load();
-            viewContainer.getChildren().setAll(view);
+            viewContainer.setCenter(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
