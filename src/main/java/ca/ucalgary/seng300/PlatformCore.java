@@ -1,55 +1,88 @@
 package ca.ucalgary.seng300;
 
+import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
+import ca.ucalgary.seng300.platform.messages.chatMessage;
+import ca.ucalgary.seng300.platform.server.GameSessionRecord;
+import ca.ucalgary.seng300.platform.server.platformChannel;
+
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // debug Server first, then as many clients as you want
 // the server will close once the last client has sent "exit"
 
 public class PlatformCore {
-    // client id number
-    private int clientNumber = 1;
+    // chat list
+    public List<Integer> connected;
+    // list of chat/lobbies
+    public List<String> chatservers;
 
-    // Database
-    public platformDB database;
-
-    // list of clients that are connected but not logged in
-    List<Integer> connected;
+    // List of games gettable by ID
+    public TTTGame tempGame;
+    public platformChannel p1;
+    public platformChannel p2;
 
     // list of connections for users currently logged in
-    List<platformChannel> users;
+    public List<platformChannel> users;
 
-    public void cMsg (int i, String s){
-        for(platformChannel h : users){
-            if(h.ID == i){
-                h.cSend(s);
+    private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
+
+    public void sendSingle (String id, Object o){
+        for(platformChannel u : users){
+            if(u.ID.equals(id)){
+                u.cliSend(o);
             }
+        }
+    }
+
+    public void sendMult (chatMessage m){
+        for(platformChannel h : users){
+            h.cliSend(m);
+        }
+    }
+
+    public void clientJoin(int i){
+        connected.add(i);
+    }
+    public void clientQuit(int i){
+        connected.remove(i);
+    }
+
+    public void chatJoin(int i){
+        connected.add(i);
+    }
+    public void chatQuit(int i){
+        connected.remove(i);
+    }
+
+    public void gameEvent(int ID, String type, PlayerAction p){
+        //Game g = games.get(ID);
+        if(type.equals("TTT")){
+            //TTTsesh.get(ID).handleAction(p);
+            tempGame.handleAction(p);
+            p1.cliSend(tempGame.getGameState());
+            p2.cliSend(tempGame.getGameState());
         }
 
     }
 
-
-    // return the current client number and increase it by 1 for the next client
-    public int getClientNumber() {
-        return clientNumber++;
-    }
+    // Number of active users
     private int cActive = 0;
 
     public PlatformCore() throws IOException, InterruptedException {
-        // Initialise database
-        // PLACEHOLDER (including the names)
-        database = new platformDB();
-        database.updateorsmth("something");
 
-        // Max clients
-        int ClientMax = 3;
-        // how many clients have connected in total
+        // Max clients -- PLACEHOLDER
+        int ClientMax = 6;
         int CCount = 0;
-        // how many clients are active
+
         // list of threads
         users = new ArrayList<platformChannel>();
+        connected = new ArrayList<Integer>();
 
         // Create a server socket listening on port 2020
         ServerSocket serverSocket = new ServerSocket();
@@ -95,7 +128,6 @@ public class PlatformCore {
 
 
     public static void main(String[] args) {
-
         try {
             new PlatformCore(); // Start the server
 
