@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1020.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.GameDashboardController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="1020.0" stylesheets="@stylesheets/romas_stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.GameDashboardController">
    <children>
       <SplitPane dividerPositions="0.20235756385068762, 0.8143418467583498" prefHeight="680.0" prefWidth="1020.0" style="-fx-background-color: #23283F;">
          <items>
@@ -43,7 +43,11 @@
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="12.0" prefHeight="51.0" prefWidth="159.0" style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #f277de, #fab55a); -fx-text-fill: White; -fx-font-size: 20; -fx-font-weight: Bold; -fx-background-insets: -10; -fx-background-radius: 10px; -fx-font-family: Tahoma;" text="Username" textAlignment="CENTER" wrapText="true" />
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="13.0" layoutY="91.0" prefHeight="58.0" prefWidth="162.0" style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-text-fill: White; -fx-font-size: 20; -fx-font-weight: Bold; -fx-background-insets: -10; -fx-background-radius: 10px; -fx-font-family: Tahoma;" text="Friends" textAlignment="CENTER" wrapText="true" />
-                  <Label fx:id="Username1Button" layoutX="41.0" layoutY="179.0" style="-fx-text-fill: White; -fx-font-size: 20; -fx-font-family: Tahoma;" text="Username 1" />
+                  <AnchorPane layoutX="14.0" layoutY="172.0" prefHeight="395.0" prefWidth="159.0">
+                     <children>
+                        <Label fx:id="Username1Button" layoutX="27.0" layoutY="14.0" style="-fx-text-fill: White; -fx-font-size: 20; -fx-font-family: Tahoma;" text="Username 1" />
+                     </children>
+                  </AnchorPane>
                </children></AnchorPane>
          </items>
       </SplitPane>
