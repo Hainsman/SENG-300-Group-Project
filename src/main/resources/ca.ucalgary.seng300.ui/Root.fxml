@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="viewContainer"
+           xmlns="http://javafx.com/javafx/23.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="ca.ucalgary.seng300.ui.CentralController"
+           prefHeight="680" prefWidth="1020"
+           style="-fx-background-color: #23283F;"
+/>
