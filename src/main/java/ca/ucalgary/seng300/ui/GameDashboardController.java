@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import java.util.ArrayList;
+
 public class GameDashboardController {
 
     @FXML
@@ -29,6 +31,8 @@ public class GameDashboardController {
     @FXML
     private Button infoButton;
 
+    private ArrayList<Label> FriendList = new ArrayList<>();
+
     @FXML
     void handleExitButton(ActionEvent event) {
         Platform.exit();
@@ -40,6 +44,10 @@ public class GameDashboardController {
 
     }
 
+    private void addToFriendlist(){
+        Label newFriend = new Label();
+        FriendList.add(newFriend);
 
+    }
 
 }
