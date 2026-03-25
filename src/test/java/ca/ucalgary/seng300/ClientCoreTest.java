@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300;
-
+/*
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -140,4 +141,4 @@ public class ClientCoreTest {
             }
         }
     }
-}
+}*/

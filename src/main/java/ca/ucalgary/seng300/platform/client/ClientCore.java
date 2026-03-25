@@ -1,87 +1,195 @@
 package ca.ucalgary.seng300.platform.client;
 
-import ca.ucalgary.seng300.platform.messages.*;
+import ca.ucalgary.seng300.PlatformCore;
+import ca.ucalgary.seng300.game.core.GameState;
+import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
+import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
+import ca.ucalgary.seng300.platform.messages.chatMessage;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.ui.CentralController;
+import javafx.application.Application;
 import javafx.application.Platform;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * STUB: Client for the game server. Matchmaking is in progress; platform core will implement
- * real networking. Same API is kept so UI and platform core can wire up later.
- * <p>
- * When implemented: connect to ServerCore, send CreateOrJoinSession and SubmitMove,
- * receive SessionCreated and GameStateUpdate, notify UI on JavaFX thread via callback.
- */
-public class ClientCore {
+// debug Server first, then as many clients as you want
+// the server will close once the last client has sent "exit"
 
-    private final String host;
-    private final int port;
+public class ClientCore extends Thread{
+    public String CID;
+    public String username;
+
+    private ObjectInputStream servRead;
+    private ObjectOutputStream servSend;
+
+    private CentralController ioMain;
+
+    public boolean running = false;
+    public volatile char flg = 'n';
+
+    public String gameType;
+    private TTTRuleValidator cliEngine;
+    public GameState gstate;
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile String sessionId;
     private volatile String myPlayerId;
     private volatile String mySide; // "PLAYER_1" or "PLAYER_2"
-    private volatile GameStateUpdate lastUpdate;
+    public volatile  boolean upFlag = false;
+    public volatile GameStateUpdate lastUpdate;
     private volatile Runnable onGameStateUpdate;
-
-    public ClientCore(String host, int port) {
-        this.host = host;
-        this.port = port;
+    
+    public boolean submitMove(int row, int col){
+        //if(gameType == "TTT"){
+            TTTPlayerMove p = new TTTPlayerMove(CID, "MOVE" , row, col);
+            //if(cliEngine.validateMove(gstate,p)){
+            try{
+                servSend.writeObject(p);
+                return true;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            //else{
+            //    return false;
+            //}
+        //}
+        //return false;
     }
 
-    /** Callback run on FX thread when a GameStateUpdate is received. Platform core will invoke when real networking is in place. */
-    public void setOnGameStateUpdate(Runnable r) {
-        this.onGameStateUpdate = r;
+    public void msgSend(Object o) {
+        try{
+            servSend.writeObject(o);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public String getSessionId() { return sessionId; }
-    public String getMyPlayerId() { return myPlayerId; }
-    public String getMySide() { return mySide; }
-    public GameStateUpdate getLastUpdate() { return lastUpdate; }
-
-    /** Connect to the server. Returns true if connected. STUB: returns false; platform core will implement. */
-    public boolean connect() {
-        // STUB: platform core will implement real TCP connection
-        return false;
-    }
-
-    /** STUB: platform core will implement. */
-    public void disconnect() {
-        executor.shutdownNow();
-    }
-
-    /**
-     * Create a new session. Blocks until response. Returns SessionCreated or null on error. Sets sessionId and mySide.
-     * STUB: returns null; platform core will implement.
-     */
-    public SessionCreated createSession(String playerId) {
-        // STUB: platform core will implement (send CreateOrJoinSession, receive SessionCreated)
-        return null;
-    }
-
-    /**
-     * Join an existing session. Blocks until response. Returns SessionCreated or null on error.
-     * STUB: returns null; platform core will implement.
-     */
-    public SessionCreated joinSession(String sessionIdToJoin, String playerId) {
-        // STUB: platform core will implement
-        return null;
-    }
-
-    /**
-     * Submit a move. When implemented: send to server and run onGameStateUpdate on FX thread when response arrives.
-     * STUB: no-op; platform core will implement.
-     */
-    public void submitMove(int row, int col) {
-        // STUB: platform core will implement (send SubmitMove, receive GameStateUpdate, Platform.runLater(onGameStateUpdate))
-    }
-
-    /**
-     * Synchronous submit: blocks until GameStateUpdate is received. Returns the update or null.
-     * STUB: returns null; platform core will implement.
-     */
     public GameStateUpdate submitMoveSync(int row, int col) {
-        // STUB: platform core will implement
+        submitMove(row,col);
         return null;
     }
+    public ClientCore(CentralController c){
+        ioMain = c;
+        cliEngine = new TTTRuleValidator();
+    }
+
+    public GameStateUpdate getLastUpdate() {
+        return lastUpdate;
+    }
+
+    @Override
+    public void run() {
+        try {
+            // Connect to the server at localhost on port 2020
+            Socket socket = new Socket();
+            try {
+                // try to establish a connection with a 1 second timeout
+                socket.setSoTimeout(1000);
+                socket.connect(new InetSocketAddress("localhost", 2020));
+                socket.setSoTimeout(0);
+            }
+            catch (Exception e) {
+                // if the timeout expires the server socket is closed so exit
+                System.out.println("Client unable to connect, press enter to close");
+                //System.in.read();
+                socket.close();
+                System.exit(0);
+            }
+
+            // Set up input and output streams for talking back and forth
+            servSend = new ObjectOutputStream(socket.getOutputStream());
+            servRead = new ObjectInputStream(socket.getInputStream());
+            //System.out.println("objreads ready");
+            Object message;
+
+
+            // wait for first client response
+            // if the client is closed unexpectedly readline returns null so this catches any error
+            while (!interrupted()) {
+                // wait for an incoming message from the server
+                try{
+                    message = servRead.readObject();
+                } catch (IOException e) {
+                    continue;
+                }
+
+                // server instructions, whole message matches
+                if (message.equals("exit")) {
+                    break;
+                }
+
+                switch(message){
+                    case sysMSG sm:
+                        switch (sm.getType()){
+                            case "LOGS":
+                                username = sm.getFieldA();
+                                CID = sm.getFieldB();
+                                flg = 's';
+                                upFlag = true;
+                                break;
+                            case "LOGF":
+                                flg = 'f';
+                                upFlag = true;
+                                break;
+                            case "GMJN":
+                                upFlag = true;
+                        }
+                        break;
+
+
+                    case GameStateUpdate g:
+                        System.out.println("a gamestate arrived");
+                        lastUpdate = g;
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                // update UI:
+                                ioMain.ttt.refreshFromGameStateUpdate(g);
+                            }
+                        });
+
+                        break;
+                    case chatMessage c:
+                        // CHAT SYSTEM UI COMPONENT
+                        break;
+                    //case matchMaking m:
+
+                    default:
+                        System.out.println("an object arrived");
+                        break;
+                }
+
+
+            }
+            // cleanup
+            socket.close();
+            System.out.println("Client " + CID + " " + socket.getInetAddress() + " has disconnected.");
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+    /*public static void main(String[] args) {
+        try {
+            ClientCore c = new ClientCore(new CentralController()); // Start the server
+            c.start();
+            System.out.println("client launched");
+            sleep(1000);
+            c.submitMove(1,1);
+            System.out.println("gst sent");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
 }

@@ -13,6 +13,11 @@ import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 
 public class GameGUIController {
+    private CentralController control;
+    public void setRoot(CentralController c){
+        control = c;
+        ticTacToeViewController.setBoss(control);
+    }
     @FXML
     private VBox childView; // Injects the root of child.fxml
     @FXML
@@ -43,10 +48,11 @@ public class GameGUIController {
         GameGUI.setHistoryBox(historyBox);
         GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
         ticTacToeViewController.setSession(new TicTacToeSession());
+
     }
 
     @FXML
-    private void handleHostGame(ActionEvent event) {
+    private void handleHostGame(ActionEvent event) {/*
         ClientCore client = new ClientCore("127.0.0.1", ServerMain.DEFAULT_PORT);   // Random IP address for now
         if (!client.connect()) {
             showAlert("Networking is currently a stub (matchmaking in progress). Platform core will implement connect() and session APIs later.");
@@ -59,11 +65,11 @@ public class GameGUIController {
         hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(), null, "TICTACTOE", 3, 3, new String[0]));
         ticTacToeViewController.setSession(null);
         ticTacToeViewController.setClientCore(client);
-        showCopyableSessionIdAlert(client.getSessionId());
+        showCopyableSessionIdAlert(client.getSessionId());*/
     }
 
     @FXML
-    private void handleJoinGame(ActionEvent event) {
+    private void handleJoinGame(ActionEvent event) {/*
         javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("");
         dialog.setTitle("Join game");
         dialog.setHeaderText("Enter session ID from the host:");
@@ -81,7 +87,7 @@ public class GameGUIController {
             hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(), null, "TICTACTOE", 3, 3, new String[0]));
             ticTacToeViewController.setSession(null);
             ticTacToeViewController.setClientCore(client);
-        });
+        };*/
     }
 
     private void showAlert(String message) {
@@ -117,7 +123,7 @@ public class GameGUIController {
 
     public void hideGameScreens(GameGUI.GameViewData data){
         String gameType = data.gameType.toUpperCase();
-
+/*
         if(gameType.equals("TICTACTOE")){
             ticTacToeViewController.setVisibility(true);
             connect4ViewController.setVisibility(false);
@@ -129,7 +135,7 @@ public class GameGUIController {
             connect4ViewController.setVisibility(true);
             tttLabel.setVisible(false);
             connect4Label.setVisible(true);
-        }
+        }*/
 
     }
 }

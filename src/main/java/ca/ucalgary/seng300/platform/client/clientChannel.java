@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.platform.client;
 
-import ca.ucalgary.seng300.ClientCore;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -8,13 +7,11 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class clientChannel extends Thread{
     // main server variable
-    private ca.ucalgary.seng300.ClientCore cliC;
+    private ClientCore cliC;
     //private int ID;
 
     private ObjectInputStream servRead;

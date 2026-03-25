@@ -15,6 +15,14 @@ import javafx.event.ActionEvent;
 
 public class TicTacToeController {
 
+    private CentralController boss;
+    public void setBoss(CentralController c){
+        boss = c;
+        boss.setTic(this);
+        clientCore = boss.getCC();
+    }
+
+
     /** When set, moves and state use the game core session; when null, existing local board logic is used. */
     private TicTacToeSession session = null;
     /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */

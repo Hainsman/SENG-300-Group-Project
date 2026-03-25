@@ -1,7 +1,10 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.server.GameSessionRecord;
 import ca.ucalgary.seng300.platform.server.platformChannel;
@@ -60,13 +63,15 @@ public class PlatformCore {
         connected.remove(i);
     }
 
-    public void gameEvent(int ID, String type, PlayerAction p){
+    public void gameEvent(int ID, String type, PlayerMove p){
         //Game g = games.get(ID);
         if(type.equals("TTT")){
             //TTTsesh.get(ID).handleAction(p);
-            tempGame.handleAction(p);
+
+            tempGame.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(),new TTTActionPayload(p.getRow(),p.getCol())) {
+            });
             p1.cliSend(tempGame.getGameState());
-            p2.cliSend(tempGame.getGameState());
+            //p2.cliSend(tempGame.getGameState());
         }
 
     }
@@ -80,6 +85,8 @@ public class PlatformCore {
         int ClientMax = 6;
         int CCount = 0;
 
+        tempGame = new TTTGame();
+
         // list of threads
         users = new ArrayList<platformChannel>();
         connected = new ArrayList<Integer>();
@@ -88,7 +95,7 @@ public class PlatformCore {
         ServerSocket serverSocket = new ServerSocket();
         serverSocket.bind(new InetSocketAddress("localhost", 2020));
         // refresh if no new communications have arrived in 5 seconds
-        serverSocket.setSoTimeout(5000);
+        //serverSocket.setSoTimeout(5000);
 
         System.out.println("Server is listening");
 
@@ -107,12 +114,14 @@ public class PlatformCore {
                     users.get(CCount).start();
                     cActive ++;
                     CCount++;
+                    System.out.println("client joined");
                 }
                 else {
                     socket.close();
                 }
             }
             catch(Exception e) {
+                System.out.println("Server timeout");
                 // lets the while check happen instead of blocking on accept when it times out
             }
         }

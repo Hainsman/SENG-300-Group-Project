@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.server;
 import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 
 import java.io.*;
@@ -37,9 +38,10 @@ public class platformChannel extends Thread {
     public void run() {
         try {
             // Set up input and output streams for talking back and forth
-            ObjectInputStream in_socket = new ObjectInputStream(new ObjectInputStream(socket.getInputStream()));
-            ObjectOutputStream out_socket = new ObjectOutputStream(new ObjectOutputStream(socket.getOutputStream()));
-            outServ = out_socket;
+            outServ = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in_socket = new ObjectInputStream(socket.getInputStream());
+
+            serv.p1 = this;
             //out_socket.println("connected");
 
             // variables for parsing input
@@ -51,7 +53,8 @@ public class platformChannel extends Thread {
                 message = in_socket.readObject();
 
                 switch (message) {
-                    case PlayerAction p:
+                    case PlayerMove p:
+                        System.out.println("player action arrived");
                         serv.gameEvent(gameID, "TTT", p);
                         break;
                     case chatMessage cm:
