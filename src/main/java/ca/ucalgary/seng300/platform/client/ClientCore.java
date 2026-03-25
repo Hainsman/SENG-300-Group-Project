@@ -72,7 +72,7 @@ public class ClientCore {
             try {
                 server.close();
                 break;
-            } catch (Exception _) {} // noop!
+            } catch (Exception _) {}
         }
         executor.shutdownNow();
     }

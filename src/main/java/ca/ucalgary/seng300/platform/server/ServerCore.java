@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
+import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTActionType;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
@@ -48,8 +49,8 @@ public class ServerCore {
         acceptPlayers.start();
 
         int curr = clients.size();
+        System.out.println("Number of players online: " + clients.size());
         while (clients.size() < 2) {
-            // NOTE: please don't remove this if statement, IntelliJ just doesn't understand the vision
             if (curr != clients.size()) {
                 System.out.println("Number of players online: " + clients.size());
                 curr = clients.size();
@@ -58,19 +59,60 @@ public class ServerCore {
         }
         running = true;
         System.out.println("Enough players joined, (" + clients.size() + "), starting match!");
+        game = new TTTGame();
 
         while (running) {
-            game = new TTTGame();
-            System.out.println(game.getGameState());
-            clients.getFirst().out.println(game.getGameState());
-            String line = clients.getFirst().in.readLine();
-            if (line != null) {
-                handleLine(line);
+            for (ClientHandler c : clients) {
+                running = move((TTTGame) game, c);
             }
-            String line2 = clients.get(1).in.readLine();
+        }
+        // Need to repeat one more time to send game status to everyone
+        for (ClientHandler c : clients) {
+            move((TTTGame) game, c);
+        }
+
+    }
+
+    /**
+     * Handles one client's move.
+     * @return Whether the game should continue or not.
+     */
+    public boolean move(TTTGame game, ClientHandler c) throws IOException {
+        System.out.println(game.getGameState());
+        c.out.println(game.getGameState());
+        if (game.getGameState().getState() == State.TIE) {
+            c.out.println("TIE");
+            return false;
+        }
+        if (game.getGameState().getState() == State.PLAYER_1_WIN) {
+            c.out.println("P1_WIN");
+            return false;
+        }
+        if (game.getGameState().getState() == State.PLAYER_2_WIN) {
+            c.out.println("P2_WIN");
+            return false;
+        }
+        c.out.println("IN_PROGRESS");
+
+        boolean valid = false;
+        while (!valid) {
+            String line = c.in.readLine();
             if (line != null) {
-                handleLine(line2);
+                handleLine(line); // Modifies game state
             }
+            valid = game.valid;
+            if (!valid) {
+                IO.println("DEBUG: player sent invalid move.");
+                c.out.println("INVALID");
+            }
+        }
+        c.out.println("VALID");
+        return true;
+    }
+
+    public void printToAll(String message) {
+        for (ClientHandler c : clients) {
+            c.out.println(message);
         }
     }
 
@@ -103,9 +145,15 @@ public class ServerCore {
     protected String handleLine(String line) {
         String[] spl = line.split(" ");
         switch (line.split(" ")[0]) {
-            case "CREATE_SESSION", "JOIN_SESSION": handleCreateOrJoin(new CreateOrJoinSession(spl[0], spl[1], spl[2], spl[3]));
-            case "MOVE": handleSubmitMove(new SubmitMove(spl[1], spl[2], Integer.parseInt(spl[3]), Integer.parseInt(spl[4])));
-            default: clients.getFirst().out.println("ERROR: bad request.");
+            case "CREATE_SESSION", "JOIN_SESSION":
+                handleCreateOrJoin(new CreateOrJoinSession(spl[0], spl[1], spl[2], spl[3]));
+                break;
+            case "MOVE":
+                handleSubmitMove(new SubmitMove(spl[1], spl[2], Integer.parseInt(spl[3]), Integer.parseInt(spl[4])));
+                break;
+            default:
+                clients.getFirst().out.println("ERROR: bad request.");
+                break;
         }
 
         return null;
@@ -140,6 +188,7 @@ public class ServerCore {
      * Handle submit move request. Platform core will implement: resolve session, validate move, apply via game.handleAction, return GameStateUpdate JSON.
      */
     protected String handleSubmitMove(SubmitMove m) {
+        IO.println("Handling move...");
         game.handleAction(
                 new TTTPlayerAction(m.getPlayerId(),
                 TTTActionType.MOVE,
