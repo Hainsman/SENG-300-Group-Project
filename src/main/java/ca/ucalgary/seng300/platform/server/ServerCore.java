@@ -1,8 +1,14 @@
 package ca.ucalgary.seng300.platform.server;
 
+import ca.ucalgary.seng300.game.core.Game;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTActionType;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.platform.messages.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
@@ -20,10 +26,9 @@ public class ServerCore {
     private final int port;
     private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
     private ServerSocket server;
-    private Socket client;
     private volatile boolean running;
-    private BufferedReader in;
-    private PrintWriter out;
+    private final ArrayList<ClientHandler> clients = new ArrayList<>();
+    private Game game;
 
     public ServerCore(int port) {
         this.port = port;
@@ -32,19 +37,49 @@ public class ServerCore {
     /** Start the server on specified port. **/
     public void start() throws IOException {
         server = new ServerSocket(port);
-        client = server.accept();
+        Thread acceptPlayers = new Thread(() -> {
+            try {
+                // Two players
+                clients.add(acceptClient(server));
+                clients.add(acceptClient(server));
+            } catch (IOException _) {}
+        });
 
-        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        out = new PrintWriter(client.getOutputStream(), true);
+        acceptPlayers.start();
+
+        int curr = clients.size();
+        while (clients.size() < 2) {
+            // NOTE: please don't remove this if statement, IntelliJ just doesn't understand the vision
+            if (curr != clients.size()) {
+                System.out.println("Number of players online: " + clients.size());
+                curr = clients.size();
+            }
+            Thread.onSpinWait(); // do nothing, but efficiently
+        }
         running = true;
-
+        System.out.println("Enough players joined, (" + clients.size() + "), starting match!");
 
         while (running) {
-            String line = in.readLine();
+            game = new TTTGame();
+            System.out.println(game.getGameState());
+            clients.getFirst().out.println(game.getGameState());
+            String line = clients.getFirst().in.readLine();
             if (line != null) {
                 handleLine(line);
             }
+            String line2 = clients.get(1).in.readLine();
+            if (line != null) {
+                handleLine(line2);
+            }
         }
+    }
+
+    public ClientHandler acceptClient(ServerSocket s) throws IOException {
+        ClientHandler result = new ClientHandler();
+        result.socket = s.accept();
+        result.in = new BufferedReader(new InputStreamReader(result.socket.getInputStream()));
+        result.out = new PrintWriter(result.socket.getOutputStream(), true);
+        return result;
     }
 
     public void stop() {
@@ -52,14 +87,11 @@ public class ServerCore {
             try {
                 server.close();
                 server = null;
-            } catch (Exception _) {} // noop!
+            } catch (Exception _) {}
         }
 
-        while (client != null) {
-            try {
-                client.close();
-                client = null;
-            } catch (Exception _) {}
+        for (ClientHandler c : clients) {
+            try {c.socket.close();} catch (IOException _) {}
         }
         running = false;
     }
@@ -73,10 +105,9 @@ public class ServerCore {
         switch (line.split(" ")[0]) {
             case "CREATE_SESSION", "JOIN_SESSION": handleCreateOrJoin(new CreateOrJoinSession(spl[0], spl[1], spl[2], spl[3]));
             case "MOVE": handleSubmitMove(new SubmitMove(spl[1], spl[2], Integer.parseInt(spl[3]), Integer.parseInt(spl[4])));
-            default: out.println("ERROR: bad request.");
+            default: clients.getFirst().out.println("ERROR: bad request.");
         }
 
-        // TODO: JSON line?
         return null;
     }
 
@@ -84,14 +115,24 @@ public class ServerCore {
      * Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
      */
     protected String handleCreateOrJoin(CreateOrJoinSession req) {
-        // TODO: delete, testing
-        {
-            System.out.println("DEBUG: successfully got create or join request.");
-            System.out.println(req.getGameType());
-            System.out.println(req.getType());
-            System.out.println(req.getPlayerId());
-            System.out.println(req.getSessionId());
+        switch (req.getType()) {
+            case "CREATE_SESSION":
+                if (req.getSessionId().equals("?")) {
+                    GameSessionRecord session = new GameSessionRecord();
+                    String sessionID = session.getSessionId();
+                    sessions.put(sessionID, session); // Look-up table
+                    session.addPlayer(req.getPlayerId());
+
+                    clients.getFirst().out.println();
+                }
+            case "JOIN_SESSION":
+                if (req.getSessionId() == null) {
+                    for (GameSessionRecord r : sessions.values()) {
+                        IO.println(r.getSessionId());
+                    }
+                }
         }
+
         return null;
     }
 
@@ -99,14 +140,11 @@ public class ServerCore {
      * Handle submit move request. Platform core will implement: resolve session, validate move, apply via game.handleAction, return GameStateUpdate JSON.
      */
     protected String handleSubmitMove(SubmitMove m) {
-        // TODO: delete, testing
-        {
-            System.out.println("DEBUG: successfully got move.");
-            System.out.println(m.getCol());
-            System.out.println(m.getRow());
-            System.out.println(m.getPlayerId());
-            System.out.println(m.getSessionId());
-        }
+        game.handleAction(
+                new TTTPlayerAction(m.getPlayerId(),
+                TTTActionType.MOVE,
+                new TTTActionPayload(m.getRow(), m.getCol())
+        ));
         return null;
     }
 }
