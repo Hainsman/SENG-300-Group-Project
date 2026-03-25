@@ -1,7 +1,9 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
@@ -67,42 +69,59 @@ public class TicTacToeController {
     @FXML
     private Button resetButton;
 
-    private String[][] board = new String[3][3]; // stores "X", "O", or null
+    private Player[][] board = new Player[3][3]; // stores PLAYER_1 PLAYER_2 NULL
+    private Player myPlayer = Player.PLAYER_1;    // which player this user is, PLAYER_1 or PLAYER_2
     private boolean xTurn = true; // X starts
     private int moves = 0;
 
     private static final Color xColor = Color.web("#3B82F6");
     private static final Color oColor = Color.web("#A855F7");
+    private String player1Token = "X";
+    private String player2Token = "O";
+
+    private String getToken (Player p){
+        if(p.equals(Player.PLAYER_1)){
+            return player1Token;
+        }
+        else if (p.equals(Player.PLAYER_2)){
+            return player2Token;
+        }
+        else{
+            // this should probably never happen, but if null needs a token it goes here
+            return "ERR";
+            //return "";
+        }
+    }
 
     private String checkWinner() {
         // Check rows
         for (int i = 0; i < 3; i++) {
-            if (board[i][0] != null &&
+            if (!board[i][0].equals(Player.EMPTY) &&
                     board[i][0].equals(board[i][1]) &&
                     board[i][1].equals(board[i][2])) {
-                return board[i][0];
+                return getToken(board[i][0]);
             }
         }
 
         // Check columns
         for (int j = 0; j < 3; j++) {
-            if (board[0][j] != null &&
+            if (!board[0][j].equals(Player.EMPTY) &&
                     board[0][j].equals(board[1][j]) &&
                     board[1][j].equals(board[2][j])) {
-                return board[0][j];
+                return getToken(board[0][j]);
             }
         }
 
         // Check diagonals
-        if (board[0][0] != null &&
+        if (!board[0][0].equals(Player.EMPTY) &&
                 board[0][0].equals(board[1][1]) &&
                 board[1][1].equals(board[2][2])) {
-            return board[0][0];
+            return getToken(board[0][0]);
         }
-        if (board[0][2] != null &&
+        if (!board[0][2].equals(Player.EMPTY) &&
                 board[0][2].equals(board[1][1]) &&
                 board[1][1].equals(board[2][0])) {
-            return board[0][2];
+            return getToken(board[0][2]);
         }
 
         return null;
@@ -115,13 +134,14 @@ public class TicTacToeController {
         Integer col = GridPane.getColumnIndex(clickedButton);
         if (row == null) row = 0;
         if (col == null) col = 0;
-
+        boolean upd = clientCore.submitMove(row, col);
+        /*
         if (clientCore != null) {
             GameStateUpdate update = clientCore.submitMoveSync(row, col);
             if (update != null) {
                 GameGUI.addHistory("TicTacToe", "PLAYER_1".equals(update.getCurrentTurn()) ? "O" : "X",
                         "(" + (row + 1) + ", " + (col + 1) + ")", "PLAYER_1".equals(update.getCurrentTurn()) ? oColor : xColor);
-                refreshFromGameStateUpdate(update);
+                //refreshFromGameStateUpdate(update);
             }
             return;
         }
@@ -139,10 +159,10 @@ public class TicTacToeController {
             return; // already filled
 
         // Set X or O
-        if (xTurn) {
-            clickedButton.setText("X");
+        //if (xTurn) {
+            clickedButton.setText(getToken(myPlayer));
             clickedButton.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
-            board[row][col] = "X";
+            board[row][col] = myPlayer;
             GameGUI.addHistory("TicTacToe", "X",
                     "(" + (row + 1) + ", " + (col + 1) + ")", xColor);
         } else {
@@ -151,7 +171,7 @@ public class TicTacToeController {
             board[row][col] = "O";
             GameGUI.addHistory("TicTacToe", "O",
                     "(" + (row + 1) + ", " + (col + 1) + ")", oColor);
-        }
+        }*/
 
         moves++;
 
@@ -172,6 +192,12 @@ public class TicTacToeController {
         // Switch turn
         xTurn = !xTurn;
         turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+        if(myPlayer.equals(Player.PLAYER_1)){
+            myPlayer = Player.PLAYER_2;
+        }
+        else{
+            myPlayer = Player.PLAYER_1;
+        }
     }
 
     private void disableBoard() {
@@ -190,7 +216,7 @@ public class TicTacToeController {
             refreshFromSession();
             return;
         }
-        board = new String[3][3];
+        board = new Player[3][3];
         moves = 0;
         xTurn = true;
         turnLabel.setText("X's Turn");
@@ -243,18 +269,31 @@ public class TicTacToeController {
     }
 
     /** Use when in online mode: refresh grid and label from server update. */
-    public void refreshFromGameStateUpdate(GameStateUpdate update) {
+    public void refreshFromGameStateUpdate(TTTGameState update) {
         if (update == null || update.getBoard() == null) return;
-        String[][] b = update.getBoard();
+        System.out.println("Ui update in TTTcontroller");
+        board = update.getBoard();
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button) {
                 Button btn = (Button) node;
                 Integer r = GridPane.getRowIndex(btn);
                 Integer c = GridPane.getColumnIndex(btn);
+
                 if (r == null) r = 0;
                 if (c == null) c = 0;
-                String cell = r < b.length && c < b[r].length ? b[r][c] : "EMPTY";
-                if ("PLAYER_1".equals(cell)) {
+                // Don't know if there is a reason not to set the style for empty buttons
+
+                btn.setText(getToken(board[r][c]));
+                System.out.println("button updated as "+getToken(board[r][c]));
+                if(!board[r][c].equals(Player.EMPTY)) {
+                    btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
+                }
+                /*
+                if (r == null) r = 0;
+                if (c == null) c = 0;
+                Player cell = r < b.length && c < b[r].length ? b[r][c] : Player.EMPTY;
+
+                if (Player.PLAYER_1.equals(cell)) {
                     btn.setText("X");
                     btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
                 } else if ("PLAYER_2".equals(cell)) {
@@ -263,25 +302,27 @@ public class TicTacToeController {
                 } else {
                     btn.setText("");
                     btn.setStyle("");
-                }
-                boolean gameOver = !"IN_PROGRESS".equals(update.getStatus());
+                }*/
+                //btn.();
+                boolean gameOver = !State.IN_PROGRESS.equals(update.getState());
                 btn.setDisable(gameOver);
             }
         }
-        String status = update.getStatus();
-        if ("PLAYER_1_WIN".equals(status)) turnLabel.setText("X Wins!");
-        else if ("PLAYER_2_WIN".equals(status)) turnLabel.setText("O Wins!");
-        else if ("TIE".equals(status)) turnLabel.setText("Draw!");
-        else turnLabel.setText("PLAYER_1".equals(update.getCurrentTurn()) ? "X's Turn" : "O's Turn");
+        State status = update.getState();
+        if (State.PLAYER_1_WIN.equals(status)) turnLabel.setText("X Wins!");
+        else if (State.PLAYER_2_WIN.equals(status)) turnLabel.setText("O Wins!");
+        else if (State.TIE.equals(status)) turnLabel.setText("Draw!");
+        else turnLabel.setText(getToken(update.getPlayerTurn()));
+        /* commented out depending on merging gamestate and gamestateupdate functions
         if (update.getMessage() != null && !update.getMessage().isEmpty()) {
             turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");
-        }
+        }*/
     }
 
-    public void setClientCore(ClientCore c) {
+    /*public void setClientCore(ClientCore c) {
         this.clientCore = c;
         if (c != null && c.getLastUpdate() != null) refreshFromGameStateUpdate(c.getLastUpdate());
-    }
+    }*/
 
     public void setVisibility(Boolean status){
         boardPane.setVisible(status);

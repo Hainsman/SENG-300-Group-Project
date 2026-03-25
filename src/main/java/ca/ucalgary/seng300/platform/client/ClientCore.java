@@ -2,9 +2,11 @@ package ca.ucalgary.seng300.platform.client;
 
 import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.GameState;
+import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
@@ -38,6 +40,8 @@ public class ClientCore extends Thread{
     public volatile char flg = 'n';
 
     public String gameType;
+    public String Player1 = "X";
+    public String Player2 = "O";
     private TTTRuleValidator cliEngine;
     public GameState gstate;
 
@@ -46,7 +50,7 @@ public class ClientCore extends Thread{
     private volatile String myPlayerId;
     private volatile String mySide; // "PLAYER_1" or "PLAYER_2"
     public volatile  boolean upFlag = false;
-    public volatile GameStateUpdate lastUpdate;
+    public volatile GameState lastUpdate;
     private volatile Runnable onGameStateUpdate;
     
     public boolean submitMove(int row, int col){
@@ -83,13 +87,24 @@ public class ClientCore extends Thread{
         cliEngine = new TTTRuleValidator();
     }
 
-    public GameStateUpdate getLastUpdate() {
+    public GameState getLastUpdate() {
         return lastUpdate;
+    }
+
+    public String debugBoard(TTTGameState t) {
+        String s = "";
+        for (Player[] p : t.getBoard()) {
+            for (Player pp : p) {
+                s = s + pp;
+            }
+        }
+        return s;
     }
 
     @Override
     public void run() {
         try {
+            Platform.setImplicitExit(false);
             // Connect to the server at localhost on port 2020
             Socket socket = new Socket();
             try {
@@ -147,16 +162,19 @@ public class ClientCore extends Thread{
                         break;
 
 
-                    case GameStateUpdate g:
+                    case GameState g:
                         System.out.println("a gamestate arrived");
-                        lastUpdate = g;
+
+                        System.out.println(debugBoard((TTTGameState) g));
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
                                 // update UI:
-                                ioMain.ttt.refreshFromGameStateUpdate(g);
+                                ioMain.ttt.refreshFromGameStateUpdate((TTTGameState) g);
+                                System.out.println("Ui update triggered");
                             }
                         });
+                        lastUpdate = g;
 
                         break;
                     case chatMessage c:

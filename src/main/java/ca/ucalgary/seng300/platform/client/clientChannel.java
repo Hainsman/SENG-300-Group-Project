@@ -8,7 +8,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-
+/*
 public class clientChannel extends Thread{
     // main server variable
     private ClientCore cliC;
@@ -92,7 +92,7 @@ public class clientChannel extends Thread{
                         break;
 
 
-                    case GameStateUpdate g:
+                    case GameState g:
                         System.out.println("a gamestate arrived");
                         cliC.lastUpdate = g;
                         cliC.upFlag = true;
@@ -120,7 +120,7 @@ public class clientChannel extends Thread{
 }
 
 
-                /*
+
                 // communication string
                 String[] parts = message.split("#");
                 int val;

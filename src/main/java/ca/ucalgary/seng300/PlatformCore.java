@@ -1,9 +1,11 @@
 package ca.ucalgary.seng300;
 
+import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.server.GameSessionRecord;
@@ -67,13 +69,23 @@ public class PlatformCore {
         //Game g = games.get(ID);
         if(type.equals("TTT")){
             //TTTsesh.get(ID).handleAction(p);
-
             tempGame.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(),new TTTActionPayload(p.getRow(),p.getCol())) {
             });
+            System.out.println(debugBoard((TTTGameState) tempGame.getGameState()));
             p1.cliSend(tempGame.getGameState());
+
             //p2.cliSend(tempGame.getGameState());
         }
 
+    }
+    public String debugBoard(TTTGameState t) {
+        String s = "";
+        for (Player[] p : t.getBoard()) {
+            for (Player pp : p) {
+                s = s + pp;
+            }
+        }
+        return s;
     }
 
     // Number of active users

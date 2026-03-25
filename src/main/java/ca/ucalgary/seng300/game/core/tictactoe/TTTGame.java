@@ -5,6 +5,7 @@ import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.RuleValidator;
+import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 
 import java.util.Map;
 

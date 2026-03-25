@@ -29,6 +29,7 @@ public class platformChannel extends Thread {
     public void cliSend (Object o){
         try{
             outServ.writeObject(o);
+            outServ.reset();
         } catch (Exception e) {
             e.printStackTrace();
         }
