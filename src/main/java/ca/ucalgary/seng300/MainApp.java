@@ -25,7 +25,6 @@ public class MainApp extends Application {
         );
         Scene scene = new Scene(loader.load(), 1020, 680);
         stage.setScene(scene);
-        stage.setTitle("Bogo Solutions");
         stage.show();
     }
 
