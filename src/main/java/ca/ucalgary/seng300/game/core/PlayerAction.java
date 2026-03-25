@@ -3,12 +3,14 @@ package ca.ucalgary.seng300.game.core;
 public abstract class PlayerAction {
     private final String playerID;
     private final ActionType actionType;
-    private final ActionPayload actionPayload;
+    private final int row;
+    private final int col;
 
-    protected PlayerAction(String playerID, ActionType actionType, ActionPayload actionPayload) {
+    protected PlayerAction(String playerID, ActionType actionType, int row, int col) {
         this.playerID = playerID;
         this.actionType = actionType;
-        this.actionPayload = actionPayload;
+        this.row = row;
+        this.col = col;
     }
 
     public String getPlayerID() {
@@ -19,7 +21,11 @@ public abstract class PlayerAction {
         return actionType;
     }
 
-    public ActionPayload getActionPayload() {
-        return  actionPayload;
+    public int getRowValue() {
+        return row;
+    }
+
+    public int getColValue() {
+        return col;
     }
 }
