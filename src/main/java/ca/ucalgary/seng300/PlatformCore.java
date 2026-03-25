@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300;
 
+import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
@@ -14,6 +15,7 @@ import ca.ucalgary.seng300.platform.server.platformChannel;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,8 +29,11 @@ public class PlatformCore {
     // list of chat/lobbies
     public List<String> chatservers;
 
-    // List of games gettable by ID
-    public TTTGame tempGame;
+    // hashmap of games gettable by ID
+    HashMap<String, Game> games;
+    // would be the list of all unused game ids, up to max size
+    String availableIDs = "test";
+
     public platformChannel p1;
     public platformChannel p2;
 
@@ -65,18 +70,42 @@ public class PlatformCore {
         connected.remove(i);
     }
 
-    public void gameEvent(int ID, String type, PlayerMove p){
+    // Called by matchmaking, creates a new game, adds both players
+    // then would remove players from matchmaking and notify them
+    public boolean gameCreate(String type, platformChannel p1, platformChannel p2){
+        return true;
+    }
+    public boolean tempJoin(platformChannel p){
+        if(p1 == null){
+            p1 = p;
+            return true;
+        }
+        else if(p2 == null){
+            p2 = p;
+            tempGameReset();
+            return true;
+        }
+        return false;
+    }
+    public void tempGameReset(){
+        TTTGame t =(TTTGame) games.get("test");
+        t.tempReset();
+        p1.cliSend(t.getGameState());
+        p2.cliSend(t.getGameState());
+    }
+
+    public void gameEvent(String id, String type, PlayerMove p){
         //Game g = games.get(ID);
         if(type.equals("TTT")){
-            //TTTsesh.get(ID).handleAction(p);
-            tempGame.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(),new TTTActionPayload(p.getRow(),p.getCol())) {
+            // Player channel stores the game type and ID for each client, no need to send it
+            TTTGame t =(TTTGame) games.get(id);
+
+            t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(),new TTTActionPayload(p.getRow(),p.getCol())) {
             });
-            System.out.println(debugBoard((TTTGameState) tempGame.getGameState()));
-            p1.cliSend(tempGame.getGameState());
-
-            //p2.cliSend(tempGame.getGameState());
+            System.out.println(debugBoard((TTTGameState) t.getGameState()));
+            p1.cliSend(t.getGameState());
+            p2.cliSend(t.getGameState());
         }
-
     }
     public String debugBoard(TTTGameState t) {
         String s = "";
@@ -96,8 +125,8 @@ public class PlatformCore {
         // Max clients -- PLACEHOLDER
         int ClientMax = 6;
         int CCount = 0;
-
-        tempGame = new TTTGame();
+        games = new HashMap<>();
+        games.put("test", new TTTGame());
 
         // list of threads
         users = new ArrayList<platformChannel>();

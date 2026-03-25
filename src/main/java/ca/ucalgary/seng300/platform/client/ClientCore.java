@@ -40,6 +40,7 @@ public class ClientCore extends Thread{
     public volatile char flg = 'n';
 
     public String gameType;
+    public Player thisUser;
     public String Player1 = "X";
     public String Player2 = "O";
     private TTTRuleValidator cliEngine;
@@ -55,6 +56,7 @@ public class ClientCore extends Thread{
     
     public boolean submitMove(int row, int col){
         //if(gameType == "TTT"){
+        //if(lastUpdate == null || lastUpdate.getPlayerTurn().equals(thisUser)){
             TTTPlayerMove p = new TTTPlayerMove(CID, "MOVE" , row, col);
             //if(cliEngine.validateMove(gstate,p)){
             try{
@@ -66,6 +68,9 @@ public class ClientCore extends Thread{
             //else{
             //    return false;
             //}
+        //}
+        //else{
+        //    return false;
         //}
         //return false;
     }
@@ -164,7 +169,7 @@ public class ClientCore extends Thread{
 
                     case GameState g:
                         System.out.println("a gamestate arrived");
-
+                        lastUpdate = (TTTGameState) g;
                         System.out.println(debugBoard((TTTGameState) g));
                         Platform.runLater(new Runnable() {
                             @Override
@@ -174,7 +179,7 @@ public class ClientCore extends Thread{
                                 System.out.println("Ui update triggered");
                             }
                         });
-                        lastUpdate = g;
+                        //lastUpdate = g;
 
                         break;
                     case chatMessage c:

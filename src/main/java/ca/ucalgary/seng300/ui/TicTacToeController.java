@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -70,14 +71,21 @@ public class TicTacToeController {
     private Button resetButton;
 
     private Player[][] board = new Player[3][3]; // stores PLAYER_1 PLAYER_2 NULL
-    private Player myPlayer = Player.PLAYER_1;    // which player this user is, PLAYER_1 or PLAYER_2
+    private Player myPlayer = Player.EMPTY;    // which player this user is, PLAYER_1 or PLAYER_2
     private boolean xTurn = true; // X starts
     private int moves = 0;
 
+    public void setPlayer(Player p){
+        myPlayer = p;
+    }
+
+
     private static final Color xColor = Color.web("#3B82F6");
     private static final Color oColor = Color.web("#A855F7");
+
     private String player1Token = "X";
     private String player2Token = "O";
+    private String emptyToken = "";
 
     private String getToken (Player p){
         if(p.equals(Player.PLAYER_1)){
@@ -86,10 +94,12 @@ public class TicTacToeController {
         else if (p.equals(Player.PLAYER_2)){
             return player2Token;
         }
+        else if (p.equals(Player.EMPTY)){
+            return emptyToken;
+        }
         else{
             // this should probably never happen, but if null needs a token it goes here
             return "ERR";
-            //return "";
         }
     }
 
@@ -135,6 +145,9 @@ public class TicTacToeController {
         if (row == null) row = 0;
         if (col == null) col = 0;
         boolean upd = clientCore.submitMove(row, col);
+        if(!upd){
+            turnLabel.setText(turnLabel.getText() + " ( Not your Turn )");
+        }
         /*
         if (clientCore != null) {
             GameStateUpdate update = clientCore.submitMoveSync(row, col);
@@ -221,6 +234,7 @@ public class TicTacToeController {
         xTurn = true;
         turnLabel.setText("X's Turn");
         GameGUI.clearHistory();
+        clientCore.msgSend(new sysMSG("reset",""));
 
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button) {

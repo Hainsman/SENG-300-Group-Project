@@ -3,6 +3,7 @@ import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,11 +13,13 @@ public class platformChannel extends Thread {
     private Socket socket;
     private String lobby;
     private String gameQueue;
-    private int gameID;
+    private String gameType;
+    private String gameID;
 
     // main server variable
     private PlatformCore serv;
     private ObjectOutputStream outServ;
+    private ObjectInputStream inCli;
     public  String ID;
 
 
@@ -38,25 +41,34 @@ public class platformChannel extends Thread {
     @Override
     public void run() {
         try {
+
             // Set up input and output streams for talking back and forth
             outServ = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream in_socket = new ObjectInputStream(socket.getInputStream());
+            inCli = new ObjectInputStream(socket.getInputStream());
 
-            serv.p1 = this;
-            //out_socket.println("connected");
+            gameID = "test";
+            gameType = "TTT";
 
+            serv.tempJoin(this);
             // variables for parsing input
             Object message;
 
             // if the client is closed unexpectedly readline returns null so this catches any error
             while (!interrupted()) {
                 // Read the client's message
-                message = in_socket.readObject();
+                message = inCli.readObject();
 
                 switch (message) {
                     case PlayerMove p:
                         System.out.println("player action arrived");
-                        serv.gameEvent(gameID, "TTT", p);
+                        serv.gameEvent(gameID, gameType, p);
+                        break;
+                    case sysMSG s:
+                        switch(s.getType()){
+                            case "reset":
+                                serv.tempGameReset();
+
+                        }
                         break;
                     case chatMessage cm:
                         if(serv.chatservers.contains(cm.getServ())){

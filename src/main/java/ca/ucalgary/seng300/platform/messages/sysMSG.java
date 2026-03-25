@@ -4,7 +4,7 @@ public class sysMSG {
     private String type;    // system message type (matchmaking, chat, game, lobby, stats)
     private String fieldA;  // data field A
     private String fieldB;  // data field B
-    private Object payload; // extra info
+    private String payload; // extra info, object .tostring of another object if needed
 
     public sysMSG(String tp, String data1) {
         type = tp;
@@ -20,11 +20,11 @@ public class sysMSG {
         payload = null;
     }
 
-    public sysMSG(String tp, String data1, String data2, Object o) {
+    public sysMSG(String tp, String data1, String data2, String s) {
         type = tp;
         fieldA = data1;
         fieldB = data2;
-        payload = o;
+        payload = s;
     }
 
     public String getType() { return type; }
