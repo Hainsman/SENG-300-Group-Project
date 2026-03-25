@@ -118,9 +118,9 @@ public class TicTacToeController {
         if (clientCore != null) {
             GameStateUpdate update = clientCore.submitMoveSync(row, col);
             Player playerTurn = update.getGameState().getPlayerTurn();
-            if (update != null) {
-                GameGUI.addHistory("TicTacToe", "PLAYER_1".equals(playerTurn) ? "O" : "X",
-                        "(" + (row + 1) + ", " + (col + 1) + ")", "PLAYER_1".equals(playerTurn) ? oColor : xColor);
+            if (update.getGameState() != null) {
+                GameGUI.addHistory("TicTacToe", Player.PLAYER_1.equals(playerTurn) ? "O" : "X",
+                        "(" + (row + 1) + ", " + (col + 1) + ")", Player.PLAYER_1.equals(playerTurn) ? oColor : xColor);
                 refreshFromGameStateUpdate(update);
             }
             return;
@@ -299,25 +299,25 @@ public class TicTacToeController {
                 if (r == null) r = 0;
                 if (c == null) c = 0;
                 Player cell = r < b.length && c < b[r].length ? b[r][c] : Player.EMPTY;
-                if ("PLAYER_1".equals(cell)) {
+                if (Player.PLAYER_1.equals(cell)) {
                     btn.setText("X");
                     btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
-                } else if ("PLAYER_2".equals(cell)) {
+                } else if (Player.PLAYER_2.equals(cell)) {
                     btn.setText("O");
                     btn.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
                 } else {
                     btn.setText("");
                     btn.setStyle("");
                 }
-                boolean gameOver = !"IN_PROGRESS".equals(update.getGameState().getState());
+                boolean gameOver = !State.IN_PROGRESS.equals(update.getGameState().getState());
                 btn.setDisable(gameOver);
             }
         }
         State status = update.getGameState().getState();
-        if ("PLAYER_1_WIN".equals(status)) turnLabel.setText("X Wins!");
-        else if ("PLAYER_2_WIN".equals(status)) turnLabel.setText("O Wins!");
-        else if ("TIE".equals(status)) turnLabel.setText("Draw!");
-        else turnLabel.setText("PLAYER_1".equals(update.getGameState().getPlayerTurn()) ? "X's Turn" : "O's Turn");
+        if (State.PLAYER_1_WIN.equals(status)) turnLabel.setText("X Wins!");
+        else if (State.PLAYER_2_WIN.equals(status)) turnLabel.setText("O Wins!");
+        else if (State.TIE.equals(status)) turnLabel.setText("Draw!");
+        else turnLabel.setText(Player.PLAYER_1.equals(Player.PLAYER_1) ? "X's Turn" : "O's Turn");
         if (update.getMessage() != null && !update.getMessage().isEmpty()) {
             turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");
         }
