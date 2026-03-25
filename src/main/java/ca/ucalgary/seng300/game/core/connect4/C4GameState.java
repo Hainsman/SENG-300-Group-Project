@@ -59,6 +59,7 @@ public class C4GameState implements GameState {
                         playerTurn = Player.PLAYER_1;
                     }
                     successful = true;
+                    break; //Added to fix the issue where it was filling the entire column with alternating players
                 }
             }
         }
