@@ -120,7 +120,7 @@ public class TicTacToeController {
             Player playerTurn = update.getGameState().getPlayerTurn();
             if (update.getGameState() != null) {
                 GameGUI.addHistory("TicTacToe", Player.PLAYER_1.equals(playerTurn) ? "O" : "X",
-                        "(" + (row + 1) + ", " + (col + 1) + ")", Player.PLAYER_1.equals(playerTurn) ? oColor : xColor);
+                        "(" + (row + 1) + ", " + (col + 1) + ")", Player.PLAYER_1.equals(playerTurn) ? oColor : xColor); // Perhaps X should go first?
                 refreshFromGameStateUpdate(update);
             }
             return;
