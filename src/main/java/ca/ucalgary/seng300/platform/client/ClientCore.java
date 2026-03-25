@@ -20,14 +20,14 @@ public class ClientCore {
     private final String host;
     private final int port;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private volatile String sessionId;
-    private volatile String myPlayerId;
+    public volatile String sessionId;
+    public volatile String myPlayerId;
     private volatile String mySide; // "PLAYER_1" or "PLAYER_2"
     private volatile GameStateUpdate lastUpdate;
     private volatile Runnable onGameStateUpdate;
-    private Socket server;
-    private BufferedReader in;
-    private PrintWriter out;
+    public Socket server;
+    public BufferedReader in;
+    public PrintWriter out;
 
     public ClientCore(String host, int port) {
         this.host = host;
@@ -51,13 +51,15 @@ public class ClientCore {
     public boolean connect() {
         try { server = new Socket(host, port); } catch (Exception _ ) {
             System.err.println("ERROR: couldn't connect to server.");
-            server = null; // NOTE(Dylan): Just in case ;-)
             return false;
         }
         try { out = new PrintWriter(server.getOutputStream(), true); } catch (Exception _) {
             System.err.println("ERROR: couldn't set up stream for outputting to server.");
-            server = null; // NOTE(Dylan): Just in case ;-)
-            out = null;
+            return false;
+        }
+
+        try { in = new BufferedReader(new InputStreamReader(server.getInputStream()));} catch (Exception _ ) {
+            System.err.println("ERROR: couldn't set up stream for getting input from server.");
             return false;
         }
 
@@ -80,7 +82,7 @@ public class ClientCore {
      * STUB: returns null; platform core will implement.
      */
     public SessionCreated createSession(String playerId) {
-        // STUB: platform core will implement (send CreateOrJoinSession, receive SessionCreated)
+        out.println(String.format("CREATE_SESSION %s %s %s", "?", playerId, "TTT"));
         return null;
     }
 
@@ -98,8 +100,6 @@ public class ClientCore {
      */
     public void submitMove(int row, int col) {
         out.println(String.format("MOVE %s %s %d %d", sessionId, myPlayerId, row, col));
-        // NOTE(Dylan): I have no idea how to do the onGameStateUpdate callback thing...
-        // I think I'm just going to focus on single-threading for now?
     }
 
     /**
