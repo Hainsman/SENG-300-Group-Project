@@ -28,7 +28,6 @@ public class MainApp extends Application {
                 WindowManager.WINDOW_MINIMUM_WIDTH,
                 WindowManager.WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
-        stage.setTitle("Bogo Solutions");
         stage.show();
     }
 
