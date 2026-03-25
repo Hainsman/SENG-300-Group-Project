@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ca.ucalgary.seng300.ui.joinLobbyController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <VBox spacing="20" alignment="TOP_CENTER"
+              AnchorPane.topAnchor="20.0"
+              AnchorPane.leftAnchor="20.0"
+              AnchorPane.rightAnchor="20.0">
+
+            <!-- Header -->
+            <VBox alignment="CENTER" spacing="5" styleClass="header-box">
+                <Label text="Join a Game" styleClass="title-label"/>
+                <Label text="Enter a lobby code or browse available games"
+                       styleClass="subtitle-label"/>
+            </VBox>
+
+            <HBox spacing="20">
+
+                <!-- LEFT SIDE -->
+                <VBox spacing="20" HBox.hgrow="ALWAYS">
+
+                    <!-- Enter Code -->
+                    <VBox spacing="10" styleClass="card">
+                        <Label text="Enter Lobby Code" styleClass="card-title"/>
+
+                        <HBox spacing="10">
+                            <TextField promptText="Enter 6-digit code..."
+                                       fx:id="codeField"
+                                       HBox.hgrow="ALWAYS"/>
+                            <Button text="Join"
+                                    fx:id="joinByCodeBtn"
+                                    />
+                        </HBox>
+                    </VBox>
+
+                    <!-- Search -->
+                    <VBox styleClass="card">
+                        <TextField promptText="Search by host name or game..."
+                                   fx:id="searchField"/>
+                    </VBox>
+
+                    <!-- Available Lobbies -->
+                    <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
+                        <Label text="Available Lobbies" styleClass="card-title"/>
+
+                        <ListView fx:id="lobbyList" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+
+                </VBox>
+
+                <!-- RIGHT SIDE -->
+                <VBox spacing="20" prefWidth="250">
+
+                    <VBox styleClass="card">
+                        <Label text="Quick Join" styleClass="card-title"/>
+                        <Label text="Ask your friend for their lobby code and enter it above."
+                               wrapText="true"/>
+                    </VBox>
+
+                    <VBox styleClass="card">
+                        <Label text="How to Join" styleClass="card-title"/>
+                        <Label text="1. Get a code&#10;2. Enter it&#10;3. Wait for host"
+                               wrapText="true"/>
+                    </VBox>
+
+                    <VBox styleClass="card">
+                        <Label text="Active Now" styleClass="card-title"/>
+                        <Label text="Players Online: 1234"/>
+                        <Label text="Active Lobbies: 42"/>
+                    </VBox>
+
+                </VBox>
+
+            </HBox>
+
+        </VBox>
+    </children>
+
+</AnchorPane>

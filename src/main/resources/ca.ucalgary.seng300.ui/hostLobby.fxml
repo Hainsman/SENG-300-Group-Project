@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ca.ucalgary.seng300.ui.hostLobbyController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <VBox spacing="20" alignment="TOP_CENTER"
+              AnchorPane.topAnchor="20.0"
+              AnchorPane.leftAnchor="20.0"
+              AnchorPane.rightAnchor="20.0">
+
+            <!-- Header -->
+            <VBox alignment="CENTER" spacing="5" styleClass="header-box">
+                <Label text="Host a Game" styleClass="title-label"/>
+                <Label text="Create a lobby and invite your friends"
+                       styleClass="subtitle-label"/>
+            </VBox>
+
+            <HBox spacing="20">
+
+                <!-- LEFT SIDE -->
+                <VBox spacing="20" HBox.hgrow="ALWAYS">
+
+                    <!-- Select Game -->
+                    <VBox spacing="10" styleClass="card">
+                        <Label text="Select Game" styleClass="card-title"/>
+
+                        <HBox spacing="15">
+                            <ToggleButton text="Checkers"
+                                          fx:id="checkersBtn"
+                                          toggleGroup="gameGroup"
+                                          HBox.hgrow="ALWAYS"/>
+
+                            <ToggleButton text="Connect 4"
+                                          fx:id="connect4Btn"
+                                          toggleGroup="gameGroup"
+                                          HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Lobby Settings -->
+                    <VBox spacing="15" styleClass="card">
+
+                        <Label text="Lobby Settings" styleClass="card-title"/>
+
+                        <TextField promptText="Lobby name (optional)"
+                                   fx:id="lobbyNameField"/>
+
+                        <Label text="Max Players"/>
+
+                        <Slider min="2" max="8" value="4"
+                                fx:id="playerSlider"/>
+
+                        <Label text="Privacy"/>
+
+                        <HBox spacing="10">
+                            <ToggleButton text="Public"
+                                          fx:id="publicBtn"
+                                          toggleGroup="privacyGroup"/>
+
+                            <ToggleButton text="Private"
+                                          fx:id="privateBtn"
+                                          toggleGroup="privacyGroup"/>
+                        </HBox>
+
+                    </VBox>
+
+                    <!-- Create Button -->
+                    <Button text="Create Lobby"
+                            fx:id="createLobbyBtn"
+                            prefHeight="50"/>
+
+                </VBox>
+
+                <!-- RIGHT SIDE -->
+                <VBox spacing="20" prefWidth="250">
+
+                    <VBox styleClass="card">
+                        <Label text="Host Benefits" styleClass="card-title"/>
+                        <Label text="• Control start&#10;• Manage players&#10;• Customize settings&#10;• Invite friends"
+                               wrapText="true"/>
+                    </VBox>
+
+                    <VBox styleClass="card">
+                        <Label text="Lobby Preview" styleClass="card-title"/>
+                        <Label text="Game: -"/>
+                        <Label text="Max Players: -"/>
+                        <Label text="Privacy: -"/>
+                    </VBox>
+
+                    <VBox styleClass="card">
+                        <Label text="Quick Tip" styleClass="card-title"/>
+                        <Label text="Share your code after creating the lobby!"
+                               wrapText="true"/>
+                    </VBox>
+
+                </VBox>
+
+            </HBox>
+
+        </VBox>
+    </children>
+
+</AnchorPane>
