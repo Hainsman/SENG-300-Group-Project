@@ -16,8 +16,8 @@ public class TTTGameState implements GameState {
     public boolean applyAction(PlayerAction action) {
         boolean successful = false;
         TTTPlayerAction TTTaction = (TTTPlayerAction) action;
-        int row = TTTaction.getActionPayload().row();
-        int col = TTTaction.getActionPayload().col();
+        int row = TTTaction.getRowValue();
+        int col = TTTaction.getColValue();
 
         if (board != null && state == State.IN_PROGRESS) {
             board[row][col] = playerTurn;
