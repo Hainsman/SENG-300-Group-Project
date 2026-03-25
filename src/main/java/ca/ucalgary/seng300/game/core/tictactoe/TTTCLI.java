@@ -23,7 +23,8 @@ public class TTTCLI {
             TTTPlayerAction action = new TTTPlayerAction(
                 state.getPlayerTurn().toString(),
                 TTTActionType.MOVE,
-                new TTTActionPayload(row, col)
+                row,
+                col
             );
 
             // TTTGame validates the move via TTTRuleValidator, then applies it to the state
