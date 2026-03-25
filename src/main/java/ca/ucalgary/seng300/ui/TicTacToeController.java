@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.game.core.tictactoe.TicTacToeRandomMoveGenerator;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -116,9 +117,10 @@ public class TicTacToeController {
 
         if (clientCore != null) {
             GameStateUpdate update = clientCore.submitMoveSync(row, col);
+            Player playerTurn = update.getGameState().getPlayerTurn();
             if (update != null) {
-                GameGUI.addHistory("TicTacToe", "PLAYER_1".equals(update.getCurrentTurn()) ? "O" : "X",
-                        "(" + (row + 1) + ", " + (col + 1) + ")", "PLAYER_1".equals(update.getCurrentTurn()) ? oColor : xColor);
+                GameGUI.addHistory("TicTacToe", "PLAYER_1".equals(playerTurn) ? "O" : "X",
+                        "(" + (row + 1) + ", " + (col + 1) + ")", "PLAYER_1".equals(playerTurn) ? oColor : xColor);
                 refreshFromGameStateUpdate(update);
             }
             return;
@@ -287,8 +289,8 @@ public class TicTacToeController {
 
     /** Use when in online mode: refresh grid and label from server update. */
     public void refreshFromGameStateUpdate(GameStateUpdate update) {
-        if (update == null || update.getBoard() == null) return;
-        String[][] b = update.getBoard();
+        if (update == null || update.getGameState() == null) return;
+        Player[][] b = update.getGameState().getBoard();
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button) {
                 Button btn = (Button) node;
@@ -296,7 +298,7 @@ public class TicTacToeController {
                 Integer c = GridPane.getColumnIndex(btn);
                 if (r == null) r = 0;
                 if (c == null) c = 0;
-                String cell = r < b.length && c < b[r].length ? b[r][c] : "EMPTY";
+                Player cell = r < b.length && c < b[r].length ? b[r][c] : Player.EMPTY;
                 if ("PLAYER_1".equals(cell)) {
                     btn.setText("X");
                     btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
@@ -307,15 +309,15 @@ public class TicTacToeController {
                     btn.setText("");
                     btn.setStyle("");
                 }
-                boolean gameOver = !"IN_PROGRESS".equals(update.getStatus());
+                boolean gameOver = !"IN_PROGRESS".equals(update.getGameState().getState());
                 btn.setDisable(gameOver);
             }
         }
-        String status = update.getStatus();
+        State status = update.getGameState().getState();
         if ("PLAYER_1_WIN".equals(status)) turnLabel.setText("X Wins!");
         else if ("PLAYER_2_WIN".equals(status)) turnLabel.setText("O Wins!");
         else if ("TIE".equals(status)) turnLabel.setText("Draw!");
-        else turnLabel.setText("PLAYER_1".equals(update.getCurrentTurn()) ? "X's Turn" : "O's Turn");
+        else turnLabel.setText("PLAYER_1".equals(update.getGameState().getPlayerTurn()) ? "X's Turn" : "O's Turn");
         if (update.getMessage() != null && !update.getMessage().isEmpty()) {
             turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");
         }

@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.platform.messages;
 
+import ca.ucalgary.seng300.platform.constants.Game;
+
 import java.util.UUID;
 
 /**
@@ -7,35 +9,22 @@ import java.util.UUID;
  * Serialized with Gson for TCP wire format.
  */
 public class SubmitMove extends Message{
-//    private String sessionId;
-    private String playerId;
+
     private int row;
     private int col;
-    private String gameType;
+    private int gameID;
 
-//    public SubmitMove() {}
-//
-//    public SubmitMove(String sessionId, String playerId, int row, int col) {
-//        this(sessionId, playerId, row, col, "TICTACTOE");
-//    }
-
-    public SubmitMove(UUID globallyUniqueSessionId, String playerId, int row, int col, String gameType) {
+    public SubmitMove(UUID globallyUniqueSessionId, int row, int col, int gameID) {
         super(globallyUniqueSessionId, SubmitMove.class.getSimpleName());
-//        this.sessionId = sessionId;
-        this.playerId = playerId;
         this.row = row;
         this.col = col;
-        this.gameType = gameType != null ? gameType : "TICTACTOE";
+        this.gameID = gameID;
     }
 
-//    public String getSessionId() { return sessionId; }
-//    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
-    public String getPlayerId() { return playerId; }
-    public void setPlayerId(String playerId) { this.playerId = playerId; }
     public int getRow() { return row; }
     public void setRow(int row) { this.row = row; }
     public int getCol() { return col; }
     public void setCol(int col) { this.col = col; }
-    public String getGameType() { return gameType; }
-    public void setGameType(String gameType) { this.gameType = gameType; }
+    public int getGameID() { return gameID; }
+    public void setGameID(int gameID) { this.gameID = gameID; }
 }

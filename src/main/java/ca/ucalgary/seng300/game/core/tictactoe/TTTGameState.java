@@ -1,16 +1,20 @@
 package ca.ucalgary.seng300.game.core.tictactoe;
 
 import ca.ucalgary.seng300.game.core.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class TTTGameState implements GameState {
+
+//    private final String type = TTTGameState.class.getSimpleName();
 
     private Player[][] board = {
         {Player.EMPTY, Player.EMPTY, Player.EMPTY},
         {Player.EMPTY, Player.EMPTY, Player.EMPTY},
         {Player.EMPTY, Player.EMPTY, Player.EMPTY}
     };
-    Player playerTurn = Player.PLAYER_1;
-    State state = State.IN_PROGRESS;
+    private Player playerTurn = Player.PLAYER_2;
+    private State state = State.IN_PROGRESS;
 
     @Override
     public boolean applyAction(PlayerAction action) {

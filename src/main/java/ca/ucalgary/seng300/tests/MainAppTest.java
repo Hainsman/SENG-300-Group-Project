@@ -1,27 +1,30 @@
 package ca.ucalgary.seng300.tests;
 
+import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
+import ca.ucalgary.seng300.platform.constants.TypeSession;
 import ca.ucalgary.seng300.platform.domain.*;
 import ca.ucalgary.seng300.platform.domain.Record;
 import ca.ucalgary.seng300.platform.messages.CreateOrJoinSession;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
+import ca.ucalgary.seng300.platform.messages.Message;
+import ca.ucalgary.seng300.platform.messages.SessionCreated;
+import ca.ucalgary.seng300.platform.messages.SubmitMove;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.utils.Helper;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+
+import static ca.ucalgary.seng300.platform.messages.Message.toJson;
 
 
 public class MainAppTest {
     public static void main(String[] args) {
-//        launch(args);
-        LocalDateTime now = LocalDateTime.now(); //local time mountain
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         UserStore userStorage = UserStore.getInstance();
         userStorage.create(new User(1, "Daniel", "daniel.maximov@ucalgary.ca", Helper.hashPassword("ABC", Constants.HASH_ALGORITHM)));
@@ -126,9 +129,31 @@ public class MainAppTest {
             System.out.println(Helper.getRank(sortedPlayers.get(i).getGameCounter(), sortedPlayers.get(i).getScore()).getDisplayName());
         }
 
+        UUID uniuqeIdent = UUID.randomUUID();
 
+        CreateOrJoinSession createOrJoinSession = new CreateOrJoinSession(TypeSession.CREATE_SESSION, uniuqeIdent, Game.TICK_TACK_TOE);
+        GameStateUpdate gameStateUpdate = new GameStateUpdate(uniuqeIdent, new TTTGameState(), "");
+        SessionCreated sessionCreated = new SessionCreated(uniuqeIdent, Player.PLAYER_1, "");
+        SubmitMove submitMove = new SubmitMove(uniuqeIdent, 1, 0, Game.CONNECT_FOUR);
+
+        String JsonCreateOrJoinSession = toJson(createOrJoinSession);
+        String JsonGameStateUpdate = toJson(gameStateUpdate);
+        String JsonSessionCreated = toJson(sessionCreated);
+        String JsonsubmitMove = toJson(submitMove);
+
+        System.out.println(JsonCreateOrJoinSession);
+        System.out.println(JsonGameStateUpdate);
+        System.out.println(JsonSessionCreated);
+        System.out.println(JsonsubmitMove);
+
+        Message messageCreateOrJoin = createOrJoinSession.fromJson(JsonCreateOrJoinSession);
+        Message messageGameStateUpdate = gameStateUpdate.fromJson(JsonGameStateUpdate);
+        Message messageSessionCreated = sessionCreated.fromJson(JsonSessionCreated);
+        Message messageSubmitMove = submitMove.fromJson(JsonsubmitMove);
+
+        System.out.println(messageCreateOrJoin.getGloballyUniqueSessionId());
+        System.out.println(messageGameStateUpdate.getGloballyUniqueSessionId());
+        System.out.println(messageSessionCreated.getGloballyUniqueSessionId());
+        System.out.println(messageSubmitMove.getGloballyUniqueSessionId());
     }
-
-    CreateOrJoinSession createOrJoinSession = new CreateOrJoinSession("CREATE_SESSION", UUID.randomUUID(), "Dan", "TTT");
-//    GameStateUpdate gameStateUpdate = new GameStateUpdate(UUID.randomUUID(), [3][3], Player);
 }

@@ -11,27 +11,27 @@ import com.google.gson.GsonBuilder;
  * Then client sends SubmitMove (JSON); server replies with GameStateUpdate (JSON).
  */
 public final class WireFormat {
-    private static final Gson GSON = new GsonBuilder().create();
-
-    public static String toJson(Object o) {
-        return GSON.toJson(o);
-    }
-
-    public static SubmitMove fromJsonSubmitMove(String json) {
-        return GSON.fromJson(json, SubmitMove.class);
-    }
-
-    public static GameStateUpdate fromJsonGameStateUpdate(String json) {
-        return GSON.fromJson(json, GameStateUpdate.class);
-    }
-
-    public static CreateOrJoinSession fromJsonCreateOrJoin(String json) {
-        return GSON.fromJson(json, CreateOrJoinSession.class);
-    }
-
-    public static SessionCreated fromJsonSessionCreated(String json) {
-        return GSON.fromJson(json, SessionCreated.class);
-    }
+//    private static final Gson GSON = new GsonBuilder().create();
+//
+//    public static String toJson(Object o) {
+//        return GSON.toJson(o);
+//    }
+//
+//    public static SubmitMove fromJsonSubmitMove(String json) {
+//        return GSON.fromJson(json, SubmitMove.class);
+//    }
+//
+//    public static GameStateUpdate fromJsonGameStateUpdate(String json) {
+//        return GSON.fromJson(json, GameStateUpdate.class);
+//    }
+//
+//    public static CreateOrJoinSession fromJsonCreateOrJoin(String json) {
+//        return GSON.fromJson(json, CreateOrJoinSession.class);
+//    }
+//
+//    public static SessionCreated fromJsonSessionCreated(String json) {
+//        return GSON.fromJson(json, SessionCreated.class);
+//    }
 
 //    public static SessionCreated toSessionCreated(String sessionId, String yourPlayer) {
 //        return new SessionCreated(sessionId, yourPlayer);

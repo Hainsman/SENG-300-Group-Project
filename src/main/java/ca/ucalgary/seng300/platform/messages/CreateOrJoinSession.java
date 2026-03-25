@@ -1,5 +1,8 @@
 package ca.ucalgary.seng300.platform.messages;
 
+import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.platform.constants.TypeSession;
+
 import java.util.UUID;
 
 /**
@@ -8,31 +11,17 @@ import java.util.UUID;
  * For JOIN_SESSION, sessionId must be set. For CREATE_SESSION, sessionId can be null.
  */
 public class CreateOrJoinSession extends Message{
-    private String type;      // "CREATE_SESSION" or "JOIN_SESSION"
-//    private String sessionId; // required for JOIN
-    private String playerId;  // this client's player id
-    private String gameType;
+    private TypeSession typeSession;      // "CREATE_SESSION" or "JOIN_SESSION"
+    private int gameID;
 
-//    public CreateOrJoinSession() {}
-
-    public CreateOrJoinSession(String type, String playerId) {
-        this(type, null, playerId, "TICTACTOE");
-    }
-
-    public CreateOrJoinSession(String type, UUID globallyUniqueSessionId, String playerId, String gameType) {
+    public CreateOrJoinSession(TypeSession typeSession, UUID globallyUniqueSessionId, int gameID) {
         super(globallyUniqueSessionId, CreateOrJoinSession.class.getSimpleName());
-        this.type = type;
-//        this.sessionId = sessionId;
-        this.playerId = playerId;
-        this.gameType = gameType != null ? gameType : "TICTACTOE";
+        this.typeSession = typeSession;
+        this.gameID = gameID;
     }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-//    public String getSessionId() { return sessionId; }
-//    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
-    public String getPlayerId() { return playerId; }
-    public void setPlayerId(String playerId) { this.playerId = playerId; }
-    public String getGameType() { return gameType; }
-    public void setGameType(String gameType) { this.gameType = gameType; }
+    public TypeSession getTypeSession() { return typeSession; }
+    public void setTypeSession(TypeSession typeSession) { this.typeSession = typeSession; }
+    public int getGameType() { return gameID; }
+    public void setGameType(int gameID) { this.gameID = gameID; }
 }
