@@ -22,7 +22,7 @@ public class TTTRuleValidator extends RuleValidator {
         //reject an action that is:
         //1. not the right player's turn
         //2. the game is not in progress
-        boolean isCorrectTurn = true; //action.getPlayerID().equals(gameState.getTurn());
+        boolean isCorrectTurn = action.getPlayerID().equals(tttGameState.getPlayerTurn().toString()); //action.getPlayerID().equals(gameState.getTurn());
         boolean isInProgress = tttGameState.getState() == State.IN_PROGRESS;
         if (!isCorrectTurn || !isInProgress) {
             System.out.println("Player action out of turn or game was not in progress");

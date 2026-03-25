@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.game.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class C4RuleValidator extends RuleValidator {
 
@@ -23,6 +24,12 @@ public class C4RuleValidator extends RuleValidator {
         // Reject if game is not in progress
         if (c4GameState.getState() != State.IN_PROGRESS) {
             System.out.println("Game is not in progress");
+            return false;
+        }
+
+        // Reject if player is out of turn
+        if(!action.getPlayerID().equals(c4GameState.getPlayerTurn().toString())) {
+            System.out.println("Action played out of turn");
             return false;
         }
 
