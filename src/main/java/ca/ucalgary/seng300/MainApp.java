@@ -10,7 +10,7 @@ import javafx.stage.StageStyle;
 
 public class MainApp extends Application {
 
-    public static final String TITLE = "I Swear I am not Gay.";
+    public static final String TITLE = "BOGO Solutions Game Application";
     public static final String VERSION = "1.0";
 
     @Override
