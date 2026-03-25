@@ -21,7 +21,5 @@ public class CreateOrJoinSession extends Message{
     }
 
     public TypeSession getTypeSession() { return typeSession; }
-    public void setTypeSession(TypeSession typeSession) { this.typeSession = typeSession; }
     public int getGameType() { return gameID; }
-    public void setGameType(int gameID) { this.gameID = gameID; }
 }

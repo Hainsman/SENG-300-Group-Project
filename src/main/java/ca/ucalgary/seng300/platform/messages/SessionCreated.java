@@ -19,7 +19,5 @@ public class SessionCreated extends Message {
     }
 
     public Player getYourPlayer() { return yourPlayer; }
-    public void setYourPlayer(Player yourPlayer) { this.yourPlayer = yourPlayer; }
     public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
 }
