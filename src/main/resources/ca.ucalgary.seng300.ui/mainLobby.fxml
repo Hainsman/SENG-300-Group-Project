@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ca.ucalgary.seng300.ui.mainLobbyController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <VBox spacing="20" alignment="TOP_CENTER"
+              AnchorPane.topAnchor="20.0"
+              AnchorPane.leftAnchor="20.0"
+              AnchorPane.rightAnchor="20.0">
+
+            <!-- 🔙 Back Button -->
+            <Button text="← Back to Menu"
+                    styleClass="back-button"/>
+
+            <!-- 🔥 HEADER (DYNAMIC TITLE) -->
+            <VBox alignment="CENTER" spacing="5" styleClass="header-box">
+                <Label fx:id="lobbyTitle"
+                       text="Game Lobby"
+                       styleClass="title-label"/>
+
+                <Label text="Invite friends and start the game"
+                       styleClass="subtitle-label"/>
+            </VBox>
+
+            <HBox spacing="20">
+
+                <!-- LEFT SIDE -->
+                <VBox spacing="20" HBox.hgrow="ALWAYS">
+
+                    <!-- Players -->
+                    <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
+                        <Label text="Players" styleClass="card-title"/>
+
+                        <ListView fx:id="playerList"
+                                  VBox.vgrow="ALWAYS"/>
+                    </VBox>
+
+                    <!-- Lobby Info -->
+                    <HBox spacing="20">
+
+                        <VBox styleClass="card" HBox.hgrow="ALWAYS">
+                            <Label text="Lobby Code" styleClass="card-title"/>
+                            <Label fx:id="lobbyCodeLabel" text="ABC123"/>
+                        </VBox>
+
+                        <VBox styleClass="card" HBox.hgrow="ALWAYS">
+                            <Label text="Privacy" styleClass="card-title"/>
+                            <Label fx:id="privacyLabel" text="Public"/>
+                        </VBox>
+
+                    </HBox>
+
+                    <!-- Start Button (Host Only) -->
+                    <Button text="Start Game"
+                            fx:id="startGameBtn"
+                            prefHeight="50"
+                            styleClass="start-button"/>
+
+                </VBox>
+
+                <!-- RIGHT SIDE -->
+                <VBox spacing="20" prefWidth="250">
+
+                    <!-- Invite -->
+                    <VBox styleClass="card">
+                        <Label text="Invite Players" styleClass="card-title"/>
+                        <Button text="Copy Lobby Code"/>
+                    </VBox>
+
+                    <!-- Lobby Settings Preview -->
+                    <VBox styleClass="card">
+                        <Label text="Lobby Info" styleClass="card-title"/>
+                        <Label fx:id="gameNameLabel" text="Game: Checkers"/>
+                        <Label fx:id="maxPlayersLabel" text="Max Players: 4"/>
+                    </VBox>
+
+                    <!-- Tips -->
+                    <VBox styleClass="card">
+                        <Label text="Tip" styleClass="card-title"/>
+                        <Label text="Share the code with friends to join quickly."
+                               wrapText="true"/>
+                    </VBox>
+
+                </VBox>
+
+            </HBox>
+
+        </VBox>
+    </children>
+
+</AnchorPane>
