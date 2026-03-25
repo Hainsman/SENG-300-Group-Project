@@ -18,8 +18,8 @@ public class C4GameState implements GameState {
     public boolean applyAction(PlayerAction action) {
         boolean successful = false;
         C4PlayerAction C4action = (C4PlayerAction) action;
-        int row = C4action.getActionPayload().row();
-        int col = C4action.getActionPayload().col();
+        int row = C4action.getRowValue();
+        int col = C4action.getColValue();
 
         if (board != null && state == State.IN_PROGRESS) {
             board[row][col] = playerTurn;
@@ -43,7 +43,7 @@ public class C4GameState implements GameState {
     public boolean applyActionColOnly(PlayerAction action) {
         boolean successful = false;
         C4PlayerAction C4action = (C4PlayerAction) action;
-        int col = C4action.getActionPayload().col();
+        int col = C4action.getColValue();
 
         if (board != null && state == State.IN_PROGRESS) {
             //check from bottom row upward to find the first empty row in the given column

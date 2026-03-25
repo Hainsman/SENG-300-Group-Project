@@ -3,13 +3,18 @@ package ca.ucalgary.seng300.game.core.connect4;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 
 public class C4PlayerAction extends PlayerAction {
-    public C4PlayerAction(String playerID, C4ActionType actionType, C4ActionPayload actionPayload) {
-        super(playerID, actionType, actionPayload);
+    public C4PlayerAction(String playerID, C4ActionType actionType, int row, int col) {
+        super(playerID, actionType, row, col);
     }
 
     @Override
-    public C4ActionPayload getActionPayload() {
-        return (C4ActionPayload) super.getActionPayload();
+    public int getRowValue() {
+        return super.getRowValue();
+    }
+
+    @Override
+    public int getColValue() {
+        return super.getColValue();
     }
 
     @Override
