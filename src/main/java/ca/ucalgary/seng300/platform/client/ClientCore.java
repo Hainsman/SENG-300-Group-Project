@@ -5,6 +5,8 @@ import javafx.application.Platform;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.io.*;
+import java.net.*;
 
 /**
  * STUB: Client for the game server. Matchmaking is in progress; platform core will implement
@@ -18,11 +20,14 @@ public class ClientCore {
     private final String host;
     private final int port;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private volatile String sessionId;
-    private volatile String myPlayerId;
+    public volatile String sessionId;
+    public volatile String myPlayerId;
     private volatile String mySide; // "PLAYER_1" or "PLAYER_2"
     private volatile GameStateUpdate lastUpdate;
     private volatile Runnable onGameStateUpdate;
+    public Socket server;
+    public BufferedReader in;
+    public PrintWriter out;
 
     public ClientCore(String host, int port) {
         this.host = host;
@@ -39,14 +44,36 @@ public class ClientCore {
     public String getMySide() { return mySide; }
     public GameStateUpdate getLastUpdate() { return lastUpdate; }
 
-    /** Connect to the server. Returns true if connected. STUB: returns false; platform core will implement. */
+    /**
+     * Connect to server.
+     * @return Boolean: true if successfully connected, false if not.
+     */
     public boolean connect() {
-        // STUB: platform core will implement real TCP connection
+        try { server = new Socket(host, port); } catch (Exception _ ) {
+            System.err.println("ERROR: couldn't connect to server.");
+            return false;
+        }
+        try { out = new PrintWriter(server.getOutputStream(), true); } catch (Exception _) {
+            System.err.println("ERROR: couldn't set up stream for outputting to server.");
+            return false;
+        }
+
+        try { in = new BufferedReader(new InputStreamReader(server.getInputStream()));} catch (Exception _ ) {
+            System.err.println("ERROR: couldn't set up stream for getting input from server.");
+            return false;
+        }
+
         return false;
     }
 
-    /** STUB: platform core will implement. */
+    /** Closes connection. */
     public void disconnect() {
+        while (true) {
+            try {
+                server.close();
+                break;
+            } catch (Exception _) {}
+        }
         executor.shutdownNow();
     }
 
@@ -55,7 +82,7 @@ public class ClientCore {
      * STUB: returns null; platform core will implement.
      */
     public SessionCreated createSession(String playerId) {
-        // STUB: platform core will implement (send CreateOrJoinSession, receive SessionCreated)
+        out.println(String.format("CREATE_SESSION %s %s %s", "?", playerId, "TTT"));
         return null;
     }
 
@@ -70,10 +97,9 @@ public class ClientCore {
 
     /**
      * Submit a move. When implemented: send to server and run onGameStateUpdate on FX thread when response arrives.
-     * STUB: no-op; platform core will implement.
      */
     public void submitMove(int row, int col) {
-        // STUB: platform core will implement (send SubmitMove, receive GameStateUpdate, Platform.runLater(onGameStateUpdate))
+        out.println(String.format("MOVE %s %s %d %d", sessionId, myPlayerId, row, col));
     }
 
     /**
