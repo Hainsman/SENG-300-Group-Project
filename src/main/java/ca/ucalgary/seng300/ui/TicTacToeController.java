@@ -13,7 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
-public class TicTacToeController {
+public class TicTacToeController extends GameGUI {
 
     /** When set, moves and state use the game core session; when null, existing local board logic is used. */
     private TicTacToeSession session = null;
@@ -65,6 +65,46 @@ public class TicTacToeController {
 
     private static final Color xColor = Color.web("#3B82F6");
     private static final Color oColor = Color.web("#A855F7");
+
+    @FXML
+    public void initialize() {
+        status = GameStatus.IN_PROGRESS;
+    }
+
+    @Override
+    public void render() {
+        board = new String[3][3];
+        moves = 0;
+        xTurn = true;
+        for (Node node : ticTacToeGrid.getChildren()) {
+            if (node instanceof Button btn) {
+                btn.setText("");
+                btn.setStyle("");
+                btn.setDisable(false);
+            }
+        }
+        GameGUI.clearHistory();
+    }
+
+    @Override
+    public void update() {
+        if (turnLabel == null) {
+            return;
+        }
+        switch (status) {
+            case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
+            case DRAW -> turnLabel.setText("Draw!");
+            default -> {
+            }
+        }
+    }
+
+    @Override
+    protected void onGameCompletion() {
+        disableBoard();
+        resetButton.setVisible(true);
+    }
 
     private String checkWinner() {
         // Check rows
@@ -130,6 +170,10 @@ public class TicTacToeController {
         if (board[row][col] != null)
             return; // already filled
 
+        // Used for sending match history
+        String rowString = String.valueOf(row + 1);
+        String colString = String.valueOf(col + 1);
+
         // Set X or O
         if (xTurn) {
             clickedButton.setText("X");
@@ -137,12 +181,14 @@ public class TicTacToeController {
             board[row][col] = "X";
             GameGUI.addHistory("TicTacToe", "X",
                     "(" + (row + 1) + ", " + (col + 1) + ")", xColor);
+            GameGUI.onMoveChosen("P1", "(" + rowString + "," + colString + ")");
         } else {
             clickedButton.setText("O");
             clickedButton.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
             board[row][col] = "O";
             GameGUI.addHistory("TicTacToe", "O",
                     "(" + (row + 1) + ", " + (col + 1) + ")", oColor);
+            GameGUI.onMoveChosen("P2", "(" + rowString + "," + colString + ")");
         }
 
         moves++;
@@ -151,19 +197,23 @@ public class TicTacToeController {
         String winner = checkWinner();
         if (winner != null) {
             turnLabel.setText(winner + " Wins!");
-            disableBoard();
+            onGameCompletion();
             return;
         }
 
         // Check draw
         if (moves == 9) {
             turnLabel.setText("Draw!");
+            onGameCompletion();
             return;
         }
 
-        // Switch turn
-        xTurn = !xTurn;
-        turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+        else {
+            // Switch turn
+            xTurn = !xTurn;
+            turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+        }
+        update();
     }
 
     private void disableBoard() {
