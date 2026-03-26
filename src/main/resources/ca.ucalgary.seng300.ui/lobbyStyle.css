@@ -1,0 +1,125 @@
+/* ================= ROOT ================= */
+
+.root {
+    -fx-background-color: #071a2c;
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+}
+
+/* ================= HEADER ================= */
+
+.header-box {
+    -fx-padding: 15 25;
+    -fx-background-radius: 25;
+    -fx-background-color: linear-gradient(to right, #a855f7, #ec4899, #f97316);
+}
+
+/* ================= TITLES ================= */
+
+.title-label {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.subtitle-label {
+    -fx-text-fill: #cbd5e1;
+    -fx-font-size: 13px;
+}
+
+/* ================= CARDS ================= */
+
+.card {
+    -fx-background-color: #0b2239;
+    -fx-background-radius: 18;
+    -fx-padding: 15;
+    -fx-border-radius: 18;
+    -fx-border-width: 2;
+    -fx-border-color: rgba(255,255,255,0.05);
+}
+
+/* Card titles */
+.card-title {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* ================= INPUT FIELDS ================= */
+
+.text-field {
+    -fx-background-color: #0f2a44;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #6b8aa8;
+    -fx-background-radius: 10;
+    -fx-padding: 8 10;
+    -fx-border-radius: 10;
+    -fx-border-color: transparent;
+}
+
+/* focus glow */
+.text-field:focused {
+    -fx-border-color: #22d3ee;
+    -fx-border-width: 1.5;
+}
+
+/* ================= BUTTONS ================= */
+
+.button {
+    -fx-background-radius: 10;
+    -fx-text-fill: white;
+    -fx-padding: 8 15;
+}
+
+/* Join button gradient */
+.button {
+    -fx-background-color: linear-gradient(to right, #a855f7, #22d3ee);
+}
+
+/* hover */
+.button:hover {
+    -fx-opacity: 0.9;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+/* ================= LIST VIEW ================= */
+
+.list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* list cells */
+.list-cell {
+    -fx-background-color: #0f2a44;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+/* spacing between cells */
+.list-cell:filled {
+    -fx-border-color: transparent transparent #071a2c transparent;
+}
+
+/* hover on list */
+.list-cell:hover {
+    -fx-background-color: #163a5c;
+}
+
+/* selected */
+.list-cell:selected {
+    -fx-background-color: linear-gradient(to right, #6366f1, #22d3ee);
+}
+
+/* ================= SIDE PANELS ================= */
+
+.card Label {
+    -fx-text-fill: #cbd5e1;
+}
+
+/* ================= OPTIONAL GLOW ================= */
+
+.card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(34,211,238,0.25), 15, 0.4, 0, 0);
+}
