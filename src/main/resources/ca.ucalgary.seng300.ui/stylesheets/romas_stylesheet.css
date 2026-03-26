@@ -1,4 +1,3 @@
-
 .root {
     BUTTON_COLOR: #4E4A51;
     BUTTON_HOVER_COLOR: #847E89;
@@ -78,3 +77,11 @@
     -fx-text-fill: BUTTON_HOVER_TEXT_FILL;
 }
 */
+#TTTLabel:hover {
+    -fx-background-color: #873E50;
+    -fx-text-fill: #D8BEC5;
+}
+#C4Label:hover {
+    -fx-background-color: #873E50;
+    -fx-text-fill: #D8BEC5;
+}

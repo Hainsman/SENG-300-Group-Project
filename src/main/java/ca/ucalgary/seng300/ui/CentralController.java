@@ -25,6 +25,12 @@ public class CentralController {
     @FXML private Button minimizeButton;
     @FXML private Button maximizeButton;
 
+    public static String selectedGame;
+    public static int maxPlayers;
+    public static String privacy;
+    public static String lobbyCode;
+    public static String previousScreen;
+
     @FXML
     public void initialize() {
         instance = this;
@@ -41,7 +47,7 @@ public class CentralController {
         windowManager = new WindowManager(controls);
 
         // REPLACE WITH LOGIN ONCE CREATED!
-        loadView("Login.fxml");
+        loadView("GameDashboard.fxml");
     }
 
     // call anytime to switch pages
@@ -56,7 +62,7 @@ public class CentralController {
                     getClass().getResource("/ca.ucalgary.seng300.ui/" + fxml)
             );
             Node view = loader.load();
-            viewContainer.setCenter(view);
+            viewContainer.getChildren().setAll(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
