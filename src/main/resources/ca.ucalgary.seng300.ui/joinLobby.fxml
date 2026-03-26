@@ -29,7 +29,7 @@
 
                         <HBox spacing="10">
                             <TextField fx:id="codeField" promptText="Enter 6-digit code..." HBox.hgrow="ALWAYS" />
-                            <Button fx:id="joinByCodeBtn" onAction="#handleJoinByCode" text="Join" />
+                            <Button fx:id="joinByCodeBtn"  text="Join" />
                         </HBox>
                     </VBox>
 
