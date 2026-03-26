@@ -14,7 +14,6 @@
         <VBox alignment="TOP_CENTER" spacing="20" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
 
             <!-- BACK BUTTON -->
-            <Button styleClass="back-button" text="← Back to Menu" />
 
             <!-- HEADER -->
             <VBox alignment="CENTER" spacing="5" styleClass="header-box">
@@ -47,7 +46,7 @@
                     </VBox>
 
                     <!-- START BUTTON -->
-                    <Button fx:id="startGameBtn" maxWidth="Infinity" prefHeight="50" styleClass="start-button" text="Start Game" />
+                    <Button fx:id="startGameBtn" maxWidth="Infinity" onAction="#handleStartGame" prefHeight="50" styleClass="start-button" text="Start Game" />
 
                 </VBox>
 
@@ -84,6 +83,7 @@
                 </VBox>
 
             </HBox>
+            <Button onAction="#handleBack" styleClass="back-button" text="← Back to Menu" />
 
         </VBox>
 

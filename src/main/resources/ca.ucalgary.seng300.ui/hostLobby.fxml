@@ -1,111 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ca.ucalgary.seng300.ui.hostLobbyController"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@lobbyStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.hostLobbyController">
+
     <children>
-        <VBox spacing="20" alignment="TOP_CENTER"
-              AnchorPane.topAnchor="20.0"
-              AnchorPane.leftAnchor="20.0"
-              AnchorPane.rightAnchor="20.0">
 
-            <!-- Header -->
+        <VBox alignment="TOP_CENTER" spacing="25" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+
+
+            <!-- HEADER -->
             <VBox alignment="CENTER" spacing="5" styleClass="header-box">
-                <Label text="Host a Game" styleClass="title-label"/>
-                <Label text="Create a lobby and invite your friends"
-                       styleClass="subtitle-label"/>
+                <Label styleClass="title-label" text="Host a Game" />
+                <Label styleClass="subtitle-label" text="Create a lobby and invite your friends" />
             </VBox>
 
-            <HBox spacing="20">
+            <HBox spacing="25" VBox.vgrow="ALWAYS">
 
                 <!-- LEFT SIDE -->
-                <VBox spacing="20" HBox.hgrow="ALWAYS">
+                <VBox spacing="20" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
 
-                    <!-- Select Game -->
+                    <!-- SELECTED GAME DISPLAY -->
                     <VBox spacing="10" styleClass="card">
-                        <Label text="Select Game" styleClass="card-title"/>
-
-                        <HBox spacing="15">
-                            <ToggleButton text="Checkers"
-                                          fx:id="checkersBtn"
-                                          toggleGroup="gameGroup"
-                                          HBox.hgrow="ALWAYS"/>
-
-                            <ToggleButton text="Connect 4"
-                                          fx:id="connect4Btn"
-                                          toggleGroup="gameGroup"
-                                          HBox.hgrow="ALWAYS"/>
-                        </HBox>
+                        <Label fx:id="gameTitle" styleClass="card-title" text="Game" />
+                        <Label fx:id="gameLabel" styleClass="game-name" text="gameLabel" />
                     </VBox>
 
-                    <!-- Lobby Settings -->
+                    <!-- LOBBY SETTINGS -->
                     <VBox spacing="15" styleClass="card">
 
-                        <Label text="Lobby Settings" styleClass="card-title"/>
+                        <Label styleClass="card-title" text="Lobby Settings" />
 
-                        <TextField promptText="Lobby name (optional)"
-                                   fx:id="lobbyNameField"/>
+                        <TextField fx:id="lobbyNameField" promptText="Lobby name (optional)" />
 
-                        <Label text="Max Players"/>
+                        <Label text="Max Players" />
 
-                        <Slider min="2" max="8" value="4"
-                                fx:id="playerSlider"/>
+                        <Slider fx:id="playerSlider" max="8" min="2" value="4" />
 
-                        <Label text="Privacy"/>
+                        <Label text="Privacy" />
+                  <ToggleButton fx:id="privateLobby" mnemonicParsing="false" text="Private ">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="privacyOptions" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton fx:id="publicLobby" mnemonicParsing="false" text="Public" toggleGroup="$privacyOptions" />
 
-                        <HBox spacing="10">
-                            <ToggleButton text="Public"
-                                          fx:id="publicBtn"
-                                          toggleGroup="privacyGroup"/>
-
-                            <ToggleButton text="Private"
-                                          fx:id="privateBtn"
-                                          toggleGroup="privacyGroup"/>
-                        </HBox>
+                        <!-- placeholder (you'll add buttons in Scene Builder) -->
+                        <HBox spacing="10" />
 
                     </VBox>
 
-                    <!-- Create Button -->
-                    <Button text="Create Lobby"
-                            fx:id="createLobbyBtn"
-                            prefHeight="50"/>
+                    <!-- CREATE BUTTON -->
+                    <Button fx:id="createLobbyBtn" maxWidth="Infinity" onAction="#handleCreateLobby" prefHeight="50" styleClass="primary-button" text="Create Lobby" />
 
                 </VBox>
 
                 <!-- RIGHT SIDE -->
-                <VBox spacing="20" prefWidth="250">
+                <VBox prefWidth="260" spacing="20">
 
                     <VBox styleClass="card">
-                        <Label text="Host Benefits" styleClass="card-title"/>
-                        <Label text="• Control start&#10;• Manage players&#10;• Customize settings&#10;• Invite friends"
-                               wrapText="true"/>
+                        <Label styleClass="card-title" text="Host Benefits" />
+                        <Label text="• Control start&#10;• Manage players&#10;• Customize settings&#10;• Invite friends" wrapText="true" />
                     </VBox>
 
                     <VBox styleClass="card">
-                        <Label text="Lobby Preview" styleClass="card-title"/>
-                        <Label text="Game: -"/>
-                        <Label text="Max Players: -"/>
-                        <Label text="Privacy: -"/>
+                        <Label styleClass="card-title" text="Lobby Preview" />
+
+                        <Label text="Game:" />
+                        <Label fx:id="previewGameLabel" text="-" />
+
+                        <Label text="Max Players:" />
+                        <Label fx:id="previewPlayersLabel" text="-" />
+
+                        <Label text="Privacy:" />
+                        <Label fx:id="previewPrivacyLabel" text="-" />
                     </VBox>
 
                     <VBox styleClass="card">
-                        <Label text="Quick Tip" styleClass="card-title"/>
-                        <Label text="Share your code after creating the lobby!"
-                               wrapText="true"/>
+                        <Label styleClass="card-title" text="Quick Tip" />
+                        <Label text="Share your code after creating the lobby!" wrapText="true" />
                     </VBox>
 
                 </VBox>
 
             </HBox>
+            <Button onAction="#handleBack" styleClass="back-button" text="← Back to Menu" />
 
         </VBox>
-    </children>
 
+    </children>
 </AnchorPane>
