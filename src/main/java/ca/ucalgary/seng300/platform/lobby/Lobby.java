@@ -6,12 +6,12 @@ import java.util.List;
 
 public abstract class Lobby {
 
-    public MatchMakingService matchMakingService;
+    //public MatchMakingService matchMakingService;
     public LeaderBoardService leaderBoardService;
     public String state;
 
     public Lobby() {
-        this.matchMakingService = new MatchMakingService();
+    //    this.matchMakingService = new MatchMakingService();
         this.leaderBoardService = new LeaderBoardService();
         this.state = "Browsing";
     }
@@ -22,21 +22,20 @@ public abstract class Lobby {
 
     // Players Queue
     public void joinQueue(PlayerStats player) {
-        matchMakingService.addPlayerToQueue(player);
+   //   matchMakingService.addPlayerToQueue(player);
         setState("InQueue");
     }
 
     public void leaveQueue(PlayerStats player) {
-        matchMakingService.removePlayer(player);
+   //   matchMakingService.removePlayer(player);
         setState("Browsing");
     }
-
-    // Matching Players
-    public List<PlayerStats> findMatch() {
-        List<PlayerStats> matched = matchMakingService.matchPlayers(getGameType());
-        if (matched != null) setState("MatchFound");
-        return matched;
-    }
+//    // Matching Players
+//    public List<PlayerStats> findMatch() {
+//     List<PlayerStats> matched = matchMakingService.matchPlayers(getGameType());
+//        if (matched != null) setState("MatchFound");
+//        return matched;
+//    }
 
     // Viewing Leaderboard
     public List<PlayerStats> getLeaderboard(int count) {
