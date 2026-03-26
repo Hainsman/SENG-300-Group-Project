@@ -5,29 +5,32 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ca.ucalgary.seng300.ui.mainMenuController"
+            fx:controller="ca.ucalgary.seng300.ui.chooseModeController"
             prefWidth="900.0" prefHeight="600.0" >
 
     <children>
-        <VBox alignment="TOP_CENTER" spacing="25"
-              AnchorPane.topAnchor="20.0"
+        <VBox alignment="TOP_CENTER" spacing="30"
+              AnchorPane.topAnchor="30.0"
               AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0">
 
-            <!-- Title -->
-            <Label text="Multiplayer Games"
+            <!-- Dynamic Game Title -->
+            <Label fx:id="gameTitleLabel"
+                   text="Game Name"
                    styleClass="title-label"/>
 
-            <Label text="Choose your game mode"
+            <Label text="Choose how you want to play"
                    styleClass="subtitle-label"/>
 
-            <!-- Cards Row -->
+            <!-- Host / Join Cards -->
             <HBox spacing="40" alignment="CENTER">
 
                 <!-- Host Game Card -->
                 <VBox alignment="CENTER" spacing="10"
                       prefWidth="250" prefHeight="180"
-                      styleClass="card host-card">
+                      styleClass="card host-card"
+                      fx:id="hostCard"
+                      onMouseClicked="#handleHostGame">
 
                     <Label text="🎮" styleClass="icon"/>
                     <Label text="Host Game" styleClass="card-title"/>
@@ -39,7 +42,9 @@
                 <!-- Join Game Card -->
                 <VBox alignment="CENTER" spacing="10"
                       prefWidth="250" prefHeight="180"
-                      styleClass="card join-card">
+                      styleClass="card join-card"
+                      fx:id="joinCard"
+                      onMouseClicked="#handleJoinGame">
 
                     <Label text="👥" styleClass="icon"/>
                     <Label text="Join Game" styleClass="card-title"/>
@@ -50,23 +55,6 @@
 
             </HBox>
 
-            <!-- Available Games -->
-            <Label text="Available Games"
-                   styleClass="subtitle-label"/>
-
-            <HBox spacing="30" alignment="CENTER">
-
-                <Button text="Checkers"
-                        prefWidth="200" prefHeight="50"
-                        styleClass="btn-checkers"/>
-
-                <Button text="Connect 4"
-                        prefWidth="200" prefHeight="50"
-                        styleClass="btn-connect"/>
-
-            </HBox>
-
         </VBox>
     </children>
-
 </AnchorPane>

@@ -25,6 +25,8 @@ public class CentralController {
     @FXML private Button minimizeButton;
     @FXML private Button maximizeButton;
 
+    public static String selectedGame;
+
     @FXML
     public void initialize() {
         instance = this;
