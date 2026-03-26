@@ -102,7 +102,7 @@ public class ServerCore {
             }
             valid = game.valid;
             if (!valid) {
-                IO.println("DEBUG: player sent invalid move.");
+                System.out.println("DEBUG: player sent invalid move.");
                 c.out.println("INVALID");
             }
         }
@@ -176,7 +176,7 @@ public class ServerCore {
             case "JOIN_SESSION":
                 if (req.getSessionId() == null) {
                     for (GameSessionRecord r : sessions.values()) {
-                        IO.println(r.getSessionId());
+                        System.out.println(r.getSessionId());
                     }
                 }
         }
@@ -188,7 +188,7 @@ public class ServerCore {
      * Handle submit move request. Platform core will implement: resolve session, validate move, apply via game.handleAction, return GameStateUpdate JSON.
      */
     protected String handleSubmitMove(SubmitMove m) {
-        IO.println("Handling move...");
+        System.out.println("Handling move...");
         game.handleAction(
                 new TTTPlayerAction(m.getPlayerId(),
                 TTTActionType.MOVE,

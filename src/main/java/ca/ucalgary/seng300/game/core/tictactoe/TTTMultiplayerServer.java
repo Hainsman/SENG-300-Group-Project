@@ -11,7 +11,7 @@ import ca.ucalgary.seng300.platform.server.ServerCore;
 import java.io.IOException;
 
 public class TTTMultiplayerServer {
-    static void main(String[] args) {
+    public static void main(String[] args) {
         ServerCore s = new ServerCore(9090);
         System.out.println("Started up server successfully!");
         try { s.start(); } catch(IOException e) {
