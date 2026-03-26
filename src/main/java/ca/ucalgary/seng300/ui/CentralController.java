@@ -26,6 +26,10 @@ public class CentralController {
     @FXML private Button maximizeButton;
 
     public static String selectedGame;
+    public static int maxPlayers;
+    public static String privacy;
+    public static String lobbyCode;
+    public static String previousScreen;
 
     @FXML
     public void initialize() {
