@@ -66,7 +66,7 @@ public class TicTacToeController extends GameGUI {
         board = new String[3][3];
         moves = 0;
         xTurn = true;
-        for (Node node: ticTacToeGrid.getChildren()) {
+        for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button btn) {
                 btn.setText("");
                 btn.setStyle("");
@@ -85,7 +85,8 @@ public class TicTacToeController extends GameGUI {
             case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
             case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
             case DRAW -> turnLabel.setText("Draw!");
-            default -> {}
+            default -> {
+            }
         }
     }
 
@@ -143,6 +144,10 @@ public class TicTacToeController extends GameGUI {
         if (board[row][col] != null)
             return; // already filled
 
+        // Used for sending match history
+        String rowString = String.valueOf(row + 1);
+        String colString = String.valueOf(col + 1);
+
         // Set X or O
         if (xTurn) {
             clickedButton.setText("X");
@@ -150,12 +155,14 @@ public class TicTacToeController extends GameGUI {
             board[row][col] = "X";
             GameGUI.addHistory("TicTacToe", "X",
                     "(" + (row + 1) + ", " + (col + 1) + ")", xColor);
+            GameGUI.onMoveChosen("P1", "(" + rowString + "," + colString + ")");
         } else {
             clickedButton.setText("O");
             clickedButton.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
             board[row][col] = "O";
             GameGUI.addHistory("TicTacToe", "O",
                     "(" + (row + 1) + ", " + (col + 1) + ")", oColor);
+            GameGUI.onMoveChosen("P2", "(" + rowString + "," + colString + ")");
         }
 
         moves++;
@@ -199,7 +206,7 @@ public class TicTacToeController extends GameGUI {
         update();
     }
 
-    public void setVisibility(Boolean status){
+    public void setVisibility(Boolean status) {
         boardPane.setVisible(status);
     }
 }

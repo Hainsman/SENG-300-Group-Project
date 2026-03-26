@@ -32,8 +32,6 @@ public class Connect4Controller extends GameGUI {
         render();
     }
 
-
-
     @Override
     public void render() {
         gridPane.getChildren().clear();
@@ -54,12 +52,14 @@ public class Connect4Controller extends GameGUI {
 
     @Override
     public void update() {
-        if (statusLabel == null) return;
+        if (statusLabel == null)
+            return;
         switch (status) {
             case IN_PROGRESS -> statusLabel.setText("Player " + currentPlayer + "'s Turn");
-            case WIN         -> statusLabel.setText("Player " + currentPlayer + " Wins!");
-            case DRAW        -> statusLabel.setText("It's a Draw!");
-            default          -> {}
+            case WIN -> statusLabel.setText("Player " + currentPlayer + " Wins!");
+            case DRAW -> statusLabel.setText("It's a Draw!");
+            default -> {
+            }
         }
 
     }
@@ -76,14 +76,21 @@ public class Connect4Controller extends GameGUI {
         for (int row = 5; row >= 0; row--) {
             if (circles[row][col].getFill().equals(Color.WHITE)) {
                 Color playerColor;
+
+                // Used for sending match history
+                String rowString = String.valueOf(row + 1);
+                String colString = String.valueOf(col + 1);
+
                 if (currentPlayer == 1) {
                     playerColor = P1;
                     GameGUI.addHistory("Connect4", "1",
                             "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
+                    GameGUI.onMoveChosen("P1", "(" + rowString + "," + colString + ")");
                 } else {
                     playerColor = P2;
                     GameGUI.addHistory("Connect4", "2",
                             "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
+                    GameGUI.onMoveChosen("P2", "(" + rowString + "," + colString + ")");
                 }
                 circles[row][col].setFill(playerColor);
 
@@ -110,8 +117,8 @@ public class Connect4Controller extends GameGUI {
     private boolean checkWin(int row, int col, Color color) {
         return checkDirection(row, col, color, 1, 0) // horizontal
                 || checkDirection(row, col, color, 0, 1) // vertical
-                || checkDirection(row, col, color, 1, 1) // diagonal ↘
-                || checkDirection(row, col, color, 1, -1); // diagonal ↙
+                || checkDirection(row, col, color, 1, 1) // diagonal
+                || checkDirection(row, col, color, 1, -1); // diagonal
     }
 
     private boolean checkDirection(int row, int col, Color color, int dr, int dc) {
