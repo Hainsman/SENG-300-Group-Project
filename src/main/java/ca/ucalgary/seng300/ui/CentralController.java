@@ -62,7 +62,8 @@ public class CentralController {
                     getClass().getResource("/ca.ucalgary.seng300.ui/" + fxml)
             );
             Node view = loader.load();
-            viewContainer.getChildren().setAll(view);
+            // Root.fxml uses a BorderPane; place screens in the center so they size correctly.
+            viewContainer.setCenter(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
