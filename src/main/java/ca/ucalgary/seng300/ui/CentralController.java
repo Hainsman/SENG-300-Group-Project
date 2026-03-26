@@ -12,6 +12,8 @@ public class CentralController {
 
     @FXML private StackPane viewContainer;
 
+    public static String selectedGame;
+
     @FXML
     public void initialize() {
         instance = this;
