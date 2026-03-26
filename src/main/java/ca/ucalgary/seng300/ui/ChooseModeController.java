@@ -13,6 +13,7 @@ public class ChooseModeController {
     public void initialize() {
 
         gameTitleLabel.setText(CentralController.selectedGame);
+
     }
 
     @FXML
