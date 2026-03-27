@@ -150,4 +150,134 @@ class StoreTest {
         assertNotNull(results);
         assertTrue(results.isEmpty());
     }
+
+    /**
+     * Mutating a field on a record and calling update() must be
+     * visible on the next get() call. Verifies that update() does
+     * not silently drop the change.
+     */
+    @Test
+    void update_changedField_isReflectedOnNextGet() {
+        User user = new User(1, "alice", "alice@example.com", "oldHash");
+        store.create(user);
+
+        // Simulate an email-change workflow: fetch, mutate, persist
+        User fetched = store.get(1);
+        fetched.setEmail("newalice@example.com");
+        store.update(fetched);
+
+        assertEquals("newalice@example.com", store.get(1).getEmail());
+    }
+
+    /**
+     * update() must only affect the record whose ID matches.
+     * All other records in the store must remain unchanged.
+     */
+    @Test
+    void update_onlyAffectsTheTargetRecord() {
+        store.create(new User(1, "alice", "alice@example.com", "hA"));
+        store.create(new User(2, "bob",   "bob@example.com",   "hB"));
+
+        User alice = store.get(1);
+        alice.setEmail("updated@example.com");
+        store.update(alice);
+
+        // Bob must be untouched
+        assertEquals("bob@example.com", store.get(2).getEmail());
+    }
+
+
+    /**
+     * A record removed via delete() must no longer be returned by get().
+     */
+    @Test
+    void delete_removesRecordFromStore() {
+        User user = new User(1, "alice", "alice@example.com", "hash");
+        store.create(user);
+
+        store.delete(user);
+
+        assertNull(store.get(1), "get() should return null after the record is deleted");
+    }
+
+    /**
+     * Deleting one record must leave all other records intact.
+     */
+    @Test
+    void delete_onlyRemovesTheTargetRecord() {
+        User alice = new User(1, "alice", "alice@example.com", "hA");
+        User bob   = new User(2, "bob",   "bob@example.com",   "hB");
+        store.create(alice);
+        store.create(bob);
+
+        store.delete(alice);
+
+        assertNull(store.get(1));
+        assertNotNull(store.get(2), "bob should still exist after alice is deleted");
+    }
+
+
+    /**
+     * Data written by one UserStore instance must be readable by a
+     * second instance pointing at the same file. Validates that
+     * saveAll() and loadAll() are inverse operations.
+     */
+    @Test
+    void persistence_dataWrittenByOneInstance_isReadableByAnother() {
+        String filePath = tempDir.resolve("users.txt").toString();
+        UserStore first = new UserStore(filePath);
+        first.create(new User(1, "alice", "alice@example.com", "hash"));
+
+        // New instance reads from the same file
+        UserStore second = new UserStore(filePath);
+
+        User loaded = second.get(1);
+        assertNotNull(loaded, "record created by first store should survive in a new instance");
+        assertEquals("alice", loaded.getlogin());
+        assertEquals("alice@example.com", loaded.getEmail());
+    }
+
+    /**
+     * A record deleted by one instance must not appear when a new
+     * instance loads the same file.
+     */
+    @Test
+    void persistence_deletedRecord_doesNotReappearAfterReload() {
+        String filePath = tempDir.resolve("users.txt").toString();
+        UserStore first = new UserStore(filePath);
+        User user = new User(1, "alice", "alice@example.com", "hash");
+        first.create(user);
+        first.delete(user);
+
+        UserStore second = new UserStore(filePath);
+
+        assertNull(second.get(1), "deleted record should not reappear after reload");
+    }
+
+    // ---------------------------------------------------------------
+    // Edge cases
+    //
+    // Boundary and defensive behaviour: what happens when the store
+    // is empty, or when a caller asks for an ID that does not exist.
+    // ---------------------------------------------------------------
+
+    /**
+     * get() on an ID that was never created must return null, not throw.
+     */
+    @Test
+    void get_nonExistentId_returnsNull() {
+        assertNull(store.get(999), "get() for a missing ID should return null");
+    }
+
+    /**
+     * find() on a completely empty store must return an empty list,
+     * not null and not an exception.
+     */
+    @Test
+    void find_onEmptyStore_returnsEmptyList() {
+        List<User> results = store.find(u -> true);
+
+        assertNotNull(results);
+        assertTrue(results.isEmpty());
+    }
 }
