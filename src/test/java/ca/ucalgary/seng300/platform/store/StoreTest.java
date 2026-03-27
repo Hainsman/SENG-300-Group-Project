@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -98,5 +99,55 @@ class StoreTest {
         store.create(replacement);
 
         assertEquals("alice2", store.get(1).getlogin());
+    }
+    /**
+     * find() with a predicate that matches one record returns a
+     * single-element list containing that record.
+     */
+    @Test
+    void find_withMatchingPredicate_returnsSingleResult() {
+        store.create(new User(1, "alice", "alice@example.com", "hashA"));
+        store.create(new User(2, "bob",   "bob@example.com",   "hashB"));
+
+        List<User> results = store.find(u -> u.getlogin().equals("alice"));
+
+        assertEquals(1, results.size());
+        assertEquals("alice", results.get(0).getlogin());
+    }
+
+    /**
+     * find() with a predicate that matches multiple records returns all
+     * of them — not just the first hit.
+     */
+    @Test
+    void find_withPredicateMatchingMultiple_returnsAllMatches() {
+        // Mark two users inactive, leave one active
+        User u1 = new User(1, "alice", "alice@example.com", "h1");
+        User u2 = new User(2, "bob",   "bob@example.com",   "h2");
+        User u3 = new User(3, "carol", "carol@example.com", "h3");
+        u1.setIsActive(false);
+        u2.setIsActive(false);
+
+        store.create(u1);
+        store.create(u2);
+        store.create(u3);
+
+        List<User> inactive = store.find(u -> !u.getIsActive());
+
+        assertEquals(2, inactive.size());
+    }
+
+    /**
+     * find() with a predicate that matches nothing returns an empty
+     * list, not null.
+     */
+    @Test
+    void find_withNoMatchingPredicate_returnsEmptyList() {
+        store.create(new User(1, "alice", "alice@example.com", "hashA"));
+
+        List<User> results = store.find(u -> u.getlogin().equals("nobody"));
+
+        assertNotNull(results);
+        assertTrue(results.isEmpty());
     }
 }
