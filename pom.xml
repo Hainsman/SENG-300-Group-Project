@@ -64,6 +64,16 @@
         </configuration>
       </plugin>
 
+      <!-- Run arbitrary main class (e.g. ServerMain) without JavaFX -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <mainClass>ca.ucalgary.seng300.platform.server.ServerMain</mainClass>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
 

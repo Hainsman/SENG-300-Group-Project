@@ -4,8 +4,16 @@ import ca.ucalgary.seng300.game.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TTTRuleValidator extends RuleValidator {
+
+    /** Optional: when set, turn is enforced (action's playerID must map to current turn). When null, turn is not checked. */
+    private Map<String, Player> playerIdToPlayer = null;
+
+    public void setPlayerIdToPlayer(Map<String, Player> map) {
+        this.playerIdToPlayer = map;
+    }
 
     public boolean validateMove(GameState gameState, PlayerAction action) {
         //Attempt to cast gameState and action to TTT types
@@ -20,9 +28,10 @@ public class TTTRuleValidator extends RuleValidator {
         }
 
         //reject an action that is:
-        //1. not the right player's turn
+        //1. not the right player's turn (when playerIdToPlayer is set)
         //2. the game is not in progress
-        boolean isCorrectTurn = true; //action.getPlayerID().equals(gameState.getTurn());
+        boolean isCorrectTurn = (playerIdToPlayer == null)
+                || tttGameState.getPlayerTurn().equals(playerIdToPlayer.get(action.getPlayerID()));
         boolean isInProgress = tttGameState.getState() == State.IN_PROGRESS;
         if (!isCorrectTurn || !isInProgress) {
             System.out.println("Player action out of turn or game was not in progress");
