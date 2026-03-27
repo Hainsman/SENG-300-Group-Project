@@ -31,16 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class HelperTest {
 
-    // ---------------------------------------------------------------
-    // getRank()
-    //
-    // Rule 1: fewer than TOTAL_ROUNDS_NEEDED_FOR_BRONZE (10) rounds
-    //         always returns BRONZE, regardless of score.
-    // Rule 2: at 10+ rounds, rank is determined by score bracket.
-    // The loop in getRank() falls through to GRAND_MASTER if no
-    // bracket matches (score >= 89.0).
-    // ---------------------------------------------------------------
-
     /**
      * A player with fewer than 10 rounds must always receive BRONZE,
      * even if their score would otherwise qualify for a higher rank.
@@ -117,5 +107,90 @@ class HelperTest {
     @Test
     void getRank_scoreBelowSilverBoundary_returnsBronze() {
         assertEquals(Rank.BRONZE, Helper.getRank(10, 13.99));
+    }
+
+
+
+    /**
+     * A well-formed email address must return true.
+     */
+    @Test
+    void isEmailValid_validEmail_returnsTrue() {
+        assertTrue(Helper.isEmailValid("user@example.com", Constants.EMAIL_REGEX));
+    }
+
+    /**
+     * A valid email with a subdomain must also pass.
+     */
+    @Test
+    void isEmailValid_subdomainEmail_returnsTrue() {
+        assertTrue(Helper.isEmailValid("user@mail.example.com", Constants.EMAIL_REGEX));
+    }
+
+    /**
+     * null must return false without throwing a NullPointerException.
+     */
+    @Test
+    void isEmailValid_nullInput_returnsFalse() {
+        assertFalse(Helper.isEmailValid(null, Constants.EMAIL_REGEX));
+    }
+
+    /**
+     * An empty string must return false.
+     */
+    @Test
+    void isEmailValid_emptyString_returnsFalse() {
+        assertFalse(Helper.isEmailValid("", Constants.EMAIL_REGEX));
+    }
+
+    /**
+     * An address missing the @ symbol is not a valid email.
+     */
+    @Test
+    void isEmailValid_missingAtSymbol_returnsFalse() {
+        assertFalse(Helper.isEmailValid("userexample.com", Constants.EMAIL_REGEX));
+    }
+
+    /**
+     * An address missing the domain part after @ is not valid.
+     */
+    @Test
+    void isEmailValid_missingDomain_returnsFalse() {
+        assertFalse(Helper.isEmailValid("user@", Constants.EMAIL_REGEX));
+    }
+
+    /**
+     * Hashing the same password twice must produce the same result.
+     * MessageDigest is deterministic — identical input → identical output.
+     */
+    @Test
+    void hashPassword_sameInput_producesIdenticalHash() {
+        String first  = Helper.hashPassword("password123", Constants.HASH_ALGORITHM);
+        String second = Helper.hashPassword("password123", Constants.HASH_ALGORITHM);
+
+        assertEquals(first, second);
+    }
+
+    /**
+     * Two different passwords must not produce the same hash.
+     */
+    @Test
+    void hashPassword_differentInputs_produceDifferentHashes() {
+        String hashA = Helper.hashPassword("password123", Constants.HASH_ALGORITHM);
+        String hashB = Helper.hashPassword("password456", Constants.HASH_ALGORITHM);
+
+        assertNotEquals(hashA, hashB);
+    }
+
+    /**
+     * The returned hash must be a non-empty string — the method
+     * must not return null or an empty string on valid input.
+     */
+    @Test
+    void hashPassword_validInput_returnsNonEmptyString() {
+        String hash = Helper.hashPassword("anyPassword", Constants.HASH_ALGORITHM);
+
+        assertNotNull(hash);
+        assertFalse(hash.isEmpty());
     }
 }
