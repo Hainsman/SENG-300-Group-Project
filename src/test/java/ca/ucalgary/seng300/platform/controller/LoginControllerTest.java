@@ -9,7 +9,7 @@ class LoginControllerTest {
 
     @BeforeEach
     void setUp() {
-        LoginController loginController = new LoginController();
+        //LoginController loginController = new LoginController();
     }
 
     @Test
