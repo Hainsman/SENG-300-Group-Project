@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MatchMakingServiceTest {
 
     private MatchMakingService queue;
-    int TIC_TAC_TOE = Game.TICK_TACK_TOE;
+    private final int TIC_TAC_TOE = Game.TICK_TACK_TOE;
 
     @BeforeEach
     void setUp() {
