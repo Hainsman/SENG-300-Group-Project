@@ -21,8 +21,10 @@ public abstract class Message {
         RuntimeTypeAdapterFactory<Message> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Message.class,"type")
                 .registerSubtype(CreateOrJoinSession.class, CreateOrJoinSession.class.getSimpleName())
                 .registerSubtype(GameStateUpdate.class, GameStateUpdate.class.getSimpleName())
-                .registerSubtype(SessionCreated.class, SessionCreated.class.getSimpleName())
-                .registerSubtype(SubmitMove.class, SubmitMove.class.getSimpleName());
+//                .registerSubtype(SessionCreated.class, SessionCreated.class.getSimpleName())
+                .registerSubtype(SubmitMove.class, SubmitMove.class.getSimpleName())
+                .registerSubtype(Authenticate.class, Authenticate.class.getSimpleName())
+                .registerSubtype(CreateSession.class, CreateSession.class.getSimpleName());
 
         RuntimeTypeAdapterFactory<GameState> gameStateAdapterFactory = RuntimeTypeAdapterFactory.of(GameState.class, "type")
                 .registerSubtype(TTTGameState.class, TTTGameState.class.getSimpleName());
@@ -36,5 +38,5 @@ public abstract class Message {
 
     public UUID getGloballyUniqueSessionId(){return globallyUniqueSessionId;}
     public static String toJson(Message message){return GSON.toJson(message);}
-    public Message fromJson(String jsonObject){return GSON.fromJson(jsonObject, Message.class);}
+    public static Message fromJson(String jsonObject){return GSON.fromJson(jsonObject, Message.class);}
 }

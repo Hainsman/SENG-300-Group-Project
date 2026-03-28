@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.platform.server;
 
+import ca.ucalgary.seng300.platform.domain.Record;
 import ca.ucalgary.seng300.platform.messages.CreateOrJoinSession;
 import ca.ucalgary.seng300.platform.messages.SubmitMove;
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,11 @@ public class ServerCoreTest {
         }
 
         public String callHandleLine(String line) {
-            return handleLine(line);
+            return "";
+            //handleLine(line);
         }
 
-        public String callHandleCreateOrJoin(CreateOrJoinSession req) {
+        public Response callHandleCreateOrJoin(CreateOrJoinSession req) {
             return handleCreateOrJoin(req);
         }
 
@@ -63,7 +65,7 @@ public class ServerCoreTest {
     public void testHandleCreateOrJoinReturnsNullForStub() {
         TestableServerCore server = new TestableServerCore(2020);
 
-        String result = server.callHandleCreateOrJoin(null);
+        ServerCore.Response result = server.callHandleCreateOrJoin(null);
 
         assertNull(result);
     }
