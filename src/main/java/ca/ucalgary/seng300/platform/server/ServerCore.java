@@ -1,16 +1,28 @@
 package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
+import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTActionType;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
+import ca.ucalgary.seng300.platform.constants.TypeSession;
+import ca.ucalgary.seng300.platform.domain.GameHistory;
+import ca.ucalgary.seng300.platform.domain.Participant;
+import ca.ucalgary.seng300.platform.domain.SessionHistory;
+import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.*;
+import ca.ucalgary.seng300.platform.store.GameHistoryStore;
+import ca.ucalgary.seng300.platform.store.ParticipantStore;
+import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
+import ca.ucalgary.seng300.platform.store.UserStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
 import java.net.*;
@@ -142,44 +154,106 @@ public class ServerCore {
      * Handle one line of input from a client; return one JSON line to send back, or null.
      * Platform core will implement: parse CreateOrJoinSession or SubmitMove, dispatch to handleCreateOrJoin / handleSubmitMove, return response.
      */
-    protected String handleLine(String line) {
-        String[] spl = line.split(" ");
-        switch (line.split(" ")[0]) {
-            case "CREATE_SESSION", "JOIN_SESSION":
-                handleCreateOrJoin(new CreateOrJoinSession(spl[0], spl[1], spl[2], spl[3]));
-                break;
-            case "MOVE":
-                handleSubmitMove(new SubmitMove(spl[1], spl[2], Integer.parseInt(spl[3]), Integer.parseInt(spl[4])));
-                break;
+    public Response handleLine(String line) {
+        Message message = Message.fromJson(line);
+
+        switch (message){
+            case Authenticate auth: return handleAuthenticate(auth);
+            case CreateSession cs: return handleCreateSession(cs);
+            case JoinSession js: return handleJoinSession(js);
+            case SubmitMove sm:break;
+            case SessionCreated sc:break;
+            case GameStateUpdate gsu:break;
             default:
-                clients.getFirst().out.println("ERROR: bad request.");
-                break;
+
         }
 
         return null;
     }
 
+
+
+    // handles authentcation of users
+    protected Response handleAuthenticate(Authenticate auth){
+        Response resp = new Response(); //user already registered
+
+        UserStore userStore = UserStore.getInstance();
+        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
+        List<User> listOfUsers= userStore.findByUserName(auth.getUsername());
+        String incomingUsername = auth.getUsername();
+        String incomingPassword = auth.getPassword();
+
+        if (listOfUsers.isEmpty()){
+            resp.status = Response.Status.FAIL;
+            resp.errors = new String[] {"Error password or username Incorrect"};
+            return resp;
+        }
+
+        if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
+            sessionHistoryStore.create(new SessionHistory(1, listOfUsers.getFirst().getID(), auth.getGloballyUniqueSessionId()));
+            resp.status = Response.Status.SUCCESS;
+            resp.errors = new String[]{""};
+            return resp;
+        }
+
+        resp.status = Response.Status.FAIL;
+        resp.errors = new String[]{"Error password or Username Incorrect"};
+
+        return resp;
+    }
+
+    protected Response handleDeAuthenticate(){
+        return null;
+    }
+
+    protected Response handleCreateSession(CreateSession cs) {
+        Response resp = new Response();
+        GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();
+        ParticipantStore participantStore = ParticipantStore.getInstance();
+        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
+        if (sessionHistoryStore.findSessionByUUID(cs.getGloballyUniqueSessionId()).isEmpty()){
+            resp.status = Response.Status.FAIL;
+            resp.errors = new String[]{"Session inactive or non existent"};
+            return resp;
+        }
+
+        List<SessionHistory> sessionOfPlayers = sessionHistoryStore.findSessionByUUID(cs.getGloballyUniqueSessionId());
+        int sessionUserId = sessionOfPlayers.getFirst().getUserId();
+
+        gameHistoryStore.create(new GameHistory(1, cs.getGameType()));
+        participantStore.create(new Participant(1, 1, sessionUserId, 0));
+
+        resp.status = Response.Status.SUCCESS;
+        resp.errors = new String[]{""};
+        return resp;
+    }
+
+    private Response handleJoinSession(JoinSession js) {
+    }
+
+
+
+
     /**
      * Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
      */
-    protected String handleCreateOrJoin(CreateOrJoinSession req) {
-        switch (req.getType()) {
-            case "CREATE_SESSION":
-                if (req.getSessionId().equals("?")) {
-                    GameSessionRecord session = new GameSessionRecord();
-                    String sessionID = session.getSessionId();
-                    sessions.put(sessionID, session); // Look-up table
-                    session.addPlayer(req.getPlayerId());
-
-                    clients.getFirst().out.println();
-                }
-            case "JOIN_SESSION":
-                if (req.getSessionId() == null) {
-                    for (GameSessionRecord r : sessions.values()) {
-                        System.out.println(r.getSessionId());
-                    }
-                }
-        }
+    protected Response handleCreateOrJoin(CreateOrJoinSession req) {
+//
+////                if (req.getSessionId().equals("?")) {
+////                    GameSessionRecord session = new GameSessionRecord();
+////                    String sessionID = session.getSessionId();
+////                    sessions.put(sessionID, session); // Look-up table
+////                    session.addPlayer(req.getPlayerId());
+////
+////                    clients.getFirst().out.println();
+////                }
+//            case TypeSession.JOIN_SESSION: // game sesion
+////                if (req.getSessionId() == null) {
+////                    for (GameSessionRecord r : sessions.values()) {
+////                        System.out.println(r.getSessionId());
+////                    }
+////                }
+//        }
 
         return null;
     }
@@ -188,12 +262,21 @@ public class ServerCore {
      * Handle submit move request. Platform core will implement: resolve session, validate move, apply via game.handleAction, return GameStateUpdate JSON.
      */
     protected String handleSubmitMove(SubmitMove m) {
-        System.out.println("Handling move...");
-        game.handleAction(
-                new TTTPlayerAction(m.getPlayerId(),
-                TTTActionType.MOVE,
-                new TTTActionPayload(m.getRow(), m.getCol())
-        ));
+//        System.out.println("Handling move...");
+//        game.handleAction(
+//                new TTTPlayerAction(m.getPlayerId(),
+//                TTTActionType.MOVE,
+//                new TTTActionPayload(m.getRow(), m.getCol())
+//        ));
         return null;
+    }
+
+    public static class Response {
+        public enum Status {
+            SUCCESS,
+            FAIL
+        }
+        public Status status;
+        public String[] errors;
     }
 }

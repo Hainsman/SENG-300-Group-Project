@@ -9,11 +9,9 @@ import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.constants.TypeSession;
 import ca.ucalgary.seng300.platform.domain.*;
 import ca.ucalgary.seng300.platform.domain.Record;
-import ca.ucalgary.seng300.platform.messages.CreateOrJoinSession;
-import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
+import ca.ucalgary.seng300.platform.messages.*;
 import ca.ucalgary.seng300.platform.messages.Message;
-import ca.ucalgary.seng300.platform.messages.SessionCreated;
-import ca.ucalgary.seng300.platform.messages.SubmitMove;
+import ca.ucalgary.seng300.platform.server.ServerCore;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.services.MatchMakingService;
 import ca.ucalgary.seng300.platform.store.*;
@@ -47,36 +45,36 @@ public class MainAppTest {
 
 
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
-//        sessionHistoryStore.create(new SessionHistory(1));
-//        sessionHistoryStore.create(new SessionHistory(2));
-//        sessionHistoryStore.create(new SessionHistory(3));
-//        sessionHistoryStore.create(new SessionHistory(4));
+//        sessionHistoryStore.create(new SessionHistory(1, 1));
+//        sessionHistoryStore.create(new SessionHistory(2, 2));
+//        sessionHistoryStore.create(new SessionHistory(3, 3));
+//        sessionHistoryStore.create(new SessionHistory(4, 4));
 
-//        GameHistoryStore gameHistoryStore = new GameHistoryStore(Constants.GAME_FILE_PATH);
-        GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();
-        gameHistoryStore.create(new GameHistory(1, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(new GameHistory(2, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(new GameHistory(3, Game.TICK_TACK_TOE));
-        GameHistory gameHistory1 = new GameHistory(4, Game.TICK_TACK_TOE);
-        gameHistoryStore.create(new GameHistory(5, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(new GameHistory(6, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(new GameHistory(7, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(new GameHistory(8, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(new GameHistory(9, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(new GameHistory(10, Game.TICK_TACK_TOE));
-        gameHistoryStore.create(gameHistory1);
+        GameHistoryStore gameHistoryStore = new GameHistoryStore(Constants.GAME_FILE_PATH);
+//        GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();
+//        gameHistoryStore.create(new GameHistory(1, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(new GameHistory(2, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(new GameHistory(3, Game.TICK_TACK_TOE));
+//        GameHistory gameHistory1 = new GameHistory(4, Game.TICK_TACK_TOE);
+//        gameHistoryStore.create(new GameHistory(5, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(new GameHistory(6, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(new GameHistory(7, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(new GameHistory(8, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(new GameHistory(9, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(new GameHistory(10, Game.TICK_TACK_TOE));
+//        gameHistoryStore.create(gameHistory1);
 //
         ParticipantStore participantStore = ParticipantStore.getInstance();
-        participantStore.create(new Participant(1, 1, 1, 1));
-        participantStore.create(new Participant(2, 2, 1, 1));
-        participantStore.create(new Participant(3, 3, 1, 1));
-        participantStore.create(new Participant(4, 4, 1, 1));
-        participantStore.create(new Participant(5, 5, 1, 1));
-        participantStore.create(new Participant(6, 6, 1, 1));
-        participantStore.create(new Participant(7, 7, 1, 1));
-        participantStore.create(new Participant(8, 8, 1, 1));
-        participantStore.create(new Participant(9, 9, 1, 1));
-        participantStore.create(new Participant(10, 10, 1, 80));
+//        participantStore.create(new Participant(1, 1, 1, 1));
+//        participantStore.create(new Participant(2, 2, 1, 1));
+//        participantStore.create(new Participant(3, 3, 1, 1));
+//        participantStore.create(new Participant(4, 4, 1, 1));
+//        participantStore.create(new Participant(5, 5, 1, 1));
+//        participantStore.create(new Participant(6, 6, 1, 1));
+//        participantStore.create(new Participant(7, 7, 1, 1));
+//        participantStore.create(new Participant(8, 8, 1, 1));
+//        participantStore.create(new Participant(9, 9, 1, 1));
+//        participantStore.create(new Participant(10, 10, 1, 80));
 
         PlayerStatsStore playerStatsStore = PlayerStatsStore.getInstance();
         PlayerStats playerOne = new PlayerStats(1, Game.TICK_TACK_TOE, 1);
@@ -113,6 +111,7 @@ public class MainAppTest {
         List<GameHistory> listOfGames = gameHistoryStore.findByGameID(Game.TICK_TACK_TOE);
         UUID uniqueIdent = UUID.fromString("be6b47b1-2cb6-414d-a7df-945abde64c5e");
         List<SessionHistory> listOfSessions = sessionHistoryStore.findSessionByUUID(uniqueIdent);
+        List<SessionHistory> listOfSessionsByUserID = sessionHistoryStore.findSessionsByUserID(1);
         List<Participant> listOfParticipants = participantStore.findUserParticipationInGameEvents(1);
 //
         Rank rank = Helper.getRank(playerFour.getGameCounter(), playerFour.getGameCounter());
@@ -122,7 +121,7 @@ public class MainAppTest {
         System.out.println(listOfGames.size());
 //        System.out.println(listOfSessions.getFirst().getGloballyUniqueSessionIdentifier());
         LeaderBoardService lbs = new LeaderBoardService();
-//        lbs.
+//        System.out.println(listOfSessionsByUserID.getFirst().getGloballyUniqueSessionIdentifier());
 
         List<PlayerStats> sortedPlayers = lbs.getLeaderBoard(false, 1, 4);
 
@@ -236,5 +235,24 @@ public class MainAppTest {
         List<PlayerStats> connectFourMatch = matchMaking.matchPlayers(Game.CONNECT_FOUR);
         System.out.println("Test 11 - ConnectFour match should contain players 107 and 108: " + connectFourMatch.get(0).getUserID() + " and " + connectFourMatch.get(1).getUserID());
 
+        ServerCore sc = new ServerCore(9090);
+        UUID userUUID = UUID.randomUUID();
+
+        //User authentication
+        Authenticate auth = new Authenticate(userUUID, "Daniel", "B5D445C3F466FA91FE2CC6ABE79232A1A57CDF14F7A26E716EA1E2789DF78");
+        String TCPauth = Message.toJson(auth);
+        ServerCore.Response resp = sc.handleLine(TCPauth);
+        System.out.println(resp.status.toString());
+        System.out.println(resp.errors[0]);
+
+        //create Session
+        CreateSession cs = new CreateSession(userUUID, Game.CONNECT_FOUR);
+        String TCPCreateSession = Message.toJson(cs);
+        ServerCore.Response respCS = sc.handleLine(TCPCreateSession);
+        System.out.println(respCS.status.toString());
+
     }
+
+
+
 }
