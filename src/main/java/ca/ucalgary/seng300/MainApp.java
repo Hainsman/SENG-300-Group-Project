@@ -22,7 +22,7 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         // load Root.fxml, an empty container to be used as base for moving through UI.
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/ca.ucalgary.seng300.ui/root.fxml")
+                getClass().getResource("/ca.ucalgary.seng300.ui/Root.fxml")
         );
 
         // This is for custom window appearance

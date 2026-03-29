@@ -45,7 +45,7 @@ public class GameDashboardController {
 
     @FXML
     void handleInfoButton(ActionEvent event) {
-        CentralController.moveTo("Info.fxml");
+        CentralController.moveTo("info.fxml");
 
     }
     public void setFriendList(String f1,String f2, String f3){

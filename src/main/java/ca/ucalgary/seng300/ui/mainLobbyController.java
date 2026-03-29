@@ -29,31 +29,42 @@ public class mainLobbyController {
     @FXML
     public void initialize() {
 
-        lobbyTitle.setText(CentralController.selectedGame + " Lobby");
+        if (lobbyTitle != null) {
+            lobbyTitle.setText(CentralController.selectedGame + " Lobby");
+        }
 
-        lobbyCodeLabel.setText(
-                CentralController.lobbyCode != null ? CentralController.lobbyCode : "----"
-        );
+        if (lobbyCodeLabel != null) {
+            lobbyCodeLabel.setText(
+                    CentralController.lobbyCode != null ? CentralController.lobbyCode : "----"
+            );
+        }
 
-        privacyLabel.setText(
-                CentralController.privacy != null ? CentralController.privacy : "Public"
-        );
+        if (privacyLabel != null) {
+            privacyLabel.setText(
+                    CentralController.privacy != null ? CentralController.privacy : "Public"
+            );
+        }
 
-        gameNameLabel.setText("Game: " + CentralController.selectedGame);
+        if (gameNameLabel != null) {
+            gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Standard");
+        }
 
-        maxPlayersLabel.setText(
-                "Max Players: " + CentralController.maxPlayers
-        );
+        if (maxPlayersLabel != null) {
+            int maxPlayers = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 8;
+            maxPlayersLabel.setText(String.valueOf(maxPlayers));
+        }
 
         // 🔥 Dummy players (replace later)
-        playerList.getItems().addAll(
-                "You (Host)",
-                "Player 2",
-                "Player 3"
-        );
+        if (playerList != null) {
+            playerList.getItems().addAll(
+                    "You (Host)",
+                    "Player 2",
+                    "Player 3"
+            );
+        }
 
         // 🔥 Optional: disable start button if not host
-        if (!"hostLobby.fxml".equals(CentralController.previousScreen)) {
+        if (startGameBtn != null && !"hostLobby.fxml".equals(CentralController.previousScreen)) {
             startGameBtn.setDisable(true);
         }
     }
@@ -78,6 +89,7 @@ public class mainLobbyController {
                 break;
 
             case "Tic Tac Toe":
+            case "TicTacToe":
                 CentralController.moveTo("TicTacToe.fxml");
                 break;
 

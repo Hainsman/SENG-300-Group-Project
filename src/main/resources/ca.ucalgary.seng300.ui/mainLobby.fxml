@@ -74,7 +74,7 @@
                         <Label fx:id="maxPlayersLabel" text="8" />
 
                         <Label text="Game Mode:" />
-                        <Label text="Standard" />
+                        <Label fx:id="gameNameLabel" text="Standard" />
 
                         <Label text="Privacy:" />
                         <Label fx:id="privacyLabel" text="Public" />

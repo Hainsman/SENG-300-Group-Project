@@ -106,7 +106,7 @@ public class GameGUIController {
 
     @FXML
     private void handleInfoButton(ActionEvent event) {
-        CentralController.moveTo("Info.fxml");
+        CentralController.moveTo("info.fxml");
 
     }
 
