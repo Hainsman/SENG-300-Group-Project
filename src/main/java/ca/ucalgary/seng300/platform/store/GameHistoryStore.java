@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.store;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.domain.GameHistory;
 
 import java.util.List;

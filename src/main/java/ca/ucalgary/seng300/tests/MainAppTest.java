@@ -1,12 +1,8 @@
 package ca.ucalgary.seng300.tests;
 
-import ca.ucalgary.seng300.game.core.Player;
-import ca.ucalgary.seng300.game.core.State;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
-import ca.ucalgary.seng300.platform.constants.TypeSession;
 import ca.ucalgary.seng300.platform.domain.*;
 import ca.ucalgary.seng300.platform.domain.Record;
 import ca.ucalgary.seng300.platform.messages.*;
@@ -18,8 +14,6 @@ import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import java.util.List;
 import java.util.UUID;
-
-import static ca.ucalgary.seng300.platform.messages.Message.toJson;
 
 
 public class MainAppTest {
@@ -246,7 +240,7 @@ public class MainAppTest {
         System.out.println(resp.errors[0]);
 
         //create Session
-        CreateSession cs = new CreateSession(userUUID, Game.CONNECT_FOUR);
+        CreateGameRoom cs = new CreateGameRoom(userUUID, Game.CONNECT_FOUR);
         String TCPCreateSession = Message.toJson(cs);
         ServerCore.Response respCS = sc.handleLine(TCPCreateSession);
         System.out.println(respCS.status.toString());

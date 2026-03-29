@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
 
-public class TicTacToeController {
+public class TicTacToeController implements GameUI {
 
     /**
      * When set, moves and state use the game core session; when null, existing local board logic is used.
@@ -65,14 +65,23 @@ public class TicTacToeController {
 
     private String[][] board = new String[3][3]; // stores "X", "O", or null
     private boolean xTurn = true; // X starts
-    private int moves = 0;
+    private State status;
+    private int moves;
 
-    private static final Color xColor = Color.web("#3B82F6");
-    private static final Color oColor = Color.web("#A855F7");
+    private static final Color XColor = Color.web("#3B82F6");
+    private static final Color OColor = Color.web("#A855F7");
+    private static final String O = "O";
+    private static final String X = "X";
+    private static final String X_WIN = "X Wins!";
+    private static final String O_WIN = "O Wins!";
+    private static final String O_TURN = "O Turn";
+    private static final String X_TURN = "X Turn";
+    private static final String DRAW = "DRAW";
+    private static final int MAX_MOVES = 9;
 
     @FXML
     public void initialize() {
-        status = GameStatus.IN_PROGRESS;
+        status = State.IN_PROGRESS;
     }
 
     @Override
@@ -97,14 +106,14 @@ public class TicTacToeController {
         }
         switch (status) {
             case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
-            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
-            case DRAW -> turnLabel.setText("Draw!");
+            case PLAYER_2_WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
+            case TIE -> turnLabel.setText("Draw!");
             default -> {}
         }
     }
 
     @Override
-    protected void onGameCompletion() {
+    public void onGameCompletion() {
         disableBoard();
     }
 
@@ -237,7 +246,7 @@ public class TicTacToeController {
 
     @FXML
     void resetClick(ActionEvent event) {
-        status = GameStatus.IN_PROGRESS;
+        status = State.IN_PROGRESS;
         render();
         update();
     }

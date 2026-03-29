@@ -19,12 +19,11 @@ public abstract class Message {
 
     private static Gson createGson(){
         RuntimeTypeAdapterFactory<Message> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Message.class,"type")
-                .registerSubtype(CreateOrJoinSession.class, CreateOrJoinSession.class.getSimpleName())
                 .registerSubtype(GameStateUpdate.class, GameStateUpdate.class.getSimpleName())
-//                .registerSubtype(SessionCreated.class, SessionCreated.class.getSimpleName())
                 .registerSubtype(SubmitMove.class, SubmitMove.class.getSimpleName())
                 .registerSubtype(Authenticate.class, Authenticate.class.getSimpleName())
-                .registerSubtype(CreateSession.class, CreateSession.class.getSimpleName());
+                .registerSubtype(JoinGameRoom.class, JoinGameRoom.class.getSimpleName())
+                .registerSubtype(CreateGameRoom.class, CreateGameRoom.class.getSimpleName());
 
         RuntimeTypeAdapterFactory<GameState> gameStateAdapterFactory = RuntimeTypeAdapterFactory.of(GameState.class, "type")
                 .registerSubtype(TTTGameState.class, TTTGameState.class.getSimpleName());

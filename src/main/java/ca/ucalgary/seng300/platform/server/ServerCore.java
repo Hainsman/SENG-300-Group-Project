@@ -1,29 +1,18 @@
 package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
-import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.State;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTActionType;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
-import ca.ucalgary.seng300.platform.constants.TypeSession;
-import ca.ucalgary.seng300.platform.domain.GameHistory;
-import ca.ucalgary.seng300.platform.domain.Participant;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.*;
-import ca.ucalgary.seng300.platform.store.GameHistoryStore;
-import ca.ucalgary.seng300.platform.store.ParticipantStore;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
 import java.net.*;
 
@@ -37,7 +26,7 @@ import java.net.*;
 public class ServerCore {
 
     private final int port;
-    private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
+    private List<GameRoom> gameRooms;
     private ServerSocket server;
     private volatile boolean running;
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
@@ -155,20 +144,28 @@ public class ServerCore {
      * Platform core will implement: parse CreateOrJoinSession or SubmitMove, dispatch to handleCreateOrJoin / handleSubmitMove, return response.
      */
     public Response handleLine(String line) {
+        Response resp = new Response();
         Message message = Message.fromJson(line);
 
+        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
+        List<SessionHistory> session = sessionHistoryStore.findSessionByUUID(message.getGloballyUniqueSessionId());
+
+        if(session.isEmpty() && message instanceof Authenticate auth)
+            return handleAuthenticate(auth); // TODO: handle edge cases
+
+        int userId = session.getFirst().getUserId();
+        User user = UserStore.getInstance().get(userId);
         switch (message){
-            case Authenticate auth: return handleAuthenticate(auth);
-            case CreateSession cs: return handleCreateSession(cs);
-            case JoinSession js: return handleJoinSession(js);
-            case SubmitMove sm:break;
-            case SessionCreated sc:break;
+            case CreateGameRoom cs: return handleCreateGameRoom(cs, user);
+            case JoinGameRoom js: return handleJoinGameRoom(js, user);
+            case SubmitMove sm: return handleSubmitMove(sm);
             case GameStateUpdate gsu:break;
             default:
-
+                // TODO: report error
         }
-
-        return null;
+        resp.status = Response.Status.FAIL;
+        resp.errors = new String[] {"Message Invalid"};
+        return resp;
     }
 
 
@@ -206,68 +203,44 @@ public class ServerCore {
         return null;
     }
 
-    protected Response handleCreateSession(CreateSession cs) {
+    private Response handleCreateGameRoom(CreateGameRoom cs, User user) {
         Response resp = new Response();
-        GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();
-        ParticipantStore participantStore = ParticipantStore.getInstance();
-        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
-        if (sessionHistoryStore.findSessionByUUID(cs.getGloballyUniqueSessionId()).isEmpty()){
+        // check user don't have room with this game id already
+
+        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID())){
             resp.status = Response.Status.FAIL;
-            resp.errors = new String[]{"Session inactive or non existent"};
-            return resp;
+            resp.errors = new String[]{"Error User already present in Game Room"};
         }
 
-        List<SessionHistory> sessionOfPlayers = sessionHistoryStore.findSessionByUUID(cs.getGloballyUniqueSessionId());
-        int sessionUserId = sessionOfPlayers.getFirst().getUserId();
-
-        gameHistoryStore.create(new GameHistory(1, cs.getGameType()));
-        participantStore.create(new Participant(1, 1, sessionUserId, 0));
-
+        // create room
+        gameRooms.add(new GameRoom(cs.getGameType(), new ArrayList<User>(List.of(user)), user, UUID.randomUUID()));
         resp.status = Response.Status.SUCCESS;
-        resp.errors = new String[]{""};
         return resp;
     }
-
-    private Response handleJoinSession(JoinSession js) {
-    }
-
 
 
 
     /**
      * Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
      */
-    protected Response handleCreateOrJoin(CreateOrJoinSession req) {
-//
-////                if (req.getSessionId().equals("?")) {
-////                    GameSessionRecord session = new GameSessionRecord();
-////                    String sessionID = session.getSessionId();
-////                    sessions.put(sessionID, session); // Look-up table
-////                    session.addPlayer(req.getPlayerId());
-////
-////                    clients.getFirst().out.println();
-////                }
-//            case TypeSession.JOIN_SESSION: // game sesion
-////                if (req.getSessionId() == null) {
-////                    for (GameSessionRecord r : sessions.values()) {
-////                        System.out.println(r.getSessionId());
-////                    }
-////                }
-//        }
 
-        return null;
+    private Response handleJoinGameRoom(JoinGameRoom js, User user) {
+        Response resp = new Response();
+
+        //check if user is present in any gameRoom
+        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID())){
+            resp.status = Response.Status.FAIL;
+            resp.errors = new String[]{"Error User already present in Game Room"};
+        }
+
+        GameRoom joinGameRoom = (GameRoom) gameRooms.stream().filter(e -> e.getGameRoomID().equals(js.getGloballyUniqueSessionId()));
+        joinGameRoom.getParticipants().add(user);
+        resp.status = Response.Status.SUCCESS;
+        resp.errors = new String[]{"User Successfully joined GameRoom"};
+        return resp;
     }
 
-    /**
-     * Handle submit move request. Platform core will implement: resolve session, validate move, apply via game.handleAction, return GameStateUpdate JSON.
-     */
-    protected String handleSubmitMove(SubmitMove m) {
-//        System.out.println("Handling move...");
-//        game.handleAction(
-//                new TTTPlayerAction(m.getPlayerId(),
-//                TTTActionType.MOVE,
-//                new TTTActionPayload(m.getRow(), m.getCol())
-//        ));
+    private Response handleSubmitMove(SubmitMove m) {
         return null;
     }
 
@@ -278,5 +251,20 @@ public class ServerCore {
         }
         public Status status;
         public String[] errors;
+
+        static public Response Fail(String message) {
+            var res = new Response();
+            res.status = Status.FAIL;
+            res.errors = new String[]{message};
+            return  res;
+        }
     }
 }
+
+
+
+
+
+
+
+
