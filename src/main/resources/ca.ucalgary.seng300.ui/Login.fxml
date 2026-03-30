@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="16"
+      style="-fx-background-color: #23283F;"
+      xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ca.ucalgary.seng300.ui.LoginController">
+    <padding>
+        <Insets top="60" bottom="60" left="300" right="300"/>
+    </padding>
+
+    <Label text="Bogo Solutions"
+           maxWidth="Infinity" alignment="CENTER"
+           style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb);
+                  -fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: Bold;
+                  -fx-background-radius: 10px; -fx-background-insets: -10;
+                  -fx-font-family: Tahoma;"
+           prefHeight="70" />
+
+    <Label text="Login"
+           maxWidth="Infinity" alignment="CENTER"
+           style="-fx-text-fill: white; -fx-font-size: 28; -fx-font-weight: Bold;" />
+
+    <VBox spacing="16">
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="👤" style="-fx-font-size: 24; -fx-text-fill: white;" />
+            <TextField fx:id="usernameField"
+                       promptText="Username"
+                       maxWidth="Infinity"
+                       prefHeight="40"
+                       style="-fx-background-color: #2e3450; -fx-text-fill: white;
+                              -fx-prompt-text-fill: #888; -fx-font-size: 16;
+                              -fx-border-color: white; -fx-border-radius: 5px;
+                              -fx-background-radius: 5px;"
+                       HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label text="🔒" style="-fx-font-size: 24; -fx-text-fill: white;" />
+            <PasswordField fx:id="passwordField"
+                           promptText="Password"
+                           maxWidth="Infinity"
+                           prefHeight="40"
+                           style="-fx-background-color: #2e3450; -fx-text-fill: white;
+                                  -fx-prompt-text-fill: #888; -fx-font-size: 16;
+                                  -fx-border-color: white; -fx-border-radius: 5px;
+                                  -fx-background-radius: 5px;"
+                           HBox.hgrow="ALWAYS" />
+        </HBox>
+    </VBox>
+
+    <CheckBox fx:id="rememberMeBox"
+              text="Remember Me"
+              style="-fx-text-fill: white; -fx-font-size: 14;" />
+
+    <Label fx:id="errorLabel"
+           style="-fx-text-fill: #ff4d4d; -fx-font-size: 13;"
+           text="" />
+
+    <VBox spacing="14">
+        <Button text="Submit"
+                onAction="#handleLogin"
+                prefHeight="45" maxWidth="Infinity"
+                style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb);
+                       -fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: Bold;
+                       -fx-background-radius: 10px;" />
+
+        <Label text="New User?"
+               maxWidth="Infinity" alignment="CENTER"
+               style="-fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: Bold;" />
+
+        <Button text="Create New Account"
+                onAction="#handleNewUser"
+                prefHeight="45" maxWidth="Infinity"
+                style="-fx-background-color: #23283f; -fx-text-fill: white;
+                       -fx-font-size: 18; -fx-border-color: white;
+                       -fx-border-radius: 10px;" />
+
+        <!-- Forgot Password -->
+        <Button text="Forgot Password?"
+                onAction="#handleForgotPassword"
+                maxWidth="Infinity" alignment="CENTER"
+                style="-fx-background-color: transparent; -fx-text-fill: #2acbeb;
+                       -fx-font-size: 13; -fx-border-color: transparent;" />
+    </VBox>
+
+</VBox>

@@ -16,7 +16,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
-public class TicTacToeController {
+public class TicTacToeController extends GameGUI {
 
     private CentralController boss;
     public void setBoss(CentralController c){
@@ -101,6 +101,46 @@ public class TicTacToeController {
             // this should probably never happen, but if null needs a token it goes here
             return "ERR";
         }
+    }
+
+    @FXML
+    public void initialize() {
+        status = GameStatus.IN_PROGRESS;
+    }
+
+    @Override
+    public void render() {
+        board = new String[3][3];
+        moves = 0;
+        xTurn = true;
+        for (Node node : ticTacToeGrid.getChildren()) {
+            if (node instanceof Button btn) {
+                btn.setText("");
+                btn.setStyle("");
+                btn.setDisable(false);
+            }
+        }
+        GameGUI.clearHistory();
+    }
+
+    @Override
+    public void update() {
+        if (turnLabel == null) {
+            return;
+        }
+        switch (status) {
+            case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
+            case DRAW -> turnLabel.setText("Draw!");
+            default -> {
+            }
+        }
+    }
+
+    @Override
+    protected void onGameCompletion() {
+        disableBoard();
+        resetButton.setVisible(true);
     }
 
     private String checkWinner() {
@@ -192,13 +232,14 @@ public class TicTacToeController {
         String winner = checkWinner();
         if (winner != null) {
             turnLabel.setText(winner + " Wins!");
-            disableBoard();
+            onGameCompletion();
             return;
         }
 
         // Check draw
         if (moves == 9) {
             turnLabel.setText("Draw!");
+            onGameCompletion();
             return;
         }
 

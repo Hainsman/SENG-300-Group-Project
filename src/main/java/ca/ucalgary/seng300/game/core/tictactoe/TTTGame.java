@@ -34,6 +34,7 @@ public class TTTGame implements Game {
     public void tempReset(){
         gameState = new TTTGameState();
     }
+    public boolean valid;
 
     @Override
     public GameState startGame(Object Player1, Object Player2) {
@@ -43,7 +44,8 @@ public class TTTGame implements Game {
 
     @Override
     public void handleAction(PlayerAction playerAction) {
-        if (validator.validateMove(gameState, playerAction)) {
+        valid = validator.validateMove(gameState, playerAction);
+        if (valid) {
             gameState.applyAction(playerAction);
         }
     }
