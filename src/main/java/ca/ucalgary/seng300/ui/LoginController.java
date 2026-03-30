@@ -1,8 +1,11 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.messages.Authenticate;
+import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import java.util.UUID;
 
 public class LoginController {
 
@@ -23,6 +26,11 @@ public class LoginController {
             errorLabel.setText("Please enter your username and password.");
             return;
         }
+
+        UUID userSession = UUID.randomUUID();
+
+        Authenticate auth = new Authenticate(userSession, username, password);
+        //TODO make client core work
 
         // TODO: pass to backend auth service when user attempts to login
         // boolean success = authService.login(username, password, rememberMeBox.isSelected());

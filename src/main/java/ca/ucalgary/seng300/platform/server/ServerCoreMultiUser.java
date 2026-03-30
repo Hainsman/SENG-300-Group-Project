@@ -71,7 +71,7 @@ public class ServerCoreMultiUser{
         }
     }
 
-    private static class ClientHandler implements Runnable {
+    public static class ClientHandler implements Runnable {
         private Socket clientSocket;
 
         public ClientHandler(Socket socket) {
