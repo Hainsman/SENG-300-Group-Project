@@ -24,7 +24,7 @@ public class TicTacToeController extends GameGUI {
     }
 
     /**
-     * Standalone Tic-Tac-Toe screen (lobby → start game): same wiring as {@link GameGUIController#setBoss},
+     * Standalone Tic-Tac-Toe screen (lobby → start game): same wiring as {@link GameGUIController},
      * clears local {@link TicTacToeSession} when online, and paints from the last server state if present.
      */
     public void connectToRootForLobby(CentralController root) {
