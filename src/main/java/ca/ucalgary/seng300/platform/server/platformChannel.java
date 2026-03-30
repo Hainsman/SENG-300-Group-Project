@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.platform.server;
 import ca.ucalgary.seng300.PlatformCore;
-import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -9,14 +8,12 @@ import java.io.*;
 import java.net.Socket;
 
 public class platformChannel extends Thread {
-    // channel variables
     private Socket socket;
     private String lobby;
     private String gameQueue;
     private String gameType;
     private String gameID;
 
-    // main server variable
     private PlatformCore serv;
     private ObjectOutputStream outServ;
     private ObjectInputStream inCli;
@@ -24,7 +21,6 @@ public class platformChannel extends Thread {
 
 
     public platformChannel(Socket socket, PlatformCore serv) {
-        //set socket and main server to the arguments
         this.socket = socket;
         this.serv = serv;
     }
@@ -38,56 +34,64 @@ public class platformChannel extends Thread {
         }
     }
 
+    private void handleSys(sysMSG sm) {
+        switch (sm.getType()) {
+            case "HOST_LOBBY" -> {
+                String code = sm.getFieldA();
+                String gt = sm.getFieldB() != null ? sm.getFieldB() : "TTT";
+                boolean ok = serv.onHostLobby(code, gt, this);
+                if (ok) {
+                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "HOST"));
+                } else {
+                    cliSend(new sysMSG("LOBBY_ERR", "create", "Could not create lobby (code may already be in use)."));
+                }
+            }
+            case "JOIN_LOBBY" -> {
+                String code = sm.getFieldA();
+                boolean ok = serv.onJoinLobby(code, this);
+                if (ok) {
+                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
+                } else {
+                    cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
+                }
+            }
+            case "GMJN" -> serv.relayToGuestIfHost(this, sm);
+            case "reset" -> serv.tempGameReset();
+            default -> { }
+        }
+    }
+
     @Override
     public void run() {
         try {
-
-            // Set up input and output streams for talking back and forth
             outServ = new ObjectOutputStream(socket.getOutputStream());
             inCli = new ObjectInputStream(socket.getInputStream());
 
             gameID = "test";
             gameType = "TTT";
 
-            serv.tempJoin(this);
-            // variables for parsing input
-            Object message;
-
-            // if the client is closed unexpectedly readline returns null so this catches any error
             while (!interrupted()) {
-                // Read the client's message
-                message = inCli.readObject();
+                Object message = inCli.readObject();
 
-                switch (message) {
-                    case PlayerMove p:
-                        System.out.println("player action arrived");
-                        serv.gameEvent(gameID, gameType, p);
-                        break;
-                    case sysMSG s:
-                        switch(s.getType()){
-                            case "reset":
-                                serv.tempGameReset();
-
-                        }
-                        break;
-                    case chatMessage cm:
-                        if(serv.chatservers.contains(cm.getServ())){
-                            serv.sendMult(cm);
-                        }
-
-                        // chat message has arrived from the chatroom
-                        // PLACEHOLDER
-                        // This switch would presumably be arguments passed to a chat function
-                        // Update chat window ?
-                        break;
-
-                    default:
-                        System.out.println("def "+message);
+                if (message instanceof String str && "exit".equals(str)) {
+                    break;
                 }
 
+                switch (message) {
+                    case PlayerMove p -> {
+                        System.out.println("player action arrived");
+                        serv.gameEvent(gameID, gameType, p);
+                    }
+                    case sysMSG s -> handleSys(s);
+                    case chatMessage cm -> {
+                        if (serv.chatservers != null && serv.chatservers.contains(cm.getServ())) {
+                            serv.sendMult(cm);
+                        }
+                    }
+                    default -> System.out.println("def " + message);
+                }
             }
 
-            // cleanup
             socket.close();
             System.out.println("Client " + ID + " " + socket.getInetAddress() + " has disconnected.");
         } catch (Exception e) {

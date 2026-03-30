@@ -42,6 +42,66 @@ public class PlatformCore {
 
     private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
 
+    /** Waiting host channels keyed by lobby code (guest joins by code). */
+    private final ConcurrentHashMap<String, platformChannel> openLobbies = new ConcurrentHashMap<>();
+
+    public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel) {
+        if (code == null || code.isBlank() || hostChannel == null) {
+            return false;
+        }
+        String normalized = code.trim().toUpperCase();
+        if (openLobbies.putIfAbsent(normalized, hostChannel) != null) {
+            return false;
+        }
+        hostChannel.ID = "host-" + normalized;
+        System.out.println("Lobby opened: " + normalized + " (" + gameType + ")");
+        return true;
+    }
+
+    public synchronized boolean onJoinLobby(String code, platformChannel guestChannel) {
+        if (code == null || code.isBlank() || guestChannel == null) {
+            return false;
+        }
+        String normalized = code.trim().toUpperCase();
+        platformChannel host = openLobbies.remove(normalized);
+        if (host == null) {
+            return false;
+        }
+        guestChannel.ID = "guest-" + normalized;
+        p1 = host;
+        p2 = guestChannel;
+        TTTGame t = (TTTGame) games.get("test");
+        Map<String, Player> turnIds = new HashMap<>();
+        turnIds.put("P1", Player.PLAYER_1);
+        turnIds.put("P2", Player.PLAYER_2);
+        t.setPlayerIdToPlayer(turnIds);
+        host.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("PARTNER_JOINED", normalized, ""));
+        tempGameReset();
+        System.out.println("Lobby " + normalized + " matched; game ready.");
+        return true;
+    }
+
+    /**
+     * Relays host "start game" to the guest using the same {@code GMJN} sysMSG pattern as the legacy client.
+     */
+    public synchronized void relayToGuestIfHost(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+        if (p2 == null || from == null) {
+            return;
+        }
+        boolean fromHost = (from == p1)
+                || (from.ID != null && from.ID.startsWith("host-"));
+        if (!fromHost) {
+            return;
+        }
+        String fxml = sm.getFieldA();
+        if (fxml == null || fxml.isBlank()) {
+            return;
+        }
+        String b = sm.getFieldB() != null ? sm.getFieldB() : "";
+        p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("GMJN", fxml, b));
+        System.out.println("GMJN relayed to guest → " + fxml);
+    }
+
     public void sendSingle (String id, Object o){
         for(platformChannel u : users){
             if(u.ID.equals(id)){
@@ -90,12 +150,18 @@ public class PlatformCore {
     public void tempGameReset(){
         TTTGame t =(TTTGame) games.get("test");
         t.tempReset();
-        p1.cliSend(t.getGameState());
-        p2.cliSend(t.getGameState());
+        if (p1 != null) {
+            p1.cliSend(t.getGameState());
+        }
+        if (p2 != null) {
+            p2.cliSend(t.getGameState());
+        }
     }
 
     public void gameEvent(String id, String type, PlayerMove p){
-        //Game g = games.get(ID);
+        if (p1 == null || p2 == null) {
+            return;
+        }
         if(type.equals("TTT")){
             // Player channel stores the game type and ID for each client, no need to send it
             TTTGame t =(TTTGame) games.get(id);
