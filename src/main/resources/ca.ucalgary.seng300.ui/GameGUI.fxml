@@ -16,11 +16,11 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="194.0" style="-fx-background-color: #23283f;">
                <children>
-                  <Button id="menuButton" fx:id="infoButton" layoutX="49.0" layoutY="525.0" mnemonicParsing="false" onAction="#handleInfoButton" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="ⓘ      Info      ">
+                  <Button id="menuButton" fx:id="infoButton" layoutX="49.0" layoutY="553.0" mnemonicParsing="false" onAction="#handleInfoButton" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="ⓘ      Info      ">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets></Button>
-                  <Button id="settingsButton" layoutX="49.0" layoutY="578.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="⚙      Settings" />
+                  <Button id="settingsButton" layoutX="49.0" layoutY="606.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: White; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="⚙      Settings" />
                   <Label fx:id="connect4Label" layoutX="44.0" layoutY="129.0" style="-fx-font-weight: bold; -fx-font-size: 40; -fx-background-radius: 10px; -fx-text-fill: #f73b1e;" text="CONNECT 4" visible="false">
                      <effect>
                         <DropShadow>
@@ -40,8 +40,10 @@
                      </effect>
                   </Label>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="13.0" layoutY="11.0" prefHeight="117.0" prefWidth="286.0" style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-text-fill: White; -fx-font-size: 40; -fx-font-weight: Bold; -fx-background-insets: -10; -fx-background-radius: 10px; -fx-font-family: Tahoma;" text="Bogo Solutions" textAlignment="CENTER" wrapText="true" />
-                  <Button alignment="CENTER" layoutX="49.0" layoutY="472.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-font-size: 20; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;" text="✕      Forfeit  " />
-                   <Button layoutX="49.0" layoutY="631.0" mnemonicParsing="false" onAction="#handleExitButton" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: white; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="🚪       Exit       " />
+                  <Button fx:id="hostGameButton" layoutX="49.0" layoutY="410.0" mnemonicParsing="false" onAction="#handleHostGame" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-font-size: 20; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;" text="Host game" />
+                  <Button fx:id="joinGameButton" layoutX="49.0" layoutY="455.0" mnemonicParsing="false" onAction="#handleJoinGame" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-font-size: 20; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;" text="Join game" />
+                  <Button alignment="CENTER" layoutX="49.0" layoutY="500.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-font-size: 20; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;" text="✕      Forfeit  " />
+                   <Button layoutX="49.0" layoutY="659.0" mnemonicParsing="false" onAction="#handleExitButton" prefHeight="45.0" prefWidth="176.0" style="-fx-background-color: #23283f; -fx-text-fill: white; -fx-font-size: 20; -fx-border-color: white; -fx-border-radius: 10px;" text="🚪       Exit       " />
                    <VBox layoutX="29.0" layoutY="216.0" prefHeight="223.0" prefWidth="252.0" style="-fx-background-color: #36a9e3; -fx-border-color: white; -fx-border-width: 5px; -fx-border-radius: 5px;">
                        <children>
                            <AnchorPane prefHeight="200.0" prefWidth="200.0">

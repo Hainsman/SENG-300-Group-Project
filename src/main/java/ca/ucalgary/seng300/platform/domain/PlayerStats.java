@@ -5,13 +5,11 @@ public class PlayerStats extends Record{
     private int userID;
     private int counter = 0;
     private double score = 0;
-    private String type;
 
     public PlayerStats(int id, int gameID, int userID) {
-        super(id);
+        super(id, PlayerStats.class.getSimpleName());
         this.gameID = gameID;
         this.userID = userID;
-        this.type = "playerStats";
     }
 
     //getters

@@ -13,7 +13,7 @@ public class TTTCLI {
 
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
+        while (!game.isGameOver()) {
              // get move from user
             System.out.print("Enter row col: ");
             int row =scanner.nextInt();
@@ -22,7 +22,7 @@ public class TTTCLI {
             // build and send action to game
             TTTPlayerAction action = new TTTPlayerAction(
                 state.getPlayerTurn().toString(),
-                TTTActionType.MOVE,
+                "MOVE",
                 row,
                 col
             );
@@ -34,5 +34,8 @@ public class TTTCLI {
             for (Player[] r : state.getBoard())
                 System.out.println(java.util.Arrays.toString(r));
         }
+
+        System.out.println("Game Over! State: " +state.getState());
+        scanner.close();
     }
 }

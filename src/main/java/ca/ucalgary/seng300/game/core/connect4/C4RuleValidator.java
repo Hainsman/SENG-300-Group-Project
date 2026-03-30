@@ -33,7 +33,7 @@ public class C4RuleValidator extends RuleValidator {
             return false;
         }
 
-        if (action.getActionType() == C4ActionType.MOVE) {
+        if ("MOVE".equals(action.getActionType())) {
             int col = c4Action.getColValue();
 
             // Reject if column is out of range (0-6)
@@ -75,7 +75,7 @@ public class C4RuleValidator extends RuleValidator {
         for (int col = 0; col < 7; col++) {
             for (int row = 5; row >= 0; row--) {
                 if (board[row][col] == Player.EMPTY) {
-                    C4PlayerAction action = new C4PlayerAction("temp", C4ActionType.MOVE, row, col);
+                    C4PlayerAction action = new C4PlayerAction("temp", "MOVE", row, col);
                     validActions.add(action);
                     break; // only the lowest empty row per column is valid
                 }
