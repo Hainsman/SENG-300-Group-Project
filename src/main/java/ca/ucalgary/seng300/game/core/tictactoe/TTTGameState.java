@@ -92,4 +92,12 @@ public class TTTGameState implements GameState {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for (Player[] r : board)
+            s.append(java.util.Arrays.toString(r)).append('\n');
+        return s.toString();
+    }
 }

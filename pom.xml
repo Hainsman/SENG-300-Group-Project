@@ -58,13 +58,13 @@
         </configuration>
       </plugin>
 
-      <!-- Run arbitrary main class (e.g. ServerMain) without JavaFX -->
+      <!-- Run a plain Java main (no JavaFX). Default = PlatformCore: same server the GUI client uses (port 2020). -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.1.0</version>
         <configuration>
-          <mainClass>ca.ucalgary.seng300.platform.server.ServerMain</mainClass>
+          <mainClass>ca.ucalgary.seng300.PlatformCore</mainClass>
         </configuration>
       </plugin>
 

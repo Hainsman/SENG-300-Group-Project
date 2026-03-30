@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.game.core;
 
-public interface GameState {
+import java.io.Serializable;
+
+public interface GameState extends Serializable {
     Player[][] board = null;
     Player playerTurn = Player.PLAYER_1;
     State state = State.IN_PROGRESS;

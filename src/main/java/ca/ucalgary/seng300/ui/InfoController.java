@@ -22,7 +22,11 @@ public class InfoController {
 
     @FXML
     private void handleBack (ActionEvent event) {
-        CentralController.moveTo("GameGUI.fxml");
+        if (CentralController.previousScreen != null) {
+            CentralController.moveTo(CentralController.previousScreen);
+        } else {
+            CentralController.moveTo("GameDashboard.fxml");
+        }
 
     }
 
@@ -30,14 +34,14 @@ public class InfoController {
         String gameType = data.gameType.toUpperCase();
         gameTitleLabel.setText(gameType);
 
-        if(gameType == "TICTACTOE"){
+        if("TICTACTOE".equals(gameType)){
             rulesTextArea.setText(
                     "TicTacToe Rules:\n" +
                             "- Players take turns placing X and O.\n" +
                             "- First to get 3 in a row (horizontal, vertical, diagonal) wins.\n" +
                             "- If all spaces are filled and no player has 3 in a row, the game is a draw."
             );
-        } else if (gameType == "CONNECT4"){
+        } else if ("CONNECT4".equals(gameType)){
             rulesTextArea.setText(
                     "Connect 4 Rules:\n" +
                             "- Players take turns dropping colored discs into a 7x6 grid.\n" +

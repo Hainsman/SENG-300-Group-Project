@@ -45,7 +45,7 @@ public class TicTacToeSession {
         }
         TTTGameState gs = (TTTGameState) game.getGameState();
         String playerId = gs.getPlayerTurn() == Player.PLAYER_1 ? "P1" : "P2";
-        TTTPlayerAction action = new TTTPlayerAction(playerId, TTTActionType.MOVE, new TTTActionPayload(row, col));
+        TTTPlayerAction action = new TTTPlayerAction(playerId, "MOVE", new TTTActionPayload(row, col));
         game.handleAction(action);
         // Move was applied only if validator accepted it (cell is now filled)
         return game.getGameState().getBoard()[row][col] != Player.EMPTY;

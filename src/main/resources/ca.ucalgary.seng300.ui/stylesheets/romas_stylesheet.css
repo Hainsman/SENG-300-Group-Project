@@ -1,0 +1,87 @@
+.root {
+    BUTTON_COLOR: #4E4A51;
+    BUTTON_HOVER_COLOR: #847E89;
+    BUTTON_HOVER_TEXT_FILL: #CFC0EA;
+    TEXT_FILL: #AB9BC6;
+    FAINT_TEXT_FILL: #AB9BC622;
+    ALTERNATE_TEXT_FILL: #DFDAE5;
+
+    -fx-base: #23283F;
+    /*
+    -fx-text-fill: TEXT_FILL;
+    -fx-font-family: "Segoe UI";
+    */
+}
+
+#title-bar {
+    -fx-background-color: BUTTON_COLOR;
+
+    /*should be part of base*/
+    -fx-text-fill: TEXT_FILL;
+    -fx-font-family: "Segoe UI";
+}
+
+/*should be part of base button*/
+#exit-button {
+    -fx-pref-width: 150;
+    -fx-pref-height: 49;
+    -fx-background-color: BUTTON_COLOR;
+    -fx-font-size: 18;
+
+    /*should be part of base*/
+    -fx-text-fill: TEXT_FILL;
+    -fx-font-family: "Segoe UI";
+}
+
+#exit-button:hover {
+    -fx-background-color: #873E50;
+    -fx-text-fill: #D8BEC5;
+}
+
+/*should be part of base button*/
+#minimize-maximize-button {
+    -fx-pref-width: 150;
+    -fx-pref-height: 49;
+    -fx-background-color: BUTTON_COLOR;
+    -fx-font-size: 18;
+
+    /*should be part of base*/
+    -fx-text-fill: TEXT_FILL;
+    -fx-font-family: "Segoe UI";
+}
+
+#minimize-maximize-button:hover {
+    -fx-background-color: #605C84;
+    -fx-text-fill: #BBB9CC;
+}
+
+#sub-header {
+    -fx-font-size: 24;
+    /*should be part of base*/
+    -fx-text-fill: TEXT_FILL;
+    -fx-font-family: "Segoe UI";
+}
+
+/*
+.button {
+    -fx-pref-width: 150;
+    -fx-pref-height: 50;
+    -fx-background-color: BUTTON_COLOR;
+    -fx-font-size: 18;
+}
+*/
+
+/*
+.button:hover {
+    -fx-background-color: BUTTON_HOVER_COLOR;
+    -fx-text-fill: BUTTON_HOVER_TEXT_FILL;
+}
+*/
+#TTTLabel:hover {
+    -fx-background-color: #873E50;
+    -fx-text-fill: #D8BEC5;
+}
+#C4Label:hover {
+    -fx-background-color: #873E50;
+    -fx-text-fill: #D8BEC5;
+}
