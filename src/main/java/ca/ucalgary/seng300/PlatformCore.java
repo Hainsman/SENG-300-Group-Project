@@ -4,7 +4,6 @@ import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
@@ -166,7 +165,7 @@ public class PlatformCore {
             // Player channel stores the game type and ID for each client, no need to send it
             TTTGame t =(TTTGame) games.get(id);
 
-            t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(),new TTTActionPayload(p.getRow(),p.getCol())) {
+            t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(), p.getRow(), p.getCol()) {
             });
             System.out.println(debugBoard((TTTGameState) t.getGameState()));
             p1.cliSend(t.getGameState());
