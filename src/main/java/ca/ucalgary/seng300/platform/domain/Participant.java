@@ -4,14 +4,12 @@ public class Participant extends Record{
     private int gameHistoryID;
     private int userID;
     private int score;
-    private String type;
 
     public Participant(int id, int gameHistoryID, int userID, int score){
-        super(id);
+        super(id, Participant.class.getSimpleName());
         this.gameHistoryID = gameHistoryID;
         this.userID = userID;
         this.score = score;
-        this.type = "participant";
     }
 
     //getters

@@ -1,5 +1,8 @@
 package ca.ucalgary.seng300.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
@@ -194,8 +197,6 @@ public abstract class GameGUI {
         update();
     };
 
-
-
     // Game History
 
     public static VBox historyBox;
@@ -234,6 +235,7 @@ public abstract class GameGUI {
         entry.getChildren().addAll(dot, label);
         historyBox.getChildren().add(entry);
     }
+
     /*
      * clearHistory() wipes the history panel.
      * Call this when starting a new game or resetting one.
@@ -242,6 +244,37 @@ public abstract class GameGUI {
         if (historyBox != null) {
             historyBox.getChildren().clear();
         }
+
+        // Clearing array list for the sending the match history.
+        matchHistory.clear();
+    }
+
+    // Array list is used for storing the match history.
+    // The match history inside the array should look something like this:
+    // "[TP1(0,0), TP2(1,0), TP1(1,1)".
+    private static List<String> matchHistory = new ArrayList<>();
+
+    /*
+     * onMoveChosen appends match history to an array list.
+     * Returns a string containing the match history and game type.
+     * 
+     * @param player send TP1/TP2 for tictactoe and CP1/CP2 for connect4.
+     * 
+     * @param move "(1,2)".
+     */
+    public static void onMoveChosen(String player, String move) {
+        String playerMove = player + move;
+        matchHistory.add(playerMove);
+    }
+
+    // Match history getter method
+    public String getMatchHistory() {
+        return matchHistory.toString(); // e.g. "[TP1(0,0), TP2(1,0), TP1(1,1)" OR "[CP1(0,0), CP2(1,0), CP1(1,1)".
+    }
+
+    // Player move getter method
+    public String getMove() {
+        return matchHistory.get(matchHistory.size() - 1); // The latest move e.g. "[TP1(0,0)]".
     }
 
     // Game Elo Labels + methods
@@ -262,7 +295,8 @@ public abstract class GameGUI {
 
     // backend can call with necessary data inputs
     public static void displayElo(int elo, int win, int loss, int draw, String rank) {
-        if (eloLabel == null) return;
+        if (eloLabel == null)
+            return;
         eloLabel.setText(String.valueOf(elo));
         winLabel.setText(String.valueOf(win));
         lossLabel.setText(String.valueOf(loss));
@@ -270,12 +304,12 @@ public abstract class GameGUI {
         rankLabel.setText("PlaceHolder");
 
         // RESOLVE PLEASE: Need to connect to backend constants / rank.java
-//        for (Rank rank : Rank.values()) {
-//            if (rank.isInRank(elo)) {
-//                rankLabel.setText(rank.getDisplayName());
-//                break;
-//            }
-//        }
+        // for (Rank rank : Rank.values()) {
+        // if (rank.isInRank(elo)) {
+        // rankLabel.setText(rank.getDisplayName());
+        // break;
+        // }
+        // }
     }
 }
 

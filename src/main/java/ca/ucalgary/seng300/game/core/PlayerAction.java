@@ -2,11 +2,11 @@ package ca.ucalgary.seng300.game.core;
 
 public abstract class PlayerAction {
     private final String playerID;
-    private final ActionType actionType;
+    private final String actionType;
     private final int row;
     private final int col;
 
-    protected PlayerAction(String playerID, ActionType actionType, int row, int col) {
+    protected PlayerAction(String playerID, String actionType, int row, int col) {
         this.playerID = playerID;
         this.actionType = actionType;
         this.row = row;
@@ -17,7 +17,7 @@ public abstract class PlayerAction {
         return playerID;
     }
 
-    public ActionType getActionType() {
+    public String getActionType() {
         return actionType;
     }
 

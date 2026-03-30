@@ -3,7 +3,7 @@ package ca.ucalgary.seng300.game.core.tictactoe;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 
 public class TTTPlayerAction extends PlayerAction {
-    public TTTPlayerAction(String playerID, TTTActionType actionType, int row, int col) {
+    public TTTPlayerAction(String playerID, String actionType, int row, int col) {
         super(playerID, actionType, row, col);
     }
 
@@ -19,7 +19,7 @@ public class TTTPlayerAction extends PlayerAction {
 
 
     @Override
-    public TTTActionType getActionType() {
-        return (TTTActionType) super.getActionType();
+    public String getActionType() {
+        return super.getActionType();
     }
 }

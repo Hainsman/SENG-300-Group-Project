@@ -22,7 +22,7 @@ public class TTTCLI {
             // build and send action to game
             TTTPlayerAction action = new TTTPlayerAction(
                 state.getPlayerTurn().toString(),
-                TTTActionType.MOVE,
+                "MOVE",
                 row,
                 col
             );
