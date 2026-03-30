@@ -191,7 +191,7 @@ public class ServerCore {
         System.out.println("Handling move...");
         game.handleAction(
                 new TTTPlayerAction(m.getPlayerId(),
-                TTTActionType.MOVE,
+                TTTActionType.MOVE.name(),
                 new TTTActionPayload(m.getRow(), m.getCol())
         ));
         return null;

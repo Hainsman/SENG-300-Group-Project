@@ -1,17 +1,17 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
-
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 
 public class joinLobbyController {
-
-
-    // FXML ELEMENTS
-
 
     @FXML private Label gameTitleLabel;
 
@@ -21,78 +21,87 @@ public class joinLobbyController {
     @FXML private TextField searchField;
     @FXML private ListView<String> lobbyList;
 
-
-
     @FXML
     public void initialize() {
+        if (gameTitleLabel != null) {
+            String g = CentralController.selectedGame;
+            gameTitleLabel.setText(g != null ? g : "Game");
+        }
 
-        // Set game title from CentralController
-        gameTitleLabel.setText(CentralController.selectedGame);
+        if (lobbyList != null) {
+            lobbyList.getItems().clear();
+            lobbyList.setPlaceholder(new Label("Public lobby browser is not available yet.\nEnter a code from your host above."));
+        }
 
-        // Dummy lobby list (you can replace later with real data)
-        lobbyList.getItems().addAll(
-                "Lobby 1 - ABC123",
-                "Lobby 2 - XYZ789",
-                "Lobby 3 - QWE456"
-        );
+        if (joinByCodeBtn != null) {
+            joinByCodeBtn.setOnAction(e -> handleJoinByCode());
+        }
 
-        // Double-click to join lobby
-        lobbyList.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                String selected = lobbyList.getSelectionModel().getSelectedItem();
-                if (selected != null) {
-                    joinLobbyFromList(selected);
-                }
-            }
-        });
-
-        // Button click
-        joinByCodeBtn.setOnAction(e -> handleJoinByCode());
+        if (lobbyList != null) {
+            lobbyList.setOnMouseClicked(this::onLobbyListClick);
+        }
     }
 
+    private void onLobbyListClick(MouseEvent event) {
+        if (event.getClickCount() != 2) {
+            return;
+        }
+        String selected = lobbyList.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            joinLobbyFromList(selected);
+        }
+    }
 
     private void handleJoinByCode() {
+        if (codeField == null) {
+            return;
+        }
+        String raw = codeField.getText() != null ? codeField.getText().trim() : "";
+        if (raw.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "Enter the lobby code your host shared.", ButtonType.OK).showAndWait();
+            return;
+        }
+        attemptJoin(raw.toUpperCase());
+    }
 
-        String code = codeField.getText().trim();
-
-        if (code.isEmpty()) {
-            System.out.println("Please enter a lobby code");
+    private void attemptJoin(String code) {
+        CentralController c = CentralController.getInstance();
+        if (c == null) {
+            return;
+        }
+        ClientCore cc = c.getCC();
+        if (cc == null || !cc.isConnected()) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Connect to the game server first.\n\nRun PlatformCore (port 2020), restart this app, then try again.",
+                    ButtonType.OK).showAndWait();
             return;
         }
 
-        System.out.println("Joining lobby with code: " + code);
-
-        // Store data
+        CentralController.hostingLobby = false;
         CentralController.lobbyCode = code;
-        CentralController.maxPlayers = 4; // placeholder
-        CentralController.privacy = "Public"; // placeholder
-
-        // Track previous screen
-        CentralController.previousScreen = "joinLobby.fxml";
-
-        // Navigate
-        CentralController.moveTo("mainLobby.fxml");
-    }
-
-
-
-    private void joinLobbyFromList(String lobby) {
-
-        System.out.println("Joining: " + lobby);
-
-        // Extract code (simple split)
-        String code = lobby.split("-")[1].trim();
-
-        CentralController.lobbyCode = code;
-        CentralController.maxPlayers = 4; // placeholder
+        CentralController.maxPlayers = 2;
         CentralController.privacy = "Public";
 
-        CentralController.previousScreen = "chooseMode.fxml";
+        LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        LobbyBridge.onJoinOk = () -> {
+            CentralController.previousScreen = "joinLobby.fxml";
+            CentralController.moveTo("mainLobby.fxml");
+        };
 
-        CentralController.moveTo("mainLobby.fxml");
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, ""));
     }
 
-
+    private void joinLobbyFromList(String lobby) {
+        String code = lobby.trim().toUpperCase();
+        String[] parts = lobby.split("-");
+        if (parts.length >= 2) {
+            code = parts[parts.length - 1].trim().toUpperCase();
+        }
+        if (codeField != null) {
+            codeField.setText(code);
+        }
+        attemptJoin(code);
+    }
 
     @FXML
     private void handleBack() {
