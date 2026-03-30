@@ -18,31 +18,6 @@ public class C4GameState implements GameState {
     public boolean applyAction(PlayerAction action) {
         boolean successful = false;
         C4PlayerAction C4action = (C4PlayerAction) action;
-        int row = C4action.getRowValue();
-        int col = C4action.getColValue();
-
-        if (board != null && state == State.IN_PROGRESS) {
-            board[row][col] = playerTurn;
-            if (playerTurn == Player.PLAYER_1) {
-                playerTurn = Player.PLAYER_2;
-            } else {
-                playerTurn = Player.PLAYER_1;
-            }
-            successful = true;
-        }
-
-        return successful;
-    }
-
-    //variant of apply action that only uses the column
-    //and figures out what row the 'piece' lands in on its own.
-    //included because there were ideas of doing it this way
-    //but currently C4ActionPayload has column and row
-    //so having both makes it easier to switch if using only column is chosen
-    //remember to add @Override and fix the function name if chosen
-    public boolean applyActionColOnly(PlayerAction action) {
-        boolean successful = false;
-        C4PlayerAction C4action = (C4PlayerAction) action;
         int col = C4action.getColValue();
 
         if (board != null && state == State.IN_PROGRESS) {

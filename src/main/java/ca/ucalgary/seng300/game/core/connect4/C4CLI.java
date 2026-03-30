@@ -28,11 +28,12 @@ public class C4CLI {
             C4PlayerAction action =new C4PlayerAction(
                 state.getPlayerTurn().toString(),
                 C4ActionType.MOVE,
-                new C4ActionPayload(-1, col)
+                -1,
+                col
             );
 
             // Bypass validator for now, use applyActionColOnly directly
-            state.applyActionColOnly(action);
+            state.applyAction(action);
         }
 
         //Print final board
