@@ -34,7 +34,6 @@ public class C4RuleValidator extends RuleValidator {
         }
 
         if (action.getActionType() == C4ActionType.MOVE) {
-            int row = c4Action.getRowValue();
             int col = c4Action.getColValue();
 
             // Reject if column is out of range (0-6)
@@ -43,21 +42,9 @@ public class C4RuleValidator extends RuleValidator {
                 return false;
             }
 
-            // Reject if row is out of range (0-5)
-            if (row < 0 || row > 5) {
-                System.out.println("Row out of range");
-                return false;
-            }
-
-            // Reject if the target cell is not empty
-            if (gameState.getBoard()[row][col] != Player.EMPTY) {
-                System.out.println("PlayerAction attempted to overwrite tile");
-                return false;
-            }
-
-            // Reject if there is no piece below (not bottom row and cell below is empty)
-            if (row < 5 && gameState.getBoard()[row + 1][col] == Player.EMPTY) {
-                System.out.println("Invalid placement: no supporting piece below");
+            // Reject if the top row of the target column is not empty
+            if (gameState.getBoard()[0][col] != Player.EMPTY) {
+                System.out.println("PlayerAction attempted to place a piece in a full column");
                 return false;
             }
         } else {
