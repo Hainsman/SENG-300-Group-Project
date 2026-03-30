@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.*;
 
 /**
  * STUB: TCP server. Matchmaking is in progress; platform core will implement real networking.
@@ -23,121 +24,157 @@ import java.net.*;
  * When implemented: listen for clients, handle CreateOrJoinSession and SubmitMove,
  * reply with SessionCreated and GameStateUpdate (one JSON line per message).
  */
-public class ServerCoreMultiUser {
-
+public class ServerCoreMultiUser{
+    private Game game;
     private final int port;
     private List<GameRoom> gameRooms;
-    private ServerSocket server;
+    private ServerSocket serverSocket;
     private volatile boolean running;
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
-    private Game game;
+    private ExecutorService threadPool;
+    private static ServerCoreMultiUser scmu;
 
-    public ServerCoreMultiUser(int port) {
+    public ServerCoreMultiUser(int port, int maxThreads, ServerCoreMultiUser scmu) {
         this.port = port;
+        this.threadPool = Executors.newFixedThreadPool(maxThreads);
+        this.scmu = scmu;
     }
+
+    public void start() throws IOException {
+        try {
+            serverSocket = new ServerSocket(port);
+            running = true;
+            System.out.println("Server started on port " + port + " with thread pool");
+
+            while (running) {
+                try {
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("Client connected: " + clientSocket.getInetAddress());
+
+                    // Submit client handling to thread pool
+                    threadPool.submit(new ClientHandler(clientSocket));
+
+                } catch (SocketException e) {
+                    if (running) {
+                        System.err.println("Socket error: " + e.getMessage());
+                    }
+                } catch (IOException e) {
+                    if (running) {
+                        System.err.println("Error accepting connection: " + e.getMessage());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Could not start server: " + e.getMessage());
+        } finally {
+            shutdown();
+        }
+    }
+
+    private static class ClientHandler implements Runnable {
+        private Socket clientSocket;
+
+        public ClientHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
+
+        @Override
+        public void run() {
+            try (BufferedReader in = new BufferedReader(
+                    new InputStreamReader(clientSocket.getInputStream()));
+                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    Response resp = scmu.handleLine(inputLine);
+
+                    if (inputLine.equalsIgnoreCase("quit")) {
+                        break;
+                    }
+                }
+
+            } catch (IOException e) {
+                System.err.println("Error handling client: " + e.getMessage());
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    System.err.println("Error closing client socket: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void shutdown() {
+        running = false;
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+            threadPool.shutdown();
+            if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {
+                threadPool.shutdownNow();
+            }
+        } catch (IOException | InterruptedException e) {
+            threadPool.shutdownNow();
+        }
+    }
+
+
 
     /** Start the server on specified port. **/
-    public void start() throws IOException {
-        server = new ServerSocket(port);
-        Thread acceptPlayers = new Thread(() -> {
-            try {
-                // Two players
-                clients.add(acceptClient(server));
-                clients.add(acceptClient(server));
-            } catch (IOException _) {}
-        });
 
-        acceptPlayers.start();
-
-        int curr = clients.size();
-        System.out.println("Number of players online: " + clients.size());
-        while (clients.size() < 2) {
-            if (curr != clients.size()) {
-                System.out.println("Number of players online: " + clients.size());
-                curr = clients.size();
-            }
-            Thread.onSpinWait(); // do nothing, but efficiently
-        }
-        running = true;
-        System.out.println("Enough players joined, (" + clients.size() + "), starting match!");
-        game = new TTTGame();
-
-        while (running) {
-            for (ClientHandler c : clients) {
-                running = move((TTTGame) game, c);
-            }
-        }
-        // Need to repeat one more time to send game status to everyone
-        for (ClientHandler c : clients) {
-            move((TTTGame) game, c);
-        }
-
-    }
 
     /**
      * Handles one client's move.
      * @return Whether the game should continue or not.
      */
-    public boolean move(TTTGame game, ClientHandler c) throws IOException {
-        System.out.println(game.getGameState());
-        c.out.println(game.getGameState());
-        if (game.getGameState().getState() == State.TIE) {
-            c.out.println("TIE");
-            return false;
-        }
-        if (game.getGameState().getState() == State.PLAYER_1_WIN) {
-            c.out.println("P1_WIN");
-            return false;
-        }
-        if (game.getGameState().getState() == State.PLAYER_2_WIN) {
-            c.out.println("P2_WIN");
-            return false;
-        }
-        c.out.println("IN_PROGRESS");
+//    public boolean move(TTTGame game, ClientHandler c) throws IOException {
+//        System.out.println(game.getGameState());
+//        c.out.println(game.getGameState());
+//        if (game.getGameState().getState() == State.TIE) {
+//            c.out.println("TIE");
+//            return false;
+//        }
+//        if (game.getGameState().getState() == State.PLAYER_1_WIN) {
+//            c.out.println("P1_WIN");
+//            return false;
+//        }
+//        if (game.getGameState().getState() == State.PLAYER_2_WIN) {
+//            c.out.println("P2_WIN");
+//            return false;
+//        }
+//        c.out.println("IN_PROGRESS");
+//
+//        boolean valid = false;
+//        while (!valid) {
+//            String line = c.in.readLine();
+//            if (line != null) {
+//                handleLine(line); // Modifies game state
+//            }
+//            valid = game.valid;
+//            if (!valid) {
+//                System.out.println("DEBUG: player sent invalid move.");
+//                c.out.println("INVALID");
+//            }
+//        }
+//        c.out.println("VALID");
+//        return true;
+//    }
 
-        boolean valid = false;
-        while (!valid) {
-            String line = c.in.readLine();
-            if (line != null) {
-                handleLine(line); // Modifies game state
-            }
-            valid = game.valid;
-            if (!valid) {
-                System.out.println("DEBUG: player sent invalid move.");
-                c.out.println("INVALID");
-            }
-        }
-        c.out.println("VALID");
-        return true;
-    }
-
-    public void printToAll(String message) {
-        for (ClientHandler c : clients) {
-            c.out.println(message);
-        }
-    }
-
-    public ClientHandler acceptClient(ServerSocket s) throws IOException {
-        ClientHandler result = new ClientHandler();
-        result.socket = s.accept();
-        result.in = new BufferedReader(new InputStreamReader(result.socket.getInputStream()));
-        result.out = new PrintWriter(result.socket.getOutputStream(), true);
-        return result;
-    }
-
-    public void stop() {
-        while (server != null) {
-            try {
-                server.close();
-                server = null;
-            } catch (Exception _) {}
-        }
-
-        for (ClientHandler c : clients) {
-            try {c.socket.close();} catch (IOException _) {}
-        }
-        running = false;
-    }
+//    public void printToAll(String message) {
+//        for (ClientHandler c : clients) {
+//            c.out.println(message);
+//        }
+//    }
+//
+//    public ClientHandler acceptClient(ServerSocket s) throws IOException {
+//        ClientHandler result = new ClientHandler();
+//        result.socket = s.accept();
+//        result.in = new BufferedReader(new InputStreamReader(result.socket.getInputStream()));
+//        result.out = new PrintWriter(result.socket.getOutputStream(), true);
+//        return result;
+//    }
 
     /**
      * Handle one line of input from a client; return one JSON line to send back, or null.
@@ -250,6 +287,8 @@ public class ServerCoreMultiUser {
     private Response handleSubmitMove(SubmitMove m) {
         return null;
     }
+
+
 
     public static class Response {
         public enum Status {
