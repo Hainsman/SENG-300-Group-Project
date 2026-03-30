@@ -1,6 +1,9 @@
 package ca.ucalgary.seng300.platform.messages;
 
-public class sysMSG {
+import java.io.Serializable;
+
+public class sysMSG implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String type;    // system message type (matchmaking, chat, game, lobby, stats)
     private String fieldA;  // data field A
     private String fieldB;  // data field B

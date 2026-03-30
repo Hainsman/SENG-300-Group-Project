@@ -34,13 +34,13 @@
                         <HBox spacing="10">
                             <Label fx:id="lobbyCodeLabel" styleClass="code-label" text="ABC123" HBox.hgrow="ALWAYS" />
 
-                            <Button text="Copy" />
+                            <Button fx:id="copyCodeBtn" onAction="#handleCopyCode" text="Copy" />
                         </HBox>
                     </VBox>
 
                     <!-- PLAYERS -->
                     <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
-                        <Label styleClass="card-title" text="Players (3/8)" />
+                        <Label fx:id="playerCountLabel" styleClass="card-title" text="Players" />
 
                         <ListView fx:id="playerList" VBox.vgrow="ALWAYS" />
                     </VBox>

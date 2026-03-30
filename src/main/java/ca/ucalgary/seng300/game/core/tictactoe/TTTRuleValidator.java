@@ -39,7 +39,7 @@ public class TTTRuleValidator extends RuleValidator {
         }
 
         //Checks for move type of action
-        if (action.getActionType() == "MOVE") {
+        if ("MOVE".equals(action.getActionType())) {
             int row = tttAction.getActionPayload().row();
             int col = tttAction.getActionPayload().col();
             //Reject move if row or col is out of range

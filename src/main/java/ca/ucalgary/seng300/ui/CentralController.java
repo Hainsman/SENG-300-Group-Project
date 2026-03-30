@@ -30,6 +30,10 @@ public class CentralController {
     public static int maxPlayers;
     public static String privacy;
     public static String lobbyCode;
+    /** Display name from host lobby screen (optional). */
+    public static String lobbyName;
+    /** True if this client created the current lobby (may start the game). */
+    public static boolean hostingLobby;
     public static String previousScreen;
     private GameGUIController gameUI;
 
@@ -49,8 +53,6 @@ public class CentralController {
     public void uptest(int i){
         test1 = i;
     }
-
-    @FXML private StackPane viewContainer;
 
     @FXML
     public void initialize() {
@@ -74,6 +76,10 @@ public class CentralController {
         loadView("GameDashboard.fxml");
     }
 
+    public static CentralController getInstance() {
+        return instance;
+    }
+
     // call anytime to switch pages
     public static void moveTo(String fxml) {
         instance.loadView(fxml);
@@ -86,10 +92,13 @@ public class CentralController {
                     getClass().getResource("/ca.ucalgary.seng300.ui/" + fxml)
             );
             Node view = loader.load();
-            gameUI = loader.getController();
-            gameUI.setRoot(this);
-            viewContainer.getChildren().setAll(view);
-            // Root.fxml uses a BorderPane; place screens in the center so they size correctly.
+            Object ctrl = loader.getController();
+            if (ctrl instanceof GameGUIController gfc) {
+                gameUI = gfc;
+                gameUI.setRoot(this);
+            } else if (ctrl instanceof TicTacToeController ttc) {
+                ttc.connectToRootForLobby(this);
+            }
             viewContainer.setCenter(view);
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 // Contributors: Kade Peters, Jarod Rideout
 
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.server.ServerMain;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
@@ -17,6 +18,10 @@ public class GameGUIController {
     public void setRoot(CentralController c){
         control = c;
         ticTacToeViewController.setBoss(control);
+        ClientCore cc = c.getCC();
+        if (cc != null && cc.getLastUpdate() instanceof TTTGameState gs) {
+            ticTacToeViewController.refreshFromGameStateUpdate(gs);
+        }
     }
     @FXML
     private VBox childView; // Injects the root of child.fxml

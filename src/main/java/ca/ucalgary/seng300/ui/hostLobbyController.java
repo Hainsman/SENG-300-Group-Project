@@ -1,17 +1,21 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 
-import javafx.scene.control.*;
-
-
-import java.io.IOException;
+import java.util.UUID;
 
 public class hostLobbyController {
-
-
-
 
     @FXML private Label gameLabel;
     @FXML private TextField lobbyNameField;
@@ -25,72 +29,101 @@ public class hostLobbyController {
     @FXML private Label previewPlayersLabel;
     @FXML private Label previewPrivacyLabel;
 
-    @FXML
-    private Button createLobbyBtn;
-
+    @FXML private Button createLobbyBtn;
 
     @FXML
     private void initialize() {
-
-        // 🔥 Set game from CentralController
         String game = CentralController.selectedGame;
-        gameLabel.setText(game);
-        previewGameLabel.setText(game);
+        if (gameLabel != null) {
+            gameLabel.setText(game != null ? game : "Game");
+        }
+        if (previewGameLabel != null) {
+            previewGameLabel.setText(game != null ? game : "-");
+        }
 
-        // Default values
-        previewPlayersLabel.setText(String.valueOf((int) playerSlider.getValue()));
-        previewPrivacyLabel.setText("Public");
+        if (previewPlayersLabel != null && playerSlider != null) {
+            previewPlayersLabel.setText(String.valueOf((int) playerSlider.getValue()));
+        }
+        if (previewPrivacyLabel != null) {
+            previewPrivacyLabel.setText("Public");
+        }
 
-        // Update preview when slider changes
-        playerSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            previewPlayersLabel.setText(String.valueOf(newVal.intValue()));
-        });
+        if (playerSlider != null) {
+            playerSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (previewPlayersLabel != null) {
+                    previewPlayersLabel.setText(String.valueOf(newVal.intValue()));
+                }
+            });
+        }
 
-        // Update preview when privacy changes
-        privacyOptions.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal == publicLobby) {
-                previewPrivacyLabel.setText("Public");
-            } else if (newVal == privateLobby) {
-                previewPrivacyLabel.setText("Private");
-            }
-        });
+        if (publicLobby != null) {
+            publicLobby.setSelected(true);
+        }
+
+        if (privacyOptions != null) {
+            privacyOptions.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+                if (previewPrivacyLabel == null) {
+                    return;
+                }
+                if (newVal == publicLobby) {
+                    previewPrivacyLabel.setText("Public");
+                } else if (newVal == privateLobby) {
+                    previewPrivacyLabel.setText("Private");
+                }
+            });
+        }
     }
 
+    private static String serverGameKey() {
+        String g = CentralController.selectedGame;
+        if (g != null && (g.contains("Tic") || g.contains("tac") || g.contains("TAC"))) {
+            return "TTT";
+        }
+        return "TTT";
+    }
 
     @FXML
     void handleCreateLobby(ActionEvent event) {
+        CentralController c = CentralController.getInstance();
+        if (c == null) {
+            return;
+        }
+        ClientCore cc = c.getCC();
+        if (cc == null || !cc.isConnected()) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Connect to the game server first.\n\nRun PlatformCore (listens on port 2020), restart this app, then try again.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
 
-        String lobbyName = lobbyNameField.getText();
-        int maxPlayers = (int) playerSlider.getValue();
+        String lobbyNam = lobbyNameField != null && lobbyNameField.getText() != null
+                ? lobbyNameField.getText().trim() : "";
+        int maxPlayers = playerSlider != null ? (int) playerSlider.getValue() : 2;
 
         String privacy = "Public";
-        if (privacyOptions.getSelectedToggle() == privateLobby) {
+        if (privacyOptions != null && privacyOptions.getSelectedToggle() == privateLobby) {
             privacy = "Private";
         }
 
-        // 🔥 STORE DATA GLOBALLY
+        String code = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+
         CentralController.maxPlayers = maxPlayers;
         CentralController.privacy = privacy;
+        CentralController.lobbyCode = code;
+        CentralController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
+        CentralController.hostingLobby = true;
 
-        // Optional
-        CentralController.lobbyCode = "ABC123"; // placeholder
+        LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        LobbyBridge.onHostOk = () -> {
+            CentralController.previousScreen = "hostLobby.fxml";
+            CentralController.moveTo("mainLobby.fxml");
+        };
 
-        System.out.println("Creating Lobby:");
-        System.out.println("Game: " + CentralController.selectedGame);
-        System.out.println("Name: " + lobbyName);
-        System.out.println("Players: " + maxPlayers);
-        System.out.println("Privacy: " + privacy);
-
-        // 🔥 Track previous screen
-        CentralController.previousScreen = "hostLobby.fxml";
-        CentralController.moveTo("mainLobby.fxml");
+        cc.msgSend(new sysMSG("HOST_LOBBY", code, serverGameKey()));
     }
-
 
     @FXML
     void handleBack(ActionEvent event) {
         CentralController.moveTo("chooseMode.fxml");
     }
-
-
 }
