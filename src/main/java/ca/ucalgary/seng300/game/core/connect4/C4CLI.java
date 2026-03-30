@@ -32,7 +32,7 @@ public class C4CLI {
                 col
             );
 
-            // Bypass validator for now, use applyActionColOnly directly
+            // Bypass validator for now, use applyAction directly
             state.applyAction(action);
         }
 
