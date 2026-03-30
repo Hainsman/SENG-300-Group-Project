@@ -13,6 +13,7 @@ import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.LobbyBridge;
 import javafx.application.Application;
 import javafx.application.Platform;
 
@@ -54,10 +55,31 @@ public class ClientCore extends Thread{
     public volatile GameState lastUpdate;
     private volatile Runnable onGameStateUpdate;
     
+    public boolean isConnected() {
+        return servSend != null && servRead != null;
+    }
+
+    /** Mapped lobby slot for moves: {@code P1} = host (X), {@code P2} = guest (O). Set from {@code LOBBY_OK}. */
+    public Player getMyNetworkRole() {
+        if ("P1".equals(myPlayerId)) {
+            return Player.PLAYER_1;
+        }
+        if ("P2".equals(myPlayerId)) {
+            return Player.PLAYER_2;
+        }
+        return null;
+    }
+
     public boolean submitMove(int row, int col){
+        if (!isConnected()) {
+            return false;
+        }
         //if(gameType == "TTT"){
         //if(lastUpdate == null || lastUpdate.getPlayerTurn().equals(thisUser)){
-            TTTPlayerMove p = new TTTPlayerMove(CID, "MOVE" , row, col);
+            String pid = (myPlayerId != null && !myPlayerId.isBlank())
+                    ? myPlayerId
+                    : ((CID != null && !CID.isBlank()) ? CID : "player");
+            TTTPlayerMove p = new TTTPlayerMove(pid, "MOVE" , row, col);
             //if(cliEngine.validateMove(gstate,p)){
             try{
                 servSend.writeObject(p);
@@ -76,8 +98,12 @@ public class ClientCore extends Thread{
     }
 
     public void msgSend(Object o) {
+        if (!isConnected()) {
+            return;
+        }
         try{
             servSend.writeObject(o);
+            servSend.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,11 +145,11 @@ public class ClientCore extends Thread{
                 socket.setSoTimeout(0);
             }
             catch (Exception e) {
-                // if the timeout expires the server socket is closed so exit
-                System.out.println("Client unable to connect, press enter to close");
-                //System.in.read();
-                socket.close();
-                System.exit(0);
+                System.out.println("Client unable to connect to game server (is PlatformCore running on port 2020?): " + e.getMessage());
+                try {
+                    socket.close();
+                } catch (IOException ignored) { }
+                return;
             }
 
             // Set up input and output streams for talking back and forth
@@ -143,8 +169,7 @@ public class ClientCore extends Thread{
                     continue;
                 }
 
-                // server instructions, whole message matches
-                if (message.equals("exit")) {
+                if (message instanceof String s && "exit".equals(s)) {
                     break;
                 }
 
@@ -163,6 +188,33 @@ public class ClientCore extends Thread{
                                 break;
                             case "GMJN":
                                 upFlag = true;
+                                {
+                                    String screen = sm.getFieldA();
+                                    if (screen != null && !screen.isBlank()) {
+                                        final String fxml = screen;
+                                        Platform.runLater(() -> {
+                                            LobbyBridge.clearLobbyUiCallbacks();
+                                            CentralController.moveTo(fxml);
+                                        });
+                                    }
+                                }
+                                break;
+                            case "LOBBY_OK":
+                                if ("HOST".equals(sm.getFieldB())) {
+                                    myPlayerId = "P1";
+                                } else if ("JOIN".equals(sm.getFieldB())) {
+                                    myPlayerId = "P2";
+                                }
+                                LobbyBridge.notifyLobbyOk(sm.getFieldB(), sm.getFieldA());
+                                break;
+                            case "LOBBY_ERR":
+                                LobbyBridge.notifyLobbyFail(sm.getFieldB() != null ? sm.getFieldB() : sm.getFieldA());
+                                break;
+                            case "PARTNER_JOINED":
+                                LobbyBridge.notifyPartnerJoined();
+                                break;
+                            default:
+                                break;
                         }
                         break;
 
@@ -171,15 +223,13 @@ public class ClientCore extends Thread{
                         System.out.println("a gamestate arrived");
                         lastUpdate = (TTTGameState) g;
                         System.out.println(debugBoard((TTTGameState) g));
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                // update UI:
+                        Platform.runLater(() -> {
+                            if (ioMain != null && ioMain.ttt != null) {
                                 ioMain.ttt.refreshFromGameStateUpdate((TTTGameState) g);
                                 System.out.println("Ui update triggered");
                             }
+                            LobbyBridge.notifyGameState();
                         });
-                        //lastUpdate = g;
 
                         break;
                     case chatMessage c:
