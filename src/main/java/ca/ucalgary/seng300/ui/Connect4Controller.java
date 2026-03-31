@@ -6,7 +6,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import javafx.event.ActionEvent;
+
+import ca.ucalgary.seng300.game.core.connect4.C4GameState;
+import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.State;
 
 public class Connect4Controller extends GameGUI {
 
@@ -165,5 +171,37 @@ public class Connect4Controller extends GameGUI {
         currentPlayer = 1;
         render();
         update();
+    }
+
+    public void refreshFromGameStateUpdate(C4GameState update) {
+        if (update == null || update.getBoard() == null)
+            return;
+
+        Player[][] board = update.getBoard();
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 7; col++) {
+                if (board[row][col] == Player.PLAYER_1) {
+                    circles[row][col].setFill(P1);
+                } else if (board[row][col] == Player.PLAYER_2) {
+                    circles[row][col].setFill(P2);
+                } else {
+                    circles[row][col].setFill(Color.WHITE);
+                }
+            }
+        }
+
+        State state = update.getState();
+        if (State.PLAYER_1_WIN.equals(state)) {
+            statusLabel.setText("Player 1 Wins!");
+            disableBoard();
+        } else if (State.PLAYER_2_WIN.equals(state)) {
+            statusLabel.setText("Player 2 Wins!");
+            disableBoard();
+        } else if (State.TIE.equals(state)) {
+            statusLabel.setText("It's a Draw!");
+            disableBoard();
+        } else {
+            statusLabel.setText(update.getPlayerTurn() == Player.PLAYER_1 ? "Player 1's Turn" : "Player 2's Turn");
+        }
     }
 }
