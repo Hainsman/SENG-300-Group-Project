@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="16"
-      style="-fx-background-color: #23283F;"
+      stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface"
       xmlns="http://javafx.com/javafx/23.0.1"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ca.ucalgary.seng300.ui.LoginController">
@@ -20,7 +20,7 @@
 
     <Label text="Bogo Solutions"
            maxWidth="Infinity" alignment="CENTER"
-           style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb);
+           style="-fx-background-color: #27244a;
                   -fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: Bold;
                   -fx-background-radius: 10px; -fx-background-insets: -10;
                   -fx-font-family: Tahoma;"
@@ -70,7 +70,7 @@
         <Button text="Submit"
                 onAction="#handleLogin"
                 prefHeight="45" maxWidth="Infinity"
-                style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb);
+                style="-fx-background-color: #3b2a61;
                        -fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: Bold;
                        -fx-background-radius: 10px;" />
 

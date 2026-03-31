@@ -72,8 +72,8 @@ public class CentralController {
 
         windowManager = new WindowManager(controls);
 
-        // REPLACE WITH LOGIN ONCE CREATED!
-        loadView("GameDashboard.fxml");
+        // Temporary entry screen
+        loadView("GameDashboardNew.fxml");
     }
 
     public static CentralController getInstance() {

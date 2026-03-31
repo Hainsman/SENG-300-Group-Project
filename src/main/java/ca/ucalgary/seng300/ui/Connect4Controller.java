@@ -166,4 +166,10 @@ public class Connect4Controller extends GameGUI {
         render();
         update();
     }
+
+    @FXML
+    private void handleBackToMode(ActionEvent event) {
+        CentralController.previousScreen = "GameDashboardNew.fxml";
+        CentralController.moveTo("chooseModeNew.fxml");
+    }
 }

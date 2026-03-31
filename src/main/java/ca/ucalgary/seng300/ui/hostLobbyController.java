@@ -115,7 +115,7 @@ public class hostLobbyController {
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onHostOk = () -> {
-            CentralController.previousScreen = "hostLobby.fxml";
+            CentralController.previousScreen = "GameDashboardNew.fxml";
             CentralController.moveTo("mainLobby.fxml");
         };
 
@@ -124,6 +124,6 @@ public class hostLobbyController {
 
     @FXML
     void handleBack(ActionEvent event) {
-        CentralController.moveTo("chooseMode.fxml");
+        CentralController.moveTo("chooseModeNew.fxml");
     }
 }

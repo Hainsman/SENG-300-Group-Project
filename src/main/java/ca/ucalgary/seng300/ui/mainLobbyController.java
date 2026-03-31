@@ -135,10 +135,15 @@ public class mainLobbyController {
     @FXML
     private void handleBack() {
         LobbyBridge.clearLobbyUiCallbacks();
+        if ("hostLobby.fxml".equals(CentralController.previousScreen)
+                || "joinLobby.fxml".equals(CentralController.previousScreen)) {
+            CentralController.moveTo("GameDashboardNew.fxml");
+            return;
+        }
         if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
         } else {
-            CentralController.moveTo("chooseMode.fxml");
+            CentralController.moveTo("GameDashboardNew.fxml");
         }
     }
 }

@@ -105,6 +105,6 @@ public class joinLobbyController {
 
     @FXML
     private void handleBack() {
-        CentralController.moveTo("chooseMode.fxml");
+        CentralController.moveTo("chooseModeNew.fxml");
     }
 }

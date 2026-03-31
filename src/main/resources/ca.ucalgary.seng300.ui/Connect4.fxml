@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.HBox?>
-<StackPane id="boardPane" alignment="CENTER" prefHeight="600.0" prefWidth="740.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.Connect4Controller">
+<StackPane id="boardPane" alignment="CENTER" prefHeight="600.0" prefWidth="740.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.Connect4Controller">
 
    <VBox alignment="CENTER" spacing="20">
 
@@ -15,7 +15,10 @@
 
       <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" style="-fx-background-color: #2979ff; -fx-padding: 16; -fx-background-radius: 12;" vgap="10" />
 
-      <Button fx:id="resetButton" visible="false" onAction="#resetClick" style="-fx-font-size: 16px; -fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb); -fx-text-fill: white; -fx-font-weight: Bold;" text="Rematch" />
+      <HBox alignment="CENTER" spacing="12">
+         <Button onAction="#handleBackToMode" styleClass="back-button" text="Back" />
+         <Button fx:id="resetButton" visible="false" onAction="#resetClick" style="-fx-font-size: 16px; -fx-background-color: #3b2a61; -fx-text-fill: white; -fx-font-weight: Bold;" text="Rematch" />
+      </HBox>
 
       <HBox alignment="CENTER" spacing="20">
          <Button fx:id="player1Label" disable="true" prefHeight="60.0" prefWidth="200.0"

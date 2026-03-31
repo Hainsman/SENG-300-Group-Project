@@ -412,4 +412,10 @@ public class TicTacToeController extends GameGUI {
     public void setVisibility(Boolean status){
         boardPane.setVisible(status);
     }
+
+    @FXML
+    private void handleBackToMode(ActionEvent event) {
+        CentralController.previousScreen = "GameDashboardNew.fxml";
+        CentralController.moveTo("chooseModeNew.fxml");
+    }
 }

@@ -25,4 +25,15 @@ public class ChooseModeController {
     void handleJoinGame(MouseEvent event) {
         CentralController.moveTo("joinLobby.fxml");
     }
+
+    @FXML
+    void handleOpenSettings(MouseEvent event) {
+        // Temporary route until a dedicated settings screen is available.
+        CentralController.moveTo("info.fxml");
+    }
+
+    @FXML
+    void handleBack(MouseEvent event) {
+        CentralController.moveTo("GameDashboardNew.fxml");
+    }
 }
