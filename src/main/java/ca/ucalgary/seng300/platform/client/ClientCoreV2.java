@@ -14,6 +14,7 @@ import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.LobbyBridge;
 import ca.ucalgary.seng300.ui.LoginController;
+import ca.ucalgary.seng300.ui.NewUserController;
 import javafx.application.Platform;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class ClientCoreV2 extends ClientCore {
 
     private CentralController ioMain;
     private LoginController loginController;
+    private NewUserController newUserController;
 
     public BufferedReader in;
     public PrintWriter out;
@@ -112,6 +114,7 @@ public class ClientCoreV2 extends ClientCore {
         super(CentralController.getInstance());
         ioMain = CentralController.getInstance();
         loginController = LoginController.getInstance();
+        newUserController = NewUserController.getInstance();
         cliEngine = new TTTRuleValidator();
     }
 

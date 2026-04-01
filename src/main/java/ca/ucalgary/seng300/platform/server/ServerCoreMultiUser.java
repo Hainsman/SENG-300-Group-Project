@@ -8,10 +8,10 @@ import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import ca.ucalgary.seng300.platform.serverreponse.ServerResponseGameRoom;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
-import ca.ucalgary.seng300.platform.utils.Helper;
-import ca.ucalgary.seng300.platform.constants.Constants;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +19,8 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
 import com.google.gson.Gson;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * STUB: TCP server. Matchmaking is in progress; platform core will implement real networking.
@@ -37,6 +39,10 @@ public class ServerCoreMultiUser{
     private ExecutorService threadPool;
     private static final int DEFAULT_PORT = 2020;
     private static final int MAX_THREADS = 10;
+    //password hashing algorithm
+    public static final String HASH_ALGORITHM = "SHA-256";
+    // regex for verifying if email is generally compliant in RFC 5322 and RFC 5321 (Note this does not cover all cases but will cover 90 to 95% of all emails compliant in RFC standards)
+    public static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
 
     private static ServerCoreMultiUser instance;
@@ -143,6 +149,9 @@ public class ServerCoreMultiUser{
         if(session.isEmpty() && message instanceof Authenticate auth)
             return handleAuthenticate(auth); // TODO: handle edge cases
 
+        if(session.isEmpty() && message instanceof CreateAccount createAccount)
+            return handleCreateAccount(createAccount); // TODO: handle edge cases
+
         int userId = session.getFirst().getUserId();
         User user = UserStore.getInstance().get(userId);
         switch (message){
@@ -156,6 +165,25 @@ public class ServerCoreMultiUser{
         return ServerResponse.Fail("Error message invalid");
     }
 
+    private ServerResponse handleCreateAccount(CreateAccount createAccount) {
+        UserStore userStore = UserStore.getInstance();
+        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
+        List<User> listOfUsers= userStore.findByUserName(createAccount.getUsername());
+        String incomingUsername = createAccount.getUsername();
+        String incomingEmail = createAccount.getEmail();
+        String incomingPassword = hashPassword(createAccount.getPassword(), HASH_ALGORITHM);
+
+        if (!listOfUsers.isEmpty())
+            return ServerResponse.Fail("Error username exists please try again");
+
+        if (!isEmailValid(incomingEmail, EMAIL_REGEX))
+            return ServerResponse.Fail("Error email is invalid please try again");
+
+        sessionHistoryStore.create(new SessionHistory(1, 1, createAccount.getGloballyUniqueSessionId()));
+        userStore.create(new User(1, incomingUsername, incomingEmail, incomingPassword));
+        return ServerResponse.Success("Successfully created new user");
+    }
+
     // handles authentication of users
     protected ServerResponse handleAuthenticate(Authenticate auth){
 
@@ -163,7 +191,7 @@ public class ServerCoreMultiUser{
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
         List<User> listOfUsers= userStore.findByUserName(auth.getUsername());
         String incomingUsername = auth.getUsername();
-        String incomingPassword = Helper.hashPassword(auth.getPassword(), Constants.HASH_ALGORITHM);
+        String incomingPassword = hashPassword(auth.getPassword(), HASH_ALGORITHM);
 
         if (listOfUsers.isEmpty())
             return ServerResponse.Fail("Error Username not found");
@@ -215,5 +243,33 @@ public class ServerCoreMultiUser{
 
     private ServerResponse handleSubmitMove(SubmitMove m) {
         return null;
+    }
+
+    // helper methods used for server logic
+    private static String hashPassword(String password, String algorithm){
+        try {
+            MessageDigest digest = MessageDigest.getInstance(algorithm);
+            byte[] hashBytes = digest.digest(password.getBytes());
+            return bytesToHex(hashBytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String bytesToHex(byte[] hash){
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash){
+            hexString.append(String.format("%X", b));
+        }
+        return hexString.toString();
+    }
+
+    private static boolean isEmailValid(String email, String emailRegex){
+        Pattern pattern = Pattern.compile(emailRegex);
+        if (email == null || email.isEmpty()){
+            return false;
+        }
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 }

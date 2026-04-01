@@ -21,6 +21,7 @@ public abstract class Message {
         RuntimeTypeAdapterFactory<Message> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Message.class,"type")
 //                .registerSubtype(GameStateUpdate.class, GameStateUpdate.class.getSimpleName())
 //                .registerSubtype(SubmitMove.class, SubmitMove.class.getSimpleName())
+                .registerSubtype(CreateAccount.class, CreateAccount.class.getSimpleName())
                 .registerSubtype(Authenticate.class, Authenticate.class.getSimpleName())
                 .registerSubtype(JoinGameRoom.class, JoinGameRoom.class.getSimpleName())
                 .registerSubtype(CreateGameRoom.class, CreateGameRoom.class.getSimpleName());

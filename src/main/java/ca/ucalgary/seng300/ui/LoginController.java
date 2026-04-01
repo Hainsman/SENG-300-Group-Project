@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCoreV2;
 import ca.ucalgary.seng300.platform.messages.Authenticate;
+import ca.ucalgary.seng300.platform.messages.CreateAccount;
 import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
 import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import javafx.event.ActionEvent;
@@ -54,7 +55,25 @@ public class LoginController {
     // Move to NewUser screen when button is triggered.
     @FXML
     private void handleNewUser(ActionEvent event) {
-        CentralController.moveTo("NewUser.fxml");
+//        UUID userSession = UUID.randomUUID();
+//        CentralController.moveTo("NewUser.fxml");
+//        String username = usernameField.getText().trim();
+//        String password = passwordField.getText();
+//        if (username.isEmpty() || password.isEmpty()) {
+//            errorLabel.setText("Please Fill all fields.");
+//            return;
+//        }
+//
+//        CreateAccount createAccount = new CreateAccount(userSession, password, "daniel.maximov@ucalgary.ca", username); //TODO UI please make a email text field and pass parameters here
+//
+//        var clientCore = ClientCoreV2.getInstance();
+//        clientCore.msgSend(createAccount);
+//        ServerResponse resp = clientCore.msgRecieve();
+//        if(resp.status.equals(ServerResponse.Status.FAIL)){
+//            errorLabel.setText(resp.details[0]);
+//            return;
+//        }
+        CentralController.moveTo("NewUser.fmxl");
     }
 
     @FXML

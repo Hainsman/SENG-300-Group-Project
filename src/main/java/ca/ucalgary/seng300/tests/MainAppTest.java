@@ -32,9 +32,9 @@ public class MainAppTest {
         System.out.println(userStorage.findByUserName("Alex").getFirst().getEmail());
 
 //        //show that email addresses are true and legit:
-        System.out.println(Helper.isEmailValid("daniel.maximov@ucalgary.ca", Constants.EMAIL_REGEX));
-        System.out.println(Helper.isEmailValid("\"john.doe\"@example.com", Constants.EMAIL_REGEX));
-        System.out.println(Helper.isEmailValid("user=name@example.com", Constants.EMAIL_REGEX));
+//        System.out.println(Helper.isEmailValid("daniel.maximov@ucalgary.ca", Constants.EMAIL_REGEX));
+//        System.out.println(Helper.isEmailValid("\"john.doe\"@example.com", Constants.EMAIL_REGEX));
+//        System.out.println(Helper.isEmailValid("user=name@example.com", Constants.EMAIL_REGEX));
 
         for (int i = 1; i < 4; i++){
             System.out.println(Record.getTimeCreatedReadableFormat(userStorage.get(i).getTimeCreated()));
