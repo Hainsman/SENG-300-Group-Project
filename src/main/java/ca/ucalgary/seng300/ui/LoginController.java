@@ -54,27 +54,7 @@ public class LoginController {
 
     // Move to NewUser screen when button is triggered.
     @FXML
-    private void handleNewUser(ActionEvent event) {
-//        UUID userSession = UUID.randomUUID();
-//        CentralController.moveTo("NewUser.fxml");
-//        String username = usernameField.getText().trim();
-//        String password = passwordField.getText();
-//        if (username.isEmpty() || password.isEmpty()) {
-//            errorLabel.setText("Please Fill all fields.");
-//            return;
-//        }
-//
-//        CreateAccount createAccount = new CreateAccount(userSession, password, "daniel.maximov@ucalgary.ca", username); //TODO UI please make a email text field and pass parameters here
-//
-//        var clientCore = ClientCoreV2.getInstance();
-//        clientCore.msgSend(createAccount);
-//        ServerResponse resp = clientCore.msgRecieve();
-//        if(resp.status.equals(ServerResponse.Status.FAIL)){
-//            errorLabel.setText(resp.details[0]);
-//            return;
-//        }
-        CentralController.moveTo("NewUser.fmxl");
-    }
+    private void handleNewUser(ActionEvent event) {CentralController.moveTo("NewUser.fxml");}
 
     @FXML
     private void handleForgotPassword(ActionEvent event) {
