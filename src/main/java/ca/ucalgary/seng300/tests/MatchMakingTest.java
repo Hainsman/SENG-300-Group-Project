@@ -110,6 +110,51 @@ public class MatchMakingTest {
         assertEquals(102, matched.get(1).getUserID());
         assertEquals(0, matchMaking.getQueueSize(Game.TICK_TACK_TOE));
     }
+    // --- Test 7: matchPlayers on empty queue returns null ---
+    @Test
+    void testMatchPlayersOnEmptyQueueReturnsNull() {
+        List<PlayerStats> emptyMatch = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        assertNull(emptyMatch);
+    }
+
+    // --- Test 8: single player in queue returns null ---
+    @Test
+    void testSinglePlayerInQueueReturnsNull() {
+        matchMaking.addPlayerToQueue(mmPlayer1);
+        List<PlayerStats> singlePlayer = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        assertNull(singlePlayer);
+    }
+
+    // --- Test 9: different game type queues don't interfere ---
+    @Test
+    void testDifferentGameTypeQueuesDoNotInterfere() {
+        matchMaking.addPlayerToQueue(mmPlayer1); // TicTacToe
+        matchMaking.addPlayerToQueue(mmPlayer7); // ConnectFour
+        matchMaking.addPlayerToQueue(mmPlayer8); // ConnectFour
+        assertEquals(1, matchMaking.getQueueSize(Game.TICK_TACK_TOE));
+        assertEquals(2, matchMaking.getQueueSize(Game.CONNECT_FOUR));
+    }
+
+    // --- Test 10: removePlayer on unknown player does nothing ---
+    @Test
+    void testRemoveUnknownPlayerDoesNothing() {
+        matchMaking.addPlayerToQueue(mmPlayer1);
+        PlayerStats unknownPlayer = new PlayerStats(999, Game.TICK_TACK_TOE, 999);
+        MatchMakingService.removePlayer(unknownPlayer);
+        assertEquals(1, matchMaking.getQueueSize(Game.TICK_TACK_TOE));
+    }
+
+    // --- Test 11: matching in ConnectFour queue works independently ---
+    @Test
+    void testConnectFourMatchingWorksIndependently() {
+        matchMaking.addPlayerToQueue(mmPlayer7); // ConnectFour score 50.0
+        matchMaking.addPlayerToQueue(mmPlayer8); // ConnectFour score 55.0, diff = 5.0
+        List<PlayerStats> connectFourMatch = matchMaking.matchPlayers(Game.CONNECT_FOUR);
+        assertNotNull(connectFourMatch);
+        assertEquals(2, connectFourMatch.size());
+        assertEquals(107, connectFourMatch.get(0).getUserID());
+        assertEquals(108, connectFourMatch.get(1).getUserID());
+    }
 
 
 }
