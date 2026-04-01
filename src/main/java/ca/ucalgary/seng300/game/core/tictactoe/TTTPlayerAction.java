@@ -3,14 +3,20 @@ package ca.ucalgary.seng300.game.core.tictactoe;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 
 public class TTTPlayerAction extends PlayerAction {
-    public TTTPlayerAction(String playerID, String actionType, TTTActionPayload actionPayload) {
-        super(playerID, actionType, actionPayload);
+    public TTTPlayerAction(String playerID, String actionType, int row, int col) {
+        super(playerID, actionType, row, col);
     }
 
     @Override
-    public TTTActionPayload getActionPayload() {
-        return (TTTActionPayload) super.getActionPayload();
+    public int getRowValue() {
+        return super.getRowValue();
     }
+
+    @Override
+    public int getColValue() {
+        return super.getColValue();
+    }
+
 
     @Override
     public String getActionType() {
