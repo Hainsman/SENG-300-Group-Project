@@ -1,0 +1,108 @@
+/* =========================================================
+   SMALL TEXT (90%)
+   Slightly reduces UI text, keeps major titles unchanged
+   ========================================================= */
+
+.root {
+    -fx-font-size: 12px;
+}
+
+/* Headers */
+.title-label {
+    -fx-font-size: 23px;   /* base 26 */
+}
+
+.subtitle-label {
+    -fx-font-size: 12px;   /* base 13 */
+}
+
+.card-title {
+    -fx-font-size: 14px;   /* base 16 */
+}
+
+
+.card-subtitle {
+    -fx-font-size: 11px;   /* base 12 */
+}
+
+/* Form / settings text */
+.field-label {
+    -fx-font-size: 12px;
+}
+
+.active-username-label {
+    -fx-font-size: 13px;
+}
+
+.input-field {
+    -fx-font-size: 12px;
+}
+
+.login-checkbox {
+    -fx-font-size: 12px;
+}
+
+/* Buttons */
+.primary-button,
+.back-button,
+.secondary-button,
+.start-button,
+.nav-button,
+.mode-back,
+.settings-accent-button,
+.profile-save-button,
+.auth-outline-button {
+    -fx-font-size: 13px;
+}
+
+/* Smaller UI elements */
+.game-chip {
+    -fx-font-size: 11px;
+}
+
+.mode-badge {
+    -fx-font-size: 11px;
+}
+
+.code-label {
+    -fx-font-size: 12px;
+}
+
+.icon-label {
+    -fx-font-size: 16px;
+}
+
+.error-text {
+    -fx-font-size: 12px;
+}
+
+/* Misc */
+#sub-header {
+    -fx-font-size: 20px;
+}
+
+.avatar-label {
+    -fx-font-size: 8px;
+}
+
+.elo-stat-game {
+    -fx-font-size: 10px;
+}
+
+.elo-stat-value {
+    -fx-font-size: 22px;
+}
+
+.elo-stat-meta {
+    -fx-font-size: 10px;
+}
+
+.profile-hero .title-label {
+    -fx-font-size: 28px;
+}
+
+.profile-list-view .list-cell {
+    -fx-font-size: 12px;
+}
+
+/* DO NOT override large game/dashboard titles */
