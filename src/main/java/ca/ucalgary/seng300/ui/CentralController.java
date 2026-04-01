@@ -38,9 +38,14 @@ public class CentralController {
     private GameGUIController gameUI;
 
     public TicTacToeController ttt;
+    public Connect4Controller connect4;
 
     public void setTic(TicTacToeController t){
         ttt = t;
+    }
+
+    public void setConnect4(Connect4Controller c4) {
+        connect4 = c4;
     }
 
     public ClientCore getCC(){
@@ -97,6 +102,8 @@ public class CentralController {
                 gameUI.setRoot(this);
             } else if (ctrl instanceof TicTacToeController ttc) {
                 ttc.connectToRootForLobby(this);
+            } else if (ctrl instanceof Connect4Controller c4) {
+                c4.connectToRootForLobby(this);
             }
             viewContainer.setCenter(view);
         } catch (IOException e) {

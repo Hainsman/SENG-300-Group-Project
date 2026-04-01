@@ -76,7 +76,14 @@ public class hostLobbyController {
 
     private static String serverGameKey() {
         String g = CentralController.selectedGame;
-        if (g != null && (g.contains("Tic") || g.contains("tac") || g.contains("TAC"))) {
+        if (g == null) {
+            return "TTT";
+        }
+        String lower = g.toLowerCase();
+        if (lower.contains("connect") || lower.contains("c4")) {
+            return "C4";
+        }
+        if (g.contains("Tic") || g.contains("tac") || g.contains("TAC")) {
             return "TTT";
         }
         return "TTT";

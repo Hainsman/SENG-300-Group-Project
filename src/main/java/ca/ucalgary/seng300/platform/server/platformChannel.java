@@ -28,6 +28,7 @@ public class platformChannel extends Thread {
     public void cliSend (Object o){
         try{
             outServ.writeObject(o);
+            outServ.flush();
             outServ.reset();
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,6 +40,7 @@ public class platformChannel extends Thread {
             case "HOST_LOBBY" -> {
                 String code = sm.getFieldA();
                 String gt = sm.getFieldB() != null ? sm.getFieldB() : "TTT";
+                this.gameType = gt;
                 boolean ok = serv.onHostLobby(code, gt, this);
                 if (ok) {
                     cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "HOST"));
@@ -59,6 +61,22 @@ public class platformChannel extends Thread {
             case "reset" -> serv.tempGameReset();
             default -> { }
         }
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
+
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameID(String gameID) {
+        this.gameID = gameID;
+    }
+
+    public String getGameID() {
+        return gameID;
     }
 
     @Override

@@ -1,5 +1,10 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.game.core.connect4.C4GameState;
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -9,6 +14,17 @@ import javafx.scene.shape.Circle;
 import javafx.event.ActionEvent;
 
 public class Connect4Controller extends GameGUI {
+    private CentralController boss;
+    private ClientCore clientCore = null;
+
+    public void connectToRootForLobby(CentralController root) {
+        boss = root;
+        boss.setConnect4(this);
+        clientCore = boss.getCC();
+        if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
+            refreshFromGameStateUpdate(gs);
+        }
+    }
 
     @FXML
     private StackPane boardPane;
@@ -38,7 +54,7 @@ public class Connect4Controller extends GameGUI {
         circles = new Circle[6][7];
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
-                Circle circle = new Circle(40);
+                Circle circle = new Circle(32);
                 circle.setFill(Color.WHITE);
                 circles[row][col] = circle;
 
@@ -73,6 +89,19 @@ public class Connect4Controller extends GameGUI {
     private int currentPlayer = 1;
 
     private void dropPiece(int col) {
+        if (clientCore != null && clientCore.isConnected()) {
+            Player myRole = clientCore.getMyNetworkRole();
+            if (myRole != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
+                if (State.IN_PROGRESS.equals(gs.getState()) && !myRole.equals(gs.getPlayerTurn())) {
+                    statusLabel.setText(myRole == Player.PLAYER_1 ? "Waiting for Player 2..." : "Waiting for Player 1...");
+                    return;
+                }
+            }
+            if (!clientCore.submitMove(0, col)) {
+                statusLabel.setText("Could not send move.");
+            }
+            return;
+        }
         for (int row = 5; row >= 0; row--) {
             if (circles[row][col].getFill().equals(Color.WHITE)) {
                 Color playerColor;
@@ -160,6 +189,10 @@ public class Connect4Controller extends GameGUI {
 
     @FXML
     private void resetClick(ActionEvent event) {
+        if (clientCore != null && clientCore.isConnected()) {
+            clientCore.msgSend(new sysMSG("reset", ""));
+            return;
+        }
         resetButton.setVisible(false);
         status = GameStatus.IN_PROGRESS;
         currentPlayer = 1;
@@ -171,5 +204,49 @@ public class Connect4Controller extends GameGUI {
     private void handleBackToMode(ActionEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
         CentralController.moveTo("chooseModeNew.fxml");
+    }
+
+    public void refreshFromGameStateUpdate(C4GameState update) {
+        if (update == null || update.getBoard() == null) {
+            return;
+        }
+        Player[][] board = update.getBoard();
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                Circle circle = circles[row][col];
+                Player p = board[row][col];
+                if (p == Player.PLAYER_1) {
+                    circle.setFill(P1);
+                } else if (p == Player.PLAYER_2) {
+                    circle.setFill(P2);
+                } else {
+                    circle.setFill(Color.WHITE);
+                }
+            }
+        }
+
+        boolean gameOver = !State.IN_PROGRESS.equals(update.getState());
+        Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
+        boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null;
+        boolean myTurn = !onlineTurns || gameOver || myRole.equals(update.getPlayerTurn());
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                circles[row][col].setDisable(gameOver || !myTurn);
+            }
+        }
+
+        if (State.PLAYER_1_WIN.equals(update.getState())) {
+            statusLabel.setText("Player 1 Wins!");
+            resetButton.setVisible(true);
+        } else if (State.PLAYER_2_WIN.equals(update.getState())) {
+            statusLabel.setText("Player 2 Wins!");
+            resetButton.setVisible(true);
+        } else if (State.TIE.equals(update.getState())) {
+            statusLabel.setText("Draw!");
+            resetButton.setVisible(true);
+        } else {
+            statusLabel.setText(update.getPlayerTurn() == Player.PLAYER_1 ? "Player 1's Turn" : "Player 2's Turn");
+            resetButton.setVisible(false);
+        }
     }
 }

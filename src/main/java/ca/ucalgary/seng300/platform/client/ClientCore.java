@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.platform.client;
 import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
@@ -82,6 +83,7 @@ public class ClientCore extends Thread{
             //if(cliEngine.validateMove(gstate,p)){
             try{
                 servSend.writeObject(p);
+                servSend.flush();
                 return true;
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -220,12 +222,16 @@ public class ClientCore extends Thread{
 
                     case GameState g:
                         System.out.println("a gamestate arrived");
-                        lastUpdate = (TTTGameState) g;
-                        System.out.println(debugBoard((TTTGameState) g));
+                        lastUpdate = g;
+                        if (g instanceof TTTGameState tttState) {
+                            System.out.println(debugBoard(tttState));
+                        }
                         Platform.runLater(() -> {
-                            if (ioMain != null && ioMain.ttt != null) {
-                                ioMain.ttt.refreshFromGameStateUpdate((TTTGameState) g);
+                            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.ttt != null) {
+                                ioMain.ttt.refreshFromGameStateUpdate(tttState);
                                 System.out.println("Ui update triggered");
+                            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
+                                ioMain.connect4.refreshFromGameStateUpdate(c4State);
                             }
                             LobbyBridge.notifyGameState();
                         });

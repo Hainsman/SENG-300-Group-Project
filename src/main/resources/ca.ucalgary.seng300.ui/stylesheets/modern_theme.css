@@ -360,3 +360,22 @@
     -fx-border-radius: 10;
     -fx-background-radius: 10;
 }
+
+.c4-grid {
+    -fx-background-color: #1f2d63;
+    -fx-padding: 16;
+    -fx-background-radius: 12;
+}
+
+.c4-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.c4-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.c4-scroll > .corner {
+    -fx-background-color: transparent;
+}

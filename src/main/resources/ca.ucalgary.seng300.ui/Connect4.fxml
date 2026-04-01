@@ -2,33 +2,66 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.layout.HBox?>
-<StackPane id="boardPane" alignment="CENTER" prefHeight="600.0" prefWidth="740.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.Connect4Controller">
-
-   <VBox alignment="CENTER" spacing="20">
-
-      <Label fx:id="statusLabel" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:white;" text="Player 1's Turn" />
-
-      <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" style="-fx-background-color: #2979ff; -fx-padding: 16; -fx-background-radius: 12;" vgap="10" />
-
-      <HBox alignment="CENTER" spacing="12">
-         <Button onAction="#handleBackToMode" styleClass="back-button" text="Back" />
-         <Button fx:id="resetButton" visible="false" onAction="#resetClick" style="-fx-font-size: 16px; -fx-background-color: #3b2a61; -fx-text-fill: white; -fx-font-weight: Bold;" text="Rematch" />
+<?import javafx.scene.shape.Circle?>
+<StackPane fx:id="boardPane" alignment="TOP_CENTER" prefHeight="630.0" prefWidth="1020.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.Connect4Controller">
+   <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-padding: 0;" styleClass="c4-scroll" vbarPolicy="AS_NEEDED">
+      <content>
+   <VBox alignment="TOP_CENTER" spacing="12" style="-fx-padding: 12 20 12 20;">
+      <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+         <children>
+            <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+            <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+               <children>
+                  <StackPane styleClass="avatar-badge">
+                     <children>
+                        <Circle radius="18.0" styleClass="avatar-circle" />
+                        <Label text="IMG" styleClass="avatar-label" />
+                     </children>
+                  </StackPane>
+               </children>
+            </HBox>
+         </children>
       </HBox>
 
-      <HBox alignment="CENTER" spacing="20">
-         <Button fx:id="player1Label" disable="true" prefHeight="60.0" prefWidth="200.0"
-                 style="-fx-font-size: 18px; -fx-background-color: #23283F; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;"
-                 text="Player 1    X" />
-         <Button fx:id="player2Label" disable="true" prefHeight="60.0" prefWidth="200.0"
-                 style="-fx-font-size: 18px; -fx-background-color: #23283F; -fx-text-fill: white; -fx-border-color: white; -fx-border-radius: 10px;"
-                 text="Player 2    O" />
-      </HBox>
+      <Label style="-fx-font-size: 34px;" styleClass="mode-title" text="Connect 4" />
+      <Label fx:id="statusLabel" style="-fx-font-size:18px;" styleClass="mode-subtitle" text="Player 1's Turn" />
 
+      <HBox alignment="TOP_CENTER" fillHeight="false" maxWidth="1.7976931348623157E308" spacing="16">
+         <children>
+            <VBox alignment="CENTER" spacing="10" style="-fx-padding: 12 14;" styleClass="ttt-shell">
+               <GridPane fx:id="gridPane" alignment="CENTER" hgap="8" styleClass="c4-grid" vgap="8" />
+
+               <HBox alignment="CENTER">
+                  <Button onAction="#handleBackToMode" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
+               </HBox>
+
+               <HBox alignment="CENTER">
+                  <Button fx:id="resetButton" onAction="#resetClick" prefHeight="42.0" prefWidth="148.0" styleClass="primary-button" text="Rematch" visible="false" />
+               </HBox>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="320.0" minWidth="320.0" prefWidth="320.0" spacing="8" styleClass="chat-shell">
+               <Label styleClass="card-title" text="Match Chat" />
+               <ListView maxHeight="220.0" minHeight="220.0" prefHeight="220.0" prefWidth="296.0" styleClass="chat-list" />
+               <HBox alignment="CENTER" spacing="8">
+                  <TextField prefWidth="194.0" promptText="Type a message..." />
+                  <Button prefHeight="36.0" prefWidth="92.0" styleClass="primary-button" text="Send" />
+               </HBox>
+            </VBox>
+         </children>
+      </HBox>
    </VBox>
+      </content>
+   </ScrollPane>
 
 </StackPane>
