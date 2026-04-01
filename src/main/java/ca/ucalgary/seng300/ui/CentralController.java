@@ -133,7 +133,7 @@ public class CentralController {
             }
         });
 
-        loadView("Login.fxml");
+        loadView("GameGUI.fxml");
     }
 
     public static CentralController getInstance() {

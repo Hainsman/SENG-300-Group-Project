@@ -38,15 +38,6 @@
             </VBox>
 
             <Region HBox.hgrow="ALWAYS" />
-
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="320.0" minWidth="320.0" prefWidth="320.0" spacing="8" styleClass="chat-shell">
-               <Label styleClass="card-title" text="Match Chat" />
-               <ListView maxHeight="220.0" minHeight="220.0" prefHeight="220.0" prefWidth="296.0" styleClass="chat-list" />
-               <HBox alignment="CENTER" spacing="8">
-                  <TextField prefWidth="194.0" promptText="Type a message..." />
-                  <Button prefHeight="36.0" prefWidth="92.0" styleClass="primary-button" text="Send" />
-               </HBox>
-            </VBox>
          </children>
       </HBox>
    </VBox>

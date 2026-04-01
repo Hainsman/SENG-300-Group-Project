@@ -643,14 +643,14 @@
 
 /* ========== Connect split game shell (GameGUI.fxml — styleMaster legacy) ========== */
 .game-gui-root {
-    -fx-background-color: #23283f;
+    -fx-background-color: #111112;
     -fx-font-family: "Inter", "Segoe UI", "Tahoma", sans-serif;
 }
 
 .game-gui-root .sidebar,
 .game-gui-root .history-sidebar,
 .game-gui-root .game-pane {
-    -fx-background-color: #23283f;
+    -fx-background-color: #111112;
 }
 
 .game-gui-root .main-split-pane > .split-pane-divider {
@@ -699,33 +699,6 @@
 .game-gui-root .card-value {
     -fx-text-fill: #fafafa;
     -fx-font-size: 18px;
-}
-
-.game-gui-root .button {
-    -fx-background-color: #1c1c1f;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-border-color: #2f2f35;
-    -fx-border-width: 1;
-    -fx-text-fill: #fafafa;
-    -fx-font-size: 15px;
-    -fx-padding: 10 18;
-}
-
-.game-gui-root .button:hover {
-    -fx-background-color: #27272a;
-    -fx-border-color: #34d399;
-    -fx-scale-x: 1;
-    -fx-scale-y: 1;
-    -fx-translate-y: 0;
-    -fx-effect: null;
-}
-
-.game-gui-root .button:pressed {
-    -fx-background-color: #18181b;
-    -fx-scale-x: 0.99;
-    -fx-scale-y: 0.99;
-    -fx-translate-y: 0;
 }
 
 .game-gui-root .match-history-header {
@@ -969,4 +942,35 @@
 
 .separator .line {
     -fx-border-color: #2f2f35;
+}
+
+.split-pane {
+    -fx-background-color: transparent;
+}
+
+.game-gui-root .button {
+    -fx-background-color: #1c1c1f;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 15px;
+    -fx-padding: 10 18;
+}
+
+.game-gui-root .button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #34d399;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-effect: null;
+}
+
+.game-gui-root .button:pressed {
+    -fx-background-color: #18181b;
+    -fx-scale-x: 0.99;
+    -fx-scale-y: 0.99;
+    -fx-translate-y: 0;
 }
