@@ -182,57 +182,29 @@ public class CentralController {
         Region region = root instanceof Region r ? r : null;
         double factor = AppUiPreferences.textScaleFactor;
 
-        if (uiScaleTransform != null) {
-            sceneRoot.getTransforms().remove(uiScaleTransform);
-            if (uiScalePivotListener != null && region != null) {
-                region.widthProperty().removeListener(uiScalePivotListener);
-                region.heightProperty().removeListener(uiScalePivotListener);
-            }
-            uiScaleTransform = null;
-            uiScalePivotListener = null;
-        }
-
         sceneRoot.getStyleClass().remove("colorblind-mode");
         if (AppUiPreferences.colorblindMode) {
             sceneRoot.getStyleClass().add("colorblind-mode");
         }
+        String path = "/ca.ucalgary.seng300.ui/stylesheets/";
+        sceneRoot.getStylesheets().removeIf(sheet ->
+                sheet.contains(path + "smallText.css") ||
+                        sheet.contains(path + "largeText.css") ||
+                        sheet.contains(path + "extraLargeText.css")
+        );
 
-        if (factor != 1.0 && region != null) {
-            uiScaleTransform = new Scale(factor, factor);
-            uiScalePivotListener = (obs, oldV, newV) ->
-                    updateScalePivot(region, uiScaleTransform);
-            region.widthProperty().addListener(uiScalePivotListener);
-            region.heightProperty().addListener(uiScalePivotListener);
-            updateScalePivot(region, uiScaleTransform);
-            sceneRoot.getTransforms().add(uiScaleTransform);
-        }
-
-        Scene scene = sceneRoot.getScene();
-        if (scene != null && scene.getWindow() instanceof Stage stage) {
-            double w = WindowManager.WINDOW_MINIMUM_WIDTH * factor;
-            double h = WindowManager.WINDOW_MINIMUM_HEIGHT * factor;
-            stage.setMinWidth(w);
-            stage.setMinHeight(h);
-            if (!stage.isMaximized()) {
-                stage.setWidth(w);
-                stage.setHeight(h);
-            }
-        }
-    }
-
-    private static void updateScalePivot(Region layoutRoot, Scale scale) {
-        if (scale == null || layoutRoot == null) {
-            return;
-        }
-        double w = layoutRoot.getLayoutBounds().getWidth();
-        double h = layoutRoot.getLayoutBounds().getHeight();
-        if (w <= 0 || h <= 0) {
-            w = layoutRoot.prefWidth(-1);
-            h = layoutRoot.prefHeight(-1);
-        }
-        if (w > 0 && h > 0) {
-            scale.setPivotX(w / 2.0);
-            scale.setPivotY(h / 2.0);
+        if(factor == 0.9){
+            sceneRoot.getStylesheets().add(path + "smallText.css");
+        }else if(factor == 1.1){
+            sceneRoot.getStylesheets().add(path + "largeText.css");
+        }else if(factor == 1.25){
+            sceneRoot.getStylesheets().add(path +"extraLargeText.css");
+        }else {
+            sceneRoot.getStylesheets().removeIf(sheet ->
+                    sheet.contains(path + "smallText.css") ||
+                            sheet.contains(path + "largeText.css") ||
+                            sheet.contains(path + "extraLargeText.css")
+            );
         }
     }
 }
