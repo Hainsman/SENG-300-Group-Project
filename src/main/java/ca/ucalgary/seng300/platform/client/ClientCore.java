@@ -13,7 +13,9 @@ import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.Connect4Controller;
 import ca.ucalgary.seng300.ui.LobbyBridge;
+import ca.ucalgary.seng300.ui.TicTacToeController;
 import javafx.application.Application;
 import javafx.application.Platform;
 
@@ -37,23 +39,18 @@ public class ClientCore extends Thread{
 
     private CentralController ioMain;
 
-    public boolean running = false;
-    public volatile char flg = 'n';
-
+    //public volatile char flg = 'n';
+    public String UItype;
     public String gameType;
-    public Player thisUser;
-    public String Player1 = "X";
-    public String Player2 = "O";
-    private TTTRuleValidator cliEngine;
-    public GameState gstate;
+    public TicTacToeController myTTT;
+    public Connect4Controller myC4;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile String sessionId;
     private volatile String myPlayerId;
-    private volatile String mySide; // "PLAYER_1" or "PLAYER_2"
     public volatile  boolean upFlag = false;
     public volatile GameState lastUpdate;
-    private volatile Runnable onGameStateUpdate;
+    //private volatile Runnable onGameStateUpdate;
     
     public boolean isConnected() {
         return servSend != null && servRead != null;
@@ -74,27 +71,31 @@ public class ClientCore extends Thread{
         if (!isConnected()) {
             return false;
         }
-        //if(gameType == "TTT"){
-        //if(lastUpdate == null || lastUpdate.getPlayerTurn().equals(thisUser)){
-            String pid = (myPlayerId != null && !myPlayerId.isBlank())
-                    ? myPlayerId
-                    : ((CID != null && !CID.isBlank()) ? CID : "player");
-            TTTPlayerMove p = new TTTPlayerMove(pid, "MOVE" , row, col);
-            //if(cliEngine.validateMove(gstate,p)){
-            try{
+        String pid = (myPlayerId != null && !myPlayerId.isBlank())
+                ? myPlayerId
+                : ((CID != null && !CID.isBlank()) ? CID : "player");
+        Object p = null;
+        switch(gameType) {
+            case "TTT":
+                p = new TTTPlayerMove(pid, "MOVE", row, col);
+                break;
+            case "C4":
+                //p = new C4move(pid, "MOVE" , row, col);
+                break;
+            default:
+                return false;
+        }
+
+        //
+        if(p != null) {
+            try {
                 servSend.writeObject(p);
                 return true;
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
-            //else{
-            //    return false;
-            //}
-        //}
-        //else{
-        //    return false;
-        //}
-        //return false;
+        }
+        return false;
     }
 
     public void msgSend(Object o) {
@@ -115,7 +116,6 @@ public class ClientCore extends Thread{
     }
     public ClientCore(CentralController c){
         ioMain = c;
-        cliEngine = new TTTRuleValidator();
     }
 
     public GameState getLastUpdate() {
@@ -179,11 +179,11 @@ public class ClientCore extends Thread{
                             case "LOGS":
                                 username = sm.getFieldA();
                                 CID = sm.getFieldB();
-                                flg = 's';
+                                //flg = 's';
                                 upFlag = true;
                                 break;
                             case "LOGF":
-                                flg = 'f';
+                                //flg = 'f';
                                 upFlag = true;
                                 break;
                             case "GMJN":

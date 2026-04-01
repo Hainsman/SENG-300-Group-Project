@@ -3,10 +3,10 @@
 // 2. Run TTT Multiplayer Client 1
 // 3. Run TTT Multiplayer Client 2
 // 4. Enjoy your game of Tic-Tac-Toe!
-
+/*
 package ca.ucalgary.seng300.game.core.tictactoe;
 
-import ca.ucalgary.seng300.platform.server.ServerCore;
+//import ca.ucalgary.seng300.platform.server.ServerCore;
 
 import java.io.IOException;
 
@@ -19,4 +19,4 @@ public class TTTMultiplayerServer {
         }
         s.stop();
     }
-}
+}*/

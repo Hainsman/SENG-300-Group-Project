@@ -18,11 +18,13 @@ public class ChooseModeController {
 
     @FXML
     void handleHostGame(MouseEvent event) {
+        CentralController.getInstance().getCC().UItype = "HL";
         CentralController.moveTo("hostLobby.fxml");
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
+        CentralController.getInstance().getCC().UItype = "JG";
         CentralController.moveTo("joinLobby.fxml");
     }
 }

@@ -37,6 +37,7 @@ public class CentralController {
     public static String previousScreen;
     private GameGUIController gameUI;
 
+    public ClientCore clientCore = null;
     public TicTacToeController ttt;
 
     public void setTic(TicTacToeController t){
@@ -47,7 +48,7 @@ public class CentralController {
         return clientCore;
     }
 
-    public ClientCore clientCore;
+
     public int test1;
 
     public void uptest(int i){
