@@ -110,21 +110,35 @@ public class SettingsController {
             return;
         }
 
+        String textStylesheet = getClass()
+                .getResource("/stylesheets/normalText.css")
+                .toExternalForm();
 
 
         switch (selectedScale) {
             case "Small (90%)":
-
+                textStylesheet = getClass()
+                        .getResource("/stylesheets/smallText.css")
+                        .toExternalForm();
                 break;
             case "Normal (100%)":
-
+                textStylesheet = getClass()
+                        .getResource("/stylesheets/normalText.css")
+                        .toExternalForm();
                 break;
             case "Large (110%)":
-
+                textStylesheet = getClass()
+                        .getResource("/stylesheets/largeText.css")
+                        .toExternalForm();
                 break;
             case "Extra Large (125%)":
-
+                textStylesheet = getClass()
+                        .getResource("/stylesheets/extraLargeText.css")
+                        .toExternalForm();
                 break;
+        }
+        if(!scene.getStylesheets().contains(textStylesheet)) {
+            scene.getStylesheets().add(textStylesheet);
         }
     }
 
