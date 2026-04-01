@@ -1,13 +1,13 @@
 package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
-import ca.ucalgary.seng300.game.core.State;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.*;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
+import ca.ucalgary.seng300.platform.constants.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
+import com.google.gson.Gson;
 
 /**
  * STUB: TCP server. Matchmaking is in progress; platform core will implement real networking.
@@ -32,12 +33,20 @@ public class ServerCoreMultiUser{
     private volatile boolean running;
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
     private ExecutorService threadPool;
-    private static ServerCoreMultiUser scmu;
+    private static final int DEFAULT_PORT = 2020;
+    private static final int MAX_THREADS = 10;
 
-    public ServerCoreMultiUser(int port, int maxThreads, ServerCoreMultiUser scmu) {
+
+    private static ServerCoreMultiUser instance;
+
+    public static ServerCoreMultiUser getInstance() {
+        if(instance == null)
+            instance = new ServerCoreMultiUser(DEFAULT_PORT, MAX_THREADS);
+        return instance;
+    }
+    ServerCoreMultiUser(int port, int maxThreads) {
         this.port = port;
         this.threadPool = Executors.newFixedThreadPool(maxThreads);
-        this.scmu = scmu;
     }
 
     public void start() throws IOException {
@@ -86,11 +95,10 @@ public class ServerCoreMultiUser{
 
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    Response resp = scmu.handleLine(inputLine);
-
-                    if (inputLine.equalsIgnoreCase("quit")) {
-                        break;
-                    }
+                    System.out.println("Recieved Request: "+ inputLine);
+                    Response resp = instance.handleLine(inputLine);
+                    System.out.println("Sending Response: " + resp);
+                    out.println(new Gson().toJson(resp)); //send response back
                 }
 
             } catch (IOException e) {
@@ -215,7 +223,7 @@ public class ServerCoreMultiUser{
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
         List<User> listOfUsers= userStore.findByUserName(auth.getUsername());
         String incomingUsername = auth.getUsername();
-        String incomingPassword = auth.getPassword();
+        String incomingPassword = Helper.hashPassword(auth.getPassword(), Constants.HASH_ALGORITHM);
 
         if (listOfUsers.isEmpty()){
             resp.status = Response.Status.FAIL;
@@ -297,6 +305,7 @@ public class ServerCoreMultiUser{
         }
         public Status status;
         public String[] errors;
+        public Message message;
 
         static public Response Fail(String message) {
             var res = new Response();

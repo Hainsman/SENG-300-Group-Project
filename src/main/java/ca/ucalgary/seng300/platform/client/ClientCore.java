@@ -9,9 +9,8 @@ import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
-import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
-import ca.ucalgary.seng300.platform.messages.chatMessage;
-import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.messages.*;
+import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.LobbyBridge;
 import javafx.application.Application;
@@ -98,9 +97,9 @@ public class ClientCore extends Thread{
     }
 
     public void msgSend(Object o) {
-        if (!isConnected()) {
+        if (!isConnected())
             return;
-        }
+
         try{
             servSend.writeObject(o);
             servSend.flush();
