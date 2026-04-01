@@ -13,5 +13,7 @@ public class UserStore extends Store<User> {
     private static class UserStoreHolder {
         private static final UserStore INSTANCE = new UserStore(Constants.USER_FILE_PATH);
     }
-    public static UserStore getInstance(){return UserStoreHolder.INSTANCE;}
+    public static UserStore getInstance(){
+        return UserStoreHolder.INSTANCE;
+    }
 }

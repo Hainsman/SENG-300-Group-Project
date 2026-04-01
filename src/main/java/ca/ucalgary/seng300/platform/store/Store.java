@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
+import java.util.Collections;
 
 class Store<T extends Record> {
     private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
@@ -76,14 +77,19 @@ class Store<T extends Record> {
             writeLock.unlock();
         }
     };
+    public int assignNewID(){
+        if (records.isEmpty())
+            return 1;
+        return Collections.max(records.keySet()) + 1;
+    }
 
     private static Gson createGson(){
         RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class,"type")
-                .registerSubtype(User.class, "User")
-                .registerSubtype(GameHistory.class, "GameHistory")
-                .registerSubtype(Participant.class, "Participant")
-                .registerSubtype(SessionHistory.class, "SessionHistory")
-                .registerSubtype(PlayerStats.class, "PlayerStats");
+                .registerSubtype(User.class, User.class.getSimpleName())
+                .registerSubtype(GameHistory.class, GameHistory.class.getSimpleName())
+                .registerSubtype(Participant.class, Participant.class.getSimpleName())
+                .registerSubtype(SessionHistory.class, SessionHistory.class.getSimpleName())
+                .registerSubtype(PlayerStats.class, PlayerStats.class.getSimpleName());
 
         return new GsonBuilder()
                 .registerTypeAdapterFactory(entityAdapterFactory)
@@ -97,6 +103,7 @@ class Store<T extends Record> {
             if (fileData != null && !fileData.isEmpty())
                 records.putAll(fileData);
         } catch (FileNotFoundException e) {
+            System.err.println(e);
             records.clear();
         } catch (IOException e) {
             System.err.println("Failed to load from: " + filePath);

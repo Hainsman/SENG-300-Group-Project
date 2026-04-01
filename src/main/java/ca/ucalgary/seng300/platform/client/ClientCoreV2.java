@@ -2,24 +2,16 @@ package ca.ucalgary.seng300.platform.client;
 
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
-import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.messages.Message;
-import ca.ucalgary.seng300.platform.messages.chatMessage;
-import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
 import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import ca.ucalgary.seng300.ui.CentralController;
-import ca.ucalgary.seng300.ui.LobbyBridge;
 import ca.ucalgary.seng300.ui.LoginController;
 import ca.ucalgary.seng300.ui.NewUserController;
 import javafx.application.Platform;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -93,11 +85,9 @@ public class ClientCoreV2 extends ClientCore {
         try {
             gson = new Gson();
             return gson.fromJson(in.readLine(), ServerResponse.class);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
 

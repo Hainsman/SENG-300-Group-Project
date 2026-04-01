@@ -42,10 +42,10 @@ public class MainAppTest {
 
 
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
-//        sessionHistoryStore.create(new SessionHistory(1));
-//        sessionHistoryStore.create(new SessionHistory(2));
-//        sessionHistoryStore.create(new SessionHistory(3));
-//        sessionHistoryStore.create(new SessionHistory(4));
+        sessionHistoryStore.create(new SessionHistory(1, 1, UUID.randomUUID()));
+        sessionHistoryStore.create(new SessionHistory(2, 2, UUID.randomUUID()));
+        sessionHistoryStore.create(new SessionHistory(3, 3, UUID.randomUUID()));
+        sessionHistoryStore.create(new SessionHistory(4, 4, UUID.randomUUID()));
 
 //        GameHistoryStore gameHistoryStore = new GameHistoryStore(Constants.GAME_FILE_PATH);
         GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();
