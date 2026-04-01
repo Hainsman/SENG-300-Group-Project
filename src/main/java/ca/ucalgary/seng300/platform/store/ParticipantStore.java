@@ -10,6 +10,7 @@ public class ParticipantStore extends Store<Participant> {
     public ParticipantStore(String filePath) {super(filePath);}
     //returns list of all games user has played
     public List<Participant> findUserParticipationInGameEvents (int id){return find(rec -> rec.getUserID() == id);}
+    public List<Participant> findParticipantsForGameHistoryID(int id) {return find(rec -> rec.getGameHistoryID() == id);}
     //Bill Pugh Singleton
     private static class ParticipantStoreHolder{
         private static final ParticipantStore INSTANCE = new ParticipantStore(Constants.PARTICIPANTS_FILE_PATH);
