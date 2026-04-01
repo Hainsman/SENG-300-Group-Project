@@ -214,6 +214,12 @@ public class ClientCore extends Thread{
                             case "PARTNER_JOINED":
                                 LobbyBridge.notifyPartnerJoined();
                                 break;
+                            case "LOBBY_ROSTER": {
+                                Object pl = sm.getPayload();
+                                CentralController.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
+                                LobbyBridge.notifyPartnerJoined();
+                                break;
+                            }
                             default:
                                 break;
                         }

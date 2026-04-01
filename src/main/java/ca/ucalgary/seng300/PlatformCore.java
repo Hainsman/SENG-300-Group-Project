@@ -46,6 +46,7 @@ public class PlatformCore {
     /** Waiting host channels keyed by lobby code (guest joins by code). */
     private final ConcurrentHashMap<String, platformChannel> openLobbies = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> openLobbyGameTypes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> openLobbyHostPayload = new ConcurrentHashMap<>();
 
     private static String normalizeGameType(String gameType) {
         if (gameType == null) {
@@ -72,7 +73,24 @@ public class PlatformCore {
         return playerId;
     }
 
-    public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel) {
+    private static String[] parseNameEloPayload(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return new String[] { "Player", "1200" };
+        }
+        String[] parts = raw.split("\\|", 2);
+        String name = parts[0].trim().isEmpty() ? "Player" : parts[0].trim();
+        int elo = 1200;
+        if (parts.length > 1) {
+            try {
+                elo = Integer.parseInt(parts[1].trim());
+            } catch (NumberFormatException ignored) {
+                elo = 1200;
+            }
+        }
+        return new String[] { name, String.valueOf(elo) };
+    }
+
+    public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel, String clientPayload) {
         if (code == null || code.isBlank() || hostChannel == null) {
             return false;
         }
@@ -82,6 +100,7 @@ public class PlatformCore {
             return false;
         }
         openLobbyGameTypes.put(normalized, normalizedType);
+        openLobbyHostPayload.put(normalized, clientPayload != null ? clientPayload : "");
         hostChannel.ID = "host-" + normalized;
         hostChannel.setGameType(normalizedType);
         hostChannel.setGameID(gameIdForType(normalizedType));
@@ -89,13 +108,14 @@ public class PlatformCore {
         return true;
     }
 
-    public synchronized boolean onJoinLobby(String code, platformChannel guestChannel) {
+    public synchronized boolean onJoinLobby(String code, platformChannel guestChannel, String guestPayload) {
         if (code == null || code.isBlank() || guestChannel == null) {
             return false;
         }
         String normalized = code.trim().toUpperCase();
         platformChannel host = openLobbies.remove(normalized);
         String gt = openLobbyGameTypes.remove(normalized);
+        String hostPayloadRaw = openLobbyHostPayload.remove(normalized);
         if (host == null) {
             return false;
         }
@@ -115,7 +135,12 @@ public class PlatformCore {
             turnIds.put("P2", Player.PLAYER_2);
             t.setPlayerIdToPlayer(turnIds);
         }
-        host.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("PARTNER_JOINED", normalized, ""));
+        String[] h = parseNameEloPayload(hostPayloadRaw);
+        String[] g = parseNameEloPayload(guestPayload);
+        String roster = h[0] + "|" + h[1] + "|" + g[0] + "|" + g[1];
+        var rosterMsg = new ca.ucalgary.seng300.platform.messages.sysMSG("LOBBY_ROSTER", normalized, "", roster);
+        host.cliSend(rosterMsg);
+        guestChannel.cliSend(rosterMsg);
         tempGameReset();
         System.out.println("Lobby " + normalized + " matched; game ready (" + gameType + ").");
         return true;

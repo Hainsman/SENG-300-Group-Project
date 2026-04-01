@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
@@ -29,6 +30,7 @@ public class TicTacToeController extends GameGUI {
      */
     public void connectToRootForLobby(CentralController root) {
         setBoss(root);
+        EloOverlayUtil.hide(eloResultOverlay);
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
         }
@@ -42,9 +44,15 @@ public class TicTacToeController extends GameGUI {
     private TicTacToeSession session = null;
     /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
     private ClientCore clientCore = null;
+    private boolean onlineEloApplied = false;
 
     @FXML
     private StackPane boardPane;
+
+    @FXML private VBox eloResultOverlay;
+    @FXML private Label eloOutcomeTitle;
+    @FXML private Label eloDeltaLabel;
+    @FXML private Label eloNewRatingLabel;
 
     @FXML
     private Button cell00;
@@ -343,6 +351,11 @@ public class TicTacToeController extends GameGUI {
     public void refreshFromGameStateUpdate(TTTGameState update) {
         if (update == null || update.getBoard() == null) return;
         System.out.println("Ui update in TTTcontroller");
+        State st = update.getState();
+        if (State.IN_PROGRESS.equals(st)) {
+            onlineEloApplied = false;
+            EloOverlayUtil.hide(eloResultOverlay);
+        }
         board = update.getBoard();
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button) {
@@ -378,17 +391,16 @@ public class TicTacToeController extends GameGUI {
                     btn.setStyle("");
                 }*/
                 //btn.();
-                boolean gameOver = !State.IN_PROGRESS.equals(update.getState());
+                boolean gameOver = !State.IN_PROGRESS.equals(st);
                 Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
                 boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null;
                 boolean myTurn = !onlineTurns || gameOver || myRole.equals(update.getPlayerTurn());
                 btn.setDisable(gameOver || !myTurn);
             }
         }
-        State status = update.getState();
-        if (State.PLAYER_1_WIN.equals(status)) turnLabel.setText("X Wins!");
-        else if (State.PLAYER_2_WIN.equals(status)) turnLabel.setText("O Wins!");
-        else if (State.TIE.equals(status)) turnLabel.setText("Draw!");
+        if (State.PLAYER_1_WIN.equals(st)) turnLabel.setText("X Wins!");
+        else if (State.PLAYER_2_WIN.equals(st)) turnLabel.setText("O Wins!");
+        else if (State.TIE.equals(st)) turnLabel.setText("Draw!");
         else {
             Player cur = update.getPlayerTurn();
             Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
@@ -398,6 +410,11 @@ public class TicTacToeController extends GameGUI {
                 turnLabel.setText(cur == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
             }
         }
+        OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, Game.TICK_TACK_TOE)
+                .ifPresent(r -> {
+                    onlineEloApplied = true;
+                    EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
+                });
         /* commented out depending on merging gamestate and gamestateupdate functions
         if (update.getMessage() != null && !update.getMessage().isEmpty()) {
             turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");
@@ -417,5 +434,10 @@ public class TicTacToeController extends GameGUI {
     private void handleBackToMode(ActionEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
         CentralController.moveTo("chooseModeNew.fxml");
+    }
+
+    @FXML
+    private void handleDismissEloOverlay() {
+        EloOverlayUtil.hide(eloResultOverlay);
     }
 }

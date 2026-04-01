@@ -35,7 +35,45 @@ public class CentralController {
     /** True if this client created the current lobby (may start the game). */
     public static boolean hostingLobby;
     public static String previousScreen;
+
+    public static int currentUserId;
+    public static String displayName = "Player";
+
+    public static String rosterHostName = "";
+    public static int rosterHostElo = 1200;
+    public static String rosterGuestName = "";
+    public static int rosterGuestElo = 1200;
+
     private GameGUIController gameUI;
+
+    public static void clearLobbyRoster() {
+        rosterHostName = "";
+        rosterGuestName = "";
+        rosterHostElo = 1200;
+        rosterGuestElo = 1200;
+    }
+
+    public static void applyLobbyRosterPayload(String payload) {
+        if (payload == null || payload.isBlank()) {
+            return;
+        }
+        String[] p = payload.split("\\|", 4);
+        if (p.length < 4) {
+            return;
+        }
+        rosterHostName = p[0].trim();
+        rosterHostElo = parseEloSegment(p[1]);
+        rosterGuestName = p[2].trim();
+        rosterGuestElo = parseEloSegment(p[3]);
+    }
+
+    private static int parseEloSegment(String s) {
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (NumberFormatException e) {
+            return 1200;
+        }
+    }
 
     public TicTacToeController ttt;
     public Connect4Controller connect4;

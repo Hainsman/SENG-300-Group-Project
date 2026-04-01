@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -27,6 +28,15 @@
                 <TextField fx:id="displayNameField" promptText="Enter display name" styleClass="input-field" />
                 <Label text="Email" styleClass="card-title" />
                 <TextField fx:id="emailField" promptText="Enter email address" styleClass="input-field" />
+
+                <Label text="Ratings (per game)" styleClass="card-title" />
+                <Label fx:id="tttEloLabel" styleClass="mode-subtitle" text="" />
+                <Label fx:id="c4EloLabel" styleClass="mode-subtitle" text="" />
+                <Label fx:id="tierSummaryLabel" styleClass="card-subtitle" text="" />
+
+                <Label text="Leaderboard (local sample)" styleClass="card-title" />
+                <ListView fx:id="leaderboardList" prefHeight="100.0" maxWidth="520.0" />
+
                 <Label fx:id="statusLabel" styleClass="card-subtitle" text="" />
                 <HBox alignment="CENTER_RIGHT" spacing="10">
                     <children>

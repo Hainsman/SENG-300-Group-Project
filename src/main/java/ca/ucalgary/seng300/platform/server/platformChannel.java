@@ -41,7 +41,8 @@ public class platformChannel extends Thread {
                 String code = sm.getFieldA();
                 String gt = sm.getFieldB() != null ? sm.getFieldB() : "TTT";
                 this.gameType = gt;
-                boolean ok = serv.onHostLobby(code, gt, this);
+                String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
+                boolean ok = serv.onHostLobby(code, gt, this, lobbyPayload);
                 if (ok) {
                     cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "HOST"));
                 } else {
@@ -50,7 +51,8 @@ public class platformChannel extends Thread {
             }
             case "JOIN_LOBBY" -> {
                 String code = sm.getFieldA();
-                boolean ok = serv.onJoinLobby(code, this);
+                String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
+                boolean ok = serv.onJoinLobby(code, this, lobbyPayload);
                 if (ok) {
                     cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
                 } else {
