@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="400" prefWidth="600" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.InfoController">
+<BorderPane prefHeight="400" prefWidth="600" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.InfoController">
 
     <!-- Top Label showing the game name -->
     <top>

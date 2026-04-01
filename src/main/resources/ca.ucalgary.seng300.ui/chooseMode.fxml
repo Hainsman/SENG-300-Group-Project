@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane stylesheets="@stylesheets/modern_theme.css"
+<AnchorPane stylesheets="@stylesheets/global.css"
             styleClass="app-surface"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"

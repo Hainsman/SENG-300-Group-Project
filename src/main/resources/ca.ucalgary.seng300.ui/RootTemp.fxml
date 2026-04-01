@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="root" prefHeight="730.0" prefWidth="1020.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.CentralController">
+<StackPane fx:id="root" prefHeight="730.0" prefWidth="1020.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.CentralController">
    <children>
       <BorderPane prefHeight="730.0" prefWidth="1020.0">
          <top>

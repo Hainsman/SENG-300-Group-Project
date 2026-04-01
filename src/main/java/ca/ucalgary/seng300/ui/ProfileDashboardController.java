@@ -9,14 +9,17 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 /**
- * Profile / stats / ELO UI (Essam branch) — separate name from team {@code Settings} to reduce merge conflicts.
+ * Profile dashboard: display name, per-game ELO, and local leaderboard samples.
  */
-public class Settings_EssamController {
+public class ProfileDashboardController {
+
     @FXML private TextField displayNameField;
     @FXML private TextField emailField;
     @FXML private Label statusLabel;
     @FXML private Label tttEloLabel;
+    @FXML private Label tttGamesLabel;
     @FXML private Label c4EloLabel;
+    @FXML private Label c4GamesLabel;
     @FXML private Label tierSummaryLabel;
     @FXML private ListView<String> leaderboardList;
 
@@ -36,12 +39,16 @@ public class Settings_EssamController {
         var ttt = PlayerProfileHelper.statsForGameId(Game.TICK_TACK_TOE);
         var c4 = PlayerProfileHelper.statsForGameId(Game.CONNECT_FOUR);
         if (tttEloLabel != null) {
-            tttEloLabel.setText(String.format(
-                    "Tic Tac Toe — %d ELO  ·  %d games", ttt.getElo(), ttt.getGameCounter()));
+            tttEloLabel.setText(String.valueOf(ttt.getElo()));
+        }
+        if (tttGamesLabel != null) {
+            tttGamesLabel.setText(ttt.getGameCounter() + " games played");
         }
         if (c4EloLabel != null) {
-            c4EloLabel.setText(String.format(
-                    "Connect 4 — %d ELO  ·  %d games", c4.getElo(), c4.getGameCounter()));
+            c4EloLabel.setText(String.valueOf(c4.getElo()));
+        }
+        if (c4GamesLabel != null) {
+            c4GamesLabel.setText(c4.getGameCounter() + " games played");
         }
         if (tierSummaryLabel != null) {
             tierSummaryLabel.setText(String.format(

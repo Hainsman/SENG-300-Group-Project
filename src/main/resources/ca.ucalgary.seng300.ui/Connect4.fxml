@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<StackPane fx:id="boardPane" alignment="TOP_CENTER" prefHeight="630.0" prefWidth="1020.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.Connect4Controller">
+<StackPane fx:id="boardPane" alignment="TOP_CENTER" prefHeight="630.0" prefWidth="1020.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.Connect4Controller">
    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-padding: 0;" styleClass="c4-scroll" vbarPolicy="AS_NEEDED">
       <content>
    <VBox alignment="TOP_CENTER" spacing="12" style="-fx-padding: 12 20 12 20;">

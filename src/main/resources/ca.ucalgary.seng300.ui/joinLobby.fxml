@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.joinLobbyController">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.joinLobbyController">
     <children>
         <VBox alignment="TOP_CENTER" spacing="22" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="24.0">
             <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
