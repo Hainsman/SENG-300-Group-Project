@@ -4,6 +4,8 @@ import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.*;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponseGameRoom;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
@@ -96,7 +98,7 @@ public class ServerCoreMultiUser{
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     System.out.println("Recieved Request: "+ inputLine);
-                    Response resp = instance.handleLine(inputLine);
+                    ServerResponse resp = instance.handleLine(inputLine);
                     System.out.println("Sending Response: " + resp);
                     out.println(new Gson().toJson(resp)); //send response back
                 }
@@ -128,68 +130,11 @@ public class ServerCoreMultiUser{
         }
     }
 
-
-
-    /** Start the server on specified port. **/
-
-
-    /**
-     * Handles one client's move.
-     * @return Whether the game should continue or not.
-     */
-//    public boolean move(TTTGame game, ClientHandler c) throws IOException {
-//        System.out.println(game.getGameState());
-//        c.out.println(game.getGameState());
-//        if (game.getGameState().getState() == State.TIE) {
-//            c.out.println("TIE");
-//            return false;
-//        }
-//        if (game.getGameState().getState() == State.PLAYER_1_WIN) {
-//            c.out.println("P1_WIN");
-//            return false;
-//        }
-//        if (game.getGameState().getState() == State.PLAYER_2_WIN) {
-//            c.out.println("P2_WIN");
-//            return false;
-//        }
-//        c.out.println("IN_PROGRESS");
-//
-//        boolean valid = false;
-//        while (!valid) {
-//            String line = c.in.readLine();
-//            if (line != null) {
-//                handleLine(line); // Modifies game state
-//            }
-//            valid = game.valid;
-//            if (!valid) {
-//                System.out.println("DEBUG: player sent invalid move.");
-//                c.out.println("INVALID");
-//            }
-//        }
-//        c.out.println("VALID");
-//        return true;
-//    }
-
-//    public void printToAll(String message) {
-//        for (ClientHandler c : clients) {
-//            c.out.println(message);
-//        }
-//    }
-//
-//    public ClientHandler acceptClient(ServerSocket s) throws IOException {
-//        ClientHandler result = new ClientHandler();
-//        result.socket = s.accept();
-//        result.in = new BufferedReader(new InputStreamReader(result.socket.getInputStream()));
-//        result.out = new PrintWriter(result.socket.getOutputStream(), true);
-//        return result;
-//    }
-
     /**
      * Handle one line of input from a client; return one JSON line to send back, or null.
      * Platform core will implement: parse CreateOrJoinSession or SubmitMove, dispatch to handleCreateOrJoin / handleSubmitMove, return response.
      */
-    public Response handleLine(String line) {
-        Response resp = new Response();
+    public ServerResponse handleLine(String line) {
         Message message = Message.fromJson(line);
 
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
@@ -208,16 +153,11 @@ public class ServerCoreMultiUser{
             default:
                 // TODO: report error
         }
-        resp.status = Response.Status.FAIL;
-        resp.errors = new String[] {"Message Invalid"};
-        return resp;
+        return ServerResponse.Fail("Error message invalid");
     }
 
-
-
-    // handles authentcation of users
-    protected Response handleAuthenticate(Authenticate auth){
-        Response resp = new Response(); //user already registered
+    // handles authentication of users
+    protected ServerResponse handleAuthenticate(Authenticate auth){
 
         UserStore userStore = UserStore.getInstance();
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
@@ -225,93 +165,55 @@ public class ServerCoreMultiUser{
         String incomingUsername = auth.getUsername();
         String incomingPassword = Helper.hashPassword(auth.getPassword(), Constants.HASH_ALGORITHM);
 
-        if (listOfUsers.isEmpty()){
-            resp.status = Response.Status.FAIL;
-            resp.errors = new String[] {"Error password or username Incorrect"};
-            return resp;
-        }
+        if (listOfUsers.isEmpty())
+            return ServerResponse.Fail("Error Username not found");
 
         if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
             sessionHistoryStore.create(new SessionHistory(1, listOfUsers.getFirst().getID(), auth.getGloballyUniqueSessionId()));
-            resp.status = Response.Status.SUCCESS;
-            resp.errors = new String[]{""};
-            return resp;
+            return ServerResponse.Success("User successfully authenticated");
         }
-
-        resp.status = Response.Status.FAIL;
-        resp.errors = new String[]{"Error password or Username Incorrect"};
-
-        return resp;
+        return ServerResponse.Fail("Error username or password incorrect");
     }
 
-    protected Response handleDeAuthenticate(){
+    protected ServerResponse handleDeAuthenticate(){
         return null;
     }
 
-    private Response handleCreateGameRoom(CreateGameRoom cs, User user) {
-        Response resp = new Response();
+    private ServerResponse handleCreateGameRoom(CreateGameRoom cs, User user) {
         // check user don't have room with this game id already
+        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID()))
+            return ServerResponse.Fail("User already in gameRood");
 
-        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID())){
-            resp.status = Response.Status.FAIL;
-            resp.errors = new String[]{"Error User already present in Game Room"};
-        }
-
+        var resp = new ServerResponseGameRoom();
         // create room
         gameRooms.add(new GameRoom(cs.getGameType(), new ArrayList<User>(List.of(user)), user, UUID.randomUUID()));
-        resp.status = Response.Status.SUCCESS;
+        resp.gameRoom = gameRooms.getLast();
         return resp;
     }
-
-
 
     /**
      * Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
      */
-
-    private Response handleJoinGameRoom(JoinGameRoom js, User user) {
-        Response resp = new Response();
-
+    private ServerResponse handleJoinGameRoom(JoinGameRoom js, User user) {
         //check if user is present in any gameRoom
-        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID())){
-            resp.status = Response.Status.FAIL;
-            resp.errors = new String[]{"Error User already present in Game Room"};
-        }
+        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID()))
+            return ServerResponse.Fail("User already in game room");
 
-        GameRoom joinGameRoom = gameRooms
+        var resp = new ServerResponseGameRoom();
+        resp.gameRoom = gameRooms
                 .stream()
                 .filter(e -> e.getGameRoomID().equals(js.getGloballyUniqueSessionId()))
                 .findFirst().orElse(null);
 
-        if (joinGameRoom == null)
-            return Response.Fail("Error game Room non existent");
+        if (resp.gameRoom == null)
+            return ServerResponseGameRoom.Fail("Error game Room non existent");
 
-        joinGameRoom.getParticipants().add(user);
-        resp.status = Response.Status.SUCCESS;
-        resp.errors = new String[]{"User Successfully joined GameRoom"};
+        resp.gameRoom.getParticipants().add(user);
+        resp.status = ServerResponse.Status.SUCCESS;
         return resp;
     }
 
-    private Response handleSubmitMove(SubmitMove m) {
+    private ServerResponse handleSubmitMove(SubmitMove m) {
         return null;
-    }
-
-
-
-    public static class Response {
-        public enum Status {
-            SUCCESS,
-            FAIL
-        }
-        public Status status;
-        public String[] errors;
-        public Message message;
-
-        static public Response Fail(String message) {
-            var res = new Response();
-            res.status = Status.FAIL;
-            res.errors = new String[]{message};
-            return  res;
-        }
     }
 }

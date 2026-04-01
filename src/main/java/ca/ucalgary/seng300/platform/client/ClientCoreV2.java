@@ -10,6 +10,7 @@ import ca.ucalgary.seng300.platform.messages.Message;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.LobbyBridge;
 import ca.ucalgary.seng300.ui.LoginController;
@@ -86,10 +87,10 @@ public class ClientCoreV2 extends ClientCore {
         out.flush();
     }
 
-    public ServerCoreMultiUser.Response msgRecieve(){
+    public ServerResponse msgRecieve(){
         try {
             gson = new Gson();
-            return gson.fromJson(in.readLine(), ServerCoreMultiUser.Response.class);
+            return gson.fromJson(in.readLine(), ServerResponse.class);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

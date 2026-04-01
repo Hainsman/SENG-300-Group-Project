@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.ui;
 import ca.ucalgary.seng300.platform.client.ClientCoreV2;
 import ca.ucalgary.seng300.platform.messages.Authenticate;
 import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -42,9 +43,9 @@ public class LoginController {
         Authenticate auth = new Authenticate(userSession, username, password);
         var clientCore = ClientCoreV2.getInstance();
         clientCore.msgSend(auth);
-        ServerCoreMultiUser.Response resp = clientCore.msgRecieve();
-        if(resp.status.equals(ServerCoreMultiUser.Response.Status.FAIL)){
-            errorLabel.setText(resp.errors[0]);
+        ServerResponse resp = clientCore.msgRecieve();
+        if(resp.status.equals(ServerResponse.Status.FAIL)){
+            errorLabel.setText(resp.details[0]);
             return;
         }
         CentralController.moveTo("GameDashboard.fxml");
