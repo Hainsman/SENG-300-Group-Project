@@ -35,8 +35,9 @@ public class LoginController {
         // TODO: pass to backend auth service when user attempts to login
         // boolean success = authService.login(username, password, rememberMeBox.isSelected());
 
-        // Placeholder: navigate to game screen on success
-        CentralController.moveTo("GameGUI.fxml");
+        // Placeholder: route into the current app flow after login.
+        CentralController.previousScreen = null;
+        CentralController.moveTo("GameDashboardNew.fxml");
     }
 
     // Move to NewUser screen when button is triggered.
