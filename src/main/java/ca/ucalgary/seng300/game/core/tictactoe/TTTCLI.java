@@ -13,7 +13,7 @@ public class TTTCLI {
 
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
+        while (!game.isGameOver()) {
              // get move from user
             System.out.print("Enter row col: ");
             int row =scanner.nextInt();
@@ -23,7 +23,8 @@ public class TTTCLI {
             TTTPlayerAction action = new TTTPlayerAction(
                 state.getPlayerTurn().toString(),
                 "MOVE",
-                new TTTActionPayload(row, col)
+                row,
+                col
             );
 
             // TTTGame validates the move via TTTRuleValidator, then applies it to the state
@@ -33,5 +34,8 @@ public class TTTCLI {
             for (Player[] r : state.getBoard())
                 System.out.println(java.util.Arrays.toString(r));
         }
+
+        System.out.println("Game Over! State: " +state.getState());
+        scanner.close();
     }
 }

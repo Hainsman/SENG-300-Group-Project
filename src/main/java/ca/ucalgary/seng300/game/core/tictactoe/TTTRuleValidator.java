@@ -40,8 +40,8 @@ public class TTTRuleValidator extends RuleValidator {
 
         //Checks for move type of action
         if ("MOVE".equals(action.getActionType())) {
-            int row = tttAction.getActionPayload().row();
-            int col = tttAction.getActionPayload().col();
+            int row = tttAction.getRowValue();
+            int col = tttAction.getColValue();
             //Reject move if row or col is out of range
             if (!(0 <= row && row <= 2 && 0 <= col && col <= 2)) {
                 System.out.println("PlayerAction row or column out of range");
@@ -74,8 +74,7 @@ public class TTTRuleValidator extends RuleValidator {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (gameState.getBoard()[i][j] == Player.EMPTY) {
-                    TTTActionPayload newPayload = new TTTActionPayload(i, j);
-                    TTTPlayerAction newAction = new TTTPlayerAction("temp", "MOVE", newPayload);
+                    TTTPlayerAction newAction = new TTTPlayerAction("temp", "MOVE", i ,j);
                     validActions.add(newAction);
                 }
             }

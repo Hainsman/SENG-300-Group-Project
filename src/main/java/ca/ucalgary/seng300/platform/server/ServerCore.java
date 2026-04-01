@@ -2,7 +2,6 @@ package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.State;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTActionPayload;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTActionType;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
@@ -192,7 +191,8 @@ public class ServerCore {
         game.handleAction(
                 new TTTPlayerAction(m.getPlayerId(),
                 TTTActionType.MOVE.name(),
-                new TTTActionPayload(m.getRow(), m.getCol())
+                m.getRow(),
+                m.getCol()
         ));
         return null;
     }
