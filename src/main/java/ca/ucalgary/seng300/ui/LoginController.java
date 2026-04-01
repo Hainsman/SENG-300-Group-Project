@@ -1,10 +1,15 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCoreV2;
 import ca.ucalgary.seng300.platform.messages.Authenticate;
+import ca.ucalgary.seng300.platform.messages.CreateAccount;
 import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+
+import java.io.IOException;
 import java.util.UUID;
 
 public class LoginController {
@@ -16,6 +21,13 @@ public class LoginController {
     @FXML private Button loginButton;
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
+    private static LoginController loginController;
+
+    public static LoginController getInstance(){
+        if (loginController == null)
+            loginController = new LoginController();
+        return loginController;
+    }
 
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -30,20 +42,19 @@ public class LoginController {
         UUID userSession = UUID.randomUUID();
 
         Authenticate auth = new Authenticate(userSession, username, password);
-        //TODO make client core work
-
-        // TODO: pass to backend auth service when user attempts to login
-        // boolean success = authService.login(username, password, rememberMeBox.isSelected());
-
-        // Placeholder: navigate to game screen on success
-        CentralController.moveTo("GameGUI.fxml");
+        var clientCore = ClientCoreV2.getInstance();
+        clientCore.msgSend(auth);
+        ServerResponse resp = clientCore.msgRecieve();
+        if(resp.status.equals(ServerResponse.Status.FAIL)){
+            errorLabel.setText(resp.details[0]);
+            return;
+        }
+        CentralController.moveTo("GameDashboard.fxml");
     }
 
     // Move to NewUser screen when button is triggered.
     @FXML
-    private void handleNewUser(ActionEvent event) {
-        CentralController.moveTo("NewUser.fxml");
-    }
+    private void handleNewUser(ActionEvent event) {CentralController.moveTo("NewUser.fxml");}
 
     @FXML
     private void handleForgotPassword(ActionEvent event) {
@@ -53,4 +64,6 @@ public class LoginController {
         forgotPasswordAlert.setContentText("Please contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
         forgotPasswordAlert.showAndWait();
     }
+
+
 }
