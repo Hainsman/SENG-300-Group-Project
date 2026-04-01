@@ -43,9 +43,9 @@ public class NewUserController {
             setError("Passwords do not match.");
             return;
         }
+        
         UUID userSession = UUID.randomUUID();
-        // TODO: wire to backend when New User is created successfully
-        CreateAccount createAccount = new CreateAccount(userSession, password, "daniel.maximov@ucalgary.ca", username); //TODO UI please make a email text field and pass parameters here
+        CreateAccount createAccount = new CreateAccount(userSession, password, email, username);
 
         var clientCore = ClientCoreV2.getInstance();
         clientCore.msgSend(createAccount);
@@ -54,8 +54,6 @@ public class NewUserController {
             errorLabel.setText(resp.details[0]);
             return;
         }
-        CentralController.moveTo("GameDashboard.fxml");
-
 
         // Navigate back to login on success
         CentralController.moveTo("Login.fxml");
