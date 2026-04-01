@@ -30,9 +30,10 @@ public class LeaderBoardService {
         PlayerStatsStore playerStatsStore = PlayerStatsStore.getInstance();
         List<PlayerStats> players = new ArrayList<>(playerStatsStore.findPlayersByGameID(gameId));
         players.sort(Comparator
-                .comparing((PlayerStats p) -> -Helper.getRank(p.getGameCounter(), p.getScore()).getRankValue()) //sort players by rank
-                .thenComparing(Comparator.comparingDouble(PlayerStats::getScore).reversed()) //then sort them by score in descending order
-                .thenComparing(PlayerStats::getGameCounter) //sort them in descending order  by number of games played
+                .comparingInt(PlayerStats::getElo).reversed()
+                .thenComparing((PlayerStats p) -> -Helper.getRank(p.getGameCounter(), p.getScore()).getRankValue())
+                .thenComparingDouble(PlayerStats::getScore).reversed()
+                .thenComparingInt(PlayerStats::getGameCounter)
         );
         cachedLeaderBoard.put(gameId, players);
         cachedLeaderBoardTS.put(gameId, System.currentTimeMillis());
@@ -62,16 +63,24 @@ public class LeaderBoardService {
             }
         }
         lock.readLock().lock();
-        try{
-            return getSublistSafe(cachedLeaderBoard.get(gameId), count);
+        try {
+            List<PlayerStats> list = cachedLeaderBoard.get(gameId);
+            if (list == null) {
+                return new ArrayList<>();
+            }
+            return getSublistSafe(list, count);
         } finally {
             lock.readLock().unlock();
         }
     }
 
     private static List<PlayerStats> getSublistSafe(List<PlayerStats> orig, int count) {
-        if (count > orig.size())
+        if (orig == null || orig.isEmpty()) {
+            return new ArrayList<>();
+        }
+        if (count > orig.size()) {
             count = orig.size();
+        }
         return new ArrayList<>(orig.subList(0, count));
     }
 }

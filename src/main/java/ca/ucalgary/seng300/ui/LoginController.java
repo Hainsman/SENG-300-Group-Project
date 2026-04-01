@@ -35,7 +35,9 @@ public class LoginController {
         // TODO: pass to backend auth service when user attempts to login
         // boolean success = authService.login(username, password, rememberMeBox.isSelected());
 
-        // Placeholder: route into the current app flow after login.
+        int uid = username.hashCode();
+        CentralController.currentUserId = uid == Integer.MIN_VALUE ? 1 : Math.abs(uid);
+        CentralController.displayName = username;
         CentralController.previousScreen = null;
         CentralController.moveTo("GameDashboardNew.fxml");
     }
