@@ -14,11 +14,11 @@
             styleClass="app-surface"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ca.ucalgary.seng300.ui.SettingsController">
+            fx:controller="ca.ucalgary.seng300.ui.Settings_EssamController">
     <children>
         <VBox alignment="TOP_CENTER" spacing="18" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="34.0">
-            <Label text="Player Settings" styleClass="mode-title" style="-fx-font-size: 42px;" />
-            <Label text="Update your profile information" styleClass="mode-subtitle" />
+            <Label text="Player Settings (Essam)" styleClass="mode-title" style="-fx-font-size: 42px;" />
+            <Label text="Profile, ratings, and local leaderboard (branch copy)" styleClass="mode-subtitle" />
 
             <VBox alignment="CENTER_LEFT" maxWidth="560.0" prefWidth="560.0" spacing="12" styleClass="card">
                 <padding>

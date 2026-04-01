@@ -27,9 +27,9 @@ public class ChooseModeController {
     }
 
     @FXML
-    void handleOpenSettings(MouseEvent event) {
+    void handleOpenSettingsEssam(MouseEvent event) {
         CentralController.previousScreen = "chooseModeNew.fxml";
-        CentralController.moveTo("Settings.fxml");
+        CentralController.moveTo("Settings_Essam.fxml");
     }
 
     @FXML

@@ -6,9 +6,9 @@ import javafx.scene.input.MouseEvent;
 public class GameDashboardNewController {
 
     @FXML
-    void handleOpenSettings(MouseEvent event) {
+    void handleOpenSettingsEssam(MouseEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
-        CentralController.moveTo("Settings.fxml");
+        CentralController.moveTo("Settings_Essam.fxml");
     }
 
     @FXML

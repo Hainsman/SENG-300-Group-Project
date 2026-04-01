@@ -8,7 +8,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
-public class SettingsController {
+/**
+ * Profile / stats / ELO UI (Essam branch) — separate name from team {@code Settings} to reduce merge conflicts.
+ */
+public class Settings_EssamController {
     @FXML private TextField displayNameField;
     @FXML private TextField emailField;
     @FXML private Label statusLabel;

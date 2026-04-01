@@ -26,7 +26,7 @@
                     <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
                     <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                         <children>
-                            <StackPane onMouseClicked="#handleOpenSettings" styleClass="avatar-badge">
+                            <StackPane onMouseClicked="#handleOpenSettingsEssam" styleClass="avatar-badge">
                                 <children>
                                     <Circle radius="18.0" styleClass="avatar-circle" />
                                     <Label text="IMG" styleClass="avatar-label" />
