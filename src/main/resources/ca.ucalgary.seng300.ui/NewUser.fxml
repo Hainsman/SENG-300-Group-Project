@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="16"
-      stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface"
+      stylesheets="@styleMaster.css" styleClass="root"
       xmlns="http://javafx.com/javafx/23.0.1"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ca.ucalgary.seng300.ui.NewUserController">
@@ -19,88 +19,69 @@
 
     <Label text="Bogo Solutions"
            maxWidth="Infinity" alignment="CENTER"
-           style="-fx-background-color: #27244a;
-                  -fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: Bold;
-                  -fx-background-radius: 10px; -fx-background-insets: -10;
-                  -fx-font-family: Tahoma;"
+           styleClass="header-box"
            prefHeight="70" />
 
     <Label text="Create New Account"
            maxWidth="Infinity" alignment="CENTER"
-           style="-fx-text-fill: white; -fx-font-size: 28; -fx-font-weight: Bold;" />
+           styleClass="mode-title" />
 
     <VBox spacing="16">
         <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="👤" style="-fx-font-size: 24; -fx-text-fill: white;" />
+            <Label text="👤" styleClass="icon-label" />
             <TextField fx:id="usernameField"
                        promptText="Username"
                        maxWidth="Infinity"
                        prefHeight="40"
-                       style="-fx-background-color: #2e3450; -fx-text-fill: white;
-                              -fx-prompt-text-fill: #888; -fx-font-size: 16;
-                              -fx-border-color: white; -fx-border-radius: 5px;
-                              -fx-background-radius: 5px;"
+                       styleClass="input-field"
                        HBox.hgrow="ALWAYS" />
         </HBox>
 
         <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="📧" style="-fx-font-size: 24; -fx-text-fill: white;" />
+            <Label text="📧" styleClass="icon-label" />
             <TextField fx:id="emailField"
                        promptText="Email"
                        maxWidth="Infinity"
                        prefHeight="40"
-                       style="-fx-background-color: #2e3450; -fx-text-fill: white;
-                              -fx-prompt-text-fill: #888; -fx-font-size: 16;
-                              -fx-border-color: white; -fx-border-radius: 5px;
-                              -fx-background-radius: 5px;"
+                       styleClass="input-field"
                        HBox.hgrow="ALWAYS" />
         </HBox>
 
         <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="🔒" style="-fx-font-size: 24; -fx-text-fill: white;" />
+            <Label text="🔒" styleClass="icon-label" />
             <PasswordField fx:id="passwordField"
                            promptText="Password"
                            maxWidth="Infinity"
                            prefHeight="40"
-                           style="-fx-background-color: #2e3450; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #888; -fx-font-size: 16;
-                                  -fx-border-color: white; -fx-border-radius: 5px;
-                                  -fx-background-radius: 5px;"
+                           styleClass="input-field"
                            HBox.hgrow="ALWAYS" />
         </HBox>
 
         <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="🔒" style="-fx-font-size: 24; -fx-text-fill: white;" />
+            <Label text="🔒" styleClass="icon-label" />
             <PasswordField fx:id="confirmPasswordField"
                            promptText="Confirm Password"
                            maxWidth="Infinity"
                            prefHeight="40"
-                           style="-fx-background-color: #2e3450; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #888; -fx-font-size: 16;
-                                  -fx-border-color: white; -fx-border-radius: 5px;
-                                  -fx-background-radius: 5px;"
+                           styleClass="input-field"
                            HBox.hgrow="ALWAYS" />
         </HBox>
     </VBox>
 
     <Label fx:id="errorLabel"
-           style="-fx-text-fill: #ff4d4d; -fx-font-size: 13;"
+           styleClass="error-text"
            text="" />
 
     <VBox spacing="14">
         <Button text="Create Account"
                 onAction="#handleCreateAccount"
                 prefHeight="45" maxWidth="Infinity"
-                style="-fx-background-color: #3b2a61;
-                       -fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: Bold;
-                       -fx-background-radius: 10px;" />
+                styleClass="button" />
 
         <Button text="Back to Login"
                 onAction="#handleBack"
                 prefHeight="45" maxWidth="Infinity"
-                style="-fx-background-color: #23283f; -fx-text-fill: white;
-                       -fx-font-size: 18; -fx-border-color: white;
-                       -fx-border-radius: 10px;" />
+                styleClass="secondary-button" />
     </VBox>
 
 </VBox>

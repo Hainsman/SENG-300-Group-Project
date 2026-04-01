@@ -15,6 +15,7 @@ import javafx.event.ActionEvent;
 
 public class GameGUIController {
     private CentralController control;
+
     public void setRoot(CentralController c){
         control = c;
         ticTacToeViewController.setBoss(control);
@@ -23,12 +24,19 @@ public class GameGUIController {
             ticTacToeViewController.refreshFromGameStateUpdate(gs);
         }
     }
+
+    @FXML
+    private SplitPane splitPane;
+    @FXML
+    private VBox leftSideBar;
     @FXML
     private VBox childView; // Injects the root of child.fxml
     @FXML
     private Connect4Controller connect4ViewController; // Injects the child's controller
     @FXML
     private TicTacToeController ticTacToeViewController; // Injects the child's controller
+
+    // ELO Table Variables
     @FXML
     private Label eloValue; // Value of elo to be displayed
     @FXML
@@ -39,8 +47,12 @@ public class GameGUIController {
     private Label drawValue; // Elo change based on draw
     @FXML
     private Label rankValue; // Elo description string
+
+    // History Box
     @FXML
     public VBox historyBox;
+
+    // Accompanying Labels
     @FXML
     private Label connect4Label;
     @FXML
@@ -53,7 +65,6 @@ public class GameGUIController {
         GameGUI.setHistoryBox(historyBox);
         GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
         ticTacToeViewController.setSession(new TicTacToeSession());
-
     }
 
     @FXML

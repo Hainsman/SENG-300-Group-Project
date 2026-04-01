@@ -1,7 +1,7 @@
 package ca.ucalgary.seng300.ui;
 
-import ca.ucalgary.seng300.platform.messages.Authenticate;
-import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
+// import ca.ucalgary.seng300.platform.messages.Authenticate;
+// import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -29,7 +29,7 @@ public class LoginController {
 
         UUID userSession = UUID.randomUUID();
 
-        Authenticate auth = new Authenticate(userSession, username, password);
+        // Authenticate auth = new Authenticate(userSession, username, password);
         //TODO make client core work
 
         // TODO: pass to backend auth service when user attempts to login
