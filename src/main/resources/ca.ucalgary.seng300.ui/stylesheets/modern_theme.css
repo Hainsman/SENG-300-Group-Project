@@ -379,3 +379,104 @@
 .c4-scroll > .corner {
     -fx-background-color: transparent;
 }
+
+/* Auth screens */
+.auth-form-card {
+    -fx-background-color: #111112;
+    -fx-background-radius: 14;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 26 22 22 22;
+}
+
+.auth-form-card:hover {
+    -fx-background-color: #111112;
+    -fx-effect: none;
+}
+
+.input-field {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+    -fx-prompt-text-fill: #71717a;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.input-field:focused {
+    -fx-border-color: #34d399;
+}
+
+.icon-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #a1a1aa;
+}
+
+.login-checkbox {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 13px;
+}
+
+.auth-outline-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fafafa;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+}
+
+.auth-outline-button:hover {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #52525b;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-effect: none;
+}
+
+.auth-outline-button:pressed {
+    -fx-background-color: transparent;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+}
+
+.link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #34d399;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.link-button:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #34d399;
+    -fx-effect: none;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-underline: true;
+}
+
+.button.link-button:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #34d399;
+    -fx-effect: none;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-underline: true;
+}
+
+.error-text {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 13px;
+}

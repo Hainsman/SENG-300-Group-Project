@@ -7,9 +7,7 @@
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.hostLobbyController">
 
@@ -19,16 +17,6 @@
             <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
                 <children>
                     <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
-                    <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-                        <children>
-                            <StackPane styleClass="avatar-badge">
-                                <children>
-                                    <Circle radius="18.0" styleClass="avatar-circle" />
-                                    <Label text="IMG" styleClass="avatar-label" />
-                                </children>
-                            </StackPane>
-                        </children>
-                    </HBox>
                 </children>
             </HBox>
 

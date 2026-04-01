@@ -28,8 +28,8 @@ public class ChooseModeController {
 
     @FXML
     void handleOpenSettings(MouseEvent event) {
-        // Temporary route until a dedicated settings screen is available.
-        CentralController.moveTo("info.fxml");
+        CentralController.previousScreen = "chooseModeNew.fxml";
+        CentralController.moveTo("Settings.fxml");
     }
 
     @FXML
