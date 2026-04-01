@@ -905,3 +905,68 @@
     -fx-border-color: #34d399;
     -fx-effect: null;
 }
+.settings-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.settings-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.settings-scroll > .corner {
+    -fx-background-color: transparent;
+}
+
+.combo-box.input-field {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+    -fx-prompt-text-fill: #71717a;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.combo-box.input-field:focused {
+    -fx-border-color: #34d399;
+}
+
+.combo-box.input-field .list-cell {
+    -fx-text-fill: #fafafa;
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #1c1c1f;
+}
+
+.check-box.login-checkbox .box {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.check-box.login-checkbox:selected .box {
+    -fx-background-color: #141416;
+    -fx-border-color: #34d399;
+}
+
+.check-box.login-checkbox:selected .mark {
+    -fx-background-color: #34d399;
+}
+
+.separator .line {
+    -fx-border-color: #2f2f35;
+}
