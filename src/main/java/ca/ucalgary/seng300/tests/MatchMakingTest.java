@@ -73,5 +73,43 @@ public class MatchMakingTest {
         assertEquals(1, matchMaking.getQueueSize(Game.TICK_TACK_TOE));
     }
 
+    // --- Test 3: matchPlayers returns the closest pair (not just first pair found) ---
+    // queue has 35.0, 35.1, 34.0 — closest pair is 35.0 and 35.1 (diff=0.1)
+    // NOT 35.0 and 34.0 (diff=1.0) or 35.1 and 34.0 (diff=1.1)
+    @Test
+    void testMatchPlayersReturnsClosestPair() {
+        matchMaking.addPlayerToQueue(mmPlayer4); // 35.0
+        matchMaking.addPlayerToQueue(mmPlayer5); // 35.1
+        matchMaking.addPlayerToQueue(mmPlayer6); // 34.0
+        List<PlayerStats> closestMatch = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        assertNotNull(closestMatch);
+        assertEquals(2, closestMatch.size());
+        assertEquals(104, closestMatch.get(0).getUserID());
+        assertEquals(105, closestMatch.get(1).getUserID());
+    }
+
+    // --- Test 4: after match, only the unmatched player remains in queue ---
+    @Test
+    void testUnmatchedPlayerRemainsInQueue() {
+        matchMaking.addPlayerToQueue(mmPlayer4); // 35.0
+        matchMaking.addPlayerToQueue(mmPlayer5); // 35.1
+        matchMaking.addPlayerToQueue(mmPlayer6); // 34.0
+        matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        assertEquals(1, matchMaking.getQueueSize(Game.TICK_TACK_TOE));
+    }
+
+    // --- Test 5: matched players are removed from the queue ---
+    @Test
+    void testMatchedPlayersRemovedFromQueue() {
+        matchMaking.addPlayerToQueue(mmPlayer1); // 50.0
+        matchMaking.addPlayerToQueue(mmPlayer2); // 53.0
+        List<PlayerStats> matched = matchMaking.matchPlayers(Game.TICK_TACK_TOE);
+        assertNotNull(matched);
+        assertEquals(2, matched.size());
+        assertEquals(101, matched.get(0).getUserID());
+        assertEquals(102, matched.get(1).getUserID());
+        assertEquals(0, matchMaking.getQueueSize(Game.TICK_TACK_TOE));
+    }
+
 
 }
