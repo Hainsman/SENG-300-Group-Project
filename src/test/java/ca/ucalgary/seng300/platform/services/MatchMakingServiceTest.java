@@ -21,7 +21,10 @@ public class MatchMakingServiceTest {
     // tests if players are being added to the queue successfully
     @Test
     void testAddPlayerToQueue() {
-        PlayerStats player = new PlayerStats(1, TIC_TAC_TOE, 100);
+        // Constructor: id=1, gameID=TIC_TAC_TOE, userID=1
+        PlayerStats player = new PlayerStats(1, TIC_TAC_TOE, 1);
+        player.updateStats(100); // Set score to 100
+
         queue.addPlayerToQueue(player);
 
         assertEquals(1, queue.getQueueSize(TIC_TAC_TOE));
@@ -31,8 +34,11 @@ public class MatchMakingServiceTest {
     // tests if matching players work
     @Test
     void testSuccessfulMatch() {
-        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 100);
-        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 105);
+        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 1);
+        player1.updateStats(100);
+
+        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 2);
+        player2.updateStats(105);
 
         queue.addPlayerToQueue(player1);
         queue.addPlayerToQueue(player2);
@@ -47,8 +53,11 @@ public class MatchMakingServiceTest {
     // tests if match making is respecting the 10 point threshold
     @Test
     void testMatchThresholdFailure(){
-        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 100);
-        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 111);
+        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 1);
+        player1.updateStats(100);
+
+        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 2);
+        player2.updateStats(111);
 
         queue.addPlayerToQueue(player1);
         queue.addPlayerToQueue(player2);
@@ -59,14 +68,16 @@ public class MatchMakingServiceTest {
         assertEquals(2, queue.getQueueSize(TIC_TAC_TOE));
     }
 
-    //TODO: players with a score higher than the threshold of 10 points are
-    // still getting matched if they are only two players in the queue
-
     @Test
     void testClosestMatchLogic() {
-        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 100);
-        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 150);
-        PlayerStats player3 = new PlayerStats(3, TIC_TAC_TOE, 105);
+        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 1);
+        player1.updateStats(100);
+
+        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 2);
+        player2.updateStats(150);
+
+        PlayerStats player3 = new PlayerStats(3, TIC_TAC_TOE, 3);
+        player3.updateStats(105);
 
         queue.addPlayerToQueue(player1);
         queue.addPlayerToQueue(player2);
@@ -78,9 +89,6 @@ public class MatchMakingServiceTest {
         assertTrue(match.contains(player3));
         assertFalse(match.contains(player2));
     }
-
-    //TODO: the matchmaking service is matching the first pair of players it sees,
-    // as opposed to the pair with the closest score
 
     @Test
     void testMatchWithEmptyQueue() {
