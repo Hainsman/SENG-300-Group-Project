@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.ui;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
+import ca.ucalgary.seng300.game.core.tictactoe.TicTacToeRandomMoveGenerator;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -37,14 +38,87 @@ public class TicTacToeController extends GameGUI {
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
             refreshFromGameStateUpdate(gs);
         }
+        refreshBackButtonVisibility();
     }
 
+    /**
+     * Online Tic-Tac-Toe inside {@link GameGUIController}: no local {@link TicTacToeSession}, moves go through
+     * {@link ClientCore}; board paints from {@link ClientCore#getLastUpdate()} when present.
+     */
+    public void prepareForNetworkPlayInShell() {
+        randomOpponentEnabled = false;
+        session = null;
+        onlineEloApplied = false;
+        EloOverlayUtil.hide(eloResultOverlay);
+        if (boss != null) {
+            clientCore = boss.getCC();
+        }
+        render();
+        if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
+            refreshFromGameStateUpdate(gs);
+        }
+        refreshBackButtonVisibility();
+    }
 
     /** When set, moves and state use the game core session; when null, existing local board logic is used. */
     private TicTacToeSession session = null;
     /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
     private ClientCore clientCore = null;
     private boolean onlineEloApplied = false;
+    /**
+     * Local play: after the human (X) moves via {@link #session}, O plays a random legal cell
+     * using {@link TicTacToeRandomMoveGenerator}.
+     */
+    private boolean randomOpponentEnabled = false;
+
+    public void setRandomOpponentEnabled(boolean enabled) {
+        this.randomOpponentEnabled = enabled;
+        refreshBackButtonVisibility();
+    }
+
+    /** Online match in TTT shell: connected, not local AI, not using a local {@link TicTacToeSession}. */
+    public boolean isStrictOnlineTtt() {
+        return !randomOpponentEnabled
+                && session == null
+                && clientCore != null
+                && clientCore.isConnected();
+    }
+
+    /**
+     * True while an online TTT game is still in progress (must use Forfeit / finish; no Back or leaving via Info).
+     */
+    public boolean isActiveOnlineMatch() {
+        if (!isStrictOnlineTtt()) {
+            return false;
+        }
+        if (clientCore.getLastUpdate() instanceof TTTGameState gs) {
+            return State.IN_PROGRESS.equals(gs.getState());
+        }
+        return true;
+    }
+
+    @FXML
+    private Button backToModeButton;
+
+    private void refreshBackButtonVisibility() {
+        if (backToModeButton == null) {
+            return;
+        }
+        State st = resolveDisplayedState();
+        boolean terminal = st == State.PLAYER_1_WIN || st == State.PLAYER_2_WIN || st == State.TIE;
+        boolean showBack = !isStrictOnlineTtt() || terminal;
+        backToModeButton.setVisible(showBack);
+    }
+
+    private State resolveDisplayedState() {
+        if (session != null) {
+            return session.getState();
+        }
+        if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
+            return gs.getState();
+        }
+        return State.IN_PROGRESS;
+    }
 
     @FXML
     private StackPane boardPane;
@@ -126,6 +200,7 @@ public class TicTacToeController extends GameGUI {
     @FXML
     public void initialize() {
         status = GameStatus.IN_PROGRESS;
+        refreshBackButtonVisibility();
     }
 
     @Override
@@ -210,7 +285,7 @@ public class TicTacToeController extends GameGUI {
         if (row == null) row = 0;
         if (col == null) col = 0;
 
-        if (clientCore != null && clientCore.isConnected()) {
+        if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
             Player myRole = clientCore.getMyNetworkRole();
             if (myRole != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
                 if (State.IN_PROGRESS.equals(gs.getState()) && !myRole.equals(gs.getPlayerTurn())) {
@@ -226,11 +301,13 @@ public class TicTacToeController extends GameGUI {
         }
 
         if (session != null) {
-            if (!session.submitMove(row, col)) return;
-            String mover = session.getTurn() == Player.PLAYER_1 ? "O" : "X";
-            Color moverColor = session.getTurn() == Player.PLAYER_1 ? oColor : xColor;
-            GameGUI.addHistory("TicTacToe", mover, "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
+            if (!session.submitMove(row, col)) {
+                return;
+            }
+            Color moverColor = xColor;
+            GameGUI.addHistory("TicTacToe", "X", "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
             refreshFromSession();
+            maybePlayRandomOpponent();
             return;
         }
 
@@ -271,6 +348,31 @@ public class TicTacToeController extends GameGUI {
         turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
     }
 
+    /** After the human plays X in session mode, O picks a random empty cell (if enabled and game continues). */
+    private void maybePlayRandomOpponent() {
+        if (!randomOpponentEnabled || session == null) {
+            return;
+        }
+        javafx.application.Platform.runLater(() -> {
+            if (session == null || session.isGameOver()) {
+                return;
+            }
+            if (session.getTurn() != Player.PLAYER_2) {
+                return;
+            }
+            int[] cell = TicTacToeRandomMoveGenerator.pickRandomEmptySlot(session.getBoard());
+            if (cell == null) {
+                return;
+            }
+            if (!session.submitMove(cell[0], cell[1])) {
+                return;
+            }
+            GameGUI.addHistory("TicTacToe", "O (AI)",
+                    "(" + (cell[0] + 1) + ", " + (cell[1] + 1) + ")", oColor);
+            refreshFromSession();
+        });
+    }
+
     private void disableBoard() {
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button) {
@@ -281,10 +383,13 @@ public class TicTacToeController extends GameGUI {
 
     @FXML
     void resetClick(ActionEvent event) {
+        EloOverlayUtil.hide(eloResultOverlay);
+        onlineEloApplied = false;
         if (session != null) {
             session.startNewGame();
             GameGUI.clearHistory();
             refreshFromSession();
+            resetButton.setVisible(false);
             return;
         }
         board = new Player[3][3];
@@ -297,8 +402,8 @@ public class TicTacToeController extends GameGUI {
         xTurn = true;
         turnLabel.setText("X's Turn");
         GameGUI.clearHistory();
-        if (clientCore != null && clientCore.isConnected()) {
-            clientCore.msgSend(new sysMSG("reset",""));
+        if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
+            clientCore.msgSend(new sysMSG("reset", ""));
         }
 
         for (Node node : ticTacToeGrid.getChildren()) {
@@ -309,6 +414,7 @@ public class TicTacToeController extends GameGUI {
                 btn.setDisable(false);
             }
         }
+        resetButton.setVisible(false);
     }
 
     /** Updates grid and turn label from session state (only when session is set). */
@@ -341,11 +447,13 @@ public class TicTacToeController extends GameGUI {
         else if (st == State.PLAYER_2_WIN) turnLabel.setText("O Wins!");
         else if (st == State.TIE) turnLabel.setText("Draw!");
         else turnLabel.setText(session.getTurn() == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
+        refreshBackButtonVisibility();
     }
 
     public void setSession(TicTacToeSession s) {
         this.session = s;
         if (s != null) refreshFromSession();
+        else refreshBackButtonVisibility();
     }
 
     /** Use when in online mode: refresh grid and label from server update. */
@@ -417,6 +525,7 @@ public class TicTacToeController extends GameGUI {
                     onlineEloApplied = true;
                     EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
                 });
+        refreshBackButtonVisibility();
         /* commented out depending on merging gamestate and gamestateupdate functions
         if (update.getMessage() != null && !update.getMessage().isEmpty()) {
             turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");
@@ -432,10 +541,46 @@ public class TicTacToeController extends GameGUI {
         boardPane.setVisible(status);
     }
 
+    private void navigateBackFromGame() {
+        CentralController.ticTacToeLocalAiMode = false;
+        randomOpponentEnabled = false;
+        EloOverlayUtil.hide(eloResultOverlay);
+        if (CentralController.previousScreen != null && !CentralController.previousScreen.isBlank()) {
+            CentralController.moveTo(CentralController.previousScreen);
+        } else {
+            CentralController.moveTo("GameDashboardNew.fxml");
+        }
+    }
+
     @FXML
     private void handleBackToMode(ActionEvent event) {
-        CentralController.previousScreen = "GameDashboardNew.fxml";
-        CentralController.moveTo("chooseModeNew.fxml");
+        if (isActiveOnlineMatch()) {
+            new Alert(Alert.AlertType.INFORMATION,
+                    "You cannot leave an online match in progress without using Forfeit in the sidebar.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+        navigateBackFromGame();
+    }
+
+    /**
+     * Called from {@link GameGUIController} sidebar forfeit. Online: server declares opponent wins;
+     * local / AI: returns to the previous screen after confirm.
+     */
+    public void handleForfeitFromShell() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Forfeit");
+        confirm.setHeaderText("Forfeit this match?");
+        confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
+        confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
+            EloOverlayUtil.hide(eloResultOverlay);
+            boolean online = !randomOpponentEnabled && clientCore != null && clientCore.isConnected();
+            if (!online) {
+                navigateBackFromGame();
+                return;
+            }
+            clientCore.msgSend(new sysMSG("FORFEIT", "", ""));
+        });
     }
 
     @FXML

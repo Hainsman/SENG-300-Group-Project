@@ -39,6 +39,7 @@ public class LoginController {
         CentralController.currentUserId = uid == Integer.MIN_VALUE ? 1 : Math.abs(uid);
         CentralController.displayName = username;
         CentralController.previousScreen = null;
+        CentralController.ticTacToeLocalAiMode = false;
         CentralController.moveTo("GameDashboardNew.fxml");
     }
 

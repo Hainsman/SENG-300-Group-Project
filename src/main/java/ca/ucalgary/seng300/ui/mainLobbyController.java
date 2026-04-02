@@ -102,13 +102,14 @@ public class mainLobbyController {
                 break;
             case "Tic Tac Toe":
             case "TicTacToe":
-                fxml = "TicTacToe.fxml";
+                fxml = CentralController.TIC_TAC_TOE_SHELL_FXML;
                 break;
             default:
                 System.out.println("Unknown game: " + game);
                 return;
         }
 
+        CentralController.ticTacToeLocalAiMode = false;
         if (CentralController.hostingLobby) {
             CentralController c = CentralController.getInstance();
             if (c != null) {

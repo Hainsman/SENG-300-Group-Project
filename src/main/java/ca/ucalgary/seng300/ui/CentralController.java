@@ -48,6 +48,17 @@ public class CentralController {
     /** FXML resource name for the profile / stats dashboard center view. */
     public static final String PROFILE_DASHBOARD_FXML = "ProfileDashboard.fxml";
 
+    /**
+     * Tic-Tac-Toe play surface: sidebar + embedded {@code TicTacToe.fxml}, wired to {@link ClientCore} for online.
+     */
+    public static final String TIC_TAC_TOE_SHELL_FXML = "GameGUI.fxml";
+
+    /**
+     * When true, {@link GameGUIController} wires Tic-Tac-Toe to a local session with a random-move AI
+     * opponent (player is X, AI is O). Cleared when leaving that flow or the game screen.
+     */
+    public static boolean ticTacToeLocalAiMode = false;
+
     public static int currentUserId;
     public static String displayName = "Player";
 
@@ -133,7 +144,8 @@ public class CentralController {
             }
         });
 
-        loadView("GameGUI.fxml");
+        // Start at auth, then GameDashboardNew → chooseModeNew → lobby or GameGUI (incl. Play with AI).
+        loadView("Login.fxml");
     }
 
     public static CentralController getInstance() {

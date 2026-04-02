@@ -109,6 +109,9 @@ class Store<T extends Record> {
             records.clear();
         } catch (JsonParseException e) {
             System.err.println("Invalid or legacy JSON store (resetting): " + filePath + " — " + e.getMessage());
+            if (filePath.contains("playerStats")) {
+                System.err.println("Tip: Gson expects a \"type\" discriminator per entry (e.g. PlayerStats). Old files are moved to *.invalid-* and the store starts empty.");
+            }
             records.clear();
             quarantineCorruptStoreFile();
         } catch (IOException e) {

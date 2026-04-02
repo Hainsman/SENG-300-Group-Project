@@ -61,6 +61,7 @@ public class platformChannel extends Thread {
             }
             case "GMJN" -> serv.relayToGuestIfHost(this, sm);
             case "reset" -> serv.tempGameReset();
+            case "FORFEIT" -> serv.onForfeit(this);
             default -> { }
         }
     }
@@ -91,7 +92,17 @@ public class platformChannel extends Thread {
             gameType = "TTT";
 
             while (!interrupted()) {
-                Object message = inCli.readObject();
+                Object message;
+                try {
+                    message = inCli.readObject();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    break;
+                } catch (RuntimeException e) {
+                    System.err.println("platformChannel: bad client message (rebuild client from same sources as server): " + e.getMessage());
+                    e.printStackTrace();
+                    break;
+                }
 
                 if (message instanceof String str && "exit".equals(str)) {
                     break;

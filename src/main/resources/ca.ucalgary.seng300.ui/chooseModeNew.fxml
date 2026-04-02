@@ -50,8 +50,8 @@
             <Label text="Choose Match Type" styleClass="mode-title" />
             <Label fx:id="gameTitleLabel" styleClass="mode-subtitle" text="Pick how to play this game online" />
 
-            <HBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
-                <VBox onMouseClicked="#handleHostGame" prefHeight="220.0" prefWidth="360.0" spacing="10.0" styleClass="mode-card">
+            <HBox alignment="CENTER" spacing="16" VBox.vgrow="ALWAYS">
+                <VBox onMouseClicked="#handleHostGame" prefHeight="220.0" prefWidth="300.0" spacing="10.0" styleClass="mode-card">
                     <children>
                         <Label text="🖥" styleClass="mode-icon" />
                         <Label text="HOST" styleClass="mode-card-title" />
@@ -60,11 +60,20 @@
                     </children>
                 </VBox>
 
-                <VBox onMouseClicked="#handleJoinGame" prefHeight="220.0" prefWidth="360.0" spacing="10.0" styleClass="mode-card">
+                <VBox onMouseClicked="#handleJoinGame" prefHeight="220.0" prefWidth="300.0" spacing="10.0" styleClass="mode-card">
                     <children>
                         <Label text="🎮" styleClass="mode-icon" />
                         <Label text="JOIN" styleClass="mode-card-title" />
                         <Label text="Join Lobby" styleClass="mode-card-subtitle" />
+                        <Label text="➔ Play Now" styleClass="mode-play" />
+                    </children>
+                </VBox>
+
+                <VBox fx:id="playWithAiCard" onMouseClicked="#handlePlayWithAi" prefHeight="220.0" prefWidth="300.0" spacing="10.0" styleClass="mode-card">
+                    <children>
+                        <Label text="🤖" styleClass="mode-icon" />
+                        <Label text="PLAY WITH AI" styleClass="mode-card-title" />
+                        <Label text="Random opponent — Tic Tac Toe" styleClass="mode-card-subtitle" />
                         <Label text="➔ Play Now" styleClass="mode-play" />
                     </children>
                 </VBox>

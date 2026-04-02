@@ -58,7 +58,7 @@
                   <Button fx:id="player2Label" disable="true" prefHeight="46.0" prefWidth="170.0" styleClass="ttt-pill" text="Player 2  O" />
               </HBox>
                <Button fx:id="resetButton" onAction="#resetClick" prefHeight="42.0" prefWidth="148.0" styleClass="primary-button" text="Rematch" visible="false" />
-               <Button onAction="#handleBackToMode" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
+               <Button fx:id="backToModeButton" onAction="#handleBackToMode" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
           </VBox>
 
         <HBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="24">
@@ -75,6 +75,7 @@
             <Label fx:id="eloOutcomeTitle" style="-fx-font-size: 32px;" styleClass="mode-title" text="Match result" />
             <Label fx:id="eloDeltaLabel" style="-fx-font-size: 22px;" styleClass="mode-subtitle" text="" />
             <Label fx:id="eloNewRatingLabel" styleClass="card-subtitle" text="" />
+            <Button onAction="#handleDismissEloOverlay" prefHeight="42.0" prefWidth="168.0" styleClass="primary-button" text="Continue" />
         </VBox>
     </VBox>
 

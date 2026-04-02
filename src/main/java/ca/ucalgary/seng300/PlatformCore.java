@@ -9,6 +9,7 @@ import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
+import ca.ucalgary.seng300.platform.messages.GameStateNetworkCodec;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.server.GameSessionRecord;
 import ca.ucalgary.seng300.platform.server.platformChannel;
@@ -212,26 +213,53 @@ public class PlatformCore {
         }
         return false;
     }
+    /**
+     * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
+     */
+    public synchronized void onForfeit(platformChannel from) {
+        if (p1 == null || p2 == null || from == null) {
+            return;
+        }
+        String normalizedType = normalizeGameType(p1.getGameType());
+        if (!"TTT".equals(normalizedType)) {
+            return;
+        }
+        Player forfeiting = null;
+        if (from == p1) {
+            forfeiting = Player.PLAYER_1;
+        } else if (from == p2) {
+            forfeiting = Player.PLAYER_2;
+        }
+        if (forfeiting == null) {
+            return;
+        }
+        TTTGame t = (TTTGame) games.get("test");
+        t.forfeit(forfeiting);
+        System.out.println("Forfeit by " + forfeiting + " — broadcasting state");
+        p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+        p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+    }
+
     public void tempGameReset(){
         String activeType = p1 != null ? normalizeGameType(p1.getGameType()) : "TTT";
         if ("C4".equals(activeType)) {
             C4Game c4 = (C4Game) games.get("c4");
             c4.startGame(null, null);
             if (p1 != null) {
-                p1.cliSend(c4.getGameState());
+                p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
             }
             if (p2 != null) {
-                p2.cliSend(c4.getGameState());
+                p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
             }
             return;
         }
         TTTGame t = (TTTGame) games.get("test");
         t.tempReset();
         if (p1 != null) {
-            p1.cliSend(t.getGameState());
+            p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
         }
         if (p2 != null) {
-            p2.cliSend(t.getGameState());
+            p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
         }
     }
 
@@ -247,15 +275,15 @@ public class PlatformCore {
             t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(), p.getRow(), p.getCol()) {
             });
             System.out.println(debugBoard((TTTGameState) t.getGameState()));
-            p1.cliSend(t.getGameState());
-            p2.cliSend(t.getGameState());
+            p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+            p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
             return;
         }
         if ("C4".equals(normalizedType)) {
             C4Game c4 = (C4Game) games.get("c4");
             c4.handleAction(new C4PlayerAction(playerIdForC4(p.getPlayerID()), p.getActionType(), p.getRow(), p.getCol()));
-            p1.cliSend(c4.getGameState());
-            p2.cliSend(c4.getGameState());
+            p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
         }
     }
     public String debugBoard(TTTGameState t) {

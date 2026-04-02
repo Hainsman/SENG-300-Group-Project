@@ -43,7 +43,7 @@
 
             <VBox layoutX="27.0" layoutY="470.0" prefWidth="250.0" spacing="12">
               <children>
-                <Button maxWidth="Infinity" text="✕  Forfeit" />
+                <Button maxWidth="Infinity" onAction="#handleForfeit" text="✕  Forfeit" />
                 <Button fx:id="infoButton" maxWidth="Infinity" onAction="#handleInfoButton" text="ⓘ  Info" />
                         <Button fx:id="exit" layoutX="10.0" layoutY="66.0" maxWidth="Infinity" onAction="#handleExitButton" text="➜]  Exit" />
               </children>

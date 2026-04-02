@@ -9,7 +9,9 @@ import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
+import ca.ucalgary.seng300.platform.messages.C4WireState;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
+import ca.ucalgary.seng300.platform.messages.TTTWireState;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -133,12 +135,29 @@ public class ClientCore extends Thread{
         return s;
     }
 
+    private void onGameStateReceived(GameState g) {
+        System.out.println("a gamestate arrived");
+        lastUpdate = g;
+        if (g instanceof TTTGameState tttState) {
+            System.out.println(debugBoard(tttState));
+        }
+        Platform.runLater(() -> {
+            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.ttt != null) {
+                ioMain.ttt.refreshFromGameStateUpdate(tttState);
+                System.out.println("Ui update triggered");
+            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
+                ioMain.connect4.refreshFromGameStateUpdate(c4State);
+            }
+            LobbyBridge.notifyGameState();
+        });
+    }
+
     @Override
     public void run() {
+        Socket socket = new Socket();
         try {
             Platform.setImplicitExit(false);
             // Connect to the server at localhost on port 2020
-            Socket socket = new Socket();
             try {
                 // try to establish a connection with a 1 second timeout
                 socket.setSoTimeout(1000);
@@ -168,6 +187,13 @@ public class ClientCore extends Thread{
                     message = servRead.readObject();
                 } catch (IOException e) {
                     continue;
+                } catch (ClassNotFoundException e) {
+                    System.err.println("Network: unknown object type from server (rebuild PlatformCore from the same sources as the client): " + e.getMessage());
+                    break;
+                } catch (RuntimeException e) {
+                    System.err.println("Network: failed to read server message.");
+                    e.printStackTrace();
+                    break;
                 }
 
                 if (message instanceof String s && "exit".equals(s)) {
@@ -226,22 +252,14 @@ public class ClientCore extends Thread{
                         break;
 
 
+                    case TTTWireState tw:
+                        onGameStateReceived(tw.toGameState());
+                        break;
+                    case C4WireState cw:
+                        onGameStateReceived(cw.toGameState());
+                        break;
                     case GameState g:
-                        System.out.println("a gamestate arrived");
-                        lastUpdate = g;
-                        if (g instanceof TTTGameState tttState) {
-                            System.out.println(debugBoard(tttState));
-                        }
-                        Platform.runLater(() -> {
-                            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.ttt != null) {
-                                ioMain.ttt.refreshFromGameStateUpdate(tttState);
-                                System.out.println("Ui update triggered");
-                            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
-                                ioMain.connect4.refreshFromGameStateUpdate(c4State);
-                            }
-                            LobbyBridge.notifyGameState();
-                        });
-
+                        onGameStateReceived(g);
                         break;
                     case chatMessage c:
                         // CHAT SYSTEM UI COMPONENT
@@ -256,11 +274,22 @@ public class ClientCore extends Thread{
 
             }
             // cleanup
-            socket.close();
+            if (!socket.isClosed()) {
+                socket.close();
+            }
             System.out.println("Client " + CID + " " + socket.getInetAddress() + " has disconnected.");
         } catch (Exception e) {
             e.printStackTrace();
 
+        } finally {
+            servSend = null;
+            servRead = null;
+            try {
+                if (!socket.isClosed()) {
+                    socket.close();
+                }
+            } catch (IOException ignored) {
+            }
         }
     }
     /*public static void main(String[] args) {

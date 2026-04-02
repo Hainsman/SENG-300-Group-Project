@@ -18,12 +18,15 @@ import javafx.scene.paint.Color;
 public class GameGUIController {
     private CentralController control;
 
-    public void setRoot(CentralController c){
+    public void setRoot(CentralController c) {
         control = c;
         ticTacToeViewController.setBoss(control);
-        ClientCore cc = c.getCC();
-        if (cc != null && cc.getLastUpdate() instanceof TTTGameState gs) {
-            ticTacToeViewController.refreshFromGameStateUpdate(gs);
+        boolean vsAi = CentralController.ticTacToeLocalAiMode;
+        ticTacToeViewController.setRandomOpponentEnabled(vsAi);
+        if (vsAi) {
+            ticTacToeViewController.setSession(new TicTacToeSession());
+        } else {
+            ticTacToeViewController.prepareForNetworkPlayInShell();
         }
     }
 
@@ -73,8 +76,6 @@ public class GameGUIController {
         GameGUI.setHistoryBox(historyBox);
         GameGUI.setChatBox(matchChat);
         GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
-        ticTacToeViewController.setSession(new TicTacToeSession());
-        ticTacToeViewController.setRandomOpponentEnabled(true);
     }
 
     @FXML
@@ -137,9 +138,21 @@ public class GameGUIController {
     }
 
     @FXML
-    private void handleInfoButton(ActionEvent event) {
-        CentralController.moveTo("info.fxml");
+    private void handleForfeit(ActionEvent event) {
+        if (ticTacToeViewController != null) {
+            ticTacToeViewController.handleForfeitFromShell();
+        }
+    }
 
+    @FXML
+    private void handleInfoButton(ActionEvent event) {
+        if (ticTacToeViewController != null && ticTacToeViewController.isActiveOnlineMatch()) {
+            new Alert(Alert.AlertType.INFORMATION,
+                    "Finish the match or use Forfeit before opening other screens.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+        CentralController.moveTo("info.fxml");
     }
 
     @FXML
@@ -158,6 +171,12 @@ public class GameGUIController {
 
     @FXML
     private void handleExitButton(ActionEvent event) {
+        if (ticTacToeViewController != null && ticTacToeViewController.isActiveOnlineMatch()) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Use Forfeit in the sidebar to leave an online match in progress. You can quit the app afterward.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
         Platform.exit();
     }
 
