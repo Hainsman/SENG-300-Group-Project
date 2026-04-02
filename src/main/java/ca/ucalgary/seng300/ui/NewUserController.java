@@ -1,5 +1,9 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -38,8 +42,25 @@ public class NewUserController {
             setError("Passwords do not match.");
             return;
         }
-        
-        // Navigate back to login on success
+
+        UserStore store = UserStore.getInstance();
+        if (!store.findByUserName(username).isEmpty()) {
+            setError("That username is already taken.");
+            return;
+        }
+        if (!store.findByUserEmail(email).isEmpty()) {
+            setError("That email is already registered.");
+            return;
+        }
+        if (!Helper.isEmailValid(email, Constants.EMAIL_REGEX)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+
+        int newId = store.assignNewID();
+        String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
+        store.create(new User(newId, username, email, passwordHash));
+
         CentralController.moveTo("Login.fxml");
     }
 

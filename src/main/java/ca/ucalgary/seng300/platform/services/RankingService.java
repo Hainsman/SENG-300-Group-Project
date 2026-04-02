@@ -1,7 +1,7 @@
 package ca.ucalgary.seng300.platform.services;
 
-import ca.ucalgary.seng300.platform.domain.PlayerStats;
-import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
+import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.UserStore;
 
 public final class RankingService {
 
@@ -17,9 +17,12 @@ public final class RankingService {
 
     public static OnlineEloResult applyOnlineLocalResult(
             int localUserId, int gameId, int opponentElo, OnlineOutcome outcome) {
-        PlayerStatsStore store = PlayerStatsStore.getInstance();
-        PlayerStats me = store.getOrCreateForUserGame(localUserId, gameId);
-        int myElo = me.getElo();
+        UserStore store = UserStore.getInstance();
+        User me = store.get(localUserId);
+        if (me == null) {
+            return new OnlineEloResult(0, 1200, outcome);
+        }
+        int myElo = me.getEloForGame(gameId);
         double expected = 1.0 / (1.0 + Math.pow(10, (opponentElo - myElo) / 400.0));
         double actual = switch (outcome) {
             case WIN -> 1.0;
@@ -27,9 +30,9 @@ public final class RankingService {
             case DRAW -> 0.5;
         };
         int delta = (int) Math.round(K * (actual - expected));
-        me.adjustElo(delta);
-        me.updateStats(actual);
+        me.adjustEloForGame(gameId, delta);
+        me.incrementGamesForGame(gameId);
         store.update(me);
-        return new OnlineEloResult(delta, me.getElo(), outcome);
+        return new OnlineEloResult(delta, me.getEloForGame(gameId), outcome);
     }
 }

@@ -5,7 +5,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -43,64 +42,48 @@
                             <Label styleClass="mode-badge" text="PROFILE"/>
                             <VBox spacing="4" HBox.hgrow="ALWAYS">
                                 <Label text="Your profile" styleClass="title-label"/>
-                                <Label text="Display name, ratings per game, and a quick local leaderboard view."
+                                <Label text="ELO, rank badges, and leaderboards. Change username, email, or password in Settings."
                                        styleClass="subtitle-label"/>
+                                <Label fx:id="loggedInAsLabel" styleClass="card-subtitle" text=""/>
                             </VBox>
                         </HBox>
                     </VBox>
 
-                    <HBox spacing="20" alignment="TOP_LEFT">
-                        <VBox prefWidth="380.0" spacing="14" styleClass="card" HBox.hgrow="NEVER">
-                            <padding>
-                                <Insets bottom="18.0" left="20.0" right="20.0" top="18.0"/>
-                            </padding>
-                            <Label text="Account" styleClass="card-title"/>
-                            <Label text="How you appear in lobbies and on the dashboard." styleClass="card-subtitle"/>
+                    <VBox spacing="14" styleClass="card" maxWidth="1.7976931348623157E308">
+                        <padding>
+                            <Insets bottom="18.0" left="20.0" right="20.0" top="18.0"/>
+                        </padding>
+                        <Label text="Ratings" styleClass="card-title"/>
+                        <Label text="ELO and games played are stored on your account." styleClass="card-subtitle"/>
 
-                            <Label text="Display name" styleClass="field-label"/>
-                            <TextField fx:id="displayNameField" promptText="Enter display name" styleClass="input-field"/>
-
-                            <Label text="Email" styleClass="field-label"/>
-                            <TextField fx:id="emailField" promptText="Enter email address" styleClass="input-field"/>
-
-                            <HBox styleClass="profile-actions" alignment="CENTER_RIGHT">
-                                <Button onAction="#handleSave" prefHeight="40.0" prefWidth="120.0"
-                                        styleClass="profile-save-button" text="Save"/>
-                            </HBox>
-
-                            <Label fx:id="statusLabel" styleClass="card-subtitle" text=""/>
-                        </VBox>
-
-                        <VBox spacing="14" styleClass="card" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
-                            <padding>
-                                <Insets bottom="18.0" left="20.0" right="20.0" top="18.0"/>
-                            </padding>
-                            <Label text="Ratings" styleClass="card-title"/>
-                            <Label text="ELO and games played are tracked per game." styleClass="card-subtitle"/>
-
-                            <HBox spacing="14">
-                                <VBox styleClass="elo-stat-tile" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                                    <Label text="TIC TAC TOE" styleClass="elo-stat-game"/>
+                        <HBox spacing="14">
+                            <VBox styleClass="elo-stat-tile" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                <Label text="TIC TAC TOE" styleClass="elo-stat-game"/>
+                                <HBox alignment="CENTER_LEFT" spacing="8">
                                     <Label fx:id="tttEloLabel" styleClass="elo-stat-value" text="—"/>
-                                    <Label fx:id="tttGamesLabel" styleClass="elo-stat-meta" text=""/>
-                                </VBox>
-                                <VBox styleClass="elo-stat-tile" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                                    <Label text="CONNECT 4" styleClass="elo-stat-game"/>
+                                    <Label fx:id="tttRankBadge" styleClass="rank-badge" text="—"/>
+                                </HBox>
+                                <Label fx:id="tttGamesLabel" styleClass="elo-stat-meta" text=""/>
+                            </VBox>
+                            <VBox styleClass="elo-stat-tile" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                <Label text="CONNECT 4" styleClass="elo-stat-game"/>
+                                <HBox alignment="CENTER_LEFT" spacing="8">
                                     <Label fx:id="c4EloLabel" styleClass="elo-stat-value" text="—"/>
-                                    <Label fx:id="c4GamesLabel" styleClass="elo-stat-meta" text=""/>
-                                </VBox>
-                            </HBox>
+                                    <Label fx:id="c4RankBadge" styleClass="rank-badge" text="—"/>
+                                </HBox>
+                                <Label fx:id="c4GamesLabel" styleClass="elo-stat-meta" text=""/>
+                            </VBox>
+                        </HBox>
 
-                            <Label fx:id="tierSummaryLabel" styleClass="card-subtitle" text=""/>
-                        </VBox>
-                    </HBox>
+                        <Label fx:id="tierSummaryLabel" styleClass="card-subtitle" text=""/>
+                    </VBox>
 
                     <VBox spacing="12" styleClass="card">
                         <padding>
                             <Insets bottom="18.0" left="20.0" right="20.0" top="18.0"/>
                         </padding>
-                        <Label text="Leaderboard (local sample)" styleClass="card-title"/>
-                        <Label text="Top entries from the in-memory leaderboard service for each game." styleClass="card-subtitle"/>
+                        <Label text="Leaderboard" styleClass="card-title"/>
+                        <Label text="All registered users, ordered by ELO (from saved accounts)." styleClass="card-subtitle"/>
                         <ListView fx:id="leaderboardList" prefHeight="200.0" styleClass="profile-list-view"/>
                     </VBox>
                 </VBox>

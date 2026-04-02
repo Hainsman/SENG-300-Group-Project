@@ -1,5 +1,9 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,6 +12,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import java.util.List;
 
 public class SettingsController {
 
@@ -22,9 +28,6 @@ public class SettingsController {
     @FXML private ComboBox<String> textScaleComboBox;
     @FXML private CheckBox colorBlindModeCheckBox;
 
-    private String currentUsername = "current_user";
-    private String currentEmail = "user@email.com";
-
     @FXML
     public void initialize() {
         textScaleComboBox.setItems(FXCollections.observableArrayList(
@@ -36,54 +39,155 @@ public class SettingsController {
         textScaleComboBox.setValue(AppUiPreferences.labelFromFactor(AppUiPreferences.textScaleFactor));
         colorBlindModeCheckBox.setSelected(AppUiPreferences.colorblindMode);
 
-        activeUsernameLabel.setText(currentUsername);
-        emailField.setText(currentEmail);
+        reloadAccountFieldsFromStore();
+        if (statusLabel != null) {
+            statusLabel.setText("Edit your account and preferences, then save.");
+        }
+    }
+
+    private User currentUserOrNull() {
+        int id = CentralController.currentUserId;
+        if (id == 0) {
+            return null;
+        }
+        return UserStore.getInstance().get(id);
+    }
+
+    private void reloadAccountFieldsFromStore() {
+        User u = currentUserOrNull();
+        if (u == null) {
+            if (activeUsernameLabel != null) {
+                activeUsernameLabel.setText("—");
+            }
+            if (usernameField != null) {
+                usernameField.setText("");
+            }
+            if (emailField != null) {
+                emailField.setText("");
+            }
+            return;
+        }
+        if (activeUsernameLabel != null) {
+            activeUsernameLabel.setText(u.getlogin());
+        }
+        if (usernameField != null) {
+            usernameField.setText(u.getlogin());
+        }
+        if (emailField != null) {
+            emailField.setText(u.getEmail() != null ? u.getEmail() : "");
+        }
+        if (passwordField != null) {
+            passwordField.clear();
+        }
+        if (confirmPasswordField != null) {
+            confirmPasswordField.clear();
+        }
     }
 
     @FXML
     private void handleSaveSettings() {
-        String newUsername = usernameField.getText().trim();
-        String newEmail = emailField.getText().trim();
-        String newPassword = passwordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
-        String selectedTextScale = textScaleComboBox.getValue();
-        boolean colorBlindModeEnabled = colorBlindModeCheckBox.isSelected();
-
-        if (!newPassword.isEmpty() && !newPassword.equals(confirmPassword)) {
-            statusLabel.setText("Passwords do not match.");
+        User u = currentUserOrNull();
+        if (u == null) {
+            if (statusLabel != null) {
+                statusLabel.setText("You must be logged in to save account settings.");
+            }
             return;
         }
 
-        if (!newUsername.isEmpty()) {
-            currentUsername = newUsername;
-            activeUsernameLabel.setText(currentUsername);
+        String newUsername = usernameField != null ? usernameField.getText().trim() : "";
+        String newEmail = emailField != null ? emailField.getText().trim() : "";
+        String newPassword = passwordField != null ? passwordField.getText() : "";
+        String confirmPassword = confirmPasswordField != null ? confirmPasswordField.getText() : "";
+        String selectedTextScale = textScaleComboBox != null ? textScaleComboBox.getValue() : "Normal (100%)";
+        boolean colorBlindModeEnabled = colorBlindModeCheckBox != null && colorBlindModeCheckBox.isSelected();
+
+        if (newUsername.isEmpty()) {
+            if (statusLabel != null) {
+                statusLabel.setText("Username cannot be empty.");
+            }
+            return;
+        }
+        if (newEmail.isEmpty()) {
+            if (statusLabel != null) {
+                statusLabel.setText("Email cannot be empty.");
+            }
+            return;
+        }
+        if (!Helper.isEmailValid(newEmail, Constants.EMAIL_REGEX)) {
+            if (statusLabel != null) {
+                statusLabel.setText("Please enter a valid email address.");
+            }
+            return;
         }
 
-        if (!newEmail.isEmpty()) {
-            currentEmail = newEmail;
+        UserStore store = UserStore.getInstance();
+        if (!newUsername.equals(u.getlogin())) {
+            List<User> takenLogin = store.findByUserName(newUsername);
+            if (!takenLogin.isEmpty() && takenLogin.getFirst().getID() != u.getID()) {
+                if (statusLabel != null) {
+                    statusLabel.setText("That username is already taken.");
+                }
+                return;
+            }
+        }
+        List<User> takenEmail = store.findByUserEmail(newEmail);
+        if (!takenEmail.isEmpty() && takenEmail.getFirst().getID() != u.getID()) {
+            if (statusLabel != null) {
+                statusLabel.setText("That email is already registered to another account.");
+            }
+            return;
+        }
+
+        if (!newPassword.isEmpty() && !newPassword.equals(confirmPassword)) {
+            if (statusLabel != null) {
+                statusLabel.setText("Passwords do not match.");
+            }
+            return;
+        }
+
+        u.setlogin(newUsername);
+        u.setEmail(newEmail);
+        if (!newPassword.isEmpty()) {
+            u.setPasswordHash(Helper.hashPassword(newPassword, Constants.HASH_ALGORITHM));
+            if (passwordField != null) {
+                passwordField.clear();
+            }
+            if (confirmPasswordField != null) {
+                confirmPasswordField.clear();
+            }
+        }
+
+        store.update(u);
+        CentralController.displayName = u.getlogin();
+        if (activeUsernameLabel != null) {
+            activeUsernameLabel.setText(u.getlogin());
         }
 
         AppUiPreferences.textScaleFactor = AppUiPreferences.factorFromLabel(selectedTextScale);
         AppUiPreferences.colorblindMode = colorBlindModeEnabled;
         CentralController.applyUiPreferences();
 
-        statusLabel.setText("Settings saved successfully.");
+        if (statusLabel != null) {
+            statusLabel.setText("Settings saved successfully.");
+        }
     }
 
     @FXML
     private void handleResetDefaults() {
-        usernameField.clear();
-        emailField.setText(currentEmail);
-        passwordField.clear();
-        confirmPasswordField.clear();
-        textScaleComboBox.setValue("Normal (100%)");
-        colorBlindModeCheckBox.setSelected(false);
-
         AppUiPreferences.textScaleFactor = 1.0;
         AppUiPreferences.colorblindMode = false;
+        if (textScaleComboBox != null) {
+            textScaleComboBox.setValue("Normal (100%)");
+        }
+        if (colorBlindModeCheckBox != null) {
+            colorBlindModeCheckBox.setSelected(false);
+        }
         CentralController.applyUiPreferences();
 
-        statusLabel.setText("Settings reset.");
+        reloadAccountFieldsFromStore();
+        if (statusLabel != null) {
+            statusLabel.setText("Accessibility reset to defaults; account fields reloaded from disk.");
+        }
     }
 
     @FXML

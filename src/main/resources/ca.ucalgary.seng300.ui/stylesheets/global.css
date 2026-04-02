@@ -837,6 +837,18 @@
     -fx-font-size: 12px;
 }
 
+.rank-badge {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+    -fx-padding: 4 8;
+    -fx-background-color: #27272a;
+    -fx-background-radius: 8;
+    -fx-border-color: #34d399;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
 .profile-list-view {
     -fx-background-color: #141416;
     -fx-border-color: #2f2f35;

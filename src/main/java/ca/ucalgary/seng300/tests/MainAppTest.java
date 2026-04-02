@@ -119,11 +119,12 @@ public class MainAppTest {
         LeaderBoardService lbs = new LeaderBoardService();
 //        lbs.
 
-        List<PlayerStats> sortedPlayers = lbs.getLeaderBoard(false, 1, 4);
+        List<User> sortedUsers = lbs.getLeaderBoard(false, 1, 4);
 
-        for (int i = 0; i < sortedPlayers.size(); i++){
-            System.out.println(sortedPlayers.get(i).getUserID());
-            System.out.println(Helper.getRank(sortedPlayers.get(i).getGameCounter(), sortedPlayers.get(i).getScore()).getDisplayName());
+        for (int i = 0; i < sortedUsers.size(); i++) {
+            User row = sortedUsers.get(i);
+            System.out.println(row.getID());
+            System.out.println(row.getlogin() + " TTT ELO=" + row.getEloForGame(1));
         }
 
 // ============================================================

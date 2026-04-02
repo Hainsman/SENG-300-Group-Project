@@ -1,9 +1,14 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import java.util.UUID;
+
+import java.util.List;
 
 public class LoginController {
 
@@ -25,9 +30,25 @@ public class LoginController {
             return;
         }
 
-        int uid = username.hashCode();
-        CentralController.currentUserId = uid == Integer.MIN_VALUE ? 1 : Math.abs(uid);
-        CentralController.displayName = username;
+        UserStore store = UserStore.getInstance();
+        List<User> matches = store.findByUserName(username);
+        if (matches.isEmpty()) {
+            errorLabel.setText("Username not found.");
+            return;
+        }
+        User user = matches.getFirst();
+        String hash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
+        if (!hash.equals(user.getPasswordHash())) {
+            errorLabel.setText("Incorrect password.");
+            return;
+        }
+        if (!user.getIsActive()) {
+            errorLabel.setText("This account is disabled.");
+            return;
+        }
+
+        CentralController.currentUserId = user.getID();
+        CentralController.displayName = user.getlogin();
         CentralController.previousScreen = null;
         CentralController.ticTacToeLocalAiMode = false;
         CentralController.connect4LocalAiMode = false;

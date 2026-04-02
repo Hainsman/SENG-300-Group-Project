@@ -1,7 +1,8 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
-import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
+import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.UserStore;
 
 public final class PlayerProfileHelper {
 
@@ -12,17 +13,36 @@ public final class PlayerProfileHelper {
         return id != 0 ? id : 1;
     }
 
+    /** ELO for the logged-in user from persisted {@link User} data. */
+    public static int eloForGameId(int gameId) {
+        User u = UserStore.getInstance().get(currentUserIdOrDefault());
+        return u == null ? 1200 : u.getEloForGame(gameId);
+    }
+
+    public static int gamesForGameId(int gameId) {
+        User u = UserStore.getInstance().get(currentUserIdOrDefault());
+        return u == null ? 0 : u.getGamesForGame(gameId);
+    }
+
+    /**
+     * Backwards-compatible view backed by {@link User} rows (not PlayerStatsStore).
+     * Mutating the returned object does not persist; use {@link UserStore#update(User)}.
+     */
     public static PlayerStats statsForGameId(int gameId) {
         int uid = currentUserIdOrDefault();
-        return PlayerStatsStore.getInstance().getOrCreateForUserGame(uid, gameId);
+        User u = UserStore.getInstance().get(uid);
+        PlayerStats ps = new PlayerStats(0, gameId, uid);
+        if (u != null) {
+            ps.setElo(u.getEloForGame(gameId));
+            for (int i = 0; i < u.getGamesForGame(gameId); i++) {
+                ps.updateStats(0);
+            }
+        }
+        return ps;
     }
 
     public static PlayerStats statsForCurrentGame() {
         return statsForGameId(GameIdMapper.fromUiGameName(CentralController.selectedGame));
-    }
-
-    public static int eloForGameId(int gameId) {
-        return statsForGameId(gameId).getElo();
     }
 
     public static String sanitizeForPayload(String name) {
@@ -40,11 +60,33 @@ public final class PlayerProfileHelper {
     }
 
     public static String eloTierLabel(int elo) {
-        if (elo < 1000) return "Novice";
-        if (elo < 1200) return "Bronze";
-        if (elo < 1400) return "Silver";
-        if (elo < 1600) return "Gold";
-        if (elo < 1800) return "Platinum";
+        if (elo < 1000) {
+            return "Novice";
+        }
+        if (elo < 1200) {
+            return "Bronze";
+        }
+        if (elo < 1400) {
+            return "Silver";
+        }
+        if (elo < 1600) {
+            return "Gold";
+        }
+        if (elo < 1800) {
+            return "Platinum";
+        }
         return "Master";
+    }
+
+    /** Short badge text for UI (e.g. "Au"). */
+    public static String eloTierBadge(int elo) {
+        return switch (eloTierLabel(elo)) {
+            case "Novice" -> "Nv";
+            case "Bronze" -> "Br";
+            case "Silver" -> "Ag";
+            case "Gold" -> "Au";
+            case "Platinum" -> "Pt";
+            default -> "M";
+        };
     }
 }

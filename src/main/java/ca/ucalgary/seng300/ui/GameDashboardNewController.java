@@ -12,11 +12,15 @@ public class GameDashboardNewController {
         CentralController.moveTo(CentralController.PROFILE_DASHBOARD_FXML);
     }
 
-    /** Teammate account and accessibility settings. */
     @FXML
     void handleTeamSettings(ActionEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
         CentralController.moveTo("Settings.fxml");
+    }
+
+    @FXML
+    void handleLogout(ActionEvent event) {
+        CentralController.logout();
     }
 
     @FXML

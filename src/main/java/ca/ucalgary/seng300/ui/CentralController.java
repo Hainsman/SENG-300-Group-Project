@@ -2,7 +2,6 @@ package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import javafx.beans.value.ChangeListener;
-import ca.ucalgary.seng300.platform.client.ClientCoreV2;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -83,6 +82,27 @@ public class CentralController {
         rosterGuestElo = 1200;
     }
 
+    /**
+     * Clears signed-in session and lobby navigation state, then shows the login screen.
+     */
+    public static void logout() {
+        currentUserId = 0;
+        displayName = "Player";
+        previousScreen = null;
+        selectedGame = null;
+        ticTacToeLocalAiMode = false;
+        connect4LocalAiMode = false;
+        hostingLobby = false;
+        lobbyCode = null;
+        lobbyName = null;
+        maxPlayers = 0;
+        privacy = null;
+        clearLobbyRoster();
+        if (instance != null) {
+            moveTo("Login.fxml");
+        }
+    }
+
     public static void applyLobbyRosterPayload(String payload) {
         if (payload == null || payload.isBlank()) {
             return;
@@ -130,7 +150,7 @@ public class CentralController {
     @FXML
     public void initialize() {
         instance = this;
-        clientCore = ClientCoreV2.getInstance();
+        clientCore = new ClientCore(this);
         clientCore.start();
         System.out.println("cc loaded");
 
