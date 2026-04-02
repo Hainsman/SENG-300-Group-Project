@@ -1,31 +1,35 @@
 package ca.ucalgary.seng300.game.core.tictactoe;
 
 import ca.ucalgary.seng300.game.core.Player;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class TTTGameUpdateTest {
+class TTTGameStateTest {
+
+    private TTTGameState gameState;
+
+    @BeforeEach
+    void setUp() {
+        gameState = new TTTGameState();
+    }
 
     @Test
-    // Tests is applying an action actually updates the board
+    // Tests if applying an action actually updates the board properly
     void applyActionUpdatesBoard() {
 
-        TTTGameState gameState = new TTTGameState();
+        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE.toString(), 1, 1);
 
-        TTTActionPayload payload = new TTTActionPayload(1, 1);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        gameState.applyAction(action);
 
-        assertTrue(gameState.applyAction(action));
+        assertSame(Player.PLAYER_1, gameState.getBoard()[1][1]);
     }
 
     @Test
     // Tests if applying an action changes player's turn
     void applyActionChangesTurn() {
 
-        TTTGameState gameState = new TTTGameState();
-
-        TTTActionPayload payload = new TTTActionPayload(0, 0);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE.toString(), 0, 0);
 
         gameState.applyAction(action);
 
