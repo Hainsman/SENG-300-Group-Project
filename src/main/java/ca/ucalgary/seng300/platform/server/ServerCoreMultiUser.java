@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
+import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.*;
@@ -37,7 +38,7 @@ public class ServerCoreMultiUser{
     private volatile boolean running;
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
     private ExecutorService threadPool;
-    private static final int DEFAULT_PORT = 2020;
+    private static final int DEFAULT_PORT = Constants.PLATFORM_GAME_PORT;
     private static final int MAX_THREADS = 10;
     //password hashing algorithm
     public static final String HASH_ALGORITHM = "SHA-256";
@@ -54,6 +55,7 @@ public class ServerCoreMultiUser{
     }
     ServerCoreMultiUser(int port, int maxThreads) {
         this.port = port;
+        this.gameRooms = new ArrayList<>();
         this.threadPool = Executors.newFixedThreadPool(maxThreads);
     }
 

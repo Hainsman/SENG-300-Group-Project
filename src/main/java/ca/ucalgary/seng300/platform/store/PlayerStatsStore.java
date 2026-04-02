@@ -9,6 +9,11 @@ public class PlayerStatsStore extends Store<PlayerStats> {
     public PlayerStatsStore(String filePath) {
         super(filePath);
     }
+
+    @Override
+    protected Class<PlayerStats> recordType() {
+        return PlayerStats.class;
+    }
     //returns users by gameID
     public List<PlayerStats> findPlayersByGameID (int id){return find(rec -> rec.getGameID() == id);}
 

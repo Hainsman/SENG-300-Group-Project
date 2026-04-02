@@ -7,10 +7,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -19,16 +18,20 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.Collections;
 
-class Store<T extends Record> {
+abstract class Store<T extends Record> {
     private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
     private final ReentrantReadWriteLock.ReadLock readLock = rwLock.readLock();
 
     private static final Gson GSON = createGson(false);
     private static final Gson PRETTY_GSON = createGson(true);
+    /** Plain Gson for files written before {@code "type"} discriminators were enforced. */
+    private static final Gson LEGACY_GSON = new GsonBuilder().create();
 
     private final ConcurrentHashMap<Integer, T> records;
     private final String filePath;
+
+    protected abstract Class<T> recordType();
 
     protected Store(String filePath) {
         this.records = new ConcurrentHashMap<>();
@@ -62,7 +65,8 @@ class Store<T extends Record> {
         } finally {
             writeLock.unlock();
         }
-    };
+    }
+
     public void delete(T record) {
         writeLock.lock();
         try {
@@ -82,10 +86,11 @@ class Store<T extends Record> {
             writeLock.unlock();
         }
     }
-    };
-    public int assignNewID(){
-        if (records.isEmpty())
+
+    public int assignNewID() {
+        if (records.isEmpty()) {
             return 1;
+        }
         return Collections.max(records.keySet()) + 1;
     }
 
@@ -101,40 +106,68 @@ class Store<T extends Record> {
             b.setPrettyPrinting();
         }
         return b.create();
-    private static Gson createGson(){
-        RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class,"type")
-                .registerSubtype(User.class, User.class.getSimpleName())
-                .registerSubtype(GameHistory.class, GameHistory.class.getSimpleName())
-                .registerSubtype(Participant.class, Participant.class.getSimpleName())
-                .registerSubtype(SessionHistory.class, SessionHistory.class.getSimpleName())
-                .registerSubtype(PlayerStats.class, PlayerStats.class.getSimpleName());
-
-        return new GsonBuilder()
-                .registerTypeAdapterFactory(entityAdapterFactory)
-                .create();
     }
 
     private void loadAll() {
-        try (FileReader fr = new FileReader(filePath)) {
-            ConcurrentHashMap<Integer, T> fileData = GSON.fromJson(fr, new TypeToken<ConcurrentHashMap<Integer, Record>>() {
-            }.getType());
-            records.clear();
-            if (fileData != null && !fileData.isEmpty()) {
-                records.putAll(fileData);
+        Path path = Path.of(filePath);
+        try {
+            if (!Files.isRegularFile(path)) {
+                records.clear();
+                return;
             }
-        } catch (FileNotFoundException e) {
-            System.err.println(e);
-            records.clear();
-        } catch (JsonParseException e) {
-            System.err.println("Invalid or legacy JSON store (resetting): " + filePath + " — " + e.getMessage());
-            if (filePath.contains("playerStats")) {
-                System.err.println("Tip: Gson expects a \"type\" discriminator per entry (e.g. PlayerStats). Old files are moved to *.invalid-* and the store starts empty.");
+            String json = Files.readString(path, StandardCharsets.UTF_8);
+            if (json.isBlank()) {
+                records.clear();
+                return;
+            }
+            ConcurrentHashMap<Integer, T> loaded = tryLoadWithTypeDiscriminator(json);
+            if (loaded == null) {
+                loaded = tryLoadLegacyShape(json);
+            }
+            if (loaded == null) {
+                System.err.println("Invalid JSON store (resetting): " + filePath);
+                records.clear();
+                quarantineCorruptStoreFile();
+                return;
             }
             records.clear();
-            quarantineCorruptStoreFile();
+            records.putAll(loaded);
         } catch (IOException e) {
             System.err.println("Failed to load from: " + filePath);
             records.clear();
+        }
+    }
+
+    /**
+     * Normal path: each entry includes {@code "type"} (e.g. {@code "User"}) for polymorphic {@link Record} values.
+     */
+    private ConcurrentHashMap<Integer, T> tryLoadWithTypeDiscriminator(String json) {
+        try {
+            ConcurrentHashMap<Integer, Record> fileData = GSON.fromJson(json,
+                    new TypeToken<ConcurrentHashMap<Integer, Record>>() {}.getType());
+            if (fileData == null) {
+                return null;
+            }
+            ConcurrentHashMap<Integer, T> out = new ConcurrentHashMap<>();
+            for (var e : fileData.entrySet()) {
+                out.put(e.getKey(), recordType().cast(e.getValue()));
+            }
+            return out;
+        } catch (JsonParseException | ClassCastException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Older files omit {@code "type"}; deserialize values as this store's concrete {@link #recordType()} instead.
+     */
+    private ConcurrentHashMap<Integer, T> tryLoadLegacyShape(String json) {
+        try {
+            Type mapType = TypeToken.getParameterized(ConcurrentHashMap.class, Integer.class, recordType()).getType();
+            ConcurrentHashMap<Integer, T> fileData = LEGACY_GSON.fromJson(json, mapType);
+            return fileData != null ? fileData : new ConcurrentHashMap<>();
+        } catch (JsonParseException e) {
+            return null;
         }
     }
 
@@ -156,7 +189,7 @@ class Store<T extends Record> {
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            try (FileWriter fw = new FileWriter(filePath)) {
+            try (var fw = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
                 PRETTY_GSON.toJson(records, fw);
             }
         } catch (IOException e) {

@@ -1,15 +1,10 @@
 package ca.ucalgary.seng300.ui;
 
-import ca.ucalgary.seng300.platform.client.ClientCoreV2;
-import ca.ucalgary.seng300.platform.messages.CreateAccount;
-import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
-import java.util.UUID;
 
 public class NewUserController {
 
@@ -44,17 +39,6 @@ public class NewUserController {
             return;
         }
         
-        UUID userSession = UUID.randomUUID();
-        CreateAccount createAccount = new CreateAccount(userSession, password, email, username);
-
-        var clientCore = ClientCoreV2.getInstance();
-        clientCore.msgSend(createAccount);
-        ServerResponse resp = clientCore.msgRecieve();
-        if(resp.status.equals(ServerResponse.Status.FAIL)){
-            errorLabel.setText(resp.details[0]);
-            return;
-        }
-
         // Navigate back to login on success
         CentralController.moveTo("Login.fxml");
     }
