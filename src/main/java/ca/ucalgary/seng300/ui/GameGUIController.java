@@ -74,6 +74,7 @@ public class GameGUIController {
         GameGUI.setChatBox(matchChat);
         GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
         ticTacToeViewController.setSession(new TicTacToeSession());
+        ticTacToeViewController.setRandomOpponentEnabled(true);
     }
 
     @FXML
