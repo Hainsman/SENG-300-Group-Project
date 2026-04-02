@@ -40,6 +40,7 @@ public class LoginController {
         CentralController.displayName = username;
         CentralController.previousScreen = null;
         CentralController.ticTacToeLocalAiMode = false;
+        CentralController.connect4LocalAiMode = false;
         CentralController.moveTo("GameDashboardNew.fxml");
     }
 

@@ -59,6 +59,12 @@ public class CentralController {
      */
     public static boolean ticTacToeLocalAiMode = false;
 
+    /**
+     * When true, {@link Connect4Controller} uses a local {@link ca.ucalgary.seng300.platform.session.ConnectFourSession}
+     * with a random-move AI as player 2 (same pattern as TTT vs AI).
+     */
+    public static boolean connect4LocalAiMode = false;
+
     public static int currentUserId;
     public static String displayName = "Player";
 

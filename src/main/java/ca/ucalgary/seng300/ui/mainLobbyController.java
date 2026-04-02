@@ -110,6 +110,7 @@ public class mainLobbyController {
         }
 
         CentralController.ticTacToeLocalAiMode = false;
+        CentralController.connect4LocalAiMode = false;
         if (CentralController.hostingLobby) {
             CentralController c = CentralController.getInstance();
             if (c != null) {

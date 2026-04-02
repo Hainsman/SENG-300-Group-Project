@@ -26,34 +26,52 @@ public class ChooseModeController {
         return g != null && ("TicTacToe".equals(g) || "Tic Tac Toe".equalsIgnoreCase(g.trim()));
     }
 
+    private static boolean isConnectFourSelection() {
+        String g = CentralController.selectedGame;
+        if (g == null) {
+            return false;
+        }
+        String t = g.trim();
+        return "Connect 4".equalsIgnoreCase(t) || "Connect4".equalsIgnoreCase(t);
+    }
+
     private void refreshAiCardVisibility() {
-        boolean ttt = isTicTacToeSelection();
+        boolean showAi = isTicTacToeSelection() || isConnectFourSelection();
         if (playWithAiCard != null) {
-            playWithAiCard.setVisible(ttt);
-            playWithAiCard.setManaged(ttt);
+            playWithAiCard.setVisible(showAi);
+            playWithAiCard.setManaged(showAi);
         }
     }
 
     @FXML
     void handleHostGame(MouseEvent event) {
         CentralController.ticTacToeLocalAiMode = false;
+        CentralController.connect4LocalAiMode = false;
         CentralController.moveTo("hostLobby.fxml");
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
         CentralController.ticTacToeLocalAiMode = false;
+        CentralController.connect4LocalAiMode = false;
         CentralController.moveTo("joinLobby.fxml");
     }
 
     @FXML
     void handlePlayWithAi(MouseEvent event) {
-        if (!isTicTacToeSelection()) {
+        CentralController.previousScreen = "chooseModeNew.fxml";
+        if (isTicTacToeSelection()) {
+            CentralController.connect4LocalAiMode = false;
+            CentralController.ticTacToeLocalAiMode = true;
+            CentralController.moveTo(CentralController.TIC_TAC_TOE_SHELL_FXML);
             return;
         }
-        CentralController.ticTacToeLocalAiMode = true;
-        CentralController.previousScreen = "chooseModeNew.fxml";
-        CentralController.moveTo(CentralController.TIC_TAC_TOE_SHELL_FXML);
+        if (isConnectFourSelection()) {
+            CentralController.ticTacToeLocalAiMode = false;
+            CentralController.connect4LocalAiMode = true;
+            CentralController.moveTo("Connect4.fxml");
+            return;
+        }
     }
 
     @FXML
