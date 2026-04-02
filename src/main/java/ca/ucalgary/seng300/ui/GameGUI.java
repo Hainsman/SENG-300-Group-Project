@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
@@ -275,6 +276,24 @@ public abstract class GameGUI {
     // Player move getter method
     public String getMove() {
         return matchHistory.get(matchHistory.size() - 1); // The latest move e.g. "[TP1(0,0)]".
+    }
+
+    private static VBox chatBox;
+
+    public static void setChatBox(VBox box) {
+        chatBox = box;
+    }
+
+    public static void addChat(String sender, String message, Color color) {
+        if (chatBox == null) return;
+        Label entry = new Label(sender + ": " + message);
+        entry.setTextFill(color);
+        entry.setWrapText(true);
+        Platform.runLater(() -> chatBox.getChildren().add(entry));
+    }
+
+    public static void clearChat() {
+        if (chatBox != null) Platform.runLater(() -> chatBox.getChildren().clear());
     }
 
     // Game Elo Labels + methods

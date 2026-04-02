@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 // Contributors: Kade Peters, Jarod Rideout
 
+import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.server.ServerMain;
@@ -12,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
+import javafx.scene.paint.Color;
 
 public class GameGUIController {
     private CentralController control;
@@ -52,6 +54,12 @@ public class GameGUIController {
     @FXML
     public VBox historyBox;
 
+    // Chat box
+    @FXML
+    public VBox chatBox;
+    @FXML private VBox matchChat;
+    @FXML private TextField chatInput;
+
     // Accompanying Labels
     @FXML
     private Label connect4Label;
@@ -63,6 +71,7 @@ public class GameGUIController {
     @FXML
     public void initialize() {
         GameGUI.setHistoryBox(historyBox);
+        GameGUI.setChatBox(matchChat);
         GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
         ticTacToeViewController.setSession(new TicTacToeSession());
     }
@@ -130,6 +139,20 @@ public class GameGUIController {
     private void handleInfoButton(ActionEvent event) {
         CentralController.moveTo("info.fxml");
 
+    }
+
+    @FXML
+    private void handleChatSend(ActionEvent event) {
+        String msg = chatInput.getText().trim();
+        if (msg.isBlank()) return;
+        String sender = "You"; // default
+        if (ticTacToeViewController != null && ticTacToeViewController.currentPlayerID != null) {
+            sender = ticTacToeViewController.currentPlayerID;
+        } else if (connect4ViewController != null && connect4ViewController.currentPlayerID != null) {
+            sender = connect4ViewController.currentPlayerID;
+        }
+        GameGUI.addChat(sender, msg, Color.web("#fafafa"));
+        chatInput.clear();
     }
 
     @FXML

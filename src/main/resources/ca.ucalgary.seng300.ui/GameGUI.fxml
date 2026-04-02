@@ -41,12 +41,11 @@
               </children>
             </VBox>
 
-            <VBox layoutX="25.0" layoutY="450.0" prefWidth="250.0" spacing="12">
+            <VBox layoutX="27.0" layoutY="470.0" prefWidth="250.0" spacing="12">
               <children>
-                <Button alignment="CENTER" maxWidth="Infinity" onAction="#handleHostGame" text="Host game" />
-                <Button maxWidth="Infinity" onAction="#handleJoinGame" text="Join game" />
                 <Button maxWidth="Infinity" text="✕  Forfeit" />
                 <Button fx:id="infoButton" maxWidth="Infinity" onAction="#handleInfoButton" text="ⓘ  Info" />
+                        <Button fx:id="exit" layoutX="10.0" layoutY="66.0" maxWidth="Infinity" onAction="#handleExitButton" text="➜]  Exit" />
               </children>
             </VBox>
           </children>
@@ -72,7 +71,7 @@
             </ScrollPane>
              <HBox alignment="CENTER" layoutX="8.0" layoutY="377.0" spacing="8" />
             <TextField fx:id="chatInput" layoutX="20.0" layoutY="590.0" prefHeight="26.0" prefWidth="200.0" promptText="Type a message..." />
-            <Button fx:id="chatSend" layoutX="91.0" layoutY="620.0" prefHeight="34.0" prefWidth="77.0" styleClass="primary-button" text="Send" />
+            <Button fx:id="chatSend" layoutX="91.0" layoutY="620.0" onAction="#handleChatSend" prefHeight="34.0" prefWidth="77.0" styleClass="primary-button" text="Send" />
              <Label alignment="CENTER" contentDisplay="CENTER" layoutX="17.0" layoutY="302.0" prefHeight="50.0" prefWidth="220.0" styleClass="match-history-header" text="Match Chat" />
                   <ScrollPane hbarPolicy="NEVER" layoutX="17.0" layoutY="352.0" prefHeight="238.0" prefWidth="220.0" styleClass="history-scroll">
                      <content>

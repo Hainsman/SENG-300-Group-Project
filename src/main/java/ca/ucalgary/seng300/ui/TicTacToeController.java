@@ -333,6 +333,7 @@ public class TicTacToeController extends GameGUI {
                     btn.setStyle("");
                 }
                 btn.setDisable(session.isGameOver());
+                resetButton.setVisible(session.isGameOver());
             }
         }
         State st = session.getState();
@@ -392,6 +393,7 @@ public class TicTacToeController extends GameGUI {
                 }*/
                 //btn.();
                 boolean gameOver = !State.IN_PROGRESS.equals(st);
+                resetButton.setVisible(gameOver);
                 Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
                 boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null;
                 boolean myTurn = !onlineTurns || gameOver || myRole.equals(update.getPlayerTurn());
