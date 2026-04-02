@@ -31,7 +31,7 @@ public class C4RuleValidatorTest {
         String actualTurn = gameState.getPlayerTurn().toString();
         String wrongPlayerID = actualTurn.equals("PLAYER_1") ? "PLAYER_2" : "PLAYER_1";
         C4PlayerAction action = new C4PlayerAction(wrongPlayerID, "MOVE", 5, 3);
-        // a move made by the player whose turn it isnt should be rejected
+        // a move made by the player whose turn it isn't should be rejected
         assertFalse(validator.validateMove(gameState, action));
     }
 
