@@ -32,9 +32,9 @@ public class MainAppTest {
         System.out.println(userStorage.findByUserName("Alex").getFirst().getEmail());
 
 //        //show that email addresses are true and legit:
-        System.out.println(Helper.isEmailValid("daniel.maximov@ucalgary.ca", Constants.EMAIL_REGEX));
-        System.out.println(Helper.isEmailValid("\"john.doe\"@example.com", Constants.EMAIL_REGEX));
-        System.out.println(Helper.isEmailValid("user=name@example.com", Constants.EMAIL_REGEX));
+//        System.out.println(Helper.isEmailValid("daniel.maximov@ucalgary.ca", Constants.EMAIL_REGEX));
+//        System.out.println(Helper.isEmailValid("\"john.doe\"@example.com", Constants.EMAIL_REGEX));
+//        System.out.println(Helper.isEmailValid("user=name@example.com", Constants.EMAIL_REGEX));
 
         for (int i = 1; i < 4; i++){
             System.out.println(Record.getTimeCreatedReadableFormat(userStorage.get(i).getTimeCreated()));
@@ -42,10 +42,10 @@ public class MainAppTest {
 
 
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
-//        sessionHistoryStore.create(new SessionHistory(1));
-//        sessionHistoryStore.create(new SessionHistory(2));
-//        sessionHistoryStore.create(new SessionHistory(3));
-//        sessionHistoryStore.create(new SessionHistory(4));
+        sessionHistoryStore.create(new SessionHistory(1, 1, UUID.randomUUID()));
+        sessionHistoryStore.create(new SessionHistory(2, 2, UUID.randomUUID()));
+        sessionHistoryStore.create(new SessionHistory(3, 3, UUID.randomUUID()));
+        sessionHistoryStore.create(new SessionHistory(4, 4, UUID.randomUUID()));
 
 //        GameHistoryStore gameHistoryStore = new GameHistoryStore(Constants.GAME_FILE_PATH);
         GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();

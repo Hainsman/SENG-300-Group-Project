@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import javafx.beans.value.ChangeListener;
+import ca.ucalgary.seng300.platform.client.ClientCoreV2;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -129,7 +130,7 @@ public class CentralController {
     @FXML
     public void initialize() {
         instance = this;
-        clientCore = new ClientCore(this);
+        clientCore = ClientCoreV2.getInstance();
         clientCore.start();
         System.out.println("cc loaded");
 

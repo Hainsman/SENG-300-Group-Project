@@ -1,10 +1,15 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCoreV2;
+import ca.ucalgary.seng300.platform.messages.CreateAccount;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import java.util.UUID;
 
 public class NewUserController {
 
@@ -13,6 +18,13 @@ public class NewUserController {
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label         errorLabel;
+    private static NewUserController newUserController;
+
+    public static NewUserController getInstance(){
+        if (newUserController == null)
+            newUserController = new NewUserController();
+        return newUserController;
+    }
 
     @FXML
     private void handleCreateAccount(ActionEvent event) {
@@ -26,19 +38,22 @@ public class NewUserController {
             setError("All fields are required.");
             return;
         }
-        // If email does not have @ as a part of the string, give error message.
-        if (!email.contains("@")) {
-            setError("Please enter a valid email address.");
-            return;
-        }
         // If password confirm input does not match password input, give error message.
         if (!password.equals(confirm)) {
             setError("Passwords do not match.");
             return;
         }
+        
+        UUID userSession = UUID.randomUUID();
+        CreateAccount createAccount = new CreateAccount(userSession, password, email, username);
 
-        // TODO: wire to backend when New User is created successfully
-
+        var clientCore = ClientCoreV2.getInstance();
+        clientCore.msgSend(createAccount);
+        ServerResponse resp = clientCore.msgRecieve();
+        if(resp.status.equals(ServerResponse.Status.FAIL)){
+            errorLabel.setText(resp.details[0]);
+            return;
+        }
 
         // Navigate back to login on success
         CentralController.moveTo("Login.fxml");

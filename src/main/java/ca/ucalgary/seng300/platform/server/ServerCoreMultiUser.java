@@ -1,21 +1,26 @@
 package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
-import ca.ucalgary.seng300.game.core.State;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.*;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponseGameRoom;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
+import com.google.gson.Gson;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * STUB: TCP server. Matchmaking is in progress; platform core will implement real networking.
@@ -32,12 +37,24 @@ public class ServerCoreMultiUser{
     private volatile boolean running;
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
     private ExecutorService threadPool;
-    private static ServerCoreMultiUser scmu;
+    private static final int DEFAULT_PORT = 2020;
+    private static final int MAX_THREADS = 10;
+    //password hashing algorithm
+    public static final String HASH_ALGORITHM = "SHA-256";
+    // regex for verifying if email is generally compliant in RFC 5322 and RFC 5321 (Note this does not cover all cases but will cover 90 to 95% of all emails compliant in RFC standards)
+    public static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
-    public ServerCoreMultiUser(int port, int maxThreads, ServerCoreMultiUser scmu) {
+
+    private static ServerCoreMultiUser instance;
+
+    public static ServerCoreMultiUser getInstance() {
+        if(instance == null)
+            instance = new ServerCoreMultiUser(DEFAULT_PORT, MAX_THREADS);
+        return instance;
+    }
+    ServerCoreMultiUser(int port, int maxThreads) {
         this.port = port;
         this.threadPool = Executors.newFixedThreadPool(maxThreads);
-        this.scmu = scmu;
     }
 
     public void start() throws IOException {
@@ -86,11 +103,10 @@ public class ServerCoreMultiUser{
 
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    Response resp = scmu.handleLine(inputLine);
-
-                    if (inputLine.equalsIgnoreCase("quit")) {
-                        break;
-                    }
+                    System.out.println("Recieved Request: "+ inputLine);
+                    ServerResponse resp = instance.handleLine(inputLine);
+                    System.out.println("Sending Response: " + resp);
+                    out.println(new Gson().toJson(resp)); //send response back
                 }
 
             } catch (IOException e) {
@@ -120,68 +136,11 @@ public class ServerCoreMultiUser{
         }
     }
 
-
-
-    /** Start the server on specified port. **/
-
-
-    /**
-     * Handles one client's move.
-     * @return Whether the game should continue or not.
-     */
-//    public boolean move(TTTGame game, ClientHandler c) throws IOException {
-//        System.out.println(game.getGameState());
-//        c.out.println(game.getGameState());
-//        if (game.getGameState().getState() == State.TIE) {
-//            c.out.println("TIE");
-//            return false;
-//        }
-//        if (game.getGameState().getState() == State.PLAYER_1_WIN) {
-//            c.out.println("P1_WIN");
-//            return false;
-//        }
-//        if (game.getGameState().getState() == State.PLAYER_2_WIN) {
-//            c.out.println("P2_WIN");
-//            return false;
-//        }
-//        c.out.println("IN_PROGRESS");
-//
-//        boolean valid = false;
-//        while (!valid) {
-//            String line = c.in.readLine();
-//            if (line != null) {
-//                handleLine(line); // Modifies game state
-//            }
-//            valid = game.valid;
-//            if (!valid) {
-//                System.out.println("DEBUG: player sent invalid move.");
-//                c.out.println("INVALID");
-//            }
-//        }
-//        c.out.println("VALID");
-//        return true;
-//    }
-
-//    public void printToAll(String message) {
-//        for (ClientHandler c : clients) {
-//            c.out.println(message);
-//        }
-//    }
-//
-//    public ClientHandler acceptClient(ServerSocket s) throws IOException {
-//        ClientHandler result = new ClientHandler();
-//        result.socket = s.accept();
-//        result.in = new BufferedReader(new InputStreamReader(result.socket.getInputStream()));
-//        result.out = new PrintWriter(result.socket.getOutputStream(), true);
-//        return result;
-//    }
-
     /**
      * Handle one line of input from a client; return one JSON line to send back, or null.
      * Platform core will implement: parse CreateOrJoinSession or SubmitMove, dispatch to handleCreateOrJoin / handleSubmitMove, return response.
      */
-    public Response handleLine(String line) {
-        Response resp = new Response();
+    public ServerResponse handleLine(String line) {
         Message message = Message.fromJson(line);
 
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
@@ -189,6 +148,9 @@ public class ServerCoreMultiUser{
 
         if(session.isEmpty() && message instanceof Authenticate auth)
             return handleAuthenticate(auth); // TODO: handle edge cases
+
+        if(session.isEmpty() && message instanceof CreateAccount createAccount)
+            return handleCreateAccount(createAccount); // TODO: handle edge cases
 
         int userId = session.getFirst().getUserId();
         User user = UserStore.getInstance().get(userId);
@@ -200,109 +162,116 @@ public class ServerCoreMultiUser{
             default:
                 // TODO: report error
         }
-        resp.status = Response.Status.FAIL;
-        resp.errors = new String[] {"Message Invalid"};
-        return resp;
+        return ServerResponse.Fail("Error message invalid");
     }
 
+    private ServerResponse handleCreateAccount(CreateAccount createAccount) {
+        UserStore userStore = UserStore.getInstance();
+        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
+        List<User> listOfUsers= userStore.findByUserName(createAccount.getUsername());
+        int newSessionId = sessionHistoryStore.assignNewID();
+        int newUserId = userStore.assignNewID();
+        String incomingUsername = createAccount.getUsername();
+        String incomingEmail = createAccount.getEmail();
+        String incomingPassword = hashPassword(createAccount.getPassword(), HASH_ALGORITHM);
 
+        if (!listOfUsers.isEmpty())
+            return ServerResponse.Fail("Error username exists please try again");
 
-    // handles authentcation of users
-    protected Response handleAuthenticate(Authenticate auth){
-        Response resp = new Response(); //user already registered
+        if (!isEmailValid(incomingEmail, EMAIL_REGEX))
+            return ServerResponse.Fail("Error email is invalid please try again");
 
+        sessionHistoryStore.create(new SessionHistory(newSessionId, newUserId, createAccount.getGloballyUniqueSessionId()));
+        userStore.create(new User(newUserId, incomingUsername, incomingEmail, incomingPassword));
+        return ServerResponse.Success("Successfully created new user");
+    }
+
+    // handles authentication of users
+    protected ServerResponse handleAuthenticate(Authenticate auth){
         UserStore userStore = UserStore.getInstance();
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
         List<User> listOfUsers= userStore.findByUserName(auth.getUsername());
+        int newSessionId = sessionHistoryStore.assignNewID();
         String incomingUsername = auth.getUsername();
-        String incomingPassword = auth.getPassword();
+        String incomingPassword = hashPassword(auth.getPassword(), HASH_ALGORITHM);
 
-        if (listOfUsers.isEmpty()){
-            resp.status = Response.Status.FAIL;
-            resp.errors = new String[] {"Error password or username Incorrect"};
-            return resp;
-        }
+        if (listOfUsers.isEmpty())
+            return ServerResponse.Fail("Error Username not found");
 
         if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
-            sessionHistoryStore.create(new SessionHistory(1, listOfUsers.getFirst().getID(), auth.getGloballyUniqueSessionId()));
-            resp.status = Response.Status.SUCCESS;
-            resp.errors = new String[]{""};
-            return resp;
+            sessionHistoryStore.create(new SessionHistory(newSessionId, listOfUsers.getFirst().getID(), auth.getGloballyUniqueSessionId()));
+            return ServerResponse.Success("User successfully authenticated");
         }
-
-        resp.status = Response.Status.FAIL;
-        resp.errors = new String[]{"Error password or Username Incorrect"};
-
-        return resp;
+        return ServerResponse.Fail("Error username or password incorrect");
     }
 
-    protected Response handleDeAuthenticate(){
+    protected ServerResponse handleDeAuthenticate(){
         return null;
     }
 
-    private Response handleCreateGameRoom(CreateGameRoom cs, User user) {
-        Response resp = new Response();
+    private ServerResponse handleCreateGameRoom(CreateGameRoom cs, User user) {
         // check user don't have room with this game id already
+        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID()))
+            return ServerResponse.Fail("User already in gameRood");
 
-        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID())){
-            resp.status = Response.Status.FAIL;
-            resp.errors = new String[]{"Error User already present in Game Room"};
-        }
-
+        var resp = new ServerResponseGameRoom();
         // create room
         gameRooms.add(new GameRoom(cs.getGameType(), new ArrayList<User>(List.of(user)), user, UUID.randomUUID()));
-        resp.status = Response.Status.SUCCESS;
+        resp.gameRoom = gameRooms.getLast();
         return resp;
     }
-
-
 
     /**
      * Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
      */
-
-    private Response handleJoinGameRoom(JoinGameRoom js, User user) {
-        Response resp = new Response();
-
+    private ServerResponse handleJoinGameRoom(JoinGameRoom js, User user) {
         //check if user is present in any gameRoom
-        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID())){
-            resp.status = Response.Status.FAIL;
-            resp.errors = new String[]{"Error User already present in Game Room"};
-        }
+        if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID()))
+            return ServerResponse.Fail("User already in game room");
 
-        GameRoom joinGameRoom = gameRooms
+        var resp = new ServerResponseGameRoom();
+        resp.gameRoom = gameRooms
                 .stream()
                 .filter(e -> e.getGameRoomID().equals(js.getGloballyUniqueSessionId()))
                 .findFirst().orElse(null);
 
-        if (joinGameRoom == null)
-            return Response.Fail("Error game Room non existent");
+        if (resp.gameRoom == null)
+            return ServerResponseGameRoom.Fail("Error game Room non existent");
 
-        joinGameRoom.getParticipants().add(user);
-        resp.status = Response.Status.SUCCESS;
-        resp.errors = new String[]{"User Successfully joined GameRoom"};
+        resp.gameRoom.getParticipants().add(user);
+        resp.status = ServerResponse.Status.SUCCESS;
         return resp;
     }
 
-    private Response handleSubmitMove(SubmitMove m) {
+    private ServerResponse handleSubmitMove(SubmitMove m) {
         return null;
     }
 
-
-
-    public static class Response {
-        public enum Status {
-            SUCCESS,
-            FAIL
+    // helper methods used for server logic
+    private static String hashPassword(String password, String algorithm){
+        try {
+            MessageDigest digest = MessageDigest.getInstance(algorithm);
+            byte[] hashBytes = digest.digest(password.getBytes());
+            return bytesToHex(hashBytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
-        public Status status;
-        public String[] errors;
+    }
 
-        static public Response Fail(String message) {
-            var res = new Response();
-            res.status = Status.FAIL;
-            res.errors = new String[]{message};
-            return  res;
+    private static String bytesToHex(byte[] hash){
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash){
+            hexString.append(String.format("%X", b));
         }
+        return hexString.toString();
+    }
+
+    private static boolean isEmailValid(String email, String emailRegex){
+        Pattern pattern = Pattern.compile(emailRegex);
+        if (email == null || email.isEmpty()){
+            return false;
+        }
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 }

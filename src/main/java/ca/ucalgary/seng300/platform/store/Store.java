@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
+import java.util.Collections;
 
 class Store<T extends Record> {
     private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
@@ -61,8 +62,7 @@ class Store<T extends Record> {
         } finally {
             writeLock.unlock();
         }
-    }
-
+    };
     public void delete(T record) {
         writeLock.lock();
         try {
@@ -82,6 +82,12 @@ class Store<T extends Record> {
             writeLock.unlock();
         }
     }
+    };
+    public int assignNewID(){
+        if (records.isEmpty())
+            return 1;
+        return Collections.max(records.keySet()) + 1;
+    }
 
     private static Gson createGson(boolean pretty) {
         RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class, "type")
@@ -95,6 +101,17 @@ class Store<T extends Record> {
             b.setPrettyPrinting();
         }
         return b.create();
+    private static Gson createGson(){
+        RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class,"type")
+                .registerSubtype(User.class, User.class.getSimpleName())
+                .registerSubtype(GameHistory.class, GameHistory.class.getSimpleName())
+                .registerSubtype(Participant.class, Participant.class.getSimpleName())
+                .registerSubtype(SessionHistory.class, SessionHistory.class.getSimpleName())
+                .registerSubtype(PlayerStats.class, PlayerStats.class.getSimpleName());
+
+        return new GsonBuilder()
+                .registerTypeAdapterFactory(entityAdapterFactory)
+                .create();
     }
 
     private void loadAll() {
@@ -106,6 +123,7 @@ class Store<T extends Record> {
                 records.putAll(fileData);
             }
         } catch (FileNotFoundException e) {
+            System.err.println(e);
             records.clear();
         } catch (JsonParseException e) {
             System.err.println("Invalid or legacy JSON store (resetting): " + filePath + " — " + e.getMessage());

@@ -9,12 +9,12 @@ import java.io.IOException;
  * for multiplayer with the GUI.
  */
 public class ServerMain {
-    public static final int DEFAULT_PORT = 9090;
+//    public static final int DEFAULT_PORT = 9090;
 
     public static void main(String[] args) throws IOException {
-        int port = args.length > 0 ? Integer.parseInt(args[0]) : DEFAULT_PORT;
-        System.out.println("Line-based ServerCore on port " + port + " (waits for 2 clients). GUI clients use PlatformCore on 2020.");
-        ServerCore server = new ServerCore(port);
+//        int port = args.length > 0 ? Integer.parseInt(args[0]) : DEFAULT_PORT;
+//        System.out.println("Line-based ServerCore on port " + port + " (waits for 2 clients). GUI clients use PlatformCore on 2020.");
+        ServerCoreMultiUser server = ServerCoreMultiUser.getInstance();
         server.start();
         System.out.println("ServerCore match finished or stopped.");
     }
