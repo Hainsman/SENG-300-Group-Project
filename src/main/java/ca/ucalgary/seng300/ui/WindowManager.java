@@ -23,6 +23,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javafx.scene.media.AudioClip;
+
 public class WindowManager {
     /**
      * While not strictly necessary, this is a nice way to keep track what the window controls are
@@ -114,6 +116,10 @@ public class WindowManager {
     private boolean showingNotificationAnimation = false;
     private Label notificationLabel;
 
+    private Button soundOffOnButton;
+    private boolean isSoundOn = true;
+    private double settingsVolume = 1.0;
+
     public WindowManager(WindowControls controls) {
         this.root = controls.root();
         this.titleBarPane = controls.titleBarPane();
@@ -121,6 +127,7 @@ public class WindowManager {
         initStageListener();
         initEventFilters();
         initNotificationLabel();
+        initSoundButton(); // TODO remove later (this is for debugging)
 
         controls.quitButton().setOnAction(this::handleQuitAction);
         controls.minimizeButton().setOnAction(this::handleMinimizeAction);
@@ -153,6 +160,19 @@ public class WindowManager {
     private void initNotificationLabel() {
         notificationLabel = new Label();
         notificationLabel.getStyleClass().add("notification-bar");
+    }
+
+    // TODO remove later (this is for debugging)
+    private void initSoundButton() {
+        soundOffOnButton = new Button(String.format("Sound: %s", isSoundOn ? "ON" : "OFF"));
+        soundOffOnButton.setOnAction(e -> {
+            isSoundOn = !isSoundOn;
+            soundOffOnButton.setText(String.format("Sound: %s", isSoundOn ? "ON" : "OFF"));
+        });
+
+        root.getChildren().add(soundOffOnButton);
+        StackPane.setAlignment(soundOffOnButton, Pos.TOP_LEFT);
+
     }
 
     private void handleQuitAction(ActionEvent event) {
@@ -411,7 +431,12 @@ public class WindowManager {
                 )
         );
 
+        double clipVolume = isSoundOn ? 1 * settingsVolume : 0;
+        AudioClip audioClip = new AudioClip(SoundEffect.YOUR_TURN_NOTIFICATION.getPath());
+        audioClip.setVolume(clipVolume);
+
         showingNotification = true;
+        audioClip.play();
         animation.play();
     }
 
