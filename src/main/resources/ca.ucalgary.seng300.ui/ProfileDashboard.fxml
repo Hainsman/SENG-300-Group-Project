@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="680.0" prefWidth="1020.0"
+            stylesheets="@stylesheets/global.css"
+            styleClass="app-surface profile-dashboard"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ca.ucalgary.seng300.ui.ProfileDashboardController">
+
+    <children>
+        <ScrollPane fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    styleClass="profile-scroll"
+                    AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="0.0">
+            <content>
+                <VBox spacing="22" maxWidth="980.0">
+                    <padding>
+                        <Insets bottom="32.0" left="40.0" right="40.0" top="28.0"/>
+                    </padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Button onAction="#handleBack" prefHeight="40.0" prefWidth="100.0"
+                                styleClass="back-button" text="← Back"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <VBox styleClass="profile-hero">
+                        <HBox alignment="CENTER_LEFT" spacing="14">
+                            <Label styleClass="mode-badge" text="PROFILE"/>
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Your profile" styleClass="title-label"/>
+                                <Label text="ELO, rank badges, and leaderboards. Change username, email, or password in Settings."
+                                       styleClass="subtitle-label"/>
+                                <Label fx:id="loggedInAsLabel" styleClass="card-subtitle" text=""/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="14" styleClass="card" maxWidth="1.7976931348623157E308">
+                        <padding>
+                            <Insets bottom="18.0" left="20.0" right="20.0" top="18.0"/>
+                        </padding>
+                        <Label text="Ratings" styleClass="card-title"/>
+                        <Label text="ELO and games played are stored on your account." styleClass="card-subtitle"/>
+
+                        <HBox spacing="14">
+                            <VBox styleClass="elo-stat-tile" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                <Label text="TIC TAC TOE" styleClass="elo-stat-game"/>
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label fx:id="tttEloLabel" styleClass="elo-stat-value" text="—"/>
+                                    <Label fx:id="tttRankBadge" styleClass="rank-badge" text="—"/>
+                                </HBox>
+                                <Label fx:id="tttGamesLabel" styleClass="elo-stat-meta" text=""/>
+                            </VBox>
+                            <VBox styleClass="elo-stat-tile" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                <Label text="CONNECT 4" styleClass="elo-stat-game"/>
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label fx:id="c4EloLabel" styleClass="elo-stat-value" text="—"/>
+                                    <Label fx:id="c4RankBadge" styleClass="rank-badge" text="—"/>
+                                </HBox>
+                                <Label fx:id="c4GamesLabel" styleClass="elo-stat-meta" text=""/>
+                            </VBox>
+                        </HBox>
+
+                        <Label fx:id="tierSummaryLabel" styleClass="card-subtitle" text=""/>
+                    </VBox>
+
+                    <VBox spacing="12" styleClass="card">
+                        <padding>
+                            <Insets bottom="18.0" left="20.0" right="20.0" top="18.0"/>
+                        </padding>
+                        <Label text="Leaderboard" styleClass="card-title"/>
+                        <Label text="All registered users, ordered by ELO (from saved accounts)." styleClass="card-subtitle"/>
+                        <ListView fx:id="leaderboardList" prefHeight="200.0" styleClass="profile-list-view"/>
+                    </VBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</AnchorPane>

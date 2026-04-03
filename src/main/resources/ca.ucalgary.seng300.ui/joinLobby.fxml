@@ -2,75 +2,42 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@lobbyStyle.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.joinLobbyController">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.joinLobbyController">
     <children>
-        <VBox alignment="TOP_CENTER" spacing="20" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-
-            <!-- Header -->
-            <VBox alignment="CENTER" spacing="5" styleClass="header-box">
-                <Label fx:id="gameTitleLabel" styleClass="title-label" text="Game Title" />
-                <Label prefHeight="18.0" prefWidth="79.0" styleClass="subtitle-label" text=" Join a Game " />
-            </VBox>
-
-            <HBox spacing="20">
-
-                <!-- LEFT SIDE -->
-                <VBox spacing="20" HBox.hgrow="ALWAYS">
-
-                    <!-- Enter Code -->
-                    <VBox spacing="10" styleClass="card">
-                        <Label styleClass="card-title" text="Enter Lobby Code" />
-
-                        <HBox spacing="10">
-                            <TextField fx:id="codeField" promptText="Enter 6-digit code..." HBox.hgrow="ALWAYS" />
-                            <Button fx:id="joinByCodeBtn"  text="Join" />
-                        </HBox>
-                    </VBox>
-
-                    <!-- Search -->
-                    <VBox styleClass="card">
-                        <TextField fx:id="searchField" promptText="Search by host name or game..." />
-                    </VBox>
-
-                    <!-- Available Lobbies -->
-                    <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
-                        <Label styleClass="card-title" text="Available Lobbies" />
-
-                        <ListView fx:id="lobbyList" VBox.vgrow="ALWAYS" />
-                    </VBox>
-
-                </VBox>
-
-                <!-- RIGHT SIDE -->
-                <VBox prefWidth="250" spacing="20">
-
-                    <VBox styleClass="card">
-                        <Label styleClass="card-title" text="Quick Join" />
-                        <Label text="Ask your friend for their lobby code and enter it above." wrapText="true" />
-                    </VBox>
-
-                    <VBox styleClass="card">
-                        <Label styleClass="card-title" text="How to Join" />
-                        <Label text="1. Get a code&#10;2. Enter it&#10;3. Wait for host" wrapText="true" />
-                    </VBox>
-
-                    <VBox styleClass="card">
-                        <Label styleClass="card-title" text="Active Now" />
-                        <Label text="Players Online: 1234" />
-                        <Label text="Active Lobbies: 42" />
-                    </VBox>
-
-                </VBox>
-
+        <VBox alignment="TOP_CENTER" spacing="22" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="24.0">
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+                <children>
+                    <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+                </children>
             </HBox>
 
-            <Button onAction="#handleBack" styleClass="back-button" text="← Back to Menu" />
+            <Label styleClass="mode-title" style="-fx-font-size: 40px;" text="Join Lobby" />
+            <Label fx:id="gameTitleLabel" styleClass="mode-subtitle" text="Enter the code from your host" />
+
+            <VBox spacing="14" styleClass="card" style="-fx-max-width: 620px; -fx-alignment: center;">
+                <Label styleClass="card-title" text="Lobby Code" />
+                <HBox alignment="CENTER" spacing="10">
+                    <children>
+                        <TextField fx:id="codeField" maxWidth="360.0" promptText="Enter 8-character code..." />
+                        <Button fx:id="joinByCodeBtn" styleClass="primary-button" text="Join" />
+                    </children>
+                </HBox>
+                <Label styleClass="card-subtitle" text="You will enter once the host is ready." />
+
+                <Button onAction="#handleBack" styleClass="back-button" text="Back" />
+            </VBox>
+
+            <!-- Hidden optional fields kept for controller compatibility -->
+            <VBox managed="false" visible="false">
+                <children>
+                    <TextField fx:id="searchField" />
+                </children>
+            </VBox>
 
         </VBox>
     </children>

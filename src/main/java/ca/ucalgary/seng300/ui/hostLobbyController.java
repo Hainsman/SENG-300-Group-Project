@@ -74,14 +74,6 @@ public class hostLobbyController {
         }
     }
 
-    private static String serverGameKey() {
-        String g = CentralController.selectedGame;
-        if (g != null && (g.contains("Tic") || g.contains("tac") || g.contains("TAC"))) {
-            return "TTT";
-        }
-        return "TTT";
-    }
-
     @FXML
     void handleCreateLobby(ActionEvent event) {
         CentralController c = CentralController.getInstance();
@@ -112,18 +104,19 @@ public class hostLobbyController {
         CentralController.lobbyCode = code;
         CentralController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
         CentralController.hostingLobby = true;
+        CentralController.clearLobbyRoster();
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onHostOk = () -> {
-            CentralController.previousScreen = "hostLobby.fxml";
+            CentralController.previousScreen = "GameDashboardNew.fxml";
             CentralController.moveTo("mainLobby.fxml");
         };
 
-        cc.msgSend(new sysMSG("HOST_LOBBY", code, serverGameKey()));
+        cc.msgSend(new sysMSG("HOST_LOBBY", code, GameIdMapper.toServerGameKey(CentralController.selectedGame), PlayerProfileHelper.lobbyPayload()));
     }
 
     @FXML
     void handleBack(ActionEvent event) {
-        CentralController.moveTo("chooseMode.fxml");
+        CentralController.moveTo("chooseModeNew.fxml");
     }
 }

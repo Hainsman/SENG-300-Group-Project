@@ -2,6 +2,9 @@ package ca.ucalgary.seng300.platform.constants;
 
 public class Constants {
 
+    /** Object-stream game server ({@link ca.ucalgary.seng300.PlatformCore}) — same port as {@link ca.ucalgary.seng300.platform.client.ClientCore}. */
+    public static final int PLATFORM_GAME_PORT = 2020;
+
     //file paths
     public static final String USER_FILE_PATH = "datafiles/user.txt";
     public static final String GAME_FILE_PATH = "datafiles/gameHistory.txt";

@@ -7,8 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="400" prefWidth="600" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.InfoController"
-            style="-fx-background-color: linear-gradient(to bottom right, #1a1f3d, #2e1a4f);">
+<BorderPane prefHeight="400" prefWidth="600" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.InfoController">
 
     <!-- Top Label showing the game name -->
     <top>
@@ -19,7 +18,7 @@
                       -fx-text-fill: white;
                       -fx-background-radius: 10;
                       -fx-background-insets: 0;
-                      -fx-background-color: linear-gradient(to right, #6a00f4, #38e5eb);
+                      -fx-background-color: #27244a;
                       -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 4, 0, 2, 2);"
                BorderPane.alignment="CENTER" />
     </top>
@@ -30,9 +29,9 @@
             <TextArea fx:id="rulesTextArea" editable="false" prefHeight="250" prefWidth="500"
                       style="-fx-font-size: 16px;
                              -fx-padding: 10;
-                             -fx-background-color: linear-gradient(to bottom right, #0b1437, #2e1a4f);
+                             -fx-background-color: #1f1b3a;
                              -fx-text-fill: #f2f2f2;
-                             -fx-border-color: linear-gradient(to right, #6a00f4, #38e5eb);
+                             -fx-border-color: #4b3f72;
                              -fx-border-width: 4;
                              -fx-background-radius: 10;
                              -fx-border-radius: 10;
@@ -48,7 +47,7 @@
                        -fx-padding: 10 20 10 20;
                        -fx-background-radius: 10;
                        -fx-background-insets: 0;
-                       -fx-background-color: linear-gradient(to right, #6a00f4, #38e5eb);
+                       -fx-background-color: #3b2a61;
                        -fx-text-fill: white;
                        -fx-font-weight: bold;
                        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 4, 0, 2, 2);"

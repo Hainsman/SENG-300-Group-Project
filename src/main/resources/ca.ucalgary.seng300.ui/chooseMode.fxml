@@ -3,7 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane stylesheets="@lobbyStyle.css"
+<AnchorPane stylesheets="@stylesheets/global.css"
+            styleClass="app-surface"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ca.ucalgary.seng300.ui.ChooseModeController"
@@ -55,6 +56,10 @@
                 </VBox>
 
             </HBox>
+
+            <Button onAction="#handleBack"
+                    styleClass="back-button"
+                    text="← Back" />
 
         </VBox>
     </children>

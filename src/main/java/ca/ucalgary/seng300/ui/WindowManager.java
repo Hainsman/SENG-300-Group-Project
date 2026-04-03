@@ -76,7 +76,7 @@ public class WindowManager {
     }
 
     public static final double WINDOW_MINIMUM_WIDTH = 1080;
-    public static final double WINDOW_MINIMUM_HEIGHT = 730;
+    public static final double WINDOW_MINIMUM_HEIGHT = 840;
 
     private static final int RESIZE_MARGIN = 6;
     private static final int RESIZE_RIPPLE_MARGIN = 1;
@@ -222,39 +222,49 @@ public class WindowManager {
             shouldBeMaximizedOnRelease = false;
     }
 
+    private double effectiveMinWidth() {
+        return WINDOW_MINIMUM_WIDTH * AppUiPreferences.textScaleFactor;
+    }
+
+    private double effectiveMinHeight() {
+        return WINDOW_MINIMUM_HEIGHT * AppUiPreferences.textScaleFactor;
+    }
+
     private void resizeHorizontally(double dx) {
         if (resizingDirection.isRight()) {
-            if (stage.getWidth() + dx >= WINDOW_MINIMUM_WIDTH)
+            if (stage.getWidth() + dx >= effectiveMinWidth()) {
                 stage.setWidth(stage.getWidth() + dx);
-            else
+            } else {
                 resizingWindow = false;
+            }
         }
 
         if (resizingDirection.isLeft()) {
-            if (stage.getWidth() - dx >= WINDOW_MINIMUM_WIDTH) {
+            if (stage.getWidth() - dx >= effectiveMinWidth()) {
                 stage.setX(stage.getX() + dx);
                 stage.setWidth(stage.getWidth() - dx);
-            }
-            else
+            } else {
                 resizingWindow = false;
+            }
         }
     }
 
     private void resizeVertically(double dy) {
         if (resizingDirection.isBottom()) {
-            if (stage.getHeight() + dy >= WINDOW_MINIMUM_HEIGHT)
+            if (stage.getHeight() + dy >= effectiveMinHeight()) {
                 stage.setHeight(stage.getHeight() + dy);
-            else
+            } else {
                 resizingWindow = false;
+            }
         }
 
         if (resizingDirection.isTop()) {
-            if (stage.getHeight() - dy >= WINDOW_MINIMUM_HEIGHT) {
+            if (stage.getHeight() - dy >= effectiveMinHeight()) {
                 stage.setY(stage.getY() + dy);
                 stage.setHeight(stage.getHeight() - dy);
-            }
-            else
+            } else {
                 resizingWindow = false;
+            }
         }
     }
 

@@ -1,5 +1,9 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -13,6 +17,13 @@ public class NewUserController {
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label         errorLabel;
+    private static NewUserController newUserController;
+
+    public static NewUserController getInstance(){
+        if (newUserController == null)
+            newUserController = new NewUserController();
+        return newUserController;
+    }
 
     @FXML
     private void handleCreateAccount(ActionEvent event) {
@@ -26,21 +37,30 @@ public class NewUserController {
             setError("All fields are required.");
             return;
         }
-        // If email does not have @ as a part of the string, give error message.
-        if (!email.contains("@")) {
-            setError("Please enter a valid email address.");
-            return;
-        }
         // If password confirm input does not match password input, give error message.
         if (!password.equals(confirm)) {
             setError("Passwords do not match.");
             return;
         }
 
-        // TODO: wire to backend when New User is created successfully
+        UserStore store = UserStore.getInstance();
+        if (!store.findByUserName(username).isEmpty()) {
+            setError("That username is already taken.");
+            return;
+        }
+        if (!store.findByUserEmail(email).isEmpty()) {
+            setError("That email is already registered.");
+            return;
+        }
+        if (!Helper.isEmailValid(email, Constants.EMAIL_REGEX)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
 
+        int newId = store.assignNewID();
+        String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
+        store.create(new User(newId, username, email, passwordHash));
 
-        // Navigate back to login on success
         CentralController.moveTo("Login.fxml");
     }
 

@@ -102,13 +102,15 @@ public class mainLobbyController {
                 break;
             case "Tic Tac Toe":
             case "TicTacToe":
-                fxml = "TicTacToe.fxml";
+                fxml = CentralController.TIC_TAC_TOE_SHELL_FXML;
                 break;
             default:
                 System.out.println("Unknown game: " + game);
                 return;
         }
 
+        CentralController.ticTacToeLocalAiMode = false;
+        CentralController.connect4LocalAiMode = false;
         if (CentralController.hostingLobby) {
             CentralController c = CentralController.getInstance();
             if (c != null) {
@@ -135,10 +137,15 @@ public class mainLobbyController {
     @FXML
     private void handleBack() {
         LobbyBridge.clearLobbyUiCallbacks();
+        if ("hostLobby.fxml".equals(CentralController.previousScreen)
+                || "joinLobby.fxml".equals(CentralController.previousScreen)) {
+            CentralController.moveTo("GameDashboardNew.fxml");
+            return;
+        }
         if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
         } else {
-            CentralController.moveTo("chooseMode.fxml");
+            CentralController.moveTo("GameDashboardNew.fxml");
         }
     }
 }

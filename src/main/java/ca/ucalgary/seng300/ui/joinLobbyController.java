@@ -81,6 +81,7 @@ public class joinLobbyController {
         CentralController.lobbyCode = code;
         CentralController.maxPlayers = 2;
         CentralController.privacy = "Public";
+        CentralController.clearLobbyRoster();
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onJoinOk = () -> {
@@ -88,7 +89,7 @@ public class joinLobbyController {
             CentralController.moveTo("mainLobby.fxml");
         };
 
-        cc.msgSend(new sysMSG("JOIN_LOBBY", code, ""));
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload()));
     }
 
     private void joinLobbyFromList(String lobby) {
@@ -105,6 +106,6 @@ public class joinLobbyController {
 
     @FXML
     private void handleBack() {
-        CentralController.moveTo("chooseMode.fxml");
+        CentralController.moveTo("chooseModeNew.fxml");
     }
 }

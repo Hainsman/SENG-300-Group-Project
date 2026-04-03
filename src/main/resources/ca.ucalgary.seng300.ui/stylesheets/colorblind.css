@@ -1,0 +1,231 @@
+/* =========================================================
+   COLORBLIND MODE
+   High-contrast override for modern_theme.css
+   Uses safer blue / amber accents instead of green
+   ========================================================= */
+
+/* ---------- BASE SURFACES ---------- */
+.root {
+    -fx-background-color: #0f172a;
+}
+
+.app-surface {
+    -fx-background-color: #0f172a;
+}
+
+.side-panel {
+    -fx-background-color: #111827;
+}
+
+.content-surface {
+    -fx-background-color: #111827;
+}
+
+.brand-card {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #ffffff;
+}
+
+/* ---------- GENERAL TEXT ---------- */
+.title-label,
+.card-title,
+.match-history-title,
+.mode-title,
+.mode-card-title,
+.game-name {
+    -fx-text-fill: #ffffff;
+}
+
+.subtitle-label,
+.card-subtitle,
+.mode-subtitle,
+.mode-card-subtitle {
+    -fx-text-fill: #d1d5db;
+}
+
+.code-label,
+.mode-icon,
+.mode-play {
+    -fx-text-fill: #f59e0b;
+}
+
+.icon {
+    -fx-text-fill: #ffffff;
+}
+
+/* ---------- CORE CARDS ---------- */
+.card {
+    -fx-background-color: #1f2937;
+    -fx-border-color: #3b82f6;
+}
+
+.card:hover {
+    -fx-background-color: #243244;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.28), 14, 0.3, 0, 2);
+}
+
+.stats-card {
+    -fx-background-color: #1f2937;
+    -fx-border-color: #3b82f6;
+}
+
+.match-history-title {
+    -fx-background-color: #1f2937;
+}
+
+.header-box {
+    -fx-background-color: #1f2937;
+}
+
+/* ---------- NAV BUTTONS ---------- */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #f9fafb;
+    -fx-border-color: #3b82f6;
+}
+
+.nav-button:hover {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.30), 14, 0.35, 0, 2);
+}
+
+/* ---------- SHARED BUTTONS ---------- */
+.primary-button,
+.start-button,
+.back-button {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #3b82f6;
+}
+
+.primary-button:hover,
+.start-button:hover,
+.back-button:hover {
+    -fx-background-color: #243244;
+    -fx-text-fill: #ffffff;
+}
+
+.button:hover {
+    -fx-background-color: #243244;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.25), 12, 0.28, 0, 2);
+}
+
+/* ---------- GAME / LOBBY CHIPS ---------- */
+.game-chip {
+    -fx-background-color: #1e3a5f;
+    -fx-text-fill: #93c5fd;
+}
+
+.mode-badge {
+    -fx-background-color: #1e3a5f;
+    -fx-text-fill: #93c5fd;
+}
+
+/* ---------- GAME CARDS ---------- */
+.game-card {
+    -fx-background-color: #1f2937;
+    -fx-text-fill: #ffffff;
+}
+
+.game-card:hover {
+    -fx-background-color: #243244;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.30), 18, 0.32, 0, 2);
+}
+
+/* ---------- MODE CARDS ---------- */
+.mode-card {
+    -fx-background-color: #1f2937;
+    -fx-border-color: #3b82f6;
+}
+
+.mode-card:hover {
+    -fx-background-color: #243244;
+    -fx-border-color: #f59e0b;
+    -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.28), 18, 0.28, 0, 2);
+}
+
+/* ---------- FORM CONTROLS ---------- */
+.input-field {
+    -fx-background-color: #0f172a;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #9ca3af;
+    -fx-border-color: #3b82f6;
+}
+
+.input-field:focused {
+    -fx-border-color: #f59e0b;
+}
+
+/* ComboBox using input-field class */
+.combo-box.input-field {
+    -fx-background-color: #0f172a;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #9ca3af;
+    -fx-border-color: #3b82f6;
+}
+
+.combo-box.input-field:focused {
+    -fx-border-color: #f59e0b;
+}
+
+.combo-box.input-field .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #111827;
+    -fx-border-color: #3b82f6;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #111827;
+    -fx-text-fill: #ffffff;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #1f2937;
+}
+
+/* ---------- CHECKBOX ---------- */
+.check-box.login-checkbox {
+    -fx-text-fill: #f3f4f6;
+}
+
+.check-box.login-checkbox .box {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #3b82f6;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.check-box.login-checkbox:selected .box {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #f59e0b;
+}
+
+.check-box.login-checkbox:selected .mark {
+    -fx-background-color: #f59e0b;
+}
+
+/* ---------- SEPARATORS ---------- */
+.separator .line {
+    -fx-border-color: #374151;
+}
+
+/* ---------- SCROLL PANE ---------- */
+.settings-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.settings-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.settings-scroll > .corner {
+    -fx-background-color: transparent;
+}

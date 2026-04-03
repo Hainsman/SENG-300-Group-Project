@@ -1,0 +1,108 @@
+/* =========================================================
+   EXTRA LARGE TEXT (125%)
+   Safe override for global.css
+   Only increases normal UI text, not big game titles
+   ========================================================= */
+
+/* Global default text bump */
+.root {
+    -fx-font-size: 16px;
+}
+
+/* Main shared headers */
+.title-label {
+    -fx-font-size: 32px;   /* base 26 */
+}
+
+.subtitle-label {
+    -fx-font-size: 16px;   /* base 13 */
+}
+
+.card-title {
+    -fx-font-size: 20px;   /* base 16 */
+}
+
+.card-subtitle {
+    -fx-font-size: 15px;   /* base 12 */
+}
+
+/* Settings / form text */
+.field-label {
+    -fx-font-size: 16px;   /* base 13 */
+}
+
+.active-username-label {
+    -fx-font-size: 19px;   /* base 15 */
+}
+
+.input-field {
+    -fx-font-size: 16px;
+}
+
+.login-checkbox {
+    -fx-font-size: 16px;   /* base 13 */
+}
+
+.secondary-button,
+.primary-button,
+.back-button,
+.start-button,
+.nav-button,
+.mode-back,
+.settings-accent-button,
+.profile-save-button,
+.auth-outline-button {
+    -fx-font-size: 18px;
+}
+
+/* Smaller badges/chips */
+.game-chip {
+    -fx-font-size: 16px;
+}
+
+.mode-badge {
+    -fx-font-size: 16px;   /* base 13 */
+}
+
+.code-label {
+    -fx-font-size: 16px;
+}
+
+.icon-label {
+    -fx-font-size: 22px;   /* base 18 */
+}
+
+.error-text {
+    -fx-font-size: 16px;   /* base 13 */
+}
+
+/* Window chrome / misc labels */
+#sub-header {
+    -fx-font-size: 28px;   /* base 22 */
+}
+
+.avatar-label {
+    -fx-font-size: 11px;   /* base 9 */
+}
+
+.elo-stat-game {
+    -fx-font-size: 15px;   /* base 12 */
+}
+
+.elo-stat-value {
+    -fx-font-size: 32px;   /* base 26 */
+}
+
+.elo-stat-meta {
+    -fx-font-size: 15px;   /* base 12 */
+}
+
+/* Profile hero */
+.profile-hero .title-label {
+    -fx-font-size: 40px;   /* base 32 */
+}
+
+/* Lists */
+.profile-list-view .list-cell {
+    -fx-font-size: 16px;
+}

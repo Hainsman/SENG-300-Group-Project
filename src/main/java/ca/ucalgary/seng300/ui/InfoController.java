@@ -25,7 +25,7 @@ public class InfoController {
         if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
         } else {
-            CentralController.moveTo("GameDashboard.fxml");
+            CentralController.moveTo("GameDashboardNew.fxml");
         }
 
     }

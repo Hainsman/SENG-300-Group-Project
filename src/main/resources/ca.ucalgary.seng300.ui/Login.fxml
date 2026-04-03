@@ -6,91 +6,74 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 
-<VBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="16"
-      style="-fx-background-color: #23283F;"
+<HBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34"
+      stylesheets="@stylesheets/global.css" styleClass="app-surface"
       xmlns="http://javafx.com/javafx/23.0.1"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ca.ucalgary.seng300.ui.LoginController">
-    <padding>
-        <Insets top="60" bottom="60" left="300" right="300"/>
-    </padding>
+    <padding><Insets top="34" bottom="34" left="34" right="34"/></padding>
 
-    <Label text="Bogo Solutions"
-           maxWidth="Infinity" alignment="CENTER"
-           style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb);
-                  -fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: Bold;
-                  -fx-background-radius: 10px; -fx-background-insets: -10;
-                  -fx-font-family: Tahoma;"
-           prefHeight="70" />
+    <StackPane minWidth="500.0" prefHeight="610.0" prefWidth="500.0" maxWidth="500.0">
+        <children>
+            <ImageView fitHeight="610.0" pickOnBounds="true" preserveRatio="true" smooth="true">
+                <image>
+                    <Image url="@stylesheets/images/logo.jpg" />
+                </image>
+            </ImageView>
+        </children>
+        <clip>
+            <Rectangle arcHeight="40.0" arcWidth="40.0" height="610.0" width="500.0" />
+        </clip>
+    </StackPane>
 
-    <Label text="Login"
-           maxWidth="Infinity" alignment="CENTER"
-           style="-fx-text-fill: white; -fx-font-size: 28; -fx-font-weight: Bold;" />
+    <VBox alignment="CENTER" minWidth="430.0" maxWidth="430.0" prefWidth="430.0" spacing="16" styleClass="auth-form-card">
+        <Label alignment="CENTER" maxWidth="Infinity" style="-fx-font-size:36px;" styleClass="mode-title" text="Welcome Back" />
+        <Label alignment="CENTER" maxWidth="Infinity" styleClass="mode-subtitle" text="Sign in to your account" />
 
-    <VBox spacing="16">
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="👤" style="-fx-font-size: 24; -fx-text-fill: white;" />
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label styleClass="icon-label" text="👤" />
             <TextField fx:id="usernameField"
-                       promptText="Username"
                        maxWidth="Infinity"
                        prefHeight="40"
-                       style="-fx-background-color: #2e3450; -fx-text-fill: white;
-                              -fx-prompt-text-fill: #888; -fx-font-size: 16;
-                              -fx-border-color: white; -fx-border-radius: 5px;
-                              -fx-background-radius: 5px;"
+                       promptText="Username"
+                       styleClass="input-field"
                        HBox.hgrow="ALWAYS" />
         </HBox>
-
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="🔒" style="-fx-font-size: 24; -fx-text-fill: white;" />
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label styleClass="icon-label" text="🔒" />
             <PasswordField fx:id="passwordField"
-                           promptText="Password"
                            maxWidth="Infinity"
                            prefHeight="40"
-                           style="-fx-background-color: #2e3450; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #888; -fx-font-size: 16;
-                                  -fx-border-color: white; -fx-border-radius: 5px;
-                                  -fx-background-radius: 5px;"
+                           promptText="Password"
+                           styleClass="input-field"
                            HBox.hgrow="ALWAYS" />
         </HBox>
+        <CheckBox fx:id="rememberMeBox" styleClass="login-checkbox" text="Remember Me" />
+        <Label fx:id="errorLabel" styleClass="error-text" text="" />
+        <VBox spacing="12">
+            <Button maxWidth="Infinity"
+                    onAction="#handleLogin"
+                    prefHeight="45"
+                    styleClass="auth-outline-button"
+                    text="Sign In" />
+            <Button maxWidth="Infinity"
+                    onAction="#handleNewUser"
+                    prefHeight="45"
+                    styleClass="auth-outline-button"
+                    text="Create New Account" />
+            <Button alignment="CENTER"
+                    maxWidth="Infinity"
+                    onAction="#handleForgotPassword"
+                    styleClass="link-button"
+                    text="Forgot Password?" />
+        </VBox>
     </VBox>
 
-    <CheckBox fx:id="rememberMeBox"
-              text="Remember Me"
-              style="-fx-text-fill: white; -fx-font-size: 14;" />
-
-    <Label fx:id="errorLabel"
-           style="-fx-text-fill: #ff4d4d; -fx-font-size: 13;"
-           text="" />
-
-    <VBox spacing="14">
-        <Button text="Submit"
-                onAction="#handleLogin"
-                prefHeight="45" maxWidth="Infinity"
-                style="-fx-background-color: linear-gradient(from 25px 25px to 100px 100px, #4255ff, #2acbeb);
-                       -fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: Bold;
-                       -fx-background-radius: 10px;" />
-
-        <Label text="New User?"
-               maxWidth="Infinity" alignment="CENTER"
-               style="-fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: Bold;" />
-
-        <Button text="Create New Account"
-                onAction="#handleNewUser"
-                prefHeight="45" maxWidth="Infinity"
-                style="-fx-background-color: #23283f; -fx-text-fill: white;
-                       -fx-font-size: 18; -fx-border-color: white;
-                       -fx-border-radius: 10px;" />
-
-        <!-- Forgot Password -->
-        <Button text="Forgot Password?"
-                onAction="#handleForgotPassword"
-                maxWidth="Infinity" alignment="CENTER"
-                style="-fx-background-color: transparent; -fx-text-fill: #2acbeb;
-                       -fx-font-size: 13; -fx-border-color: transparent;" />
-    </VBox>
-
-</VBox>
+</HBox>
