@@ -1,4 +1,7 @@
 .root {
+    NOTIFICATION_BACKGROUND: #23220F;
+    NOTIFICATION_TEXTFILL: #C1D134;
+
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
     -fx-background-color: #111112;
 }
@@ -207,6 +210,16 @@
 .mode-badge {
     -fx-background-color: #10261a;
     -fx-text-fill: #34d399;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-padding: 8 16;
+}
+
+/* Yellow version of mode-badge */
+.notification-bar {
+    -fx-background-color: NOTIFICATION_BACKGROUND;
+    -fx-text-fill: NOTIFICATION_TEXTFILL;
     -fx-font-size: 13px;
     -fx-font-weight: 800;
     -fx-background-radius: 999;

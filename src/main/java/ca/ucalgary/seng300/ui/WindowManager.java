@@ -111,6 +111,7 @@ public class WindowManager {
     private double unMaximizedY;
 
     private boolean showingNotification = false;
+    private boolean showingNotificationAnimation = false;
     private Label notificationLabel;
 
     public WindowManager(WindowControls controls) {
@@ -151,7 +152,7 @@ public class WindowManager {
 
     private void initNotificationLabel() {
         notificationLabel = new Label();
-        notificationLabel.getStyleClass().add("mode-badge");
+        notificationLabel.getStyleClass().add("notification-bar");
     }
 
     private void handleQuitAction(ActionEvent event) {
@@ -418,27 +419,33 @@ public class WindowManager {
     private void hideNotification() {
         root.getChildren().remove(notificationLabel);
         showingNotification = false;
+        showingNotificationAnimation = false;
     }
 
     private void hideNotificationWithDelay() {
-        Timeline animation = new Timeline(
-                new KeyFrame(
-                        Duration.ZERO,
-                        new KeyValue(notificationLabel.translateYProperty(), notificationLabel.getTranslateY()),
-                        new KeyValue(notificationLabel.opacityProperty(), 1)
-                ),
-                new KeyFrame(
-                        Duration.millis(NOTIFICATION_DURATION_MILLIS),
-                        new KeyValue(notificationLabel.translateYProperty(), titleBarPane.getHeight(), Interpolator.EASE_IN),
-                        new KeyValue(notificationLabel.opacityProperty(), 0)
-                )
-        );
+        if (!showingNotificationAnimation) {
+            Timeline animation = new Timeline(
+                    new KeyFrame(
+                            Duration.ZERO,
+                            new KeyValue(notificationLabel.translateYProperty(), notificationLabel.getTranslateY()),
+                            new KeyValue(notificationLabel.opacityProperty(), 1)
+                    ),
+                    new KeyFrame(
+                            Duration.millis(NOTIFICATION_DURATION_MILLIS),
+                            new KeyValue(notificationLabel.translateYProperty(), titleBarPane.getHeight(), Interpolator.EASE_OUT),
+                            new KeyValue(notificationLabel.opacityProperty(), 0)
+                    )
+            );
 
-        animation.setOnFinished(e -> {
-            root.getChildren().remove(notificationLabel);
-            showingNotification = false;
-        });
-        animation.play();
+            showingNotificationAnimation = true;
+
+            animation.setOnFinished(e -> {
+                root.getChildren().remove(notificationLabel);
+                showingNotification = false;
+                showingNotificationAnimation = false;
+            });
+            animation.play();
+        }
     }
 
     private boolean isNearRightEdge(MouseEvent event) {
