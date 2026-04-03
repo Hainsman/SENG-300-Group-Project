@@ -29,14 +29,14 @@ public class TicTacToeController extends GameGUI {
      * Standalone Tic-Tac-Toe screen (lobby → start game): same wiring as {@link GameGUIController},
      * clears local {@link TicTacToeSession} when online, and paints from the last server state if present.
      */
-    public void connectToRootForLobby(CentralController root) {
+    public void connectToRootForLobby(CentralController root, WindowManager windowManager) {
         setBoss(root);
         EloOverlayUtil.hide(eloResultOverlay);
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
         }
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
-            refreshFromGameStateUpdate(gs);
+            refreshFromGameStateUpdate(gs, windowManager);
         }
         refreshBackButtonVisibility();
     }
@@ -45,7 +45,7 @@ public class TicTacToeController extends GameGUI {
      * Online Tic-Tac-Toe inside {@link GameGUIController}: no local {@link TicTacToeSession}, moves go through
      * {@link ClientCore}; board paints from {@link ClientCore#getLastUpdate()} when present.
      */
-    public void prepareForNetworkPlayInShell() {
+    public void prepareForNetworkPlayInShell(WindowManager windowManager) {
         randomOpponentEnabled = false;
         session = null;
         onlineEloApplied = false;
@@ -55,7 +55,7 @@ public class TicTacToeController extends GameGUI {
         }
         render();
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
-            refreshFromGameStateUpdate(gs);
+            refreshFromGameStateUpdate(gs, windowManager);
         }
         refreshBackButtonVisibility();
     }
@@ -457,7 +457,7 @@ public class TicTacToeController extends GameGUI {
     }
 
     /** Use when in online mode: refresh grid and label from server update. */
-    public void refreshFromGameStateUpdate(TTTGameState update) {
+    public void refreshFromGameStateUpdate(TTTGameState update, WindowManager windowManager) {
         if (update == null || update.getBoard() == null) return;
         System.out.println("Ui update in TTTcontroller");
         State st = update.getState();
@@ -518,6 +518,8 @@ public class TicTacToeController extends GameGUI {
                 turnLabel.setText(myRole == Player.PLAYER_1 ? "You are X — waiting for O" : "You are O — waiting for X");
             } else {
                 turnLabel.setText(cur == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
+                windowManager.showNotification();
+                //System.out.println("Your turn");
             }
         }
         OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, Game.TICK_TACK_TOE)

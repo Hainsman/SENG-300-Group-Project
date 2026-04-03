@@ -26,7 +26,7 @@ public class GameGUIController {
         if (vsAi) {
             ticTacToeViewController.setSession(new TicTacToeSession());
         } else {
-            ticTacToeViewController.prepareForNetworkPlayInShell();
+            ticTacToeViewController.prepareForNetworkPlayInShell(control.getWindowManager());
         }
     }
 

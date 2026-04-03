@@ -141,7 +141,7 @@ public class ClientCore extends Thread{
         }
         Platform.runLater(() -> {
             if (g instanceof TTTGameState tttState && ioMain != null && ioMain.ttt != null) {
-                ioMain.ttt.refreshFromGameStateUpdate(tttState);
+                ioMain.ttt.refreshFromGameStateUpdate(tttState, ioMain.getWindowManager());
                 System.out.println("Ui update triggered");
             } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
                 ioMain.connect4.refreshFromGameStateUpdate(c4State);

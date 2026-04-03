@@ -205,7 +205,7 @@ public class CentralController {
                 gameUI = gfc;
                 gameUI.setRoot(this);
             } else if (ctrl instanceof TicTacToeController ttc) {
-                ttc.connectToRootForLobby(this);
+                ttc.connectToRootForLobby(this, getWindowManager());
             } else if (ctrl instanceof Connect4Controller c4) {
                 c4.connectToRootForLobby(this);
             }
@@ -245,5 +245,9 @@ public class CentralController {
                             sheet.contains(path + "extraLargeText.css")
             );
         }
+    }
+
+    public WindowManager getWindowManager() {
+        return windowManager;
     }
 }
