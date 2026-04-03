@@ -430,10 +430,8 @@ public class WindowManager {
                         new KeyValue(notificationLabel.opacityProperty(), 1)
                 )
         );
-
-        double clipVolume = isSoundOn ? 1 * settingsVolume : 0;
         AudioClip audioClip = new AudioClip(SoundEffect.YOUR_TURN_NOTIFICATION.getPath());
-        audioClip.setVolume(clipVolume);
+        audioClip.setVolume(getActualVolume());
 
         showingNotification = true;
         audioClip.play();
@@ -546,5 +544,9 @@ public class WindowManager {
         }
 
         shouldBeResizedOnDrag = !maximized && !(overControl && dir != Direction.NONE);
+    }
+
+    private double getActualVolume() {
+        return isSoundOn ? 1 * settingsVolume : 0;
     }
 }
