@@ -30,8 +30,7 @@ public class InfoController {
 
     }
 
-    public void setGameType(GameGUI.GameViewData data){
-        String gameType = data.gameType.toUpperCase();
+    public void setGameType(String gameType){
         gameTitleLabel.setText(gameType);
 
         if("TICTACTOE".equals(gameType)){

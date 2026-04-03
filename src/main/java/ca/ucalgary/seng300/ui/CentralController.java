@@ -193,6 +193,7 @@ public class CentralController {
         }
     }
 
+    // TODO redo this
     // private method used by navigateTo
     private void loadView(String fxml) {
         try {

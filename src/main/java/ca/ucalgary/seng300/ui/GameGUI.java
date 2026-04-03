@@ -1,210 +1,281 @@
 package ca.ucalgary.seng300.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.control.Label;
 
 // parent class for both Connect 4 and Tic Tac Toe GUI
 
-public abstract class GameGUI {
+public abstract class GameGUI extends VBox {
+
+    private CentralController rootController;
+
+//    public void setRoot(CentralController c) {
+//        rootController = c;
+//        ticTacToeViewController.setBoss(rootController);
+//        boolean vsAi = CentralController.ticTacToeLocalAiMode;
+//        ticTacToeViewController.setRandomOpponentEnabled(vsAi);
+//        if (vsAi) {
+//            ticTacToeViewController.setSession(new TicTacToeSession());
+//        } else {
+//            ticTacToeViewController.prepareForNetworkPlayInShell();
+//        }
+//    }
+
+    //    @FXML
+//    private SplitPane splitPane;
+//    @FXML
+//    private VBox leftSideBar;
+//    @FXML
+//    private VBox childView; // Injects the root of child.fxml
+    @FXML
+    private Connect4Controller connect4ViewController; // Injects the child's controller
+    @FXML
+    private TicTacToeController ticTacToeViewController; // Injects the child's controller
+
+    // ELO Table Variables
+    @FXML
+    private Label eloValue; // Value of elo to be displayed
+    @FXML
+    private Label winValue; // Elo change based on win
+    //    @FXML
+//    private Label lossValue; // Elo change based on loss
+//    @FXML
+//    private Label drawValue; // Elo change based on draw
+    @FXML
+    private Label rankValue; // Elo description string
+
+    // History Box
+    @FXML
+    public VBox historyBox;
+
+    // Chat box
+//    @FXML
+//    public VBox chatBox;
+    @FXML private VBox matchChat;
+    @FXML private TextField chatInput;
+
+    // Accompanying Labels
+//    @FXML
+//    private Label connect4Label;
+    @FXML
+    private Label tttLabel;
+    @FXML
+    private Button infoButton;
+
+    public GameGUI (CentralController rootController) {
+        try {
+            this.rootController = rootController;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(getClass().getSimpleName() + ".fxml"));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    @FXML
+//    public void initialize() {
+//        GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
+//        GameGUI.setEloLabels(eloValue, winValue, rankValue);
+//    }
 
     // Enums
-    public enum GameActionType {
-        PLAYER_MOVE,
-        FORFEIT,
-        SETTINGS,
-        INFO,
-        EXIT
-    }
+//    public enum GameActionType {
+//        PLAYER_MOVE,
+//        FORFEIT,
+//        SETTINGS,
+//        INFO,
+//        EXIT
+//    }
 
-    public enum GameStatus {
-        WAITING,
-        IN_PROGRESS,
-        WIN,
-        LOSS,
-        DRAW,
-        QUIT,
-    }
+//    public enum GameStatus {
+//        WAITING,
+//        IN_PROGRESS,
+//        WIN,
+//        LOSS,
+//        DRAW,
+//        QUIT,
+//    }
 
     //
-    public static class GameViewData {
-        public final String playerID;
-        public final String opponentID;
-        public final String gameType;
-        public final int rows;
-        public final int cols;
-        public final String[] availableActions;
+//    public static class GameViewData {
+//        public final String playerID;
+//        public final String opponentID;
+//        public final String gameType;
+//        public final int rows;
+//        public final int cols;
+//        public final String[] availableActions;
+//
+//        public GameViewData(String playerID, String opponentID,
+//                String gameType, int rows, int cols,
+//                String[] availableActions) {
+//            this.playerID = playerID;
+//            this.opponentID = opponentID;
+//            this.gameType = gameType;
+//            this.rows = rows;
+//            this.cols = cols;
+//            this.availableActions = availableActions;
+//        }
+//
+//    }
 
-        public GameViewData(String playerID, String opponentID,
-                String gameType, int rows, int cols,
-                String[] availableActions) {
-            this.playerID = playerID;
-            this.opponentID = opponentID;
-            this.gameType = gameType;
-            this.rows = rows;
-            this.cols = cols;
-            this.availableActions = availableActions;
-        }
+//    /** Carries a player's move and actionType. */
+//    public static class GameAction {
+//        public final String playerID;
+//        public final int row;
+//        public final int col;
+//        public final String optionalPayload;
+//
+//        public GameAction(String playerID,
+//                int row, int col, String optionalPayload) {
+//            this.playerID = playerID;
+//            this.row = row;
+//            this.col = col;
+//            this.optionalPayload = optionalPayload;
+//        }
+//    }
 
-    }
-
-    /** Carries a player's move and actionType. */
-    public static class GameAction {
-        public final String playerID;
-        public final GameGUI.GameActionType actionType;
-        public final int row;
-        public final int col;
-        public final String optionalPayload;
-
-        public GameAction(String playerID, GameGUI.GameActionType actionType,
-                int row, int col, String optionalPayload) {
-            this.playerID = playerID;
-            this.actionType = actionType;
-            this.row = row;
-            this.col = col;
-            this.optionalPayload = optionalPayload;
-        }
-    }
-
-    /** Look at the game state; returned by getGameState(). */
-    public static class GameState {
-        public final String currentPlayerID;
-        public final char[][] board; // board[row][col]
-        public final GameGUI.GameStatus status;
-        public final String statusMessage;
-        public final int moveCount;
-
-        public GameState(String currentPlayerID, char[][] board,
-                GameGUI.GameStatus status, String statusMessage, int moveCount) {
-            this.currentPlayerID = currentPlayerID;
-            this.board = board;
-            this.status = status;
-            this.statusMessage = statusMessage;
-            this.moveCount = moveCount;
-        }
-    }
+//    /** Look at the game state; returned by getGameState(). */
+//    public static class GameState {
+//        public final String currentPlayerID;
+//        public final char[][] board; // board[row][col]
+//        public final ClientState status;
+//        public final String statusMessage;
+//        public final int moveCount;
+//
+//        public GameState(String currentPlayerID, char[][] board,
+//                ClientState status, String statusMessage, int moveCount) {
+//            this.currentPlayerID = currentPlayerID;
+//            this.board = board;
+//            this.status = status;
+//            this.statusMessage = statusMessage;
+//            this.moveCount = moveCount;
+//        }
+//    }
 
     // Internal current setup
-    protected GameGUI.GameViewData viewData;
-    protected char[][] board;
-    protected GameGUI.GameStatus status;
-    protected String currentPlayerID;
-    protected int moveCount;
-    protected boolean isInitialized;
+//    protected GameGUI.GameViewData viewData;
+//    protected char[][] board;
+//    protected ClientState status;
+//    protected String currentPlayerID;
+//    protected int moveCount;
+//    protected boolean isInitialized;
 
     /**
      * Set up the board render and update.
      * Child classes should call super.initialize(data) first, then add any
      * game-specific setup needed.
      */
-    public void initialize(GameGUI.GameViewData data) {
-        this.viewData = data;
-        this.board = new char[data.rows][data.cols];
-        this.status = GameGUI.GameStatus.WAITING;
-        this.currentPlayerID = data.playerID;
-        this.moveCount = 0;
-        this.isInitialized = true;
-        // For child classes to establish.
-        render();
-        update();
-    }
+//    public void initialize(GameGUI.GameViewData data) {
+//        this.viewData = data;
+//        this.board = new char[data.rows][data.cols];
+//        this.status = ClientState.WAITING;
+//        this.currentPlayerID = data.playerID;
+//        this.moveCount = 0;
+//        this.isInitialized = true;
+//        // For child classes to establish.
+//        render();
+//        update();
+//    }
 
-    /**
-     * Do specified GameAction.
-     * Child classes override this for game-specific move logic, then call
-     * super.handleGameAction(action) to let the parent handle FORFEIT or EXIT.
-     */
-    public void handleGameAction(GameGUI.GameAction action) {
-        ensureInitialized();
-        switch (action.actionType) {
-            case FORFEIT -> restart();
-            case EXIT -> status = GameGUI.GameStatus.QUIT;
-            // child will handle other cases.
-            default -> {
-            }
-        }
-        update();
-    }
+//    /**
+//     * Do specified GameAction.
+//     * Child classes override this for game-specific move logic, then call
+//     * super.handleGameAction(action) to let the parent handle FORFEIT or EXIT.
+//     */
+//    public void handleGameAction(GameGUI.GameAction action) {
+//        ensureInitialized();
+//        switch (action.actionType) {
+//            case FORFEIT -> restart();
+//            case EXIT -> status = ClientState.QUIT;
+//            // child will handle other cases.
+//            default -> {
+//            }
+//        }
+//        update();
+//    }
 
-    /** Return an current game state info. */
-    public GameGUI.GameState getGameState() {
-        ensureInitialized();
-        return new GameGUI.GameState(
-                currentPlayerID,
-                copyBoard(),
-                status,
-                createStatusMessage(),
-                moveCount);
-    }
+//    /** Return an current game state info. */
+//    public GameGUI.GameState getGameState() {
+//        ensureInitialized();
+//        return new GameGUI.GameState(
+//                currentPlayerID,
+//                copyBoard(),
+//                status,
+//                createStatusMessage(),
+//                moveCount);
+//    }
 
-    /** Complete shutdown sequence. */
-    public void shutdown() {
-        isInitialized = false;
-        board = null;
-        viewData = null;
-    }
+//    /** Complete shutdown sequence. */
+//    public void shutdown() {
+//        isInitialized = false;
+//        board = null;
+//        viewData = null;
+//    }
 
-    /** Methods to be fleshed out by child classes */
-    public abstract void render();
-
-    public abstract void update();
-
-    protected abstract void onGameCompletion();
+//    /** Methods to be fleshed out by child classes */
+//    public abstract void render();
+//
+//    public abstract void update();
+//
+//    protected abstract void onGameCompletion();
 
     // Helpers
 
-    private void ensureInitialized() {
-        if (!isInitialized) {
-            throw new IllegalStateException(
-                    "GameGUI has not been initialized. Call initialize() first.");
-        }
-    }
+//    private void ensureInitialized() {
+//        if (!isInitialized) {
+//            throw new IllegalStateException(
+//                    "GameGUI has not been initialized. Call initialize() first.");
+//        }
+//    }
 
-    private char[][] copyBoard() {
-        char[][] copy = new char[board.length][board[0].length];
-        for (int r = 0; r < board.length; r++) {
-            System.arraycopy(board[r], 0, copy[r], 0, board[r].length);
-        }
-        return copy;
-    }
+//    private char[][] copyBoard() {
+//        char[][] copy = new char[board.length][board[0].length];
+//        for (int r = 0; r < board.length; r++) {
+//            System.arraycopy(board[r], 0, copy[r], 0, board[r].length);
+//        }
+//        return copy;
+//    }
+//
+//    private String createStatusMessage() {
+//        return switch (status) {
+//            case WAITING -> "Waiting to start...";
+//            case IN_PROGRESS -> "Player " + currentPlayerID + "'s turn";
+//            case GAME_CONCLUDED -> "Game concluded";
+////            case WIN -> currentPlayerID + " wins!";
+////            case LOSS -> currentPlayerID + " lost.";
+////            case DRAW -> "Draw.";
+//            case QUIT -> "Game quit.";
+//        };
+//    }
 
-    private String createStatusMessage() {
-        return switch (status) {
-            case WAITING -> "Waiting to start...";
-            case IN_PROGRESS -> "Player " + currentPlayerID + "'s turn";
-            case WIN -> currentPlayerID + " wins!";
-            case LOSS -> currentPlayerID + " lost.";
-            case DRAW -> "Draw.";
-            case QUIT -> "Game quit.";
-        };
-    }
-
-    private void restart() {
-        // reset board, render and update
-        board = new char[viewData.rows][viewData.cols];
-        status = GameStatus.WAITING;
-        currentPlayerID = viewData.playerID;
-        moveCount = 0;
-        render();
-        update();
-    };
+//    private void restart() {
+//        // reset board, render and update
+//        board = new char[viewData.rows][viewData.cols];
+//        status = ClientState.WAITING;
+//        currentPlayerID = viewData.playerID;
+//        moveCount = 0;
+//        render();
+//        update();
+//    };
 
     // Game History
-
-    public static VBox historyBox;
-
-    public static void setHistoryBox(VBox box) {
-        historyBox = box;
-    }
 
     /*
      * addHistory() is the single method any game controller calls to log a move.
@@ -218,7 +289,7 @@ public abstract class GameGUI {
      * 
      * @param color dot color matching the player's piece
      */
-    public static void addHistory(String gameType, String player, String details, Color color) {
+    public void addHistory(String gameType, String player, String details, Color color) {
         if (historyBox == null) {
             return;
         }
@@ -241,7 +312,7 @@ public abstract class GameGUI {
      * clearHistory() wipes the history panel.
      * Call this when starting a new game or resetting one.
      */
-    public static void clearHistory() {
+    public void clearHistory() {
         if (historyBox != null) {
             historyBox.getChildren().clear();
         }
@@ -253,7 +324,7 @@ public abstract class GameGUI {
     // Array list is used for storing the match history.
     // The match history inside the array should look something like this:
     // "[TP1(0,0), TP2(1,0), TP1(1,1)".
-    private static List<String> matchHistory = new ArrayList<>();
+    private final List<String> matchHistory = new ArrayList<>();
 
     /*
      * onMoveChosen appends match history to an array list.
@@ -263,7 +334,7 @@ public abstract class GameGUI {
      * 
      * @param move "(1,2)".
      */
-    public static void onMoveChosen(String player, String move) {
+    public void onMoveChosen(String player, String move) {
         String playerMove = player + move;
         matchHistory.add(playerMove);
     }
@@ -275,60 +346,99 @@ public abstract class GameGUI {
 
     // Player move getter method
     public String getMove() {
-        return matchHistory.get(matchHistory.size() - 1); // The latest move e.g. "[TP1(0,0)]".
+        return matchHistory.getLast(); // The latest move e.g. "[TP1(0,0)]".
     }
 
-    private static VBox chatBox;
-
-    public static void setChatBox(VBox box) {
-        chatBox = box;
-    }
-
-    public static void addChat(String sender, String message, Color color) {
-        if (chatBox == null) return;
+    public void addChat(String sender, String message, Color color) {
+        if (matchChat == null) return;
         Label entry = new Label(sender + ": " + message);
         entry.setTextFill(color);
         entry.setWrapText(true);
-        Platform.runLater(() -> chatBox.getChildren().add(entry));
+        Platform.runLater(() -> matchChat.getChildren().add(entry));
     }
 
-    public static void clearChat() {
-        if (chatBox != null) Platform.runLater(() -> chatBox.getChildren().clear());
+    public void clearChat() {
+        if (matchChat != null) Platform.runLater(() -> matchChat.getChildren().clear());
     }
 
     // Game Elo Labels + methods
 
-    public static Label eloLabel; // Value of elo to be displayed
-    public static Label winLabel; // Elo change based on win
-    public static Label lossLabel; // Elo change based on loss
-    public static Label drawLabel; // Elo change based on draw
-    public static Label rankLabel;
+//    public static Label eloLabel; // Value of elo to be displayed
+//    public static Label winLabel; // Elo change based on win
+////    public static Label lossLabel; // Elo change based on loss
+////    public static Label drawLabel; // Elo change based on draw
+//    public static Label rankLabel;
 
-    public static void setEloLabels(Label elo, Label win, Label loss, Label draw, Label rank) {
-        eloLabel = elo;
-        winLabel = win;
-        lossLabel = loss;
-        drawLabel = draw;
-        rankLabel = rank;
-    }
+//    public static void setEloLabels(Label elo, Label win, Label loss, Label draw, Label rank) {
+//    public static void setEloLabels(Label elo, Label win, Label rank) {
+//        eloLabel = elo;
+//        winLabel = win;
+////        lossLabel = loss;
+////        drawLabel = draw;
+//        rankLabel = rank;
+//    }
 
     // backend can call with necessary data inputs
-    public static void displayElo(int elo, int win, int loss, int draw, String rank) {
-        if (eloLabel == null)
-            return;
-        eloLabel.setText(String.valueOf(elo));
-        winLabel.setText(String.valueOf(win));
-        lossLabel.setText(String.valueOf(loss));
-        drawLabel.setText(String.valueOf(draw));
-        rankLabel.setText("PlaceHolder");
+//    public static void displayElo(int elo, int win, int loss, int draw, String rank) {
+//        if (eloLabel == null)
+//            return;
+//        eloLabel.setText(String.valueOf(elo));
+//        winLabel.setText(String.valueOf(win));
+////        lossLabel.setText(String.valueOf(loss));
+////        drawLabel.setText(String.valueOf(draw));
+//        rankLabel.setText("PlaceHolder");
+//
+//        // RESOLVE PLEASE: Need to connect to backend constants / rank.java
+//        // for (Rank rank : Rank.values()) {
+//        // if (rank.isInRank(elo)) {
+//        // rankLabel.setText(rank.getDisplayName());
+//        // break;
+//        // }
+//        // }
+//    }
 
-        // RESOLVE PLEASE: Need to connect to backend constants / rank.java
-        // for (Rank rank : Rank.values()) {
-        // if (rank.isInRank(elo)) {
-        // rankLabel.setText(rank.getDisplayName());
-        // break;
-        // }
-        // }
+@FXML
+private void handleForfeit(ActionEvent event) {
+    if (ticTacToeViewController != null) {
+        ticTacToeViewController.handleForfeitFromShell();
+    }
+}
+
+    @FXML
+    private void handleInfoButton(ActionEvent event) {
+        if (ticTacToeViewController != null && ticTacToeViewController.isActiveOnlineMatch()) {
+            new Alert(Alert.AlertType.INFORMATION,
+                    "Finish the match or use Forfeit before opening other screens.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+        CentralController.moveTo("info.fxml");
+    }
+
+    @FXML
+    private void handleChatSend(ActionEvent event) {
+        String msg = chatInput.getText().trim();
+        if (msg.isBlank()) return;
+        String sender = "You"; // default
+        // TODO redo this
+//        if (ticTacToeViewController != null && ticTacToeViewController.currentPlayerID != null) {
+//            sender = ticTacToeViewController.currentPlayerID;
+//        } else if (connect4ViewController != null && connect4ViewController.currentPlayerID != null) {
+//            sender = connect4ViewController.currentPlayerID;
+//        }
+        addChat(sender, msg, Color.web("#fafafa"));
+        chatInput.clear();
+    }
+
+    @FXML
+    private void handleExitButton(ActionEvent event) {
+        if (ticTacToeViewController != null && ticTacToeViewController.isActiveOnlineMatch()) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Use Forfeit in the sidebar to leave an online match in progress. You can quit the app afterward.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+        Platform.exit();
     }
 }
 

@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.game.client.ClientState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
@@ -16,10 +17,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.event.ActionEvent;
 
-public class Connect4Controller extends GameGUI {
+//public class Connect4Controller extends GameGUI {
+public class Connect4Controller {
     private CentralController boss;
     private ClientCore clientCore = null;
     private boolean onlineEloApplied = false;
+
+    private ClientState status;
 
     /**
      * Local session using {@link C4Game} (human as player 1, optional random-move AI as player 2).
@@ -28,24 +32,25 @@ public class Connect4Controller extends GameGUI {
     /** When true with a non-null session, player 2 uses {@link ConnectFourRandomMoveGenerator}. */
     private boolean randomOpponentEnabled = false;
 
-    public void connectToRootForLobby(CentralController root) {
-        boss = root;
-        boss.setConnect4(this);
-        clientCore = boss.getCC();
-        EloOverlayUtil.hide(eloResultOverlay);
-        if (CentralController.connect4LocalAiMode) {
-            randomOpponentEnabled = true;
-            session = new ConnectFourSession();
-            GameGUI.clearHistory();
-            refreshFromSession();
-        } else {
-            randomOpponentEnabled = false;
-            session = null;
-            if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
-                refreshFromGameStateUpdate(gs);
-            }
-        }
-    }
+    // TODO move this into initialize
+//    public void connectToRootForLobby(CentralController root) {
+//        boss = root;
+//        boss.setConnect4(this);
+//        clientCore = boss.getCC();
+//        EloOverlayUtil.hide(eloResultOverlay);
+//        if (CentralController.connect4LocalAiMode) {
+//            randomOpponentEnabled = true;
+//            session = new ConnectFourSession();
+//            GameGUI.clearHistory();
+//            refreshFromSession();
+//        } else {
+//            randomOpponentEnabled = false;
+//            session = null;
+//            if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
+//                refreshFromGameStateUpdate(gs);
+//            }
+//        }
+//    }
 
     @FXML
     private StackPane boardPane;
@@ -78,7 +83,7 @@ public class Connect4Controller extends GameGUI {
         render();
     }
 
-    @Override
+    //@Override
     public void render() {
         gridPane.getChildren().clear();
         circles = new Circle[6][7];
@@ -96,21 +101,22 @@ public class Connect4Controller extends GameGUI {
         }
     }
 
-    @Override
+    //@Override
     public void update() {
         if (statusLabel == null)
             return;
         switch (status) {
             case IN_PROGRESS -> statusLabel.setText("Player " + currentPlayer + "'s Turn");
-            case WIN -> statusLabel.setText("Player " + currentPlayer + " Wins!");
-            case DRAW -> statusLabel.setText("It's a Draw!");
+            // TODO
+//            case WIN -> statusLabel.setText("Player " + currentPlayer + " Wins!");
+//            case DRAW -> statusLabel.setText("It's a Draw!");
             default -> {
             }
         }
 
     }
 
-    @Override
+    //@Override
     protected void onGameCompletion() {
         disableBoard();
         resetButton.setVisible(true);
@@ -170,20 +176,21 @@ public class Connect4Controller extends GameGUI {
                 }
                 circles[row][col].setFill(playerColor);
 
-                if (checkWin(row, col, playerColor)) {
-                    status = GameStatus.WIN;
-                    onGameCompletion();
-                } else if (isBoardFull()) {
-                    status = GameStatus.DRAW;
-                    onGameCompletion();
-                } else {
-                    status = GameStatus.IN_PROGRESS;
-                    if (currentPlayer == 1) {
-                        currentPlayer = 2;
-                    } else {
-                        currentPlayer = 1;
-                    }
-                }
+                // TODO
+//                if (checkWin(row, col, playerColor)) {
+//                    status = GameStatus.WIN;
+//                    onGameCompletion();
+//                } else if (isBoardFull()) {
+//                    status = GameStatus.DRAW;
+//                    onGameCompletion();
+//                } else {
+//                    status = GameStatus.IN_PROGRESS;
+//                    if (currentPlayer == 1) {
+//                        currentPlayer = 2;
+//                    } else {
+//                        currentPlayer = 1;
+//                    }
+//                }
                 update();
                 return;
             }
@@ -331,7 +338,7 @@ public class Connect4Controller extends GameGUI {
             return;
         }
         resetButton.setVisible(false);
-        status = GameStatus.IN_PROGRESS;
+        status = ClientState.IN_PROGRESS;
         currentPlayer = 1;
         render();
         update();

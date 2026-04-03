@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.game.client.ClientState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
@@ -9,28 +10,31 @@ import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
-public class TicTacToeController extends GameGUI {
+//public class TicTacToeController extends GameGUI {
+public class TicTacToeController extends StackPane {
 
-    private CentralController boss;
-    public void setBoss(CentralController c){
-        boss = c;
-        boss.setTic(this);
-        clientCore = boss.getCC();
-    }
+    private ClientState status;
+
+    private final CentralController rootController;
+    private final GameGUI parentGUI;
+//    public void setBoss(CentralController c){
+//        rootController = c;
+//        rootController.setTic(this);
+//        clientCore = rootController.getCC();
+//    }
 
     /**
      * Standalone Tic-Tac-Toe screen (lobby → start game): same wiring as {@link GameGUIController},
      * clears local {@link TicTacToeSession} when online, and paints from the last server state if present.
      */
-    public void connectToRootForLobby(CentralController root) {
-        setBoss(root);
+    // TODO move this into initialize
+    public void connectToRootForLobby() {
         EloOverlayUtil.hide(eloResultOverlay);
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
@@ -39,6 +43,11 @@ public class TicTacToeController extends GameGUI {
             refreshFromGameStateUpdate(gs);
         }
         refreshBackButtonVisibility();
+    }
+
+    public TicTacToeController (CentralController rootController, GameGUI parentGUI) {
+        this.rootController = rootController;
+        this.parentGUI = parentGUI;
     }
 
     /**
@@ -50,8 +59,8 @@ public class TicTacToeController extends GameGUI {
         session = null;
         onlineEloApplied = false;
         EloOverlayUtil.hide(eloResultOverlay);
-        if (boss != null) {
-            clientCore = boss.getCC();
+        if (rootController != null) {
+            clientCore = rootController.getCC();
         }
         render();
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
@@ -199,11 +208,11 @@ public class TicTacToeController extends GameGUI {
 
     @FXML
     public void initialize() {
-        status = GameStatus.IN_PROGRESS;
+        status = ClientState.IN_PROGRESS;
         refreshBackButtonVisibility();
     }
 
-    @Override
+//    @Override
     public void render() {
         board = new Player[3][3];
         for (int i = 0; i < 3; i++) {
@@ -220,24 +229,25 @@ public class TicTacToeController extends GameGUI {
                 btn.setDisable(false);
             }
         }
-        GameGUI.clearHistory();
+        parentGUI.clearHistory();
     }
 
-    @Override
+//    @Override
     public void update() {
         if (turnLabel == null) {
             return;
         }
         switch (status) {
             case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
-            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
-            case DRAW -> turnLabel.setText("Draw!");
+            // TODO
+//            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
+//            case DRAW -> turnLabel.setText("Draw!");
             default -> {
             }
         }
     }
 
-    @Override
+//    @Override
     protected void onGameCompletion() {
         disableBoard();
         resetButton.setVisible(true);
@@ -305,7 +315,7 @@ public class TicTacToeController extends GameGUI {
                 return;
             }
             Color moverColor = xColor;
-            GameGUI.addHistory("TicTacToe", "X", "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
+            parentGUI.addHistory("TicTacToe", "X", "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
             refreshFromSession();
             maybePlayRandomOpponent();
             return;
@@ -319,13 +329,13 @@ public class TicTacToeController extends GameGUI {
             clickedButton.setText(player1Token);
             clickedButton.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
             board[row][col] = Player.PLAYER_1;
-            GameGUI.addHistory("TicTacToe", "X",
+            parentGUI.addHistory("TicTacToe", "X",
                     "(" + (row + 1) + ", " + (col + 1) + ")", xColor);
         } else {
             clickedButton.setText(player2Token);
             clickedButton.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
             board[row][col] = Player.PLAYER_2;
-            GameGUI.addHistory("TicTacToe", "O",
+            parentGUI.addHistory("TicTacToe", "O",
                     "(" + (row + 1) + ", " + (col + 1) + ")", oColor);
         }
 
@@ -367,7 +377,7 @@ public class TicTacToeController extends GameGUI {
             if (!session.submitMove(cell[0], cell[1])) {
                 return;
             }
-            GameGUI.addHistory("TicTacToe", "O (AI)",
+            parentGUI.addHistory("TicTacToe", "O (AI)",
                     "(" + (cell[0] + 1) + ", " + (cell[1] + 1) + ")", oColor);
             refreshFromSession();
         });
@@ -387,7 +397,7 @@ public class TicTacToeController extends GameGUI {
         onlineEloApplied = false;
         if (session != null) {
             session.startNewGame();
-            GameGUI.clearHistory();
+            parentGUI.clearHistory();
             refreshFromSession();
             resetButton.setVisible(false);
             return;
@@ -401,7 +411,7 @@ public class TicTacToeController extends GameGUI {
         moves = 0;
         xTurn = true;
         turnLabel.setText("X's Turn");
-        GameGUI.clearHistory();
+        parentGUI.clearHistory();
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
             clientCore.msgSend(new sysMSG("reset", ""));
         }
