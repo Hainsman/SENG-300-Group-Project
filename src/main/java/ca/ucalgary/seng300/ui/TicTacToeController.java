@@ -518,8 +518,7 @@ public class TicTacToeController extends GameGUI {
                 turnLabel.setText(myRole == Player.PLAYER_1 ? "You are X — waiting for O" : "You are O — waiting for X");
             } else {
                 turnLabel.setText(cur == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
-                windowManager.showNotification();
-                //System.out.println("Your turn");
+                windowManager.showNotification("Your Turn!");
             }
         }
         OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, Game.TICK_TACK_TOE)

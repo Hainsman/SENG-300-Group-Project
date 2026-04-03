@@ -389,9 +389,8 @@ public class WindowManager {
         animation.play();
     }
 
-    public void showNotification() {
-        notificationLabel.setText("Your Turn!");
-        notificationLabel.setTranslateY(0);
+    public void showNotification(String notification) {
+        notificationLabel.setText(notification);
 
         root.getChildren().add(notificationLabel);
         StackPane.setAlignment(notificationLabel, Pos.TOP_CENTER);
