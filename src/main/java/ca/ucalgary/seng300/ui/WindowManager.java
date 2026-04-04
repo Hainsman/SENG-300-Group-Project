@@ -5,6 +5,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
@@ -141,7 +142,7 @@ public class WindowManager {
     }
 
     private void handleQuitAction(ActionEvent event) {
-        stage.close();
+        Platform.exit();
     }
 
     private void handleMinimizeAction(ActionEvent event) {

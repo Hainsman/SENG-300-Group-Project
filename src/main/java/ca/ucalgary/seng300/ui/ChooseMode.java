@@ -13,11 +13,9 @@ import java.io.IOException;
 
 public class ChooseMode extends AnchorPane implements Navigable {
 
-    @FXML
-    private Label gameTitleLabel;
+    @FXML private Label gameTitleLabel;
 
-    @FXML
-    private VBox playWithAiCard;
+    @FXML private VBox playWithAiCard;
 
     public ChooseMode() {
         try {

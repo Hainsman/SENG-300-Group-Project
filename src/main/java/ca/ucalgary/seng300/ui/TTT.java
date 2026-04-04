@@ -19,13 +19,59 @@ import javafx.event.ActionEvent;
 
 import java.io.IOException;
 
-//public class TicTacToeController extends GameGUI {
 public class TTT extends StackPane implements Navigable {
 
     private ClientState status;
 
     private CentralController rootController;
     private GameGUI parentGUI;
+
+    private Player[][] board = new Player[3][3]; // stores PLAYER_1 PLAYER_2 NULL
+    private Player myPlayer = Player.EMPTY;    // which player this user is, PLAYER_1 or PLAYER_2
+    private boolean xTurn = true; // X starts
+    private int moves = 0;
+
+    private static final Color xColor = Color.web("#3B82F6");
+    private static final Color oColor = Color.web("#A855F7");
+
+    private final String player1Token = "X";
+    private final String player2Token = "O";
+    private final String emptyToken = "";
+
+    /** When set, moves and state use the game core session; when null, existing local board logic is used. */
+    private TicTacToeSession session = null;
+    /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
+    private ClientCore clientCore = null;
+    private boolean onlineEloApplied = false;
+    /**
+     * Local play: after the human (X) moves via {@link #session}, O plays a random legal cell
+     * using {@link TicTacToeRandomMoveGenerator}.
+     */
+    private boolean randomOpponentEnabled = false;
+
+    @FXML private Button backToModeButton;
+    @FXML private StackPane boardPane;
+
+    @FXML private VBox eloResultOverlay;
+    @FXML private Label eloOutcomeTitle;
+    @FXML private Label eloDeltaLabel;
+    @FXML private Label eloNewRatingLabel;
+
+    @FXML private Button cell00;
+    @FXML private Button cell01;
+    @FXML private Button cell02;
+    @FXML private Button cell10;
+    @FXML private Button cell11;
+    @FXML private Button cell12;
+    @FXML private Button cell20;
+    @FXML private Button cell21;
+    @FXML private Button cell22;
+
+    @FXML private GridPane ticTacToeGrid;
+
+    @FXML private Label turnLabel;
+
+    @FXML private Button resetButton;
 
     public TTT(CentralController rootController, GameGUI parentGUI) {
         try {
@@ -61,17 +107,6 @@ public class TTT extends StackPane implements Navigable {
         refreshBackButtonVisibility();
     }
 
-    /** When set, moves and state use the game core session; when null, existing local board logic is used. */
-    private TicTacToeSession session = null;
-    /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
-    private ClientCore clientCore = null;
-    private boolean onlineEloApplied = false;
-    /**
-     * Local play: after the human (X) moves via {@link #session}, O plays a random legal cell
-     * using {@link TicTacToeRandomMoveGenerator}.
-     */
-    private boolean randomOpponentEnabled = false;
-
     public void setRandomOpponentEnabled(boolean enabled) {
         this.randomOpponentEnabled = enabled;
         refreshBackButtonVisibility();
@@ -98,9 +133,6 @@ public class TTT extends StackPane implements Navigable {
         return true;
     }
 
-    @FXML
-    private Button backToModeButton;
-
     private void refreshBackButtonVisibility() {
         if (backToModeButton == null) {
             return;
@@ -121,66 +153,9 @@ public class TTT extends StackPane implements Navigable {
         return State.IN_PROGRESS;
     }
 
-    @FXML
-    private StackPane boardPane;
-
-    @FXML private VBox eloResultOverlay;
-    @FXML private Label eloOutcomeTitle;
-    @FXML private Label eloDeltaLabel;
-    @FXML private Label eloNewRatingLabel;
-
-    @FXML
-    private Button cell00;
-
-    @FXML
-    private Button cell01;
-
-    @FXML
-    private Button cell02;
-
-    @FXML
-    private Button cell10;
-
-    @FXML
-    private Button cell11;
-
-    @FXML
-    private Button cell12;
-
-    @FXML
-    private Button cell20;
-
-    @FXML
-    private Button cell21;
-
-    @FXML
-    private Button cell22;
-
-    @FXML
-    private GridPane ticTacToeGrid;
-
-    @FXML
-    private Label turnLabel;
-
-    @FXML
-    private Button resetButton;
-
-    private Player[][] board = new Player[3][3]; // stores PLAYER_1 PLAYER_2 NULL
-    private Player myPlayer = Player.EMPTY;    // which player this user is, PLAYER_1 or PLAYER_2
-    private boolean xTurn = true; // X starts
-    private int moves = 0;
-
     public void setPlayer(Player p){
         myPlayer = p;
     }
-
-
-    private static final Color xColor = Color.web("#3B82F6");
-    private static final Color oColor = Color.web("#A855F7");
-
-    private String player1Token = "X";
-    private String player2Token = "O";
-    private String emptyToken = "";
 
     private String getToken (Player p){
         if(p.equals(Player.PLAYER_1)){
@@ -204,7 +179,6 @@ public class TTT extends StackPane implements Navigable {
         refreshBackButtonVisibility();
     }
 
-//    @Override
     public void render() {
         board = new Player[3][3];
         for (int i = 0; i < 3; i++) {
@@ -224,22 +198,19 @@ public class TTT extends StackPane implements Navigable {
         parentGUI.clearHistory();
     }
 
-//    @Override
     public void update() {
         if (turnLabel == null) {
             return;
         }
         switch (status) {
             case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
-            // TODO
-//            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
-//            case DRAW -> turnLabel.setText("Draw!");
+            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
+            case DRAW -> turnLabel.setText("Draw!");
             default -> {
             }
         }
     }
 
-//    @Override
     protected void onGameCompletion() {
         disableBoard();
         resetButton.setVisible(true);
@@ -421,6 +392,7 @@ public class TTT extends StackPane implements Navigable {
 
     /** Updates grid and turn label from session state (only when session is set). */
     private void refreshFromSession() {
+        System.out.println("fromSession");
         if (session == null) return;
         ca.ucalgary.seng300.game.core.Player[][] b = session.getBoard();
         for (Node node : ticTacToeGrid.getChildren()) {
@@ -460,6 +432,7 @@ public class TTT extends StackPane implements Navigable {
 
     /** Use when in online mode: refresh grid and label from server update. */
     public void refreshFromGameStateUpdate(TTTGameState update) {
+        System.out.println("fromGameState");
         if (update == null || update.getBoard() == null) return;
         System.out.println("Ui update in TTTcontroller");
         State st = update.getState();
@@ -598,6 +571,14 @@ public class TTT extends StackPane implements Navigable {
     @Override
     public void reset() {
         initialize();
+
+        boolean vsAi = CentralController.ticTacToeLocalAiMode;
+        setRandomOpponentEnabled(vsAi);
+        if (vsAi) {
+            setSession(new TicTacToeSession());
+        } else {
+            prepareForNetworkPlayInShell();
+        }
 
         clientCore = rootController.clientCore;
 

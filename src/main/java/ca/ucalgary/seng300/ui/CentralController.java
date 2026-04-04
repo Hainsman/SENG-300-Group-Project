@@ -49,14 +49,6 @@ public class CentralController {
     public static Navigation previousScreen;
     public static Navigation currentScreen;
 
-//    /** FXML resource name for the profile / stats dashboard center view. */
-//    public static final String PROFILE_DASHBOARD_FXML = "ProfileDashboard.fxml";
-//
-//    /**
-//     * Tic-Tac-Toe play surface: sidebar + embedded {@code TicTacToe.fxml}, wired to {@link ClientCore} for online.
-//     */
-//    public static final String TIC_TAC_TOE_SHELL_FXML = "GameGUI.fxml";
-
     /**
      * When true, {@link GameGUIController} wires Tic-Tac-Toe to a local session with a random-move AI
      * opponent (player is X, AI is O). Cleared when leaving that flow or the game screen.
@@ -76,8 +68,6 @@ public class CentralController {
     public static int rosterHostElo = 1200;
     public static String rosterGuestName = "";
     public static int rosterGuestElo = 1200;
-
-    //private GameGUIController gameUI;
 
     public static void clearLobbyRoster() {
         rosterHostName = "";
@@ -103,7 +93,6 @@ public class CentralController {
         privacy = null;
         clearLobbyRoster();
         if (instance != null) {
-//            moveTo("Login.fxml");
             moveTo(Navigation.LOGIN);
         }
     }
@@ -168,12 +157,11 @@ public class CentralController {
         initializeNodes();
 
         // Start at auth, then GameDashboardNew → chooseModeNew → lobby or GameGUI (incl. Play with AI).
-//        loadView("Login.fxml");
         loadView(Navigation.LOGIN);
     }
 
     private void initializeNodes() {
-        GameGUI gameGUI = new GameGUI();
+        GameGUI gameGUI = new GameGUI(this);
         connect4 = new C4(this, gameGUI);
         ttt = new TTT(this, gameGUI);
         nodes.add(gameGUI);
@@ -234,25 +222,6 @@ public class CentralController {
         node.reset();
 
         currentScreen = nav;
-//        try {
-//            FXMLLoader loader = new FXMLLoader(
-//                    getClass().getResource("/ca.ucalgary.seng300.ui/" + fxml)
-//            );
-//            Node view = loader.load();
-//            Object ctrl = loader.getController();
-//            if (ctrl instanceof GameGUIController gfc) {
-//                gameUI = gfc;
-//                gameUI.setRoot(this);
-//            } else if (ctrl instanceof TTT ttc) {
-//                ttc.connectToRootForLobby(this);
-//            } else if (ctrl instanceof C4 c4) {
-//                c4.connectToRootForLobby(this);
-//            }
-//            viewContainer.setCenter(view);
-//            syncUiPreferencesToScene();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private void syncUiPreferencesToScene() {

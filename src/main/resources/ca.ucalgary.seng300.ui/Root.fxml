@@ -24,7 +24,7 @@
                   <Label id="sub-header" fx:id="titleLabel" text="Title" BorderPane.alignment="CENTER" />
                </center>
                <left>
-                  <HBox BorderPane.alignment="CENTER" />
+                  <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="150.0" BorderPane.alignment="CENTER" />
                </left>
             </BorderPane>
          </top>

@@ -20,7 +20,6 @@ import javafx.event.ActionEvent;
 
 import java.io.IOException;
 
-//public class Connect4Controller extends GameGUI {
 public class C4 extends StackPane implements Navigable {
 
     private ClientState status;
@@ -30,6 +29,29 @@ public class C4 extends StackPane implements Navigable {
 
     private ClientCore clientCore = null;
     private boolean onlineEloApplied = false;
+
+    /**
+     * Local session using {@link C4Game} (human as player 1, optional random-move AI as player 2).
+     */
+    private ConnectFourSession session = null;
+    /** When true with a non-null session, player 2 uses {@link ConnectFourRandomMoveGenerator}. */
+    private boolean randomOpponentEnabled = false;
+
+    private Circle[][] circles = new Circle[6][7];
+    private int rows = 6;
+    private int cols = 7;
+
+    private final Color P1 = Color.web("#dd3030ff");
+    private final Color P2 = Color.web("#fad44aff");
+
+    @FXML private StackPane boardPane;
+    @FXML private VBox eloResultOverlay;
+    @FXML private Label eloOutcomeTitle;
+    @FXML private Label eloDeltaLabel;
+    @FXML private Label eloNewRatingLabel;
+    @FXML private GridPane gridPane;
+    @FXML private Label statusLabel;
+    @FXML private Button resetButton;
 
     public C4(CentralController rootController, GameGUI parentGUI) {
         try {
@@ -45,39 +67,6 @@ public class C4 extends StackPane implements Navigable {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Local session using {@link C4Game} (human as player 1, optional random-move AI as player 2).
-     */
-    private ConnectFourSession session = null;
-    /** When true with a non-null session, player 2 uses {@link ConnectFourRandomMoveGenerator}. */
-    private boolean randomOpponentEnabled = false;
-
-    @FXML
-    private StackPane boardPane;
-
-    @FXML
-    private VBox eloResultOverlay;
-    @FXML
-    private Label eloOutcomeTitle;
-    @FXML
-    private Label eloDeltaLabel;
-    @FXML
-    private Label eloNewRatingLabel;
-
-    @FXML
-    private GridPane gridPane;
-    private Circle[][] circles = new Circle[6][7];
-    private int rows = 6;
-    private int cols = 7;
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    private Button resetButton;
-
-    private final Color P1 = Color.web("#dd3030ff");
-    private final Color P2 = Color.web("#fad44aff");
 
     @FXML
     public void initialize() {
@@ -102,22 +91,19 @@ public class C4 extends StackPane implements Navigable {
         }
     }
 
-    //@Override
     public void update() {
         if (statusLabel == null)
             return;
         switch (status) {
             case IN_PROGRESS -> statusLabel.setText("Player " + currentPlayer + "'s Turn");
-            // TODO
-//            case WIN -> statusLabel.setText("Player " + currentPlayer + " Wins!");
-//            case DRAW -> statusLabel.setText("It's a Draw!");
+            case WIN -> statusLabel.setText("Player " + currentPlayer + " Wins!");
+            case DRAW -> statusLabel.setText("It's a Draw!");
             default -> {
             }
         }
 
     }
 
-    //@Override
     protected void onGameCompletion() {
         disableBoard();
         resetButton.setVisible(true);
@@ -177,21 +163,20 @@ public class C4 extends StackPane implements Navigable {
                 }
                 circles[row][col].setFill(playerColor);
 
-                // TODO
-//                if (checkWin(row, col, playerColor)) {
-//                    status = GameStatus.WIN;
-//                    onGameCompletion();
-//                } else if (isBoardFull()) {
-//                    status = GameStatus.DRAW;
-//                    onGameCompletion();
-//                } else {
-//                    status = GameStatus.IN_PROGRESS;
-//                    if (currentPlayer == 1) {
-//                        currentPlayer = 2;
-//                    } else {
-//                        currentPlayer = 1;
-//                    }
-//                }
+                if (checkWin(row, col, playerColor)) {
+                    status = ClientState.WIN;
+                    onGameCompletion();
+                } else if (isBoardFull()) {
+                    status = ClientState.DRAW;
+                    onGameCompletion();
+                } else {
+                    status = ClientState.IN_PROGRESS;
+                    if (currentPlayer == 1) {
+                        currentPlayer = 2;
+                    } else {
+                        currentPlayer = 1;
+                    }
+                }
                 update();
                 return;
             }
@@ -351,10 +336,8 @@ public class C4 extends StackPane implements Navigable {
         randomOpponentEnabled = false;
         session = null;
         EloOverlayUtil.hide(eloResultOverlay);
-//        CentralController.previousScreen = "chooseModeNew.fxml";
-////        CentralController.moveTo("chooseModeNew.fxml");
-//        CentralController.previousScreen = Navigation.CHOOSE_MODE_NEW;
         CentralController.moveTo(Navigation.CHOOSE_MODE);
+        CentralController.previousScreen = Navigation.CHOOSE_MODE;
     }
 
     public void refreshFromGameStateUpdate(C4GameState update) {

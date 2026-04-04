@@ -13,14 +13,9 @@ import java.io.IOException;
 public class Info extends BorderPane implements Navigable {
 
 
-    @FXML
-    private Button backButton;
-
-    @FXML
-    private Label gameTitleLabel;
-
-    @FXML
-    private TextArea rulesTextArea;
+    @FXML private Button backButton;
+    @FXML private Label gameTitleLabel;
+    @FXML private TextArea rulesTextArea;
 
     private String gameType;
 
