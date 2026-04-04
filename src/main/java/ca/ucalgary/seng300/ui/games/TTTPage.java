@@ -577,6 +577,8 @@ public class TTTPage extends StackPane implements Navigable {
     public void reset() {
         initialize();
 
+        moves = 0;
+
         boolean vsAi = CentralController.ticTacToeLocalAiMode;
         setRandomOpponentEnabled(vsAi);
         if (vsAi) {
