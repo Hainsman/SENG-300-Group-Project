@@ -32,8 +32,7 @@ public class C4CLI {
                 col
             );
 
-            // Bypass validator for now, use applyAction directly
-            state.applyAction(action);
+            game.handleAction(action);
         }
 
         //Print final board

@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 // Contributors: Kade Peters, Jarod Rideout
 
+import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 //import ca.ucalgary.seng300.platform.server.ServerMain;
@@ -15,14 +16,18 @@ import javafx.event.ActionEvent;
 
 public class GameGUIController {
     private CentralController control;
-    public void setRoot(CentralController c){
+
+    public void setRoot(CentralController c) {
         control = c;
         ticTacToeViewController.setBoss(control);
         ClientCore cc = c.getCC();
         if (cc != null && cc.getLastUpdate() instanceof TTTGameState gs) {
             ticTacToeViewController.refreshFromGameStateUpdate(gs);
+        } else if (cc != null && cc.getLastUpdate() instanceof C4GameState c4gs) {
+            connect4ViewController.refreshFromGameStateUpdate(c4gs);
         }
     }
+
     @FXML
     private VBox childView; // Injects the root of child.fxml
     @FXML
@@ -58,41 +63,52 @@ public class GameGUIController {
 
     @FXML
     private void handleHostGame(ActionEvent event) {/*
-        ClientCore client = new ClientCore("127.0.0.1", ServerMain.DEFAULT_PORT);   // Random IP address for now
-        if (!client.connect()) {
-            showAlert("Networking is currently a stub (matchmaking in progress). Platform core will implement connect() and session APIs later.");
-            return;
-        }
-        if (client.createSession(null) == null || client.getSessionId() == null) {
-            showAlert("Could not create session.");
-            return;
-        }
-        hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(), null, "TICTACTOE", 3, 3, new String[0]));
-        ticTacToeViewController.setSession(null);
-        ticTacToeViewController.setClientCore(client);
-        showCopyableSessionIdAlert(client.getSessionId());*/
+                                                     * ClientCore client = new ClientCore("127.0.0.1",
+                                                     * ServerMain.DEFAULT_PORT); // Random IP address for now
+                                                     * if (!client.connect()) {
+                                                     * showAlert("Networking is currently a stub (matchmaking in progress). Platform core will implement connect() and session APIs later."
+                                                     * );
+                                                     * return;
+                                                     * }
+                                                     * if (client.createSession(null) == null || client.getSessionId()
+                                                     * == null) {
+                                                     * showAlert("Could not create session.");
+                                                     * return;
+                                                     * }
+                                                     * hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(),
+                                                     * null, "TICTACTOE", 3, 3, new String[0]));
+                                                     * ticTacToeViewController.setSession(null);
+                                                     * ticTacToeViewController.setClientCore(client);
+                                                     * showCopyableSessionIdAlert(client.getSessionId());
+                                                     */
     }
 
     @FXML
     private void handleJoinGame(ActionEvent event) {/*
-        javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog("");
-        dialog.setTitle("Join game");
-        dialog.setHeaderText("Enter session ID from the host:");
-        dialog.showAndWait().ifPresent(sessionId -> {
-            if (sessionId == null || sessionId.isBlank()) return;
-            ClientCore client = new ClientCore("127.0.0.1", ServerMain.DEFAULT_PORT);
-            if (!client.connect()) {
-                showAlert("Networking is currently a stub (matchmaking in progress). Platform core will implement connect() and session APIs later.");
-                return;
-            }
-            if (client.joinSession(sessionId.trim(), null) == null || client.getSessionId() == null) {
-                showAlert("Could not join session. Check the ID.");
-                return;
-            }
-            hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(), null, "TICTACTOE", 3, 3, new String[0]));
-            ticTacToeViewController.setSession(null);
-            ticTacToeViewController.setClientCore(client);
-        };*/
+                                                     * javafx.scene.control.TextInputDialog dialog = new
+                                                     * javafx.scene.control.TextInputDialog("");
+                                                     * dialog.setTitle("Join game");
+                                                     * dialog.setHeaderText("Enter session ID from the host:");
+                                                     * dialog.showAndWait().ifPresent(sessionId -> {
+                                                     * if (sessionId == null || sessionId.isBlank()) return;
+                                                     * ClientCore client = new ClientCore("127.0.0.1",
+                                                     * ServerMain.DEFAULT_PORT);
+                                                     * if (!client.connect()) {
+                                                     * showAlert("Networking is currently a stub (matchmaking in progress). Platform core will implement connect() and session APIs later."
+                                                     * );
+                                                     * return;
+                                                     * }
+                                                     * if (client.joinSession(sessionId.trim(), null) == null ||
+                                                     * client.getSessionId() == null) {
+                                                     * showAlert("Could not join session. Check the ID.");
+                                                     * return;
+                                                     * }
+                                                     * hideGameScreens(new GameGUI.GameViewData(client.getMyPlayerId(),
+                                                     * null, "TICTACTOE", 3, 3, new String[0]));
+                                                     * ticTacToeViewController.setSession(null);
+                                                     * ticTacToeViewController.setClientCore(client);
+                                                     * };
+                                                     */
     }
 
     private void showAlert(String message) {
@@ -126,21 +142,22 @@ public class GameGUIController {
         Platform.exit();
     }
 
-    public void hideGameScreens(GameGUI.GameViewData data){
+    public void hideGameScreens(GameGUI.GameViewData data) {
         String gameType = data.gameType.toUpperCase();
-/*
-        if(gameType.equals("TICTACTOE")){
-            ticTacToeViewController.setVisibility(true);
-            connect4ViewController.setVisibility(false);
-            tttLabel.setVisible(true);
-            connect4Label.setVisible(false);
-
-        } else if(gameType.equals("CONNECT4")) {
-            ticTacToeViewController.setVisibility(false);
-            connect4ViewController.setVisibility(true);
-            tttLabel.setVisible(false);
-            connect4Label.setVisible(true);
-        }*/
+        /*
+         * if(gameType.equals("TICTACTOE")){
+         * ticTacToeViewController.setVisibility(true);
+         * connect4ViewController.setVisibility(false);
+         * tttLabel.setVisible(true);
+         * connect4Label.setVisible(false);
+         * 
+         * } else if(gameType.equals("CONNECT4")) {
+         * ticTacToeViewController.setVisibility(false);
+         * connect4ViewController.setVisibility(true);
+         * tttLabel.setVisible(false);
+         * connect4Label.setVisible(true);
+         * }
+         */
 
     }
 }
