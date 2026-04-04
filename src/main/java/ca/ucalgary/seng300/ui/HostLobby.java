@@ -21,6 +21,8 @@ import java.util.UUID;
 
 public class HostLobby extends AnchorPane implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private Label gameLabel;
     @FXML private TextField lobbyNameField;
     @FXML private Slider playerSlider;
@@ -35,8 +37,10 @@ public class HostLobby extends AnchorPane implements Navigable {
 
     @FXML private Button createLobbyBtn;
 
-    public HostLobby() {
+    public HostLobby(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -50,53 +54,35 @@ public class HostLobby extends AnchorPane implements Navigable {
     @FXML
     private void initialize() {
         GameType game = CentralController.selectedGame;
-        if (gameLabel != null) {
-            gameLabel.setText(game != null ? game.toString() : "Game");
-        }
-        if (previewGameLabel != null) {
-            previewGameLabel.setText(game != null ? game.toString() : "-");
-        }
+        gameLabel.setText(game != null ? game.toString() : "Game");
+        previewGameLabel.setText(game != null ? game.toString() : "-");
 
-        if (previewPlayersLabel != null && playerSlider != null) {
-            previewPlayersLabel.setText(String.valueOf((int) playerSlider.getValue()));
-        }
-        if (previewPrivacyLabel != null) {
-            previewPrivacyLabel.setText("Public");
-        }
+        previewPlayersLabel.setText(String.valueOf((int) playerSlider.getValue()));
+        previewPrivacyLabel.setText("Public");
 
-        if (playerSlider != null) {
-            playerSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-                if (previewPlayersLabel != null) {
-                    previewPlayersLabel.setText(String.valueOf(newVal.intValue()));
-                }
-            });
-        }
+        playerSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (previewPlayersLabel != null) {
+                previewPlayersLabel.setText(String.valueOf(newVal.intValue()));
+            }
+        });
 
-        if (publicLobby != null) {
-            publicLobby.setSelected(true);
-        }
+        publicLobby.setSelected(true);
 
-        if (privacyOptions != null) {
-            privacyOptions.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-                if (previewPrivacyLabel == null) {
-                    return;
-                }
-                if (newVal == publicLobby) {
-                    previewPrivacyLabel.setText("Public");
-                } else if (newVal == privateLobby) {
-                    previewPrivacyLabel.setText("Private");
-                }
-            });
-        }
+        privacyOptions.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+            if (previewPrivacyLabel == null) {
+                return;
+            }
+            if (newVal == publicLobby) {
+                previewPrivacyLabel.setText("Public");
+            } else if (newVal == privateLobby) {
+                previewPrivacyLabel.setText("Private");
+            }
+        });
     }
 
     @FXML
     void handleCreateLobby(ActionEvent event) {
-        CentralController c = CentralController.getInstance();
-        if (c == null) {
-            return;
-        }
-        ClientCore cc = c.getCC();
+        ClientCore cc = rootController.getCC();
         if (cc == null || !cc.isConnected()) {
             new Alert(Alert.AlertType.WARNING,
                     "Connect to the game server first.\n\nRun PlatformCore (listens on port 2020), restart this app, then try again.",
@@ -144,5 +130,7 @@ public class HostLobby extends AnchorPane implements Navigable {
     @Override
     public void reset() {
         initialize();
+
+        lobbyNameField.clear();
     }
 }

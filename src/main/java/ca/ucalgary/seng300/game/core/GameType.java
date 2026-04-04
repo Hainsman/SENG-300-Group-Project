@@ -4,8 +4,8 @@ import ca.ucalgary.seng300.ui.Navigation;
 
 public enum GameType {
     CHECKERS (0, "CHECKERS"),
-    TIC_TAC_TOE (1, "TTT"),
-    CONNECT4 (2, "C4");
+    TIC_TAC_TOE (1, "Tic Tac Toe"),
+    CONNECT4 (2, "Connect 4");
 
     private final int id;
     private final String string;

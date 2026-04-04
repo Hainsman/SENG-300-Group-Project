@@ -336,8 +336,7 @@ public class C4 extends StackPane implements Navigable {
         randomOpponentEnabled = false;
         session = null;
         EloOverlayUtil.hide(eloResultOverlay);
-        CentralController.moveTo(Navigation.CHOOSE_MODE);
-        CentralController.previousScreen = Navigation.CHOOSE_MODE;
+        CentralController.moveTo(CentralController.previousScreen);
     }
 
     public void refreshFromGameStateUpdate(C4GameState update) {

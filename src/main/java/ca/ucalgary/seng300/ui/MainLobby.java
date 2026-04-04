@@ -16,6 +16,8 @@ import java.io.IOException;
 
 public class MainLobby extends AnchorPane implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private Label lobbyTitle;
     @FXML private ListView<String> playerList;
     @FXML private Label lobbyCodeLabel;
@@ -26,8 +28,10 @@ public class MainLobby extends AnchorPane implements Navigable {
     @FXML private Button startGameBtn;
     @FXML private Button copyCodeBtn;
 
-    public MainLobby() {
+    public MainLobby(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -66,7 +70,7 @@ public class MainLobby extends AnchorPane implements Navigable {
     private void refreshPlayersFromState() {
         if (playerList != null) {
             playerList.getItems().clear();
-            ClientCore cc = CentralController.getInstance() != null ? CentralController.getInstance().getCC() : null;
+            ClientCore cc = rootController != null ? rootController.getCC() : null;
             boolean guestThere = cc != null && cc.getLastUpdate() != null;
             if (CentralController.hostingLobby) {
                 playerList.getItems().add("You (host)");
@@ -77,7 +81,7 @@ public class MainLobby extends AnchorPane implements Navigable {
             }
         }
         if (playerCountLabel != null) {
-            ClientCore cc = CentralController.getInstance() != null ? CentralController.getInstance().getCC() : null;
+            ClientCore cc = rootController != null ? rootController.getCC() : null;
             boolean paired = cc != null && cc.getLastUpdate() != null;
             int cur = paired ? 2 : 1;
             int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
@@ -89,7 +93,7 @@ public class MainLobby extends AnchorPane implements Navigable {
         if (startGameBtn == null) {
             return;
         }
-        ClientCore cc = CentralController.getInstance() != null ? CentralController.getInstance().getCC() : null;
+        ClientCore cc = rootController != null ? rootController.getCC() : null;
         boolean paired = cc != null && cc.getLastUpdate() != null;
         boolean host = CentralController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
@@ -109,12 +113,9 @@ public class MainLobby extends AnchorPane implements Navigable {
         CentralController.ticTacToeLocalAiMode = false;
         CentralController.connect4LocalAiMode = false;
         if (CentralController.hostingLobby) {
-            CentralController c = CentralController.getInstance();
-            if (c != null) {
-                ClientCore cc = c.getCC();
-                if (cc != null && cc.isConnected()) {
-                    cc.msgSend(new sysMSG("GMJN", nav.getFxml(), ""));
-                }
+            ClientCore cc = rootController.getCC();
+            if (cc != null && cc.isConnected()) {
+                cc.msgSend(new sysMSG("GMJN", nav.getFxml(), ""));
             }
         }
         LobbyBridge.clearLobbyUiCallbacks();

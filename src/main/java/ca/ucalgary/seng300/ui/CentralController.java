@@ -169,11 +169,11 @@ public class CentralController {
         nodes.add(ttt);
         nodes.add(new ChooseMode());
         nodes.add(new GameDashboard());
-        nodes.add(new HostLobby());
+        nodes.add(new HostLobby(this));
         nodes.add(new Info());
-        nodes.add(new JoinLobby());
+        nodes.add(new JoinLobby(this));
         nodes.add(new Login());
-        nodes.add(new MainLobby());
+        nodes.add(new MainLobby(this));
         nodes.add(new NewUser());
         nodes.add(new ProfileDashboard());
         nodes.add(new Settings());
@@ -214,6 +214,7 @@ public class CentralController {
             viewContainer.setCenter(gameGUI);
             gameGUI.setGameNode((Node) node);
             gameGUI.reset();
+            previousScreen = Navigation.CHOOSE_MODE;
         }
         else {
             viewContainer.setCenter((Node) node);

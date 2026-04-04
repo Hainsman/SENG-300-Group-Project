@@ -18,6 +18,8 @@ import java.io.IOException;
 
 public class JoinLobby extends AnchorPane implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private Label gameTitleLabel;
 
     @FXML private TextField codeField;
@@ -26,8 +28,10 @@ public class JoinLobby extends AnchorPane implements Navigable {
     @FXML private TextField searchField;
     @FXML private ListView<String> lobbyList;
 
-    public JoinLobby() {
+    public JoinLobby(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -82,11 +86,7 @@ public class JoinLobby extends AnchorPane implements Navigable {
     }
 
     private void attemptJoin(String code) {
-        CentralController c = CentralController.getInstance();
-        if (c == null) {
-            return;
-        }
-        ClientCore cc = c.getCC();
+        ClientCore cc = rootController.getCC();
         if (cc == null || !cc.isConnected()) {
             new Alert(Alert.AlertType.WARNING,
                     "Connect to the game server first.\n\nRun PlatformCore (port 2020), restart this app, then try again.",
@@ -133,5 +133,7 @@ public class JoinLobby extends AnchorPane implements Navigable {
     @Override
     public void reset() {
         initialize();
+
+        codeField.clear();
     }
 }
