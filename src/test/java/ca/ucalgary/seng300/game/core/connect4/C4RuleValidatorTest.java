@@ -1,4 +1,9 @@
 package ca.ucalgary.seng300.game.core.connect4;
+
+// NOTE: C4RuleValidator, C4GameState, and C4PlayerAction do not exist in src/main yet.
+// These tests are written in anticipation of the Connect4 source implementation.
+// This file will not compile until those classes are created.
+
 import ca.ucalgary.seng300.game.core.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
