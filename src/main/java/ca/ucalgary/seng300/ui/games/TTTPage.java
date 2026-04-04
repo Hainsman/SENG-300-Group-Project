@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.games;
 
 import ca.ucalgary.seng300.game.client.ClientState;
 import ca.ucalgary.seng300.game.core.Player;
@@ -9,6 +9,11 @@ import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
+import ca.ucalgary.seng300.ui.*;
+import ca.ucalgary.seng300.ui.util.EloOverlayUtil;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -19,12 +24,12 @@ import javafx.event.ActionEvent;
 
 import java.io.IOException;
 
-public class TTT extends StackPane implements Navigable {
+public class TTTPage extends StackPane implements Navigable {
 
     private ClientState status;
 
     private CentralController rootController;
-    private GameGUI parentGUI;
+    private GameGUIPage parentGUI;
 
     private Player[][] board = new Player[3][3]; // stores PLAYER_1 PLAYER_2 NULL
     private Player myPlayer = Player.EMPTY;    // which player this user is, PLAYER_1 or PLAYER_2
@@ -73,7 +78,7 @@ public class TTT extends StackPane implements Navigable {
 
     @FXML private Button resetButton;
 
-    public TTT(CentralController rootController, GameGUI parentGUI) {
+    public TTTPage(CentralController rootController, GameGUIPage parentGUI) {
         try {
             this.rootController = rootController;
             this.parentGUI = parentGUI;

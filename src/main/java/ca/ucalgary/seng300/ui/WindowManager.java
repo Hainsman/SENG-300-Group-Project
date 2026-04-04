@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.MainApp;
+import ca.ucalgary.seng300.ui.userdata.AppUiPreferences;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

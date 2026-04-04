@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.userdata;
 
 /**
  * Global UI preferences applied to the whole app (text scale, colorblind accents).

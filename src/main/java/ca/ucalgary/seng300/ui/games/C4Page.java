@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.games;
 
 import ca.ucalgary.seng300.game.client.ClientState;
 import ca.ucalgary.seng300.game.core.Player;
@@ -9,6 +9,11 @@ import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.ConnectFourSession;
+import ca.ucalgary.seng300.ui.*;
+import ca.ucalgary.seng300.ui.util.EloOverlayUtil;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,12 +25,12 @@ import javafx.event.ActionEvent;
 
 import java.io.IOException;
 
-public class C4 extends StackPane implements Navigable {
+public class C4Page extends StackPane implements Navigable {
 
     private ClientState status;
 
     private CentralController rootController;
-    private GameGUI parentGUI;
+    private GameGUIPage parentGUI;
 
     private ClientCore clientCore = null;
     private boolean onlineEloApplied = false;
@@ -53,7 +58,7 @@ public class C4 extends StackPane implements Navigable {
     @FXML private Label statusLabel;
     @FXML private Button resetButton;
 
-    public C4(CentralController rootController, GameGUI parentGUI) {
+    public C4Page(CentralController rootController, GameGUIPage parentGUI) {
         try {
             this.rootController = rootController;
             this.parentGUI = parentGUI;

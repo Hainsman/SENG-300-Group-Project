@@ -1,9 +1,10 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.util;
 
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.ui.CentralController;
 
 public final class PlayerProfileHelper {
 

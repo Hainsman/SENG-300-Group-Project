@@ -1,8 +1,12 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +14,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -19,13 +22,12 @@ import javafx.scene.layout.AnchorPane;
 import java.io.IOException;
 import java.util.UUID;
 
-public class HostLobby extends AnchorPane implements Navigable {
+public class HostLobbyPage extends AnchorPane implements Navigable {
 
     private CentralController rootController;
 
     @FXML private Label gameLabel;
     @FXML private TextField lobbyNameField;
-    @FXML private Slider playerSlider;
 
     @FXML private ToggleButton privateLobby;
     @FXML private ToggleButton publicLobby;
@@ -37,7 +39,7 @@ public class HostLobby extends AnchorPane implements Navigable {
 
     @FXML private Button createLobbyBtn;
 
-    public HostLobby(CentralController rootController) {
+    public HostLobbyPage(CentralController rootController) {
         try {
             this.rootController = rootController;
 
@@ -57,14 +59,7 @@ public class HostLobby extends AnchorPane implements Navigable {
         gameLabel.setText(game != null ? game.toString() : "Game");
         previewGameLabel.setText(game != null ? game.toString() : "-");
 
-        previewPlayersLabel.setText(String.valueOf((int) playerSlider.getValue()));
         previewPrivacyLabel.setText("Public");
-
-        playerSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (previewPlayersLabel != null) {
-                previewPlayersLabel.setText(String.valueOf(newVal.intValue()));
-            }
-        });
 
         publicLobby.setSelected(true);
 
@@ -92,7 +87,7 @@ public class HostLobby extends AnchorPane implements Navigable {
 
         String lobbyNam = lobbyNameField != null && lobbyNameField.getText() != null
                 ? lobbyNameField.getText().trim() : "";
-        int maxPlayers = playerSlider != null ? (int) playerSlider.getValue() : 2;
+        int maxPlayers = 2;
 
         String privacy = "Public";
         if (privacyOptions != null && privacyOptions.getSelectedToggle() == privateLobby) {

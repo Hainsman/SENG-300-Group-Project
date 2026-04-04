@@ -1,6 +1,9 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,13 +14,13 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
-public class ChooseMode extends AnchorPane implements Navigable {
+public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML private Label gameTitleLabel;
 
     @FXML private VBox playWithAiCard;
 
-    public ChooseMode() {
+    public ChooseModePage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);

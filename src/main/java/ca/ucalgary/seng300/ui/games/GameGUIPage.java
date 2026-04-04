@@ -1,9 +1,12 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.games;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,13 +19,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class GameGUI extends VBox implements Navigable {
+public class GameGUIPage extends VBox implements Navigable {
 
     private CentralController rootController;
 
     private String currentPlayerID;
-    private C4 c4;
-    private TTT ttt;
+    private C4Page c4Page;
+    private TTTPage tttPage;
 
     @FXML private VBox gameBox;
 
@@ -44,7 +47,7 @@ public class GameGUI extends VBox implements Navigable {
     @FXML private Label tttLabel;
     @FXML private Button infoButton;
 
-    public GameGUI (CentralController rootController) {
+    public GameGUIPage(CentralController rootController) {
         try {
             this.rootController = rootController;
 
@@ -62,8 +65,8 @@ public class GameGUI extends VBox implements Navigable {
         gameBox.getChildren().clear();
         gameBox.getChildren().add(node);
 
-        c4 = node instanceof C4 connect4 ? connect4 : null;
-        ttt = node instanceof TTT ticTacToe ? ticTacToe : null;
+        c4Page = node instanceof C4Page connect4 ? connect4 : null;
+        tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
     }
 
 //    @FXML
@@ -186,14 +189,14 @@ public class GameGUI extends VBox implements Navigable {
 
     @FXML
     private void handleForfeit(ActionEvent event) {
-        if (ttt != null) {
-            ttt.handleForfeitFromShell();
+        if (tttPage != null) {
+            tttPage.handleForfeitFromShell();
         }
     }
 
     @FXML
     private void handleInfoButton(ActionEvent event) {
-        if (ttt != null && ttt.isActiveOnlineMatch()) {
+        if (tttPage != null && tttPage.isActiveOnlineMatch()) {
             new Alert(Alert.AlertType.INFORMATION,
                     "Finish the match or use Forfeit before opening other screens.",
                     ButtonType.OK).showAndWait();
@@ -206,7 +209,7 @@ public class GameGUI extends VBox implements Navigable {
     private void handleChatSend(ActionEvent event) {
         String msg = chatInput.getText().trim();
         if (msg.isBlank()) return;
-        String sender = rootController.ttt != null || rootController.connect4 != null
+        String sender = rootController.tttPage != null || rootController.connect4 != null
                 ? currentPlayerID
                 : "You";
 
@@ -216,7 +219,7 @@ public class GameGUI extends VBox implements Navigable {
 
     @FXML
     private void handleExitButton(ActionEvent event) {
-        if (ttt != null && ttt.isActiveOnlineMatch()) {
+        if (tttPage != null && tttPage.isActiveOnlineMatch()) {
             new Alert(Alert.AlertType.WARNING,
                     "Use Forfeit in the sidebar to leave an online match in progress. You can quit the app afterward.",
                     ButtonType.OK).showAndWait();

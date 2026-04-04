@@ -1,9 +1,9 @@
 package ca.ucalgary.seng300.game.core;
 
-import ca.ucalgary.seng300.ui.Navigation;
+import ca.ucalgary.seng300.ui.util.Navigation;
 
 public enum GameType {
-    CHECKERS (0, "CHECKERS"),
+    CHECKERS (0, "Checkers"),
     TIC_TAC_TOE (1, "Tic Tac Toe"),
     CONNECT4 (2, "Connect 4");
 

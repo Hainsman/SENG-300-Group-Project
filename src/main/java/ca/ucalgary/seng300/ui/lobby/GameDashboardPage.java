@@ -1,6 +1,9 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,9 +12,9 @@ import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 
-public class GameDashboard extends AnchorPane implements Navigable {
+public class GameDashboardPage extends AnchorPane implements Navigable {
 
-    public GameDashboard() {
+    public GameDashboardPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);

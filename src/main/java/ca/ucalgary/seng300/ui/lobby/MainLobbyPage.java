@@ -1,8 +1,11 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -14,7 +17,7 @@ import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 
-public class MainLobby extends AnchorPane implements Navigable {
+public class MainLobbyPage extends AnchorPane implements Navigable {
 
     private CentralController rootController;
 
@@ -28,7 +31,7 @@ public class MainLobby extends AnchorPane implements Navigable {
     @FXML private Button startGameBtn;
     @FXML private Button copyCodeBtn;
 
-    public MainLobby(CentralController rootController) {
+    public MainLobbyPage(CentralController rootController) {
         try {
             this.rootController = rootController;
 

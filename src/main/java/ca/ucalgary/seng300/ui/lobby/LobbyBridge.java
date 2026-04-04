@@ -1,5 +1,6 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.lobby;
 
+import ca.ucalgary.seng300.ui.CentralController;
 import javafx.application.Platform;
 
 import java.util.function.Consumer;

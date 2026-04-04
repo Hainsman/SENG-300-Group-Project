@@ -1,9 +1,13 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.userdata;
 
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,9 +19,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Profile dashboard: read-only ELO, rank badges, and leaderboards. Account changes: {@link Settings}.
+ * Profile dashboard: read-only ELO, rank badges, and leaderboards. Account changes: {@link SettingsPage}.
  */
-public class ProfileDashboard extends AnchorPane implements Navigable {
+public class ProfileDashboardPage extends AnchorPane implements Navigable {
 
     @FXML private Label loggedInAsLabel;
     @FXML private Label tttEloLabel;
@@ -29,7 +33,7 @@ public class ProfileDashboard extends AnchorPane implements Navigable {
     @FXML private Label tierSummaryLabel;
     @FXML private ListView<String> leaderboardList;
 
-    public ProfileDashboard() {
+    public ProfileDashboardPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);

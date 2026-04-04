@@ -1,8 +1,12 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -16,7 +20,7 @@ import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 
-public class JoinLobby extends AnchorPane implements Navigable {
+public class JoinLobbyPage extends AnchorPane implements Navigable {
 
     private CentralController rootController;
 
@@ -28,7 +32,7 @@ public class JoinLobby extends AnchorPane implements Navigable {
     @FXML private TextField searchField;
     @FXML private ListView<String> lobbyList;
 
-    public JoinLobby(CentralController rootController) {
+    public JoinLobbyPage(CentralController rootController) {
         try {
             this.rootController = rootController;
 

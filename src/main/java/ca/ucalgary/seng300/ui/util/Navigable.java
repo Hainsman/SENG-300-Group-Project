@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.util;
 
 public interface Navigable {
 

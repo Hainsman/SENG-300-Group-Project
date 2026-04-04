@@ -2,6 +2,13 @@ package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.ui.games.C4Page;
+import ca.ucalgary.seng300.ui.games.GameGUIPage;
+import ca.ucalgary.seng300.ui.games.TTTPage;
+import ca.ucalgary.seng300.ui.lobby.*;
+import ca.ucalgary.seng300.ui.userdata.*;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -35,8 +42,8 @@ public class CentralController {
 
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
-    public TTT ttt;
-    public C4 connect4;
+    public TTTPage tttPage;
+    public C4Page connect4;
 
     public static GameType selectedGame;
     public static int maxPlayers;
@@ -56,7 +63,7 @@ public class CentralController {
     public static boolean ticTacToeLocalAiMode = false;
 
     /**
-     * When true, {@link C4} uses a local {@link ca.ucalgary.seng300.platform.session.ConnectFourSession}
+     * When true, {@link C4Page} uses a local {@link ca.ucalgary.seng300.platform.session.ConnectFourSession}
      * with a random-move AI as player 2 (same pattern as TTT vs AI).
      */
     public static boolean connect4LocalAiMode = false;
@@ -161,22 +168,22 @@ public class CentralController {
     }
 
     private void initializeNodes() {
-        GameGUI gameGUI = new GameGUI(this);
-        connect4 = new C4(this, gameGUI);
-        ttt = new TTT(this, gameGUI);
-        nodes.add(gameGUI);
+        GameGUIPage gameGUIPage = new GameGUIPage(this);
+        connect4 = new C4Page(this, gameGUIPage);
+        tttPage = new TTTPage(this, gameGUIPage);
+        nodes.add(gameGUIPage);
         nodes.add(connect4);
-        nodes.add(ttt);
-        nodes.add(new ChooseMode());
-        nodes.add(new GameDashboard());
-        nodes.add(new HostLobby(this));
-        nodes.add(new Info());
-        nodes.add(new JoinLobby(this));
-        nodes.add(new Login());
-        nodes.add(new MainLobby(this));
-        nodes.add(new NewUser());
-        nodes.add(new ProfileDashboard());
-        nodes.add(new Settings());
+        nodes.add(tttPage);
+        nodes.add(new ChooseModePage());
+        nodes.add(new GameDashboardPage());
+        nodes.add(new HostLobbyPage(this));
+        nodes.add(new InfoPage());
+        nodes.add(new JoinLobbyPage(this));
+        nodes.add(new LoginPage());
+        nodes.add(new MainLobbyPage(this));
+        nodes.add(new NewUserPage());
+        nodes.add(new ProfileDashboardPage());
+        nodes.add(new SettingsPage());
     }
 
     public static CentralController getInstance() {
@@ -210,10 +217,10 @@ public class CentralController {
         Navigable node = getNode(nav);
 
         if (nav == Navigation.TTT || nav == Navigation.C4) {
-            GameGUI gameGUI = (GameGUI) getNode(Navigation.GAME_GUI);
-            viewContainer.setCenter(gameGUI);
-            gameGUI.setGameNode((Node) node);
-            gameGUI.reset();
+            GameGUIPage gameGUIPage = (GameGUIPage) getNode(Navigation.GAME_GUI);
+            viewContainer.setCenter(gameGUIPage);
+            gameGUIPage.setGameNode((Node) node);
+            gameGUIPage.reset();
             previousScreen = Navigation.CHOOSE_MODE;
         }
         else {

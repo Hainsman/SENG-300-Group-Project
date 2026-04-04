@@ -1,5 +1,8 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.userdata;
 
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +13,7 @@ import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 
-public class Info extends BorderPane implements Navigable {
+public class InfoPage extends BorderPane implements Navigable {
 
 
     @FXML private Button backButton;
@@ -19,7 +22,7 @@ public class Info extends BorderPane implements Navigable {
 
     private String gameType;
 
-    public Info() {
+    public InfoPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);

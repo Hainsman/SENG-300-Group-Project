@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.util;
 
 import ca.ucalgary.seng300.platform.services.RankingService;
 import javafx.scene.control.Label;

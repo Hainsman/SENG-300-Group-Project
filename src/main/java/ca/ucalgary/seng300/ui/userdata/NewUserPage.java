@@ -1,9 +1,12 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.userdata;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +17,7 @@ import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 
-public class NewUser extends HBox implements Navigable {
+public class NewUserPage extends HBox implements Navigable {
 
     @FXML private TextField     usernameField;
     @FXML private TextField     emailField;
@@ -22,7 +25,7 @@ public class NewUser extends HBox implements Navigable {
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label         errorLabel;
 
-    public NewUser() {
+    public NewUserPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
@@ -90,6 +93,9 @@ public class NewUser extends HBox implements Navigable {
 
     @Override
     public void reset() {
-
+        usernameField.clear();
+        emailField.clear();
+        passwordField.clear();
+        confirmPasswordField.clear();
     }
 }

@@ -1,10 +1,11 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.util;
 
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.services.RankingService;
+import ca.ucalgary.seng300.ui.CentralController;
 
 import java.util.Optional;
 
