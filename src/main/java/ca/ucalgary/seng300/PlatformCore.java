@@ -7,9 +7,14 @@ import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
+import ca.ucalgary.seng300.platform.domain.SessionHistory;
+import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.server.GameSessionRecord;
 import ca.ucalgary.seng300.platform.server.platformChannel;
+import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
+import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
+import ca.ucalgary.seng300.platform.store.UserStore;
 
 import java.net.*;
 import java.io.*;
@@ -19,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static ca.ucalgary.seng300.platform.constants.Constants.HASH_ALGORITHM;
+import static ca.ucalgary.seng300.platform.utils.Helper.hashPassword;
+
 // debug Server first, then as many clients as you want
 // the server will close once the last client has sent "exit"
 
@@ -27,6 +35,8 @@ public class PlatformCore {
     public List<Integer> connected;
     // list of chat/lobbies
     public List<String> chatservers;
+
+    public UserStore userStore;
 
     // hashmap of games gettable by ID
     HashMap<String, Game> games;
@@ -113,6 +123,17 @@ public class PlatformCore {
         for(platformChannel h : users){
             h.cliSend(m);
         }
+    }
+
+
+    public String authenticate(String user, String pass, platformChannel pl){
+        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
+        List<User> listOfUsers= userStore.findByUserName(user);
+        String incomingUsername = user;
+        String incomingPassword = hashPassword(pass, HASH_ALGORITHM);
+
+        return "N/A";
+
     }
 
     public void clientJoin(int i){

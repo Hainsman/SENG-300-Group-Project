@@ -10,10 +10,7 @@ import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
 import ca.ucalgary.seng300.platform.messages.*;
 import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
-import ca.ucalgary.seng300.ui.CentralController;
-import ca.ucalgary.seng300.ui.Connect4Controller;
-import ca.ucalgary.seng300.ui.LobbyBridge;
-import ca.ucalgary.seng300.ui.TicTacToeController;
+import ca.ucalgary.seng300.ui.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 
@@ -174,15 +171,11 @@ public class ClientCore extends Thread{
                 switch(message){
                     case sysMSG sm:
                         switch (sm.getType()){
-                            case "LOGS":
-                                username = sm.getFieldA();
-                                CID = sm.getFieldB();
-                                //flg = 's';
-                                upFlag = true;
-                                break;
-                            case "LOGF":
-                                //flg = 'f';
-                                upFlag = true;
+                            case "AUTH":
+                                Platform.runLater(() -> {
+                                    LoginController.loginReply();
+                                    CentralController.moveTo(fxml);
+                                });
                                 break;
                             case "GMJN":
                                 upFlag = true;

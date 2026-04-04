@@ -36,7 +36,22 @@ public class platformChannel extends Thread {
 
     private void handleSys(sysMSG sm) {
         switch (sm.getType()) {
-            case "HOST_LOBBY" -> {
+            case "AUTH":
+                String ares = serv.authenticate(sm.getFieldA(),sm.getFieldB(),this);
+                switch(ares){
+                    case "N/A":
+                        cliSend(new sysMSG("AUTH", "User not found"));
+                        break;
+                    case "#F":
+                        cliSend(new sysMSG("AUTH", "Login failed, invalid username or password"));
+                        break;
+                    default:
+                        cliSend(new sysMSG("AUTH", "Pass"));
+                        ID = ares;
+                        break;
+                }
+                break;
+            case "HOST_LOBBY":
                 String code = sm.getFieldA();
                 String gt = sm.getFieldB() != null ? sm.getFieldB() : "TTT";
                 boolean ok = serv.onHostLobby(code, gt, this);
@@ -45,19 +60,24 @@ public class platformChannel extends Thread {
                 } else {
                     cliSend(new sysMSG("LOBBY_ERR", "create", "Could not create lobby (code may already be in use)."));
                 }
-            }
-            case "JOIN_LOBBY" -> {
-                String code = sm.getFieldA();
-                boolean ok = serv.onJoinLobby(code, this);
-                if (ok) {
-                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
+
+            case "JOIN_LOBBY":
+                //String code = sm.getFieldA();
+                //boolean ok = serv.onJoinLobby(sm.getFieldA(), this);
+                if (serv.onJoinLobby(sm.getFieldA(), this)) {
+                    cliSend(new sysMSG("LOBBY_OK", sm.getFieldA(), "JOIN"));
                 } else {
                     cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
                 }
-            }
-            case "GMJN" -> serv.relayToGuestIfHost(this, sm);
-            case "reset" -> serv.tempGameReset();
-            default -> { }
+
+            case "GMJN":
+                serv.relayToGuestIfHost(this, sm);
+                break;
+            case "reset":
+                serv.tempGameReset();
+                break;
+            default:
+                break;
         }
     }
 

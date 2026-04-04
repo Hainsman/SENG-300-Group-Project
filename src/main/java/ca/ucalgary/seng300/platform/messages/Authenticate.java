@@ -1,5 +1,5 @@
 package ca.ucalgary.seng300.platform.messages;
-
+/* DEPRECATED
 import java.util.UUID;
 
 public class Authenticate extends Message{
@@ -12,5 +12,5 @@ public class Authenticate extends Message{
     }
     public String getUsername(){return this.username;}
     public String getPassword(){return this.password;}
-}
+}*/
 

@@ -1,16 +1,11 @@
 package ca.ucalgary.seng300.ui;
 
-import ca.ucalgary.seng300.platform.client.ClientCoreV2;
-import ca.ucalgary.seng300.platform.messages.Authenticate;
-import ca.ucalgary.seng300.platform.messages.CreateAccount;
-import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
-import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.io.IOException;
-import java.util.UUID;
+//import java.util.UUID;
 
 public class LoginController {
 
@@ -38,18 +33,31 @@ public class LoginController {
             errorLabel.setText("Please enter your username and password.");
             return;
         }
-
+        /*
         UUID userSession = UUID.randomUUID();
 
         Authenticate auth = new Authenticate(userSession, username, password);
-        var clientCore = ClientCoreV2.getInstance();
-        clientCore.msgSend(auth);
-        ServerResponse resp = clientCore.msgRecieve();
+        //var clientCore = ClientCoreV2.getInstance();
+        //clientCore.msgSend(auth);
+        //ServerResponse resp = clientCore.msgRecieve();
         if(resp.status.equals(ServerResponse.Status.FAIL)){
             errorLabel.setText(resp.details[0]);
             return;
-        }
+        }*/
+        CentralController.getInstance().getCC().msgSend(new sysMSG("AUTH", username, password));
         CentralController.moveTo("GameDashboard.fxml");
+    }
+    public void loginReply(sysMSG s){
+        switch (s.getFieldA()){
+            case "PASS":
+                CentralController.moveTo("GameDashboard.fxml");
+                break;
+            case "NF":
+                errorLabel.setText("Error Username not found");
+                break;
+            default:
+                errorLabel.setText("Error username or password incorrect");
+        }
     }
 
     // Move to NewUser screen when button is triggered.
