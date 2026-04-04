@@ -35,6 +35,9 @@ public class CentralController {
 
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
+    public TTT ttt;
+    public C4 connect4;
+
     public static GameType selectedGame;
     public static int maxPlayers;
     public static String privacy;
@@ -127,17 +130,6 @@ public class CentralController {
         }
     }
 
-    public TTT ttt;
-    public C4 connect4;
-
-    public void setTic(TTT t){
-        ttt = t;
-    }
-
-    public void setConnect4(C4 c4) {
-        connect4 = c4;
-    }
-
     public ClientCore getCC(){
         return clientCore;
     }
@@ -182,9 +174,11 @@ public class CentralController {
 
     private void initializeNodes() {
         GameGUI gameGUI = new GameGUI();
+        connect4 = new C4(this, gameGUI);
+        ttt = new TTT(this, gameGUI);
         nodes.add(gameGUI);
-        nodes.add(new C4(this, gameGUI));
-        nodes.add(new TTT(this, gameGUI));
+        nodes.add(connect4);
+        nodes.add(ttt);
         nodes.add(new ChooseMode());
         nodes.add(new GameDashboard());
         nodes.add(new HostLobby());

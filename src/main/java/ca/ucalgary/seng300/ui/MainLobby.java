@@ -4,12 +4,15 @@ import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
+
+import java.io.IOException;
 
 public class MainLobby extends AnchorPane implements Navigable {
 
@@ -23,33 +26,35 @@ public class MainLobby extends AnchorPane implements Navigable {
     @FXML private Button startGameBtn;
     @FXML private Button copyCodeBtn;
 
+    public MainLobby() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     public void initialize() {
-        if (lobbyTitle != null) {
-            String g = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Game";
-            lobbyTitle.setText(g + " Lobby");
-        }
+        String g = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Game";
+        lobbyTitle.setText(g + " Lobby");
 
-        if (lobbyCodeLabel != null) {
-            lobbyCodeLabel.setText(
-                    CentralController.lobbyCode != null ? CentralController.lobbyCode : "----"
-            );
-        }
+        lobbyCodeLabel.setText(
+                CentralController.lobbyCode != null ? CentralController.lobbyCode : "----"
+        );
 
-        if (privacyLabel != null) {
-            privacyLabel.setText(
-                    CentralController.privacy != null ? CentralController.privacy : "Public"
-            );
-        }
+        privacyLabel.setText(
+                CentralController.privacy != null ? CentralController.privacy : "Public"
+        );
 
-        if (gameNameLabel != null) {
-            gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Standard");
-        }
+        gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Standard");
 
-        if (maxPlayersLabel != null) {
-            int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
-            maxPlayersLabel.setText(String.valueOf(max));
-        }
+        int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
+        maxPlayersLabel.setText(String.valueOf(max));
 
         refreshPlayersFromState();
         refreshStartButton();
@@ -143,7 +148,7 @@ public class MainLobby extends AnchorPane implements Navigable {
 
     @Override
     public Navigation getNavigation() {
-        return Navigation.GAME_GUI;
+        return Navigation.MAIN_LOBBY;
     }
 
     @Override

@@ -599,6 +599,8 @@ public class TTT extends StackPane implements Navigable {
     public void reset() {
         initialize();
 
+        clientCore = rootController.clientCore;
+
         EloOverlayUtil.hide(eloResultOverlay);
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
