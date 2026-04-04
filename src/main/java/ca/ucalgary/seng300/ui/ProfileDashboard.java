@@ -1,20 +1,23 @@
 package ca.ucalgary.seng300.ui;
 
-import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
- * Profile dashboard: read-only ELO, rank badges, and leaderboards. Account changes: {@link SettingsController}.
+ * Profile dashboard: read-only ELO, rank badges, and leaderboards. Account changes: {@link Settings}.
  */
-public class ProfileDashboardController {
+public class ProfileDashboard extends AnchorPane implements Navigable {
 
     @FXML private Label loggedInAsLabel;
     @FXML private Label tttEloLabel;
@@ -25,6 +28,18 @@ public class ProfileDashboardController {
     @FXML private Label c4RankBadge;
     @FXML private Label tierSummaryLabel;
     @FXML private ListView<String> leaderboardList;
+
+    public ProfileDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     private void initialize() {
@@ -53,10 +68,10 @@ public class ProfileDashboardController {
     }
 
     private void refreshStats() {
-        int tttElo = PlayerProfileHelper.eloForGameId(Game.TICK_TACK_TOE);
-        int c4Elo = PlayerProfileHelper.eloForGameId(Game.CONNECT_FOUR);
-        int tttGames = PlayerProfileHelper.gamesForGameId(Game.TICK_TACK_TOE);
-        int c4Games = PlayerProfileHelper.gamesForGameId(Game.CONNECT_FOUR);
+        int tttElo = PlayerProfileHelper.eloForGameType(GameType.TIC_TAC_TOE);
+        int c4Elo = PlayerProfileHelper.eloForGameType(GameType.CONNECT4);
+        int tttGames = PlayerProfileHelper.gamesForGameType(GameType.TIC_TAC_TOE);
+        int c4Games = PlayerProfileHelper.gamesForGameType(GameType.CONNECT4);
 
         if (tttEloLabel != null) {
             tttEloLabel.setText(String.valueOf(tttElo));
@@ -85,21 +100,21 @@ public class ProfileDashboardController {
         if (leaderboardList != null) {
             leaderboardList.getItems().clear();
             leaderboardList.getItems().add("— Tic Tac Toe (by ELO) —");
-            appendLeaderboardRows(Game.TICK_TACK_TOE);
+            appendLeaderboardRows(GameType.TIC_TAC_TOE);
             leaderboardList.getItems().add("— Connect 4 (by ELO) —");
-            appendLeaderboardRows(Game.CONNECT_FOUR);
+            appendLeaderboardRows(GameType.CONNECT4);
         }
     }
 
-    private void appendLeaderboardRows(int gameId) {
-        List<User> top = LeaderBoardService.getInstance().getLeaderBoard(true, gameId, 20);
+    private void appendLeaderboardRows(GameType gameType) {
+        List<User> top = LeaderBoardService.getInstance().getLeaderBoard(true, gameType, 20);
         if (top.isEmpty()) {
             leaderboardList.getItems().add("  (no players yet)");
             return;
         }
         for (int i = 0; i < top.size(); i++) {
             User u = top.get(i);
-            int elo = u.getEloForGame(gameId);
+            int elo = u.getEloForGame(gameType);
             leaderboardList.getItems().add(String.format(
                     "  #%d  %s  —  %d ELO  (%s)",
                     i + 1,
@@ -111,10 +126,20 @@ public class ProfileDashboardController {
 
     @FXML
     private void handleBack(ActionEvent event) {
-        if (CentralController.previousScreen != null && !CentralController.previousScreen.isBlank()) {
+        if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
             return;
         }
-        CentralController.moveTo("GameDashboardNew.fxml");
+        CentralController.moveTo(Navigation.GAME_DASHBOARD);
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.PROFILE_DASHBOARD;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
     }
 }

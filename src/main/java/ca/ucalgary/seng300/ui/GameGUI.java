@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -18,10 +18,7 @@ import javafx.scene.shape.Circle;
 
 // parent class for both Connect 4 and Tic Tac Toe GUI
 
-public abstract class GameGUI extends VBox {
-
-    private CentralController rootController;
-
+public class GameGUI extends VBox implements Navigable {
 //    public void setRoot(CentralController c) {
 //        rootController = c;
 //        ticTacToeViewController.setBoss(rootController);
@@ -40,10 +37,9 @@ public abstract class GameGUI extends VBox {
 //    private VBox leftSideBar;
 //    @FXML
 //    private VBox childView; // Injects the root of child.fxml
-    @FXML
-    private Connect4Controller connect4ViewController; // Injects the child's controller
-    @FXML
-    private TicTacToeController ticTacToeViewController; // Injects the child's controller
+    @FXML private VBox gameBox;
+    private C4 c4;
+    private TTT ttt;
 
     // ELO Table Variables
     @FXML
@@ -75,11 +71,9 @@ public abstract class GameGUI extends VBox {
     @FXML
     private Button infoButton;
 
-    public GameGUI (CentralController rootController) {
+    public GameGUI () {
         try {
-            this.rootController = rootController;
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(getClass().getSimpleName() + ".fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
             loader.load();
@@ -87,6 +81,14 @@ public abstract class GameGUI extends VBox {
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setGameNode(Node node) {
+        gameBox.getChildren().clear();
+        gameBox.getChildren().add(node);
+
+        c4 = node instanceof C4 connect4 ? connect4 : null;
+        ttt = node instanceof TTT ticTacToe ? ticTacToe : null;
     }
 
 //    @FXML
@@ -397,22 +399,22 @@ public abstract class GameGUI extends VBox {
 //        // }
 //    }
 
-@FXML
-private void handleForfeit(ActionEvent event) {
-    if (ticTacToeViewController != null) {
-        ticTacToeViewController.handleForfeitFromShell();
+    @FXML
+    private void handleForfeit(ActionEvent event) {
+        if (ttt != null) {
+            ttt.handleForfeitFromShell();
+        }
     }
-}
 
     @FXML
     private void handleInfoButton(ActionEvent event) {
-        if (ticTacToeViewController != null && ticTacToeViewController.isActiveOnlineMatch()) {
+        if (ttt != null && ttt.isActiveOnlineMatch()) {
             new Alert(Alert.AlertType.INFORMATION,
                     "Finish the match or use Forfeit before opening other screens.",
                     ButtonType.OK).showAndWait();
             return;
         }
-        CentralController.moveTo("info.fxml");
+        CentralController.moveTo(Navigation.INFO);
     }
 
     @FXML
@@ -432,13 +434,23 @@ private void handleForfeit(ActionEvent event) {
 
     @FXML
     private void handleExitButton(ActionEvent event) {
-        if (ticTacToeViewController != null && ticTacToeViewController.isActiveOnlineMatch()) {
+        if (ttt != null && ttt.isActiveOnlineMatch()) {
             new Alert(Alert.AlertType.WARNING,
                     "Use Forfeit in the sidebar to leave an online match in progress. You can quit the app afterward.",
                     ButtonType.OK).showAndWait();
             return;
         }
         Platform.exit();
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.GAME_GUI;
+    }
+
+    @Override
+    public void reset() {
+
     }
 }
 

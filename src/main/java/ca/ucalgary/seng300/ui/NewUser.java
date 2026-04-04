@@ -6,23 +6,32 @@ import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 
-public class NewUserController {
+import java.io.IOException;
+
+public class NewUser extends HBox implements Navigable {
 
     @FXML private TextField     usernameField;
     @FXML private TextField     emailField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label         errorLabel;
-    private static NewUserController newUserController;
 
-    public static NewUserController getInstance(){
-        if (newUserController == null)
-            newUserController = new NewUserController();
-        return newUserController;
+    public NewUser() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -61,16 +70,26 @@ public class NewUserController {
         String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
         store.create(new User(newId, username, email, passwordHash));
 
-        CentralController.moveTo("Login.fxml");
+        CentralController.moveTo(Navigation.LOGIN);
     }
 
     @FXML
     private void handleBack(ActionEvent event) {
-        CentralController.moveTo("Login.fxml");
+        CentralController.moveTo(Navigation.LOGIN);
     }
 
     private void setError(String message) {
         errorLabel.setStyle("-fx-text-fill: #ff4d4d; -fx-font-size: 13;");
         errorLabel.setText(message);
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.NEW_USER;
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

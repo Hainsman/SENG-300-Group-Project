@@ -6,24 +6,45 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.connect4.ConnectFourRandomMoveGenerator;
 import ca.ucalgary.seng300.platform.client.ClientCore;
-import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.ConnectFourSession;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.event.ActionEvent;
 
+import java.io.IOException;
+
 //public class Connect4Controller extends GameGUI {
-public class Connect4Controller {
-    private CentralController boss;
+public class C4 extends StackPane implements Navigable {
+
+    private ClientState status;
+
+    private CentralController rootController;
+    private GameGUI parentGUI;
+
     private ClientCore clientCore = null;
     private boolean onlineEloApplied = false;
 
-    private ClientState status;
+    public C4(CentralController rootController, GameGUI parentGUI) {
+        try {
+            this.rootController = rootController;
+            this.parentGUI = parentGUI;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Local session using {@link C4Game} (human as player 1, optional random-move AI as player 2).
@@ -31,26 +52,6 @@ public class Connect4Controller {
     private ConnectFourSession session = null;
     /** When true with a non-null session, player 2 uses {@link ConnectFourRandomMoveGenerator}. */
     private boolean randomOpponentEnabled = false;
-
-    // TODO move this into initialize
-//    public void connectToRootForLobby(CentralController root) {
-//        boss = root;
-//        boss.setConnect4(this);
-//        clientCore = boss.getCC();
-//        EloOverlayUtil.hide(eloResultOverlay);
-//        if (CentralController.connect4LocalAiMode) {
-//            randomOpponentEnabled = true;
-//            session = new ConnectFourSession();
-//            GameGUI.clearHistory();
-//            refreshFromSession();
-//        } else {
-//            randomOpponentEnabled = false;
-//            session = null;
-//            if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
-//                refreshFromGameStateUpdate(gs);
-//            }
-//        }
-//    }
 
     @FXML
     private StackPane boardPane;
@@ -148,7 +149,7 @@ public class Connect4Controller {
                 Player mover = b[landingRow][col];
                 Color moverColor = mover == Player.PLAYER_1 ? P1 : P2;
                 String label = mover == Player.PLAYER_1 ? "1" : "2";
-                GameGUI.addHistory("Connect4", label,
+                parentGUI.addHistory("Connect4", label,
                         "(" + (landingRow + 1) + ", " + (col + 1) + ")", moverColor);
             }
             refreshFromSession();
@@ -165,14 +166,14 @@ public class Connect4Controller {
 
                 if (currentPlayer == 1) {
                     playerColor = P1;
-                    GameGUI.addHistory("Connect4", "1",
+                    parentGUI.addHistory("Connect4", "1",
                             "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
-                    GameGUI.onMoveChosen("P1", "(" + rowString + "," + colString + ")");
+                    parentGUI.onMoveChosen("P1", "(" + rowString + "," + colString + ")");
                 } else {
                     playerColor = P2;
-                    GameGUI.addHistory("Connect4", "2",
+                    parentGUI.addHistory("Connect4", "2",
                             "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
-                    GameGUI.onMoveChosen("P2", "(" + rowString + "," + colString + ")");
+                    parentGUI.onMoveChosen("P2", "(" + rowString + "," + colString + ")");
                 }
                 circles[row][col].setFill(playerColor);
 
@@ -228,7 +229,7 @@ public class Connect4Controller {
             Player[][] b = session.getBoard();
             int landingRow = landingRowForLastDrop(b, acol);
             if (landingRow >= 0) {
-                GameGUI.addHistory("Connect4", "2 (AI)",
+                parentGUI.addHistory("Connect4", "2 (AI)",
                         "(" + (landingRow + 1) + ", " + (acol + 1) + ")", P2);
             }
             refreshFromSession();
@@ -350,8 +351,10 @@ public class Connect4Controller {
         randomOpponentEnabled = false;
         session = null;
         EloOverlayUtil.hide(eloResultOverlay);
-        CentralController.previousScreen = "chooseModeNew.fxml";
-        CentralController.moveTo("chooseModeNew.fxml");
+//        CentralController.previousScreen = "chooseModeNew.fxml";
+////        CentralController.moveTo("chooseModeNew.fxml");
+//        CentralController.previousScreen = Navigation.CHOOSE_MODE_NEW;
+        CentralController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     public void refreshFromGameStateUpdate(C4GameState update) {
@@ -401,7 +404,7 @@ public class Connect4Controller {
             statusLabel.setText(update.getPlayerTurn() == Player.PLAYER_1 ? "Player 1's Turn" : "Player 2's Turn");
             resetButton.setVisible(false);
         }
-        OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, Game.CONNECT_FOUR)
+        OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, GameType.CONNECT4)
                 .ifPresent(r -> {
                     onlineEloApplied = true;
                     EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
@@ -411,5 +414,31 @@ public class Connect4Controller {
     @FXML
     private void handleDismissEloOverlay() {
         EloOverlayUtil.hide(eloResultOverlay);
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.C4;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
+
+        clientCore = rootController.getCC();
+        EloOverlayUtil.hide(eloResultOverlay);
+        if (CentralController.connect4LocalAiMode) {
+            randomOpponentEnabled = true;
+            session = new ConnectFourSession();
+            parentGUI.clearHistory();
+            refreshFromSession();
+        } else {
+            randomOpponentEnabled = false;
+            session = null;
+            if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
+                refreshFromGameStateUpdate(gs);
+            }
+        }
+        render();
     }
 }

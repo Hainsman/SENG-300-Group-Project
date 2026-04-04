@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
@@ -14,27 +15,27 @@ public final class PlayerProfileHelper {
     }
 
     /** ELO for the logged-in user from persisted {@link User} data. */
-    public static int eloForGameId(int gameId) {
+    public static int eloForGameType(GameType gameType) {
         User u = UserStore.getInstance().get(currentUserIdOrDefault());
-        return u == null ? 1200 : u.getEloForGame(gameId);
+        return u == null ? 1200 : u.getEloForGame(gameType);
     }
 
-    public static int gamesForGameId(int gameId) {
+    public static int gamesForGameType(GameType gameType) {
         User u = UserStore.getInstance().get(currentUserIdOrDefault());
-        return u == null ? 0 : u.getGamesForGame(gameId);
+        return u == null ? 0 : u.getGamesForGame(gameType);
     }
 
     /**
      * Backwards-compatible view backed by {@link User} rows (not PlayerStatsStore).
      * Mutating the returned object does not persist; use {@link UserStore#update(User)}.
      */
-    public static PlayerStats statsForGameId(int gameId) {
+    public static PlayerStats statsForGameType(GameType gameType) {
         int uid = currentUserIdOrDefault();
         User u = UserStore.getInstance().get(uid);
-        PlayerStats ps = new PlayerStats(0, gameId, uid);
+        PlayerStats ps = new PlayerStats(0, gameType, uid);
         if (u != null) {
-            ps.setElo(u.getEloForGame(gameId));
-            for (int i = 0; i < u.getGamesForGame(gameId); i++) {
+            ps.setElo(u.getEloForGame(gameType));
+            for (int i = 0; i < u.getGamesForGame(gameType); i++) {
                 ps.updateStats(0);
             }
         }
@@ -42,7 +43,7 @@ public final class PlayerProfileHelper {
     }
 
     public static PlayerStats statsForCurrentGame() {
-        return statsForGameId(GameIdMapper.fromUiGameName(CentralController.selectedGame));
+        return statsForGameType(CentralController.selectedGame);
     }
 
     public static String sanitizeForPayload(String name) {
@@ -55,7 +56,7 @@ public final class PlayerProfileHelper {
 
     public static String lobbyPayload() {
         String name = sanitizeForPayload(CentralController.displayName);
-        int elo = eloForGameId(GameIdMapper.fromUiGameName(CentralController.selectedGame));
+        int elo = eloForGameType(CentralController.selectedGame);
         return name + "|" + elo;
     }
 

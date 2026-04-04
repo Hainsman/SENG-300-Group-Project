@@ -2,11 +2,15 @@ package ca.ucalgary.seng300.ui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 
-public class InfoController {
+import java.io.IOException;
+
+public class Info extends BorderPane implements Navigable {
 
 
     @FXML
@@ -20,12 +24,24 @@ public class InfoController {
 
     private String gameType;
 
+    public Info() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void handleBack (ActionEvent event) {
         if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
         } else {
-            CentralController.moveTo("GameDashboardNew.fxml");
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
         }
 
     }
@@ -54,5 +70,13 @@ public class InfoController {
 
     }
 
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.INFO;
+    }
 
+    @Override
+    public void reset() {
+
+    }
 }

@@ -7,15 +7,18 @@ import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 
+import java.io.IOException;
 import java.util.List;
 
-public class SettingsController {
+public class Settings extends BorderPane implements Navigable {
 
     @FXML private Label activeUsernameLabel;
     @FXML private Label statusLabel;
@@ -27,6 +30,18 @@ public class SettingsController {
 
     @FXML private ComboBox<String> textScaleComboBox;
     @FXML private CheckBox colorBlindModeCheckBox;
+
+    public Settings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     public void initialize() {
@@ -192,10 +207,20 @@ public class SettingsController {
 
     @FXML
     private void handleBack(ActionEvent event) {
-        if (CentralController.previousScreen != null && !CentralController.previousScreen.isBlank()) {
+        if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
         } else {
-            CentralController.moveTo("GameDashboardNew.fxml");
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
         }
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.SETTINGS;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
     }
 }

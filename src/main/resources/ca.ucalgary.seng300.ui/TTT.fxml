@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="boardPane" styleClass="app-surface" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.TicTacToeController">
+<fx:root type="StackPane" fx:id="boardPane" styleClass="app-surface" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 26 26 24 26;">
         <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
@@ -79,4 +79,4 @@
         </VBox>
     </VBox>
 
-</StackPane>
+</fx:root>

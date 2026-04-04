@@ -6,48 +6,40 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TicTacToeRandomMoveGenerator;
 import ca.ucalgary.seng300.platform.client.ClientCore;
-import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
+import java.io.IOException;
+
 //public class TicTacToeController extends GameGUI {
-public class TicTacToeController extends StackPane {
+public class TTT extends StackPane implements Navigable {
 
     private ClientState status;
 
-    private final CentralController rootController;
-    private final GameGUI parentGUI;
-//    public void setBoss(CentralController c){
-//        rootController = c;
-//        rootController.setTic(this);
-//        clientCore = rootController.getCC();
-//    }
+    private CentralController rootController;
+    private GameGUI parentGUI;
 
-    /**
-     * Standalone Tic-Tac-Toe screen (lobby → start game): same wiring as {@link GameGUIController},
-     * clears local {@link TicTacToeSession} when online, and paints from the last server state if present.
-     */
-    // TODO move this into initialize
-    public void connectToRootForLobby() {
-        EloOverlayUtil.hide(eloResultOverlay);
-        if (clientCore != null && clientCore.isConnected()) {
-            session = null;
-        }
-        if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
-            refreshFromGameStateUpdate(gs);
-        }
-        refreshBackButtonVisibility();
-    }
+    public TTT(CentralController rootController, GameGUI parentGUI) {
+        try {
+            this.rootController = rootController;
+            this.parentGUI = parentGUI;
 
-    public TicTacToeController (CentralController rootController, GameGUI parentGUI) {
-        this.rootController = rootController;
-        this.parentGUI = parentGUI;
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -530,7 +522,7 @@ public class TicTacToeController extends StackPane {
                 turnLabel.setText(cur == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
             }
         }
-        OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, Game.TICK_TACK_TOE)
+        OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, GameType.TIC_TAC_TOE)
                 .ifPresent(r -> {
                     onlineEloApplied = true;
                     EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
@@ -555,10 +547,10 @@ public class TicTacToeController extends StackPane {
         CentralController.ticTacToeLocalAiMode = false;
         randomOpponentEnabled = false;
         EloOverlayUtil.hide(eloResultOverlay);
-        if (CentralController.previousScreen != null && !CentralController.previousScreen.isBlank()) {
+        if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
         } else {
-            CentralController.moveTo("GameDashboardNew.fxml");
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
         }
     }
 
@@ -596,5 +588,24 @@ public class TicTacToeController extends StackPane {
     @FXML
     private void handleDismissEloOverlay() {
         EloOverlayUtil.hide(eloResultOverlay);
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.TTT;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
+
+        EloOverlayUtil.hide(eloResultOverlay);
+        if (clientCore != null && clientCore.isConnected()) {
+            session = null;
+        }
+        if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
+            refreshFromGameStateUpdate(gs);
+        }
+        refreshBackButtonVisibility();
     }
 }

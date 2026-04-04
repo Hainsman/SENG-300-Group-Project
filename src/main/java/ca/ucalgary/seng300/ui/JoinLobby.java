@@ -1,8 +1,10 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -10,8 +12,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
-public class joinLobbyController {
+import java.io.IOException;
+
+public class JoinLobby extends AnchorPane implements Navigable {
 
     @FXML private Label gameTitleLabel;
 
@@ -21,11 +26,23 @@ public class joinLobbyController {
     @FXML private TextField searchField;
     @FXML private ListView<String> lobbyList;
 
+    public JoinLobby() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     public void initialize() {
         if (gameTitleLabel != null) {
-            String g = CentralController.selectedGame;
-            gameTitleLabel.setText(g != null ? g : "Game");
+            GameType g = CentralController.selectedGame;
+            gameTitleLabel.setText(g != null ? g.toString() : "Game");
         }
 
         if (lobbyList != null) {
@@ -85,8 +102,7 @@ public class joinLobbyController {
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onJoinOk = () -> {
-            CentralController.previousScreen = "joinLobby.fxml";
-            CentralController.moveTo("mainLobby.fxml");
+            CentralController.moveTo(Navigation.MAIN_LOBBY);
         };
 
         cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload()));
@@ -106,6 +122,16 @@ public class joinLobbyController {
 
     @FXML
     private void handleBack() {
-        CentralController.moveTo("chooseModeNew.fxml");
+        CentralController.moveTo(Navigation.CHOOSE_MODE);
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.JOIN_LOBBY;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
     }
 }

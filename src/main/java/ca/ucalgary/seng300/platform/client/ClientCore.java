@@ -15,6 +15,7 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.messages.*;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.LobbyBridge;
+import ca.ucalgary.seng300.ui.Navigation;
 import javafx.application.Platform;
 
 import java.io.IOException;
@@ -219,7 +220,7 @@ public class ClientCore extends Thread{
                                         final String fxml = screen;
                                         Platform.runLater(() -> {
                                             LobbyBridge.clearLobbyUiCallbacks();
-                                            CentralController.moveTo(fxml);
+                                            CentralController.moveTo(Navigation.getFromFxml(fxml));
                                         });
                                     }
                                 }

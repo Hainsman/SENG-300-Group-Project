@@ -6,11 +6,14 @@ import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 
+import java.io.IOException;
 import java.util.List;
 
-public class LoginController {
+public class Login extends HBox implements Navigable {
 
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
@@ -19,6 +22,18 @@ public class LoginController {
     @FXML private Button loginButton;
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
+
+    public Login() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -52,13 +67,13 @@ public class LoginController {
         CentralController.previousScreen = null;
         CentralController.ticTacToeLocalAiMode = false;
         CentralController.connect4LocalAiMode = false;
-        CentralController.moveTo("GameDashboardNew.fxml");
+        CentralController.moveTo(Navigation.GAME_DASHBOARD);
     }
 
     // Move to NewUser screen when button is triggered.
     @FXML
     private void handleNewUser(ActionEvent event) {
-        CentralController.moveTo("NewUser.fxml");
+        CentralController.moveTo(Navigation.NEW_USER);
     }
 
     @FXML
@@ -68,5 +83,15 @@ public class LoginController {
         forgotPasswordAlert.setHeaderText("Need to reset your password?");
         forgotPasswordAlert.setContentText("Please contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
         forgotPasswordAlert.showAndWait();
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.LOGIN;
+    }
+
+    @Override
+    public void reset() {
+
     }
 }

@@ -53,11 +53,7 @@
 
         <AnchorPane styleClass="game-pane">
           <children>
-            <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <children>
-                <fx:include fx:id="ticTacToeView" source="TicTacToe.fxml" />
-              </children>
-            </VBox>
+            <VBox fx:id="gameBox" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
 

@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.platform.services;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
 
@@ -26,34 +27,34 @@ public class LeaderBoardService {
         return LeaderBoardHolder.INSTANCE;
     }
 
-    private void buildLeaderBoard(int gameId) {
+    private void buildLeaderBoard(GameType gameType) {
         List<User> users = new ArrayList<>(UserStore.getInstance().findAll());
         users.sort(Comparator
-                .comparingInt((User u) -> u.getEloForGame(gameId)).reversed()
+                .comparingInt((User u) -> u.getEloForGame(gameType)).reversed()
                 .thenComparing(User::getlogin, String.CASE_INSENSITIVE_ORDER));
-        cachedLeaderBoard.put(gameId, users);
-        cachedLeaderBoardTS.put(gameId, System.currentTimeMillis());
+        cachedLeaderBoard.put(gameType.toId(), users);
+        cachedLeaderBoardTS.put(gameType.toId(), System.currentTimeMillis());
     }
 
-    private Long getTimeStampSafe(int gameId) {
+    private Long getTimeStampSafe(GameType gameType) {
         lock.readLock().lock();
         try {
-            return cachedLeaderBoardTS.get(gameId);
+            return cachedLeaderBoardTS.get(gameType.toId());
         } finally {
             lock.readLock().unlock();
         }
     }
 
-    public List<User> getLeaderBoard(boolean forceRecalc, int gameId, int count) {
-        Long ts = getTimeStampSafe(gameId);
+    public List<User> getLeaderBoard(boolean forceRecalc, GameType gameType, int count) {
+        Long ts = getTimeStampSafe(gameType);
         if (forceRecalc || ts == null || System.currentTimeMillis() - ts >= TEN_MINUTES) {
             lock.writeLock().lock();
             try {
-                Long currentTs = cachedLeaderBoardTS.get(gameId);
+                Long currentTs = cachedLeaderBoardTS.get(gameType.toId());
                 if (currentTs == null
                         || ((forceRecalc && System.currentTimeMillis() - currentTs >= FORCE_RECALC_THRESHOLD)
                         || (System.currentTimeMillis() - currentTs >= TEN_MINUTES))) {
-                    buildLeaderBoard(gameId);
+                    buildLeaderBoard(gameType);
                 }
             } finally {
                 lock.writeLock().unlock();
@@ -61,7 +62,7 @@ public class LeaderBoardService {
         }
         lock.readLock().lock();
         try {
-            List<User> list = cachedLeaderBoard.get(gameId);
+            List<User> list = cachedLeaderBoard.get(gameType);
             if (list == null) {
                 return new ArrayList<>();
             }

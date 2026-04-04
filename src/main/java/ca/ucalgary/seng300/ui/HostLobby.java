@@ -1,9 +1,11 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -12,10 +14,12 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.util.UUID;
 
-public class hostLobbyController {
+public class HostLobby extends AnchorPane implements Navigable {
 
     @FXML private Label gameLabel;
     @FXML private TextField lobbyNameField;
@@ -31,14 +35,26 @@ public class hostLobbyController {
 
     @FXML private Button createLobbyBtn;
 
+    public HostLobby() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void initialize() {
-        String game = CentralController.selectedGame;
+        GameType game = CentralController.selectedGame;
         if (gameLabel != null) {
-            gameLabel.setText(game != null ? game : "Game");
+            gameLabel.setText(game != null ? game.toString() : "Game");
         }
         if (previewGameLabel != null) {
-            previewGameLabel.setText(game != null ? game : "-");
+            previewGameLabel.setText(game != null ? game.toString() : "-");
         }
 
         if (previewPlayersLabel != null && playerSlider != null) {
@@ -108,15 +124,25 @@ public class hostLobbyController {
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onHostOk = () -> {
-            CentralController.previousScreen = "GameDashboardNew.fxml";
-            CentralController.moveTo("mainLobby.fxml");
+            CentralController.moveTo(Navigation.MAIN_LOBBY);
+            CentralController.previousScreen = Navigation.GAME_DASHBOARD;
         };
 
-        cc.msgSend(new sysMSG("HOST_LOBBY", code, GameIdMapper.toServerGameKey(CentralController.selectedGame), PlayerProfileHelper.lobbyPayload()));
+        cc.msgSend(new sysMSG("HOST_LOBBY", code, CentralController.selectedGame.toString(), PlayerProfileHelper.lobbyPayload()));
     }
 
     @FXML
     void handleBack(ActionEvent event) {
-        CentralController.moveTo("chooseModeNew.fxml");
+        CentralController.moveTo(Navigation.CHOOSE_MODE);
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.HOST_LOBBY;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
     }
 }

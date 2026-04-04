@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.ui;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.services.RankingService;
 
 import java.util.Optional;
@@ -17,7 +18,7 @@ public final class OnlineRankingHelper {
     }
 
     public static Optional<RankingService.OnlineEloResult> applyIfOnlineGameFinished(
-            ClientCore cc, State state, boolean alreadyApplied, int gameIdForStats) {
+            ClientCore cc, State state, boolean alreadyApplied, GameType gameTypeForStats) {
         if (alreadyApplied || cc == null || !cc.isConnected()) {
             return Optional.empty();
         }
@@ -41,6 +42,6 @@ public final class OnlineRankingHelper {
         }
         int uid = PlayerProfileHelper.currentUserIdOrDefault();
         int oppElo = opponentEloFromLobby(CentralController.hostingLobby);
-        return Optional.of(RankingService.applyOnlineLocalResult(uid, gameIdForStats, oppElo, outcome));
+        return Optional.of(RankingService.applyOnlineLocalResult(uid, gameTypeForStats, oppElo, outcome));
     }
 }

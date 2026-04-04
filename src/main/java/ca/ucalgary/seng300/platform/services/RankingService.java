@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.platform.services;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
 
@@ -16,13 +17,13 @@ public final class RankingService {
     private RankingService() {}
 
     public static OnlineEloResult applyOnlineLocalResult(
-            int localUserId, int gameId, int opponentElo, OnlineOutcome outcome) {
+            int localUserId, GameType gameType, int opponentElo, OnlineOutcome outcome) {
         UserStore store = UserStore.getInstance();
         User me = store.get(localUserId);
         if (me == null) {
             return new OnlineEloResult(0, 1200, outcome);
         }
-        int myElo = me.getEloForGame(gameId);
+        int myElo = me.getEloForGame(gameType);
         double expected = 1.0 / (1.0 + Math.pow(10, (opponentElo - myElo) / 400.0));
         double actual = switch (outcome) {
             case WIN -> 1.0;
@@ -30,9 +31,9 @@ public final class RankingService {
             case DRAW -> 0.5;
         };
         int delta = (int) Math.round(K * (actual - expected));
-        me.adjustEloForGame(gameId, delta);
-        me.incrementGamesForGame(gameId);
+        me.adjustEloForGame(gameType, delta);
+        me.incrementGamesForGame(gameType);
         store.update(me);
-        return new OnlineEloResult(delta, me.getEloForGame(gameId), outcome);
+        return new OnlineEloResult(delta, me.getEloForGame(gameType), outcome);
     }
 }

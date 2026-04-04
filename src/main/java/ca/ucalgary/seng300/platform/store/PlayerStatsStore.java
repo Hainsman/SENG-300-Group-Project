@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.store;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 
 import java.util.List;
@@ -15,22 +16,24 @@ public class PlayerStatsStore extends Store<PlayerStats> {
         return PlayerStats.class;
     }
     //returns users by gameID
-    public List<PlayerStats> findPlayersByGameID (int id){return find(rec -> rec.getGameID() == id);}
+    public List<PlayerStats> findPlayersByGameType(GameType gameType) {
+        return find(rec -> rec.getGameType() == gameType);
+    }
 
-    public List<PlayerStats> findByUserAndGame(int userId, int gameId) {
-        return find(rec -> rec.getUserID() == userId && rec.getGameID() == gameId);
+    public List<PlayerStats> findByUserAndGame(int userId, GameType gameType) {
+        return find(rec -> rec.getUserID() == userId && rec.getGameType() == gameType);
     }
 
     public int nextId() {
         return find(rec -> true).stream().mapToInt(PlayerStats::getID).max().orElse(0) + 1;
     }
 
-    public PlayerStats getOrCreateForUserGame(int userId, int gameId) {
-        List<PlayerStats> matches = findByUserAndGame(userId, gameId);
+    public PlayerStats getOrCreateForUserGame(int userId, GameType gameType) {
+        List<PlayerStats> matches = findByUserAndGame(userId, gameType);
         if (!matches.isEmpty()) {
             return matches.get(0);
         }
-        PlayerStats ps = new PlayerStats(nextId(), gameId, userId);
+        PlayerStats ps = new PlayerStats(nextId(), gameType, userId);
         create(ps);
         return ps;
     }

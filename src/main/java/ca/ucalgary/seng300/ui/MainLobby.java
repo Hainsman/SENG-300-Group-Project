@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,8 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.AnchorPane;
 
-public class mainLobbyController {
+public class MainLobby extends AnchorPane implements Navigable {
 
     @FXML private Label lobbyTitle;
     @FXML private ListView<String> playerList;
@@ -24,7 +26,7 @@ public class mainLobbyController {
     @FXML
     public void initialize() {
         if (lobbyTitle != null) {
-            String g = CentralController.selectedGame != null ? CentralController.selectedGame : "Game";
+            String g = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Game";
             lobbyTitle.setText(g + " Lobby");
         }
 
@@ -41,7 +43,7 @@ public class mainLobbyController {
         }
 
         if (gameNameLabel != null) {
-            gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Standard");
+            gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Standard");
         }
 
         if (maxPlayersLabel != null) {
@@ -91,22 +93,12 @@ public class mainLobbyController {
 
     @FXML
     private void handleStartGame() {
-        String game = CentralController.selectedGame;
-        String fxml;
-        switch (game) {
-            case "Checkers":
-                fxml = "GameGUI.fxml";
-                break;
-            case "Connect 4":
-                fxml = "Connect4.fxml";
-                break;
-            case "Tic Tac Toe":
-            case "TicTacToe":
-                fxml = CentralController.TIC_TAC_TOE_SHELL_FXML;
-                break;
-            default:
-                System.out.println("Unknown game: " + game);
-                return;
+        GameType game = CentralController.selectedGame;
+        Navigation nav = GameType.getNavigation(game);
+
+        if (nav == null) {
+            System.out.println("Unknown game: ");
+            return;
         }
 
         CentralController.ticTacToeLocalAiMode = false;
@@ -116,12 +108,12 @@ public class mainLobbyController {
             if (c != null) {
                 ClientCore cc = c.getCC();
                 if (cc != null && cc.isConnected()) {
-                    cc.msgSend(new sysMSG("GMJN", fxml, ""));
+                    cc.msgSend(new sysMSG("GMJN", nav.getFxml(), ""));
                 }
             }
         }
         LobbyBridge.clearLobbyUiCallbacks();
-        CentralController.moveTo(fxml);
+        CentralController.moveTo(nav);
     }
 
     @FXML
@@ -137,15 +129,25 @@ public class mainLobbyController {
     @FXML
     private void handleBack() {
         LobbyBridge.clearLobbyUiCallbacks();
-        if ("hostLobby.fxml".equals(CentralController.previousScreen)
-                || "joinLobby.fxml".equals(CentralController.previousScreen)) {
-            CentralController.moveTo("GameDashboardNew.fxml");
+        if (Navigation.HOST_LOBBY == CentralController.previousScreen
+                || Navigation.JOIN_LOBBY == CentralController.previousScreen) {
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
             return;
         }
         if (CentralController.previousScreen != null) {
             CentralController.moveTo(CentralController.previousScreen);
         } else {
-            CentralController.moveTo("GameDashboardNew.fxml");
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
         }
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.GAME_GUI;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
     }
 }

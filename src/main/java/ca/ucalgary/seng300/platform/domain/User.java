@@ -1,6 +1,6 @@
 package ca.ucalgary.seng300.platform.domain;
 
-import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.game.core.GameType;
 
 public class User extends Record {
     private String login;
@@ -44,37 +44,37 @@ public class User extends Record {
         return gamesConnectFour;
     }
 
-    /** ELO for {@link Game#TICK_TACK_TOE} or {@link Game#CONNECT_FOUR}. */
-    public int getEloForGame(int gameId) {
-        if (gameId == Game.CONNECT_FOUR) {
+    /** ELO for {@link GameType#TIC_TAC_TOE} or {@link GameType#CONNECT4}. */
+    public int getEloForGame(GameType gameType) {
+        if (gameType == GameType.CONNECT4) {
             return getEloConnectFour();
         }
         return getEloTicTacToe();
     }
 
-    public int getGamesForGame(int gameId) {
-        if (gameId == Game.CONNECT_FOUR) {
+    public int getGamesForGame(GameType gameType) {
+        if (gameType == GameType.CONNECT4) {
             return gamesConnectFour;
         }
         return gamesTicTacToe;
     }
 
-    public void setEloForGame(int gameId, int elo) {
+    public void setEloForGame(GameType gameType, int elo) {
         int v = Math.max(0, elo);
-        if (gameId == Game.CONNECT_FOUR) {
+        if (gameType == GameType.CONNECT4) {
             this.eloConnectFour = v;
         } else {
             this.eloTicTacToe = v;
         }
     }
 
-    public void adjustEloForGame(int gameId, int delta) {
-        int next = getEloForGame(gameId) + delta;
-        setEloForGame(gameId, Math.max(0, next));
+    public void adjustEloForGame(GameType gameType, int delta) {
+        int next = getEloForGame(gameType) + delta;
+        setEloForGame(gameType, Math.max(0, next));
     }
 
-    public void incrementGamesForGame(int gameId) {
-        if (gameId == Game.CONNECT_FOUR) {
+    public void incrementGamesForGame(GameType gameType) {
+        if (gameType == GameType.CONNECT4) {
             gamesConnectFour++;
         } else {
             gamesTicTacToe++;
