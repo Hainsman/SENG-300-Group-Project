@@ -414,6 +414,7 @@ public class WindowManager {
     public void showNotification(String notification) {
         notificationLabel.setText(notification);
 
+        root.getChildren().remove(notificationLabel); // added this to make sure no duplicates get added (which causes a crash)
         root.getChildren().add(notificationLabel);
         StackPane.setAlignment(notificationLabel, Pos.TOP_CENTER);
 

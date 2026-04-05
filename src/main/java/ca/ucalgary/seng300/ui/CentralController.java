@@ -263,6 +263,10 @@ public class CentralController {
         }
     }
 
+    public boolean isGameOn() {
+        return currentScreen == Navigation.C4 || currentScreen == Navigation.TTT;
+    }
+
     public WindowManager getWindowManager() {
         return windowManager;
     }
