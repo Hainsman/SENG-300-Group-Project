@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<fx:root type="StackPane" fx:id="boardPane" alignment="TOP_CENTER" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-padding: 0;" styleClass="c4-scroll" vbarPolicy="AS_NEEDED">
+      <content>
+   <VBox alignment="TOP_CENTER" spacing="12" style="-fx-padding: 12 20 12 20;">
+      <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+         <children>
+            <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+         </children>
+      </HBox>
+
+      <Label style="-fx-font-size: 34px;" styleClass="mode-title" text="Connect 4" />
+      <Label fx:id="statusLabel" style="-fx-font-size:18px;" styleClass="mode-subtitle" text="Player 1's Turn" />
+
+      <HBox alignment="TOP_CENTER" fillHeight="false" maxWidth="1.7976931348623157E308" spacing="16">
+         <children>
+            <VBox alignment="CENTER" spacing="10" style="-fx-padding: 12 14;" styleClass="ttt-shell">
+               <GridPane fx:id="gridPane" alignment="CENTER" hgap="8" styleClass="c4-grid" vgap="8" />
+
+               <HBox alignment="CENTER">
+                  <Button onAction="#handleBackToMode" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
+               </HBox>
+
+               <HBox alignment="CENTER">
+                  <Button fx:id="resetButton" onAction="#resetClick" prefHeight="42.0" prefWidth="148.0" styleClass="primary-button" text="Rematch" visible="false" />
+               </HBox>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+   </VBox>
+      </content>
+   </ScrollPane>
+
+   <VBox fx:id="eloResultOverlay" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" visible="false"
+         style="-fx-background-color: rgba(15,12,28,0.72);"
+         StackPane.alignment="CENTER">
+      <VBox alignment="CENTER" spacing="14" styleClass="card" style="-fx-padding: 28 36; -fx-max-width: 420;">
+         <Label fx:id="eloOutcomeTitle" styleClass="mode-title" style="-fx-font-size: 32px;" text="Match result" />
+         <Label fx:id="eloDeltaLabel" styleClass="mode-subtitle" style="-fx-font-size: 22px;" text="" />
+         <Label fx:id="eloNewRatingLabel" styleClass="card-subtitle" text="" />
+         <Button onAction="#handleDismissEloOverlay" prefHeight="42.0" prefWidth="160.0" styleClass="primary-button" text="Continue" />
+      </VBox>
+   </VBox>
+</fx:root>

@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 
-<VBox prefHeight="680.0" prefWidth="1020.0" styleClass="game-gui-root" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.GameGUIController">
+<fx:root prefHeight="680.0" prefWidth="1020.0" styleClass="game-gui-root" stylesheets="@stylesheets/global.css" type="VBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <SplitPane dividerPositions="0.3, 0.75" prefHeight="680.0" prefWidth="1020.0">
+    <SplitPane dividerPositions="0.3, 0.75" VBox.vgrow="ALWAYS">
       <items>
 
         <AnchorPane styleClass="sidebar">
@@ -53,11 +53,7 @@
 
         <AnchorPane styleClass="game-pane">
           <children>
-            <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <children>
-                <fx:include fx:id="ticTacToeView" source="TicTacToe.fxml" />
-              </children>
-            </VBox>
+            <VBox fx:id="gameBox" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
 
@@ -84,4 +80,4 @@
       </items>
     </SplitPane>
   </children>
-</VBox>
+</fx:root>

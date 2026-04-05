@@ -1,21 +1,26 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.ui.games.C4Page;
+import ca.ucalgary.seng300.ui.games.GameGUIPage;
+import ca.ucalgary.seng300.ui.games.TTTPage;
+import ca.ucalgary.seng300.ui.lobby.*;
+import ca.ucalgary.seng300.ui.userdata.*;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
-import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.util.ArrayList;
 
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
@@ -35,7 +40,12 @@ public class CentralController {
     @FXML private Button minimizeButton;
     @FXML private Button maximizeButton;
 
-    public static String selectedGame;
+    private final ArrayList<Navigable> nodes = new ArrayList<>();
+
+    public TTTPage tttPage;
+    public C4Page connect4;
+
+    public static GameType selectedGame;
     public static int maxPlayers;
     public static String privacy;
     public static String lobbyCode;
@@ -43,15 +53,8 @@ public class CentralController {
     public static String lobbyName;
     /** True if this client created the current lobby (may start the game). */
     public static boolean hostingLobby;
-    public static String previousScreen;
-
-    /** FXML resource name for the profile / stats dashboard center view. */
-    public static final String PROFILE_DASHBOARD_FXML = "ProfileDashboard.fxml";
-
-    /**
-     * Tic-Tac-Toe play surface: sidebar + embedded {@code TicTacToe.fxml}, wired to {@link ClientCore} for online.
-     */
-    public static final String TIC_TAC_TOE_SHELL_FXML = "GameGUI.fxml";
+    public static Navigation previousScreen;
+    public static Navigation currentScreen;
 
     /**
      * When true, {@link GameGUIController} wires Tic-Tac-Toe to a local session with a random-move AI
@@ -60,7 +63,7 @@ public class CentralController {
     public static boolean ticTacToeLocalAiMode = false;
 
     /**
-     * When true, {@link Connect4Controller} uses a local {@link ca.ucalgary.seng300.platform.session.ConnectFourSession}
+     * When true, {@link C4Page} uses a local {@link ca.ucalgary.seng300.platform.session.ConnectFourSession}
      * with a random-move AI as player 2 (same pattern as TTT vs AI).
      */
     public static boolean connect4LocalAiMode = false;
@@ -72,8 +75,6 @@ public class CentralController {
     public static int rosterHostElo = 1200;
     public static String rosterGuestName = "";
     public static int rosterGuestElo = 1200;
-
-    private GameGUIController gameUI;
 
     public static void clearLobbyRoster() {
         rosterHostName = "";
@@ -99,7 +100,7 @@ public class CentralController {
         privacy = null;
         clearLobbyRoster();
         if (instance != null) {
-            moveTo("Login.fxml");
+            moveTo(Navigation.LOGIN);
         }
     }
 
@@ -123,17 +124,6 @@ public class CentralController {
         } catch (NumberFormatException e) {
             return 1200;
         }
-    }
-
-    public TicTacToeController ttt;
-    public Connect4Controller connect4;
-
-    public void setTic(TicTacToeController t){
-        ttt = t;
-    }
-
-    public void setConnect4(Connect4Controller c4) {
-        connect4 = c4;
     }
 
     public ClientCore getCC(){
@@ -171,8 +161,29 @@ public class CentralController {
             }
         });
 
+        initializeNodes();
+
         // Start at auth, then GameDashboardNew → chooseModeNew → lobby or GameGUI (incl. Play with AI).
-        loadView("Login.fxml");
+        loadView(Navigation.LOGIN);
+    }
+
+    private void initializeNodes() {
+        GameGUIPage gameGUIPage = new GameGUIPage(this);
+        connect4 = new C4Page(this, gameGUIPage);
+        tttPage = new TTTPage(this, gameGUIPage);
+        nodes.add(gameGUIPage);
+        nodes.add(connect4);
+        nodes.add(tttPage);
+        nodes.add(new ChooseModePage());
+        nodes.add(new GameDashboardPage());
+        nodes.add(new HostLobbyPage(this));
+        nodes.add(new InfoPage());
+        nodes.add(new JoinLobbyPage(this));
+        nodes.add(new LoginPage());
+        nodes.add(new MainLobbyPage(this));
+        nodes.add(new NewUserPage());
+        nodes.add(new ProfileDashboardPage());
+        nodes.add(new SettingsPage());
     }
 
     public static CentralController getInstance() {
@@ -180,8 +191,9 @@ public class CentralController {
     }
 
     // call anytime to switch pages
-    public static void moveTo(String fxml) {
-        instance.loadView(fxml);
+    public static void moveTo(Navigation nav) {
+        previousScreen = currentScreen;
+        instance.loadView(nav);
     }
 
     /**
@@ -193,27 +205,31 @@ public class CentralController {
         }
     }
 
+    private Navigable getNode(Navigation nav) {
+        for (Navigable node : nodes)
+            if (node.getNavigation() == nav)
+                return node;
+        return null;
+    }
+
     // private method used by navigateTo
-    private void loadView(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/ca.ucalgary.seng300.ui/" + fxml)
-            );
-            Node view = loader.load();
-            Object ctrl = loader.getController();
-            if (ctrl instanceof GameGUIController gfc) {
-                gameUI = gfc;
-                gameUI.setRoot(this);
-            } else if (ctrl instanceof TicTacToeController ttc) {
-                ttc.connectToRootForLobby(this, getWindowManager());
-            } else if (ctrl instanceof Connect4Controller c4) {
-                c4.connectToRootForLobby(this);
-            }
-            viewContainer.setCenter(view);
-            syncUiPreferencesToScene();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void loadView(Navigation nav) {
+        Navigable node = getNode(nav);
+
+        if (nav == Navigation.TTT || nav == Navigation.C4) {
+            GameGUIPage gameGUIPage = (GameGUIPage) getNode(Navigation.GAME_GUI);
+            viewContainer.setCenter(gameGUIPage);
+            gameGUIPage.setGameNode((Node) node);
+            gameGUIPage.reset();
+            previousScreen = Navigation.CHOOSE_MODE;
         }
+        else {
+            viewContainer.setCenter((Node) node);
+        }
+
+        node.reset();
+
+        currentScreen = nav;
     }
 
     private void syncUiPreferencesToScene() {

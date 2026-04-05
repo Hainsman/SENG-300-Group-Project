@@ -13,14 +13,12 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="720.0" prefWidth="1000.0"
+<fx:root type="BorderPane" prefHeight="720.0" prefWidth="1000.0"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ca.ucalgary.seng300.ui.SettingsController"
             stylesheets="@stylesheets/global.css"
             styleClass="root">
 
@@ -201,4 +199,4 @@
             </children>
         </VBox>
     </center>
-</BorderPane>
+</fx:root>
