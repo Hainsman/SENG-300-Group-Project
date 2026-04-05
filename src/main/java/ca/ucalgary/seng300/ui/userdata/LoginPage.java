@@ -68,8 +68,7 @@ public class LoginPage extends HBox implements Navigable {
         CentralController.currentUserId = user.getID();
         CentralController.displayName = user.getlogin();
         CentralController.previousScreen = null;
-        CentralController.ticTacToeLocalAiMode = false;
-        CentralController.connect4LocalAiMode = false;
+        CentralController.localAiMode = false;
         CentralController.moveTo(Navigation.GAME_DASHBOARD);
     }
 

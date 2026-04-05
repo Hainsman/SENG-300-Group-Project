@@ -131,7 +131,7 @@ public class C4Page extends StackPane implements Navigable {
             return;
         }
         if (session != null) {
-            if (!session.submitMove(col)) {
+            if (!session.submitMove(0, col)) {
                 return;
             }
             Player[][] b = session.getBoard();
@@ -213,7 +213,7 @@ public class C4Page extends StackPane implements Navigable {
             if (acol == null) {
                 return;
             }
-            if (!session.submitMove(acol)) {
+            if (!session.submitMove(0, acol)) {
                 return;
             }
             Player[][] b = session.getBoard();
@@ -337,7 +337,7 @@ public class C4Page extends StackPane implements Navigable {
 
     @FXML
     private void handleBackToMode(ActionEvent event) {
-        CentralController.connect4LocalAiMode = false;
+        CentralController.localAiMode = false;
         randomOpponentEnabled = false;
         session = null;
         EloOverlayUtil.hide(eloResultOverlay);
@@ -414,7 +414,7 @@ public class C4Page extends StackPane implements Navigable {
 
         clientCore = rootController.getCC();
         EloOverlayUtil.hide(eloResultOverlay);
-        if (CentralController.connect4LocalAiMode) {
+        if (CentralController.localAiMode) {
             randomOpponentEnabled = true;
             session = new ConnectFourSession();
             parentGUI.clearHistory();

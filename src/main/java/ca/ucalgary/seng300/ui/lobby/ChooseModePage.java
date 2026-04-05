@@ -58,32 +58,23 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     void handleHostGame(MouseEvent event) {
-        CentralController.ticTacToeLocalAiMode = false;
-        CentralController.connect4LocalAiMode = false;
+        CentralController.localAiMode = false;
         CentralController.moveTo(Navigation.HOST_LOBBY);
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
-        CentralController.ticTacToeLocalAiMode = false;
-        CentralController.connect4LocalAiMode = false;
+        CentralController.localAiMode = false;
         CentralController.moveTo(Navigation.JOIN_LOBBY);
     }
 
     @FXML
     void handlePlayWithAi(MouseEvent event) {
-        if (isTicTacToeSelection()) {
-            CentralController.connect4LocalAiMode = false;
-            CentralController.ticTacToeLocalAiMode = true;
+        CentralController.localAiMode = true;
+        if (isTicTacToeSelection())
             CentralController.moveTo(Navigation.TTT);
-            return;
-        }
-        if (isConnectFourSelection()) {
-            CentralController.ticTacToeLocalAiMode = false;
-            CentralController.connect4LocalAiMode = true;
+        else if (isConnectFourSelection())
             CentralController.moveTo(Navigation.C4);
-            return;
-        }
     }
 
     @FXML

@@ -113,8 +113,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             return;
         }
 
-        CentralController.ticTacToeLocalAiMode = false;
-        CentralController.connect4LocalAiMode = false;
+        CentralController.localAiMode = false;
         if (CentralController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {

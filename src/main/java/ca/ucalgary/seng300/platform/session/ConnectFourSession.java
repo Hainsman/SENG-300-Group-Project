@@ -10,7 +10,7 @@ import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
  * Local game session facade for Connect Four. Holds one {@link C4Game} and exposes
  * {@link #submitMove(int)} for a column drop and board/turn/state for the UI.
  */
-public class ConnectFourSession {
+public class ConnectFourSession implements Session {
 
     private final C4Game game = new C4Game();
 
@@ -27,7 +27,8 @@ public class ConnectFourSession {
      *
      * @return {@code true} if the move was valid and applied
      */
-    public boolean submitMove(int col) {
+    @Override
+    public boolean submitMove(int row, int col) {
         if (!State.IN_PROGRESS.equals(game.getGameState().getState())) {
             return false;
         }
@@ -52,18 +53,22 @@ public class ConnectFourSession {
         return gs.getBoard()[landing][col] != Player.EMPTY;
     }
 
+    @Override
     public Player[][] getBoard() {
         return game.getGameState().getBoard();
     }
 
+    @Override
     public Player getTurn() {
         return game.getGameState().getPlayerTurn();
     }
 
+    @Override
     public State getState() {
         return game.getGameState().getState();
     }
 
+    @Override
     public boolean isGameOver() {
         return game.isGameOver();
     }

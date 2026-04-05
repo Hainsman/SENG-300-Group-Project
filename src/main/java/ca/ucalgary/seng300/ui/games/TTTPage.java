@@ -428,6 +428,12 @@ public class TTTPage extends StackPane implements Navigable {
         refreshBackButtonVisibility();
     }
 
+//    @Override
+//    protected void refreshFromSession() {
+//        super.refreshFromSession();
+//        refreshBackButtonVisibility();
+//    }
+
     public void setSession(TicTacToeSession s) {
         this.session = s;
         if (s != null) refreshFromSession();
@@ -511,6 +517,12 @@ public class TTTPage extends StackPane implements Navigable {
         }*/
     }
 
+//    @Override
+//    public void refreshFromGameState(GameState gameState) {
+//        super.refreshFromGameState(gameState);
+//        refreshBackButtonVisibility();
+//    }
+
     /*public void setClientCore(ClientCore c) {
         this.clientCore = c;
         if (c != null && c.getLastUpdate() != null) refreshFromGameStateUpdate(c.getLastUpdate());
@@ -521,7 +533,7 @@ public class TTTPage extends StackPane implements Navigable {
     }
 
     private void navigateBackFromGame() {
-        CentralController.ticTacToeLocalAiMode = false;
+        CentralController.localAiMode = false;
         randomOpponentEnabled = false;
         EloOverlayUtil.hide(eloResultOverlay);
         if (CentralController.previousScreen != null) {
@@ -578,7 +590,7 @@ public class TTTPage extends StackPane implements Navigable {
 
         moves = 0;
 
-        boolean vsAi = CentralController.ticTacToeLocalAiMode;
+        boolean vsAi = CentralController.localAiMode;
         setRandomOpponentEnabled(vsAi);
         if (vsAi) {
             setSession(new TicTacToeSession());

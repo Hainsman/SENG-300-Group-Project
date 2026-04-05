@@ -57,16 +57,10 @@ public class CentralController {
     public static Navigation currentScreen;
 
     /**
-     * When true, {@link GameGUIController} wires Tic-Tac-Toe to a local session with a random-move AI
-     * opponent (player is X, AI is O). Cleared when leaving that flow or the game screen.
+     * When true, {@link ca.ucalgary.seng300.ui.games.CommonGameLogic} wires the game to a local session with a random-move AI
+     * opponent. Cleared when leaving that flow or the game screen.
      */
-    public static boolean ticTacToeLocalAiMode = false;
-
-    /**
-     * When true, {@link C4Page} uses a local {@link ca.ucalgary.seng300.platform.session.ConnectFourSession}
-     * with a random-move AI as player 2 (same pattern as TTT vs AI).
-     */
-    public static boolean connect4LocalAiMode = false;
+    public static boolean localAiMode = false;
 
     public static int currentUserId;
     public static String displayName = "Player";
@@ -91,8 +85,7 @@ public class CentralController {
         displayName = "Player";
         previousScreen = null;
         selectedGame = null;
-        ticTacToeLocalAiMode = false;
-        connect4LocalAiMode = false;
+        localAiMode = false;
         hostingLobby = false;
         lobbyCode = null;
         lobbyName = null;
