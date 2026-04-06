@@ -57,9 +57,8 @@ public class NewUserController {
             return;
         }
 
-        int newId = store.assignNewID();
         String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
-        store.create(new User(newId, username, email, passwordHash));
+        store.createWithNextId(id -> new User(id, username, email, passwordHash));
 
         CentralController.moveTo("Login.fxml");
     }

@@ -171,8 +171,6 @@ public class ServerCoreMultiUser{
         UserStore userStore = UserStore.getInstance();
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
         List<User> listOfUsers= userStore.findByUserName(createAccount.getUsername());
-        int newSessionId = sessionHistoryStore.assignNewID();
-        int newUserId = userStore.assignNewID();
         String incomingUsername = createAccount.getUsername();
         String incomingEmail = createAccount.getEmail();
         String incomingPassword = hashPassword(createAccount.getPassword(), HASH_ALGORITHM);
@@ -183,8 +181,8 @@ public class ServerCoreMultiUser{
         if (!isEmailValid(incomingEmail, EMAIL_REGEX))
             return ServerResponse.Fail("Error email is invalid please try again");
 
-        sessionHistoryStore.create(new SessionHistory(newSessionId, newUserId, createAccount.getGloballyUniqueSessionId()));
-        userStore.create(new User(newUserId, incomingUsername, incomingEmail, incomingPassword));
+        User newUser = userStore.createWithNextId(id -> new User(id, incomingUsername, incomingEmail, incomingPassword));
+        sessionHistoryStore.createWithNextId(sid -> new SessionHistory(sid, newUser.getID(), createAccount.getGloballyUniqueSessionId()));
         return ServerResponse.Success("Successfully created new user");
     }
 
@@ -193,7 +191,6 @@ public class ServerCoreMultiUser{
         UserStore userStore = UserStore.getInstance();
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
         List<User> listOfUsers= userStore.findByUserName(auth.getUsername());
-        int newSessionId = sessionHistoryStore.assignNewID();
         String incomingUsername = auth.getUsername();
         String incomingPassword = hashPassword(auth.getPassword(), HASH_ALGORITHM);
 
@@ -201,7 +198,8 @@ public class ServerCoreMultiUser{
             return ServerResponse.Fail("Error Username not found");
 
         if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
-            sessionHistoryStore.create(new SessionHistory(newSessionId, listOfUsers.getFirst().getID(), auth.getGloballyUniqueSessionId()));
+            int userId = listOfUsers.getFirst().getID();
+            sessionHistoryStore.createWithNextId(sid -> new SessionHistory(sid, userId, auth.getGloballyUniqueSessionId()));
             return ServerResponse.Success("User successfully authenticated");
         }
         return ServerResponse.Fail("Error username or password incorrect");

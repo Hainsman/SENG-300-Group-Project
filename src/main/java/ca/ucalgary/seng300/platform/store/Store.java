@@ -10,11 +10,14 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.Collections;
 
@@ -87,11 +90,43 @@ abstract class Store<T extends Record> {
         }
     }
 
-    public int assignNewID() {
-        if (records.isEmpty()) {
-            return 1;
+    /**
+     * Allocates the next id and inserts the record in one step (same write lock as {@link #create}).
+     * Prefer this over {@link #assignNewID()} followed by {@link #create} to avoid duplicate-id races.
+     */
+    public T createWithNextId(IntFunction<T> factory) {
+        writeLock.lock();
+        try {
+            int nextId = records.isEmpty() ? 1 : Collections.max(records.keySet()) + 1;
+            T record = factory.apply(nextId);
+            if (record == null) {
+                throw new IllegalArgumentException("factory returned null");
+            }
+            if (record.getID() != nextId) {
+                record.setID(nextId);
+            }
+            records.put(nextId, record);
+            saveAll();
+            return record;
+        } finally {
+            writeLock.unlock();
         }
-        return Collections.max(records.keySet()) + 1;
+    }
+
+    /**
+     * Peek at the next id that would be used. Thread-safe for reads but not paired atomically with {@link #create};
+     * use {@link #createWithNextId} when adding a new row.
+     */
+    public int assignNewID() {
+        readLock.lock();
+        try {
+            if (records.isEmpty()) {
+                return 1;
+            }
+            return Collections.max(records.keySet()) + 1;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     private static Gson createGson(boolean pretty) {
@@ -125,7 +160,8 @@ abstract class Store<T extends Record> {
                 loaded = tryLoadLegacyShape(json);
             }
             if (loaded == null) {
-                System.err.println("Invalid JSON store (resetting): " + filePath);
+                System.err.println("Invalid JSON store (resetting in-memory map): " + filePath);
+                backupCorruptStoreFile(path);
                 records.clear();
                 quarantineCorruptStoreFile();
                 return;
@@ -171,6 +207,19 @@ abstract class Store<T extends Record> {
         }
     }
 
+    private void backupCorruptStoreFile(Path path) {
+        try {
+            if (!Files.isRegularFile(path)) {
+                return;
+            }
+            Path backup = Path.of(filePath + ".corrupt-backup-" + System.currentTimeMillis());
+            Files.copy(path, backup, StandardCopyOption.REPLACE_EXISTING);
+            System.err.println("Corrupt store copied to backup (restore manually if needed): " + backup.toAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Could not back up corrupt store: " + e.getMessage());
+        }
+    }
+
     private void quarantineCorruptStoreFile() {
         try {
             Path p = Path.of(filePath);
@@ -183,18 +232,30 @@ abstract class Store<T extends Record> {
     }
 
     private void saveAll() {
+        Path path = Path.of(filePath).toAbsolutePath().normalize();
+        Path parent = path.getParent();
+        Path tmp = parent != null
+                ? parent.resolve(path.getFileName() + ".tmp")
+                : Path.of(path + ".tmp");
         try {
-            Path path = Path.of(filePath);
-            Path parent = path.getParent();
             if (parent != null) {
                 Files.createDirectories(parent);
             }
-            try (var fw = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            try (var fw = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8)) {
                 PRETTY_GSON.toJson(records, fw);
+            }
+            try {
+                Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             System.err.println("Failed to write to: " + filePath + ": " + e.getMessage());
             e.printStackTrace();
+            try {
+                Files.deleteIfExists(tmp);
+            } catch (IOException ignored) {
+            }
         }
     }
 }

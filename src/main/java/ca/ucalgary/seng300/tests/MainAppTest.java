@@ -5,24 +5,28 @@ import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.*;
 import ca.ucalgary.seng300.platform.domain.Record;
-import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.services.MatchMakingService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.utils.Helper;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-
+/**
+ * Manual integration runner. Uses a temp directory for all {@link Store} files so it never overwrites project {@code datafiles/}.
+ */
 public class MainAppTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //        launch(args);
-        LocalDateTime now = LocalDateTime.now(); //local time mountain
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Path tempDir = Files.createTempDirectory("seng300-mainapptest");
+        tempDir.toFile().deleteOnExit();
 
-        UserStore userStorage = UserStore.getInstance();
+        UserStore userStorage = new UserStore(tempDir.resolve("user.txt").toString());
         userStorage.create(new User(1, "Daniel", "daniel.maximov@ucalgary.ca", Helper.hashPassword("ABC", Constants.HASH_ALGORITHM)));
         userStorage.create(new User(2, "Alex", "alex.smith@ucalgary.ca", Helper.hashPassword("DEF", Constants.HASH_ALGORITHM)));
         userStorage.create(new User(3, "John", "John.Johnson@ucalgary,ca", Helper.hashPassword("ABC", Constants.HASH_ALGORITHM)));
@@ -41,14 +45,14 @@ public class MainAppTest {
         }
 
 
-        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
+        SessionHistoryStore sessionHistoryStore = new SessionHistoryStore(tempDir.resolve("sessionHistory.txt").toString());
         sessionHistoryStore.create(new SessionHistory(1, 1, UUID.randomUUID()));
         sessionHistoryStore.create(new SessionHistory(2, 2, UUID.randomUUID()));
         sessionHistoryStore.create(new SessionHistory(3, 3, UUID.randomUUID()));
         sessionHistoryStore.create(new SessionHistory(4, 4, UUID.randomUUID()));
 
 //        GameHistoryStore gameHistoryStore = new GameHistoryStore(Constants.GAME_FILE_PATH);
-        GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();
+        GameHistoryStore gameHistoryStore = new GameHistoryStore(tempDir.resolve("gameHistory.txt").toString());
         gameHistoryStore.create(new GameHistory(1, Game.TICK_TACK_TOE));
         gameHistoryStore.create(new GameHistory(2, Game.TICK_TACK_TOE));
         gameHistoryStore.create(new GameHistory(3, Game.TICK_TACK_TOE));
@@ -61,7 +65,7 @@ public class MainAppTest {
         gameHistoryStore.create(new GameHistory(10, Game.TICK_TACK_TOE));
         gameHistoryStore.create(gameHistory1);
 //
-        ParticipantStore participantStore = ParticipantStore.getInstance();
+        ParticipantStore participantStore = new ParticipantStore(tempDir.resolve("participants.txt").toString());
         participantStore.create(new Participant(1, 1, 1, 1));
         participantStore.create(new Participant(2, 2, 1, 1));
         participantStore.create(new Participant(3, 3, 1, 1));
@@ -73,7 +77,7 @@ public class MainAppTest {
         participantStore.create(new Participant(9, 9, 1, 1));
         participantStore.create(new Participant(10, 10, 1, 80));
 
-        PlayerStatsStore playerStatsStore = PlayerStatsStore.getInstance();
+        PlayerStatsStore playerStatsStore = new PlayerStatsStore(tempDir.resolve("playerStats.txt").toString());
         PlayerStats playerOne = new PlayerStats(1, Game.TICK_TACK_TOE, 1);
         PlayerStats playerTwo = new PlayerStats(2, Game.TICK_TACK_TOE, 2);
         PlayerStats playerThree = new PlayerStats(3, Game.TICK_TACK_TOE, 3);
@@ -116,10 +120,7 @@ public class MainAppTest {
         System.out.println(listOfUsers.getFirst().getlogin());
         System.out.println(listOfGames.size());
 //        System.out.println(listOfSessions.getFirst().getGloballyUniqueSessionIdentifier());
-        LeaderBoardService lbs = new LeaderBoardService();
-//        lbs.
-
-        List<User> sortedUsers = lbs.getLeaderBoard(false, 1, 4);
+        List<User> sortedUsers = buildSortedUserLeaderBoardSlice(userStorage, Game.TICK_TACK_TOE, 4);
 
         for (int i = 0; i < sortedUsers.size(); i++) {
             User row = sortedUsers.get(i);
@@ -232,5 +233,20 @@ public class MainAppTest {
         List<PlayerStats> connectFourMatch = matchMaking.matchPlayers(Game.CONNECT_FOUR);
         System.out.println("Test 11 - ConnectFour match should contain players 107 and 108: " + connectFourMatch.get(0).getUserID() + " and " + connectFourMatch.get(1).getUserID());
 
+    }
+
+    /** Same ordering as {@link ca.ucalgary.seng300.platform.services.LeaderBoardService} for tests using a non-singleton {@link UserStore}. */
+    private static List<User> buildSortedUserLeaderBoardSlice(UserStore store, int gameId, int count) {
+        List<User> users = new ArrayList<>(store.findAll());
+        users.sort(Comparator
+                .comparingInt((User u) -> u.getEloForGame(gameId)).reversed()
+                .thenComparing(User::getlogin, String.CASE_INSENSITIVE_ORDER));
+        if (users.isEmpty()) {
+            return new ArrayList<>();
+        }
+        if (count > users.size()) {
+            count = users.size();
+        }
+        return new ArrayList<>(users.subList(0, count));
     }
 }
