@@ -2,90 +2,146 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="AnchorPane" prefHeight="700.0" prefWidth="1100.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root type="AnchorPane" prefHeight="700.0" prefWidth="1100.0" styleClass="lobby-screen lobby-ttt" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <children>
+        <VBox alignment="TOP_CENTER" spacing="24.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="28.0">
+            <children>
+                <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="16.0">
+                    <children>
+                        <Button onAction="#handleBack" styleClass="back-button" text="←  Back" />
+                        <Region maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                        <Label styleClass="lobby-chip" text="WAITING ROOM" />
+                    </children>
+                </HBox>
 
-        <VBox alignment="TOP_CENTER" spacing="20" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-
-            <!-- BACK BUTTON -->
-
-            <!-- HEADER -->
-            <VBox alignment="CENTER" spacing="5" styleClass="header-box">
-                <Label fx:id="lobbyTitle" styleClass="title-label" />
-
-                <Label styleClass="subtitle-label" text="Invite friends and start the game" />
-            </VBox>
-
-            <HBox spacing="25" VBox.vgrow="ALWAYS">
-
-                <!-- LEFT SIDE -->
-                <VBox spacing="20" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-
-                    <!-- LOBBY CODE -->
-                    <VBox styleClass="card">
-                        <Label styleClass="card-title" text="Lobby Code" />
-
-                        <HBox spacing="10">
-                            <Label fx:id="lobbyCodeLabel" styleClass="code-label" text="ABC123" HBox.hgrow="ALWAYS" />
-
-                            <Button fx:id="copyCodeBtn" onAction="#handleCopyCode" text="Copy" />
-                        </HBox>
-                    </VBox>
-
-                    <!-- PLAYERS -->
-                    <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
-                        <Label fx:id="playerCountLabel" styleClass="card-title" text="Players" />
-
-                        <ListView fx:id="playerList" VBox.vgrow="ALWAYS" />
-                    </VBox>
-
-                    <!-- START BUTTON -->
-                    <Button fx:id="startGameBtn" maxWidth="Infinity" onAction="#handleStartGame" prefHeight="50" styleClass="start-button" text="Start Game" />
-
+                <VBox spacing="6.0">
+                    <children>
+                        <Label fx:id="lobbyTitle" styleClass="mode-title" style="-fx-font-size: 42px;" text="Lobby" />
+                        <Label fx:id="lobbySubtitle" styleClass="mode-subtitle" text="Share the code with your opponent. When both are connected, the host starts the match." wrapText="true" />
+                    </children>
                 </VBox>
 
-                <!-- RIGHT SIDE -->
-                <VBox prefWidth="260" spacing="20">
+                <HBox alignment="TOP_LEFT" spacing="28.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <VBox maxWidth="1.7976931348623157E308" spacing="20.0" HBox.hgrow="ALWAYS" minWidth="420.0">
+                            <children>
+                                <VBox spacing="14.0" styleClass="lobby-card lobby-code-card">
+                                    <children>
+                                        <Label styleClass="lobby-card-heading" text="Lobby code" />
+                                        <HBox alignment="CENTER_LEFT" spacing="14.0">
+                                            <children>
+                                                <Label fx:id="lobbyCodeLabel" styleClass="lobby-code-value" text="----" />
+                                                <Region maxWidth="1.7976931348623157E308" minWidth="8.0" HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="copyCodeBtn" minWidth="88.0" mnemonicParsing="false" onAction="#handleCopyCode" styleClass="primary-button" text="Copy" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
 
-                    <!-- PLAYER CARD -->
-                    <VBox styleClass="card">
-                        <Label styleClass="card-title" text="Player 1" />
-                    </VBox>
+                                <VBox spacing="0.0" styleClass="lobby-card lobby-players-card" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <Label fx:id="playerCountLabel" styleClass="lobby-card-heading" text="Players" />
 
-                    <!-- FRIENDS -->
-                    <VBox styleClass="card">
-                        <Label styleClass="card-title" text="Friends" />
-                        <Label text="Username2" />
-                        <Label text="Username3" />
-                        <Label text="Username4" />
-                    </VBox>
+                                        <VBox spacing="0.0" styleClass="lobby-player-list">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="lobby-player-row">
+                                                    <children>
+                                                        <VBox alignment="CENTER" styleClass="lobby-avatar-slot" minWidth="48.0" prefWidth="48.0">
+                                                            <children>
+                                                                <Label styleClass="lobby-avatar-letter" text="H" />
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                                    <children>
+                                                                        <Label fx:id="hostNameLabel" styleClass="lobby-player-name" text="—" />
+                                                                        <Label fx:id="hostYouPill" managed="false" styleClass="lobby-you-pill" text="YOU" visible="false" />
+                                                                        <Region maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                                        <Label fx:id="hostSlotLabel" styleClass="lobby-slot-tag" text="Host" />
+                                                                    </children>
+                                                                </HBox>
+                                                                <Label fx:id="hostEloLabel" styleClass="lobby-elo" text="Elo —" />
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </HBox>
 
-                    <!-- GAME SETTINGS -->
-                    <VBox styleClass="card">
-                        <Label styleClass="card-title" text="Game Settings" />
+                                                <Region prefHeight="1.0" maxHeight="1.0" styleClass="lobby-player-divider" />
 
-                        <Label text="Max Players:" />
-                        <Label fx:id="maxPlayersLabel" text="8" />
+                                                <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="lobby-player-row">
+                                                    <children>
+                                                        <VBox alignment="CENTER" styleClass="lobby-avatar-slot lobby-avatar-guest" minWidth="48.0" prefWidth="48.0">
+                                                            <children>
+                                                                <Label styleClass="lobby-avatar-letter" text="G" />
+                                                            </children>
+                                                        </VBox>
+                                                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                                    <children>
+                                                                        <Label fx:id="guestNameLabel" styleClass="lobby-player-name" text="—" />
+                                                                        <Label fx:id="guestYouPill" managed="false" styleClass="lobby-you-pill" text="YOU" visible="false" />
+                                                                        <Region maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                                        <Label fx:id="guestSlotLabel" styleClass="lobby-slot-tag" text="Guest" />
+                                                                    </children>
+                                                                </HBox>
+                                                                <Label fx:id="guestEloLabel" styleClass="lobby-elo" text="Elo —" />
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
 
-                        <Label text="Game Mode:" />
-                        <Label fx:id="gameNameLabel" text="Standard" />
+                                        <Label fx:id="connectionHintLabel" styleClass="lobby-hint" text="Waiting for your opponent to join…" wrapText="true" />
+                                    </children>
+                                </VBox>
 
-                        <Label text="Privacy:" />
-                        <Label fx:id="privacyLabel" text="Public" />
-                    </VBox>
+                                <Button fx:id="startGameBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleStartGame" prefHeight="52.0" styleClass="start-button" text="Start game" />
+                            </children>
+                        </VBox>
 
-                </VBox>
-
-            </HBox>
-            <Button onAction="#handleBack" styleClass="back-button" text="← Back to Menu" />
-
+                        <VBox minWidth="280.0" prefWidth="300.0" maxWidth="340.0" spacing="20.0">
+                            <children>
+                                <VBox spacing="14.0" styleClass="lobby-card lobby-side-card">
+                                    <children>
+                                        <Label styleClass="lobby-card-heading" text="Match details" />
+                                        <VBox spacing="10.0">
+                                            <children>
+                                                <HBox styleClass="lobby-kv-row">
+                                                    <children>
+                                                        <Label styleClass="lobby-kv-key" text="Game" />
+                                                        <Label fx:id="gameNameLabel" styleClass="lobby-kv-value" text="—" />
+                                                    </children>
+                                                </HBox>
+                                                <HBox styleClass="lobby-kv-row">
+                                                    <children>
+                                                        <Label styleClass="lobby-kv-key" text="Privacy" />
+                                                        <Label fx:id="privacyLabel" styleClass="lobby-kv-value" text="—" />
+                                                    </children>
+                                                </HBox>
+                                                <HBox styleClass="lobby-kv-row">
+                                                    <children>
+                                                        <Label styleClass="lobby-kv-key" text="Max players" />
+                                                        <Label fx:id="maxPlayersLabel" styleClass="lobby-kv-value" text="2" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
         </VBox>
-
     </children>
 </fx:root>

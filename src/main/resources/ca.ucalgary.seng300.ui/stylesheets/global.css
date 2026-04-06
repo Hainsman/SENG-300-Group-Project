@@ -1027,3 +1027,171 @@
     -fx-scale-y: 0.99;
     -fx-translate-y: 0;
 }
+
+/* ========== Main lobby (MainLobby.fxml) ========== */
+.lobby-screen {
+    -fx-background-color: #111112;
+}
+
+.lobby-screen.lobby-ttt {
+    -fx-border-color: transparent;
+}
+
+.lobby-screen.lobby-c4 {
+    -fx-border-color: transparent;
+}
+
+.lobby-chip {
+    -fx-background-color: #10261a;
+    -fx-text-fill: #34d399;
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-padding: 8 14;
+}
+
+.lobby-c4 .lobby-chip {
+    -fx-background-color: #1e3a5f;
+    -fx-text-fill: #60a5fa;
+}
+
+.lobby-card {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 18 20;
+}
+
+.lobby-code-card {
+    -fx-border-width: 1;
+}
+
+.lobby-screen.lobby-ttt .lobby-code-card {
+    -fx-border-color: #14532d;
+}
+
+.lobby-screen.lobby-c4 .lobby-code-card {
+    -fx-border-color: #1e3a8a;
+}
+
+.lobby-card-heading {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-letter-spacing: 0.06em;
+}
+
+.lobby-code-value {
+    -fx-text-fill: #4ade80;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-font-family: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+}
+
+.lobby-c4 .lobby-code-value {
+    -fx-text-fill: #60a5fa;
+}
+
+.lobby-players-card {
+    -fx-min-height: 220;
+}
+
+.lobby-player-list {
+    -fx-padding: 8 0 0 0;
+}
+
+.lobby-player-row {
+    -fx-padding: 14 0;
+}
+
+.lobby-player-divider {
+    -fx-background-color: #2f2f35;
+}
+
+.lobby-avatar-slot {
+    -fx-background-color: #141416;
+    -fx-background-radius: 12;
+    -fx-border-color: #34d399;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-min-height: 48;
+    -fx-pref-height: 48;
+}
+
+.lobby-c4 .lobby-avatar-slot {
+    -fx-border-color: #3b82f6;
+}
+
+.lobby-avatar-slot.lobby-avatar-guest {
+    -fx-border-color: #a855f7;
+}
+
+.lobby-c4 .lobby-avatar-slot.lobby-avatar-guest {
+    -fx-border-color: #818cf8;
+}
+
+.lobby-avatar-letter {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+}
+
+.lobby-player-name {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+.lobby-you-pill {
+    -fx-background-color: #27272a;
+    -fx-text-fill: #34d399;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 6;
+    -fx-padding: 2 8;
+}
+
+.lobby-c4 .lobby-you-pill {
+    -fx-text-fill: #60a5fa;
+}
+
+.lobby-slot-tag {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.lobby-elo {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.lobby-hint {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 13px;
+    -fx-padding: 14 0 0 0;
+}
+
+.lobby-side-card {
+    -fx-padding: 18 18;
+}
+
+.lobby-kv-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 12;
+}
+
+.lobby-kv-key {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 13px;
+    -fx-min-width: 96;
+}
+
+.lobby-kv-value {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
