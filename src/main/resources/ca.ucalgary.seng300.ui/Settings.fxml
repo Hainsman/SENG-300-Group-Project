@@ -11,21 +11,19 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="BorderPane" prefHeight="720.0" prefWidth="1000.0"
-            xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            stylesheets="@stylesheets/global.css"
-            styleClass="root">
+<fx:root prefHeight="720.0" prefWidth="1000.0" styleClass="root" stylesheets="@stylesheets/global.css" type="BorderPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <center>
         <VBox spacing="18.0" styleClass="app-surface">
             <padding>
-                <Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
             </padding>
 
             <children>
@@ -33,39 +31,33 @@
                 <!-- Top row -->
                 <HBox alignment="CENTER_LEFT" spacing="12.0">
                     <children>
-                        <Button fx:id="backButton"
-                                text="← Back"
-                                onAction="#handleBack"
-                                mnemonicParsing="false"
-                                prefWidth="110.0"
-                                prefHeight="40.0"
-                                styleClass="back-button"/>
+                        <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" prefHeight="40.0" prefWidth="110.0" styleClass="back-button" text="← Back" />
 
-                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label styleClass="title-label" text="Settings" translateX="690.0" />
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" translateX="690.0">
+                     <image>
+                        <Image url="@stylesheets/images/bogo_solutions_logo.png" />
+                     </image>
+                  </ImageView>
 
-                        <Label text="Settings"
-                               styleClass="title-label"/>
+                        <Region HBox.hgrow="ALWAYS" />
                     </children>
                 </HBox>
 
                 <!-- Header -->
                 <VBox spacing="4.0" styleClass="header-box">
                     <children>
-                        <Label text="Manage Your Settings" styleClass="title-label"/>
-                        <Label text="Update your account information and accessibility preferences."
-                               styleClass="subtitle-label"/>
+                        <Label styleClass="title-label" text="Manage Your Settings" />
+                        <Label styleClass="subtitle-label" text="Update your account information and accessibility preferences." />
                     </children>
                 </VBox>
 
                 <!-- Main scrollable content -->
-                <ScrollPane fitToWidth="true"
-                            hbarPolicy="NEVER"
-                            VBox.vgrow="ALWAYS"
-                            styleClass="settings-scroll">
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="settings-scroll" VBox.vgrow="ALWAYS">
                     <content>
-                        <VBox spacing="18.0" maxWidth="760.0">
+                        <VBox maxWidth="760.0" spacing="18.0">
                             <padding>
-                                <Insets top="4.0" right="4.0" bottom="4.0" left="4.0"/>
+                                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                             </padding>
 
                             <children>
@@ -73,16 +65,13 @@
                                 <!-- Active account -->
                                 <VBox spacing="10.0" styleClass="card">
                                     <children>
-                                        <Label text="Current Account" styleClass="card-title"/>
-                                        <Label text="This is the username currently signed in."
-                                               styleClass="card-subtitle"/>
+                                        <Label styleClass="card-title" text="Current Account" />
+                                        <Label styleClass="card-subtitle" text="This is the username currently signed in." />
 
-                                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <children>
-                                                <Label text="Active Username:" styleClass="subtitle-label"/>
-                                                <Label fx:id="activeUsernameLabel"
-                                                       text="current_user"
-                                                       styleClass="game-name"/>
+                                                <Label styleClass="subtitle-label" text="Active Username:" />
+                                                <Label fx:id="activeUsernameLabel" styleClass="game-name" text="current_user" />
                                             </children>
                                         </HBox>
                                     </children>
@@ -91,45 +80,36 @@
                                 <!-- Account settings -->
                                 <VBox spacing="14.0" styleClass="card">
                                     <children>
-                                        <Label text="Account Settings" styleClass="card-title"/>
-                                        <Label text="Change your username, email, or password."
-                                               styleClass="card-subtitle"/>
+                                        <Label styleClass="card-title" text="Account Settings" />
+                                        <Label styleClass="card-subtitle" text="Change your username, email, or password." />
 
-                                        <Separator/>
+                                        <Separator />
 
                                         <VBox spacing="6.0">
                                             <children>
-                                                <Label text="New Username" styleClass="subtitle-label"/>
-                                                <TextField fx:id="usernameField"
-                                                           promptText="Enter new username"
-                                                           styleClass="input-field"/>
+                                                <Label styleClass="subtitle-label" text="New Username" />
+                                                <TextField fx:id="usernameField" promptText="Enter new username" styleClass="input-field" />
                                             </children>
                                         </VBox>
 
                                         <VBox spacing="6.0">
                                             <children>
-                                                <Label text="New Email" styleClass="subtitle-label"/>
-                                                <TextField fx:id="emailField"
-                                                           promptText="Enter new email address"
-                                                           styleClass="input-field"/>
+                                                <Label styleClass="subtitle-label" text="New Email" />
+                                                <TextField fx:id="emailField" promptText="Enter new email address" styleClass="input-field" />
                                             </children>
                                         </VBox>
 
                                         <VBox spacing="6.0">
                                             <children>
-                                                <Label text="New Password" styleClass="subtitle-label"/>
-                                                <PasswordField fx:id="passwordField"
-                                                               promptText="Enter new password"
-                                                               styleClass="input-field"/>
+                                                <Label styleClass="subtitle-label" text="New Password" />
+                                                <PasswordField fx:id="passwordField" promptText="Enter new password" styleClass="input-field" />
                                             </children>
                                         </VBox>
 
                                         <VBox spacing="6.0">
                                             <children>
-                                                <Label text="Confirm Password" styleClass="subtitle-label"/>
-                                                <PasswordField fx:id="confirmPasswordField"
-                                                               promptText="Confirm new password"
-                                                               styleClass="input-field"/>
+                                                <Label styleClass="subtitle-label" text="Confirm Password" />
+                                                <PasswordField fx:id="confirmPasswordField" promptText="Confirm new password" styleClass="input-field" />
                                             </children>
                                         </VBox>
                                     </children>
@@ -138,60 +118,41 @@
                                 <!-- Accessibility -->
                                 <VBox spacing="14.0" styleClass="card">
                                     <children>
-                                        <Label text="Accessibility" styleClass="card-title"/>
-                                        <Label text="Adjust readability and visual accessibility."
-                                               styleClass="card-subtitle"/>
+                                        <Label styleClass="card-title" text="Accessibility" />
+                                        <Label styleClass="card-subtitle" text="Adjust readability and visual accessibility." />
 
-                                        <Separator/>
+                                        <Separator />
 
                                         <VBox spacing="6.0">
                                             <children>
-                                                <Label text="Text Scaling" styleClass="subtitle-label"/>
-                                                <ComboBox fx:id="textScaleComboBox"
-                                                          promptText="Select text scale"
-                                                          styleClass="input-field">
+                                                <Label styleClass="subtitle-label" text="Text Scaling" />
+                                                <ComboBox fx:id="textScaleComboBox" promptText="Select text scale" styleClass="input-field">
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
-                                                            <String fx:value="Small (90%)"/>
-                                                            <String fx:value="Normal (100%)"/>
-                                                            <String fx:value="Large (110%)"/>
-                                                            <String fx:value="Extra Large (125%)"/>
+                                                            <String fx:value="Small (90%)" />
+                                                            <String fx:value="Normal (100%)" />
+                                                            <String fx:value="Large (110%)" />
+                                                            <String fx:value="Extra Large (125%)" />
                                                         </FXCollections>
                                                     </items>
                                                 </ComboBox>
                                             </children>
                                         </VBox>
 
-                                        <CheckBox fx:id="colorBlindModeCheckBox"
-                                                  text="Enable Colorblind Mode"
-                                                  styleClass="login-checkbox"/>
+                                        <CheckBox fx:id="colorBlindModeCheckBox" styleClass="login-checkbox" text="Enable Colorblind Mode" />
                                     </children>
                                 </VBox>
 
                                 <!-- Save area -->
-                                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                                <HBox alignment="CENTER_LEFT" spacing="12.0">
                                     <children>
-                                        <Button fx:id="saveButton"
-                                                text="Save Changes"
-                                                onAction="#handleSaveSettings"
-                                                mnemonicParsing="false"
-                                                prefWidth="150.0"
-                                                prefHeight="40.0"
-                                                styleClass="primary-button"/>
+                                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveSettings" prefHeight="40.0" prefWidth="150.0" styleClass="primary-button" text="Save Changes" />
 
-                                        <Button fx:id="resetButton"
-                                                text="Reset"
-                                                onAction="#handleResetDefaults"
-                                                mnemonicParsing="false"
-                                                prefWidth="110.0"
-                                                prefHeight="40.0"
-                                                styleClass="back-button"/>
+                                        <Button fx:id="resetButton" mnemonicParsing="false" onAction="#handleResetDefaults" prefHeight="40.0" prefWidth="110.0" styleClass="back-button" text="Reset" />
                                     </children>
                                 </HBox>
 
-                                <Label fx:id="statusLabel"
-                                       text="Settings ready to edit."
-                                       styleClass="card-subtitle"/>
+                                <Label fx:id="statusLabel" styleClass="card-subtitle" text="Settings ready to edit." />
                             </children>
                         </VBox>
                     </content>

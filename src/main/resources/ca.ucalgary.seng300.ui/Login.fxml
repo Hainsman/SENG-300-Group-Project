@@ -13,13 +13,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<fx:root type="HBox" alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34"
-      stylesheets="@stylesheets/global.css" styleClass="app-surface"
-      xmlns="http://javafx.com/javafx/23.0.1"
-      xmlns:fx="http://javafx.com/fxml/1">
-    <padding><Insets top="34" bottom="34" left="34" right="34"/></padding>
+<fx:root alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34" styleClass="app-surface" stylesheets="@stylesheets/global.css" type="HBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <padding><Insets bottom="34" left="34" right="34" top="34" /></padding>
 
-    <StackPane minWidth="500.0" prefHeight="610.0" prefWidth="500.0" maxWidth="500.0">
+    <StackPane maxWidth="500.0" minWidth="500.0" prefHeight="610.0" prefWidth="500.0">
         <children>
             <ImageView fitHeight="610.0" pickOnBounds="true" preserveRatio="true" smooth="true">
                 <image>
@@ -32,46 +29,29 @@
         </clip>
     </StackPane>
 
-    <VBox alignment="CENTER" minWidth="430.0" maxWidth="430.0" prefWidth="430.0" spacing="16" styleClass="auth-form-card">
+    <VBox alignment="CENTER" maxWidth="430.0" minWidth="430.0" prefWidth="430.0" spacing="16" styleClass="auth-form-card">
+      <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@stylesheets/images/bogo_solutions_logo.png" />
+         </image>
+      </ImageView>
         <Label alignment="CENTER" maxWidth="Infinity" style="-fx-font-size:36px;" styleClass="mode-title" text="Welcome Back" />
         <Label alignment="CENTER" maxWidth="Infinity" styleClass="mode-subtitle" text="Sign in to your account" />
 
         <HBox alignment="CENTER_LEFT" spacing="12">
             <Label styleClass="icon-label" text="👤" />
-            <TextField fx:id="usernameField"
-                       maxWidth="Infinity"
-                       prefHeight="40"
-                       promptText="Username"
-                       styleClass="input-field"
-                       HBox.hgrow="ALWAYS" />
+            <TextField fx:id="usernameField" maxWidth="Infinity" prefHeight="40" promptText="Username" styleClass="input-field" HBox.hgrow="ALWAYS" />
         </HBox>
         <HBox alignment="CENTER_LEFT" spacing="12">
             <Label styleClass="icon-label" text="🔒" />
-            <PasswordField fx:id="passwordField"
-                           maxWidth="Infinity"
-                           prefHeight="40"
-                           promptText="Password"
-                           styleClass="input-field"
-                           HBox.hgrow="ALWAYS" />
+            <PasswordField fx:id="passwordField" maxWidth="Infinity" prefHeight="40" promptText="Password" styleClass="input-field" HBox.hgrow="ALWAYS" />
         </HBox>
         <CheckBox fx:id="rememberMeBox" styleClass="login-checkbox" text="Remember Me" />
         <Label fx:id="errorLabel" styleClass="error-text" text="" />
         <VBox spacing="12">
-            <Button maxWidth="Infinity"
-                    onAction="#handleLogin"
-                    prefHeight="45"
-                    styleClass="auth-outline-button"
-                    text="Sign In" />
-            <Button maxWidth="Infinity"
-                    onAction="#handleNewUser"
-                    prefHeight="45"
-                    styleClass="auth-outline-button"
-                    text="Create New Account" />
-            <Button alignment="CENTER"
-                    maxWidth="Infinity"
-                    onAction="#handleForgotPassword"
-                    styleClass="link-button"
-                    text="Forgot Password?" />
+            <Button maxWidth="Infinity" onAction="#handleLogin" prefHeight="45" styleClass="auth-outline-button" text="Sign In" />
+            <Button maxWidth="Infinity" onAction="#handleNewUser" prefHeight="45" styleClass="auth-outline-button" text="Create New Account" />
+            <Button alignment="CENTER" maxWidth="Infinity" onAction="#handleForgotPassword" styleClass="link-button" text="Forgot Password?" />
         </VBox>
     </VBox>
 

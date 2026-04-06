@@ -5,27 +5,34 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="AnchorPane" prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="700.0" prefWidth="1000.0" styleClass="app-surface" stylesheets="@stylesheets/global.css" type="AnchorPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <children>
 
         <VBox alignment="TOP_CENTER" spacing="22" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="24.0">
             <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
                 <children>
-                    <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+                    <Label styleClass="mode-badge" text="⚡ ONLINE MULTIPLAYER" />
+               <ImageView fitHeight="40.0" fitWidth="40.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" translateX="730.0">
+                  <image>
+                     <Image url="@stylesheets/images/bogo_solutions_logo.png" />
+                  </image>
+               </ImageView>
                 </children>
             </HBox>
 
-            <Label styleClass="mode-title" style="-fx-font-size: 40px;" text="Host Lobby" />
+            <Label style="-fx-font-size: 40px;" styleClass="mode-title" text="Host Lobby" />
             <Label styleClass="mode-subtitle" text="Create a room and share your code" />
 
-            <VBox spacing="14" styleClass="card" style="-fx-max-width: 620px; -fx-alignment: center;">
+            <VBox spacing="14" style="-fx-max-width: 620px; -fx-alignment: center;" styleClass="card">
                 <Label fx:id="gameTitle" styleClass="card-title" text="Game" />
-                <Label fx:id="gameLabel" styleClass="mode-card-title" style="-fx-font-size:28px;" text="gameLabel" />
+                <Label fx:id="gameLabel" style="-fx-font-size:28px;" styleClass="mode-card-title" text="gameLabel" />
 
                 <TextField fx:id="lobbyNameField" maxWidth="420.0" promptText="Lobby name (optional)" />
 
