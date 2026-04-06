@@ -11,6 +11,7 @@ public class Constants {
     public static final String SESSION_FILE_PATH = "datafiles/sessionHistory.txt";
     public static final String PARTICIPANTS_FILE_PATH = "datafiles/participants.txt";
     public static final String PLAYER_STATS_FILE_PATH = "datafiles/playerStats.txt";
+    public static final String FRIENDS_FILE_PATH = "datafiles/friends.txt";
 
     //password hashing algorithm
     public static final String HASH_ALGORITHM = "SHA-256";
