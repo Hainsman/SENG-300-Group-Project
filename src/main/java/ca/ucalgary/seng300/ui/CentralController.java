@@ -36,30 +36,23 @@ public class CentralController {
     /** True if this client created the current lobby (may start the game). */
     public static boolean hostingLobby;
     public static String previousScreen;
+    /** Need a way to get the specific instances of each subscreen for clientcore **/
     private GameGUIController gameUI;
-
     public ClientCore clientCore = null;
+    public LoginController loginController = null;
+    public NewUserController newUserController = null;
+    public Connect4Controller C4;
     public TicTacToeController ttt;
-
-    public void setTic(TicTacToeController t){
-        ttt = t;
-    }
 
     public ClientCore getCC(){
         return clientCore;
     }
 
 
-    public int test1;
-
-    public void uptest(int i){
-        test1 = i;
-    }
-
     @FXML
     public void initialize() {
         instance = this;
-        clientCore = ClientCoreV2.getInstance();
+        clientCore = new ClientCore(this);
         clientCore.start();
         System.out.println("cc loaded");
 
@@ -94,12 +87,37 @@ public class CentralController {
             );
             Node view = loader.load();
             Object ctrl = loader.getController();
+            switch(ctrl){
+                case GameGUIController gu:
+                    gameUI = gu;
+                    gameUI.setRoot(this);
+                    break;
+                case LoginController lc:
+                    loginController = lc;
+                    loginController.setRoot(this);
+                    break;
+                case NewUserController nu:
+                    newUserController = nu;
+                    newUserController.setRoot(this);
+                    break;
+                case Connect4Controller cccc:
+                    C4 = cccc;
+                    C4.setRoot(this);
+                    break;
+                case TicTacToeController tic:
+                    ttt = tic;
+                    ttt.setRoot(this);
+                    break;
+                default:
+                    System.out.println("Scene "+ ctrl.getClass()+ "doesn't have client core access");
+                    break;
+            }/*
             if (ctrl instanceof GameGUIController gfc) {
                 gameUI = gfc;
                 gameUI.setRoot(this);
             } else if (ctrl instanceof TicTacToeController ttc) {
                 ttc.connectToRootForLobby(this);
-            }
+            }*/
             viewContainer.setCenter(view);
         } catch (IOException e) {
             e.printStackTrace();

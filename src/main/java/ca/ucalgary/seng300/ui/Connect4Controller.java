@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -15,6 +16,13 @@ import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 
 public class Connect4Controller extends GameGUI {
+
+    private CentralController root;
+    private ClientCore clientCore = null;
+    public void setRoot(CentralController c){
+        root = c;
+        clientCore = root.getCC();
+    }
 
     @FXML
     private StackPane boardPane;

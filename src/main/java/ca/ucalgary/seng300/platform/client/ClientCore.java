@@ -173,21 +173,17 @@ public class ClientCore extends Thread{
                         switch (sm.getType()){
                             case "AUTH":
                                 Platform.runLater(() -> {
-                                    LoginController.loginReply();
-                                    CentralController.moveTo(fxml);
+                                    ioMain.loginController.loginReply(sm);
                                 });
                                 break;
                             case "GMJN":
-                                upFlag = true;
-                                {
-                                    String screen = sm.getFieldA();
-                                    if (screen != null && !screen.isBlank()) {
-                                        final String fxml = screen;
-                                        Platform.runLater(() -> {
-                                            LobbyBridge.clearLobbyUiCallbacks();
-                                            CentralController.moveTo(fxml);
-                                        });
-                                    }
+                                String screen = sm.getFieldA();
+                                if (screen != null && !screen.isBlank()) {
+                                    final String fxml = screen;
+                                    Platform.runLater(() -> {
+                                        LobbyBridge.clearLobbyUiCallbacks();
+                                        CentralController.moveTo(fxml);
+                                    });
                                 }
                                 break;
                             case "LOBBY_OK":

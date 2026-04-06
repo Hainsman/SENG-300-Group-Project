@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +18,13 @@ public class LoginController {
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
     private static LoginController loginController;
+
+    private CentralController root;
+    private ClientCore clientCore = null;
+    public void setRoot(CentralController c){
+        root = c;
+        clientCore = root.getCC();
+    }
 
     public static LoginController getInstance(){
         if (loginController == null)
@@ -44,8 +52,9 @@ public class LoginController {
             errorLabel.setText(resp.details[0]);
             return;
         }*/
-        CentralController.getInstance().getCC().msgSend(new sysMSG("AUTH", username, password));
-        CentralController.moveTo("GameDashboard.fxml");
+        clientCore.msgSend(new sysMSG("AUTH", username, password));
+
+        //root.moveTo("GameDashboard.fxml");
     }
     public void loginReply(sysMSG s){
         switch (s.getFieldA()){

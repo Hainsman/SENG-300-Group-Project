@@ -1,7 +1,9 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.client.ClientCoreV2;
 import ca.ucalgary.seng300.platform.messages.CreateAccount;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,6 +28,13 @@ public class NewUserController {
         return newUserController;
     }
 
+    private CentralController root;
+    private ClientCore clientCore = null;
+    public void setRoot(CentralController c){
+        root = c;
+        clientCore = root.getCC();
+    }
+
     @FXML
     private void handleCreateAccount(ActionEvent event) {
         String username = usernameField.getText().trim();
@@ -43,10 +52,12 @@ public class NewUserController {
             setError("Passwords do not match.");
             return;
         }
+
+        clientCore.msgSend(new sysMSG("NEWU", username, email, password));
+        /*
         UUID userSession = UUID.randomUUID();
         // TODO: wire to backend when New User is created successfully
-        CreateAccount createAccount = new CreateAccount(userSession, password, "daniel.maximov@ucalgary.ca", username); //TODO UI please make a email text field and pass parameters here
-
+        //CreateAccount createAccount = new CreateAccount(userSession, password, "daniel.maximov@ucalgary.ca", username); //TODO UI please make a email text field and pass parameters here
         var clientCore = ClientCoreV2.getInstance();
         clientCore.msgSend(createAccount);
         ServerResponse resp = clientCore.msgRecieve();
@@ -58,7 +69,20 @@ public class NewUserController {
 
 
         // Navigate back to login on success
-        CentralController.moveTo("Login.fxml");
+        CentralController.moveTo("Login.fxml");*/
+    }
+
+    public void newUserReply(sysMSG s){
+        switch (s.getFieldA()){
+            case "PASS":
+                CentralController.moveTo("GameDashboard.fxml");
+                break;
+            case "NF":
+                errorLabel.setText("Error Username not found");
+                break;
+            default:
+                errorLabel.setText("Error username or password incorrect");
+        }
     }
 
     @FXML

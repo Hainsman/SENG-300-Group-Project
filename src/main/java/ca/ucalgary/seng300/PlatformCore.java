@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static ca.ucalgary.seng300.platform.constants.Constants.EMAIL_REGEX;
 import static ca.ucalgary.seng300.platform.constants.Constants.HASH_ALGORITHM;
 import static ca.ucalgary.seng300.platform.utils.Helper.hashPassword;
+import static ca.ucalgary.seng300.platform.utils.Helper.isEmailValid;
 
 // debug Server first, then as many clients as you want
 // the server will close once the last client has sent "exit"
@@ -36,7 +38,9 @@ public class PlatformCore {
     // list of chat/lobbies
     public List<String> chatservers;
 
+    /** Database setup**/
     public UserStore userStore;
+    public SessionHistoryStore sessionHistoryStore;
 
     // hashmap of games gettable by ID
     HashMap<String, Game> games;
@@ -136,6 +140,18 @@ public class PlatformCore {
 
     }
 
+    public String createAccount(String user, String pass, String email){
+        List<User> check = userStore.findByUserName(user);
+        if(!check.isEmpty()){
+            //sysMSg username taken
+        }
+        if(!isEmailValid(email, EMAIL_REGEX)){
+            //sysmsg invalid email
+        }
+        userStore.create(new User(1,user,email,hashPassword(pass,HASH_ALGORITHM)));
+        return "done";
+    }
+
     public void clientJoin(int i){
         connected.add(i);
     }
@@ -207,22 +223,21 @@ public class PlatformCore {
     private int cActive = 0;
 
     public PlatformCore() throws IOException, InterruptedException {
+        /** database initialisation, replace null with the file path **/
+        userStore = new UserStore(null);
+        sessionHistoryStore = new SessionHistoryStore(null);
 
-        // Max clients -- PLACEHOLDER
-        int ClientMax = 6;
-        int CCount = 0;
+        // all of the lists of active threads
         games = new HashMap<>();
-        games.put("test", new TTTGame());
-
-        // list of threads
         users = new ArrayList<platformChannel>();
         connected = new ArrayList<Integer>();
+
+        int ClientMax = 100;
+        int CCount = 0;
 
         // Create a server socket listening on port 2020
         ServerSocket serverSocket = new ServerSocket();
         serverSocket.bind(new InetSocketAddress("localhost", 2020));
-        // refresh if no new communications have arrived in 5 seconds
-        //serverSocket.setSoTimeout(5000);
 
         System.out.println("Server is listening");
 
@@ -230,7 +245,6 @@ public class PlatformCore {
         Boolean wait = true;
         // Loop to listen for new clients
         do{
-            // accept throws a timeout exception every 5 secs to check if there are no clients left
             try {
                 // Accept a new client connection
                 Socket socket = serverSocket.accept();

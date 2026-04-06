@@ -51,6 +51,21 @@ public class platformChannel extends Thread {
                         break;
                 }
                 break;
+            case "NEWU":
+                String ares = serv.authenticate(sm.getFieldA(),sm.getFieldB(),this);
+                switch(ares){
+                    case "N/A":
+                        cliSend(new sysMSG("AUTH", "User not found"));
+                        break;
+                    case "#F":
+                        cliSend(new sysMSG("AUTH", "Login failed, invalid username or password"));
+                        break;
+                    default:
+                        cliSend(new sysMSG("AUTH", "Pass"));
+                        ID = ares;
+                        break;
+                }
+                break;
             case "HOST_LOBBY":
                 String code = sm.getFieldA();
                 String gt = sm.getFieldB() != null ? sm.getFieldB() : "TTT";

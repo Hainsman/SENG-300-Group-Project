@@ -16,11 +16,11 @@ import javafx.event.ActionEvent;
 
 public class TicTacToeController extends GameGUI {
 
-    private CentralController boss;
-    public void setBoss(CentralController c){
-        boss = c;
-        boss.setTic(this);
-        clientCore = boss.getCC();
+    private CentralController root;
+    private ClientCore clientCore = null;
+    public void setRoot(CentralController c){
+        root = c;
+        clientCore = root.getCC();
     }
 
     /**
@@ -28,7 +28,7 @@ public class TicTacToeController extends GameGUI {
      * clears local {@link TicTacToeSession} when online, and paints from the last server state if present.
      */
     public void connectToRootForLobby(CentralController root) {
-        setBoss(root);
+        setRoot(root);
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
         }
@@ -41,7 +41,7 @@ public class TicTacToeController extends GameGUI {
     /** When set, moves and state use the game core session; when null, existing local board logic is used. */
     private TicTacToeSession session = null;
     /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
-    private ClientCore clientCore = null;
+
 
     @FXML
     private StackPane boardPane;
