@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import javax.swing.text.html.ImageView;
 import java.io.IOException;
 
 public class ChooseModePage extends AnchorPane implements Navigable {
