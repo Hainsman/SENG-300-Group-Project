@@ -2,12 +2,14 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="AnchorPane" prefHeight="700.0" prefWidth="1100.0" styleClass="lobby-screen lobby-ttt" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="700.0" prefWidth="1100.0" styleClass="lobby-screen lobby-ttt" stylesheets="@stylesheets/global.css" type="AnchorPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <children>
         <VBox alignment="TOP_CENTER" spacing="24.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="28.0">
@@ -16,20 +18,25 @@
                     <children>
                         <Button onAction="#handleBack" styleClass="back-button" text="←  Back" />
                         <Region maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@stylesheets/images/pagelogo.png" />
+                            </image>
+                        </ImageView>
                         <Label styleClass="lobby-chip" text="WAITING ROOM" />
                     </children>
                 </HBox>
 
                 <VBox spacing="6.0">
                     <children>
-                        <Label fx:id="lobbyTitle" styleClass="mode-title" style="-fx-font-size: 42px;" text="Lobby" />
+                        <Label fx:id="lobbyTitle" style="-fx-font-size: 42px;" styleClass="mode-title" text="Lobby" />
                         <Label fx:id="lobbySubtitle" styleClass="mode-subtitle" text="Share the code with your opponent. When both are connected, the host starts the match." wrapText="true" />
                     </children>
                 </VBox>
 
                 <HBox alignment="TOP_LEFT" spacing="28.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <VBox maxWidth="1.7976931348623157E308" spacing="20.0" HBox.hgrow="ALWAYS" minWidth="420.0">
+                        <VBox maxWidth="1.7976931348623157E308" minWidth="420.0" spacing="20.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <VBox spacing="14.0" styleClass="lobby-card lobby-code-card">
                                     <children>
@@ -52,7 +59,7 @@
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="lobby-player-row">
                                                     <children>
-                                                        <VBox alignment="CENTER" styleClass="lobby-avatar-slot" minWidth="48.0" prefWidth="48.0">
+                                                        <VBox alignment="CENTER" minWidth="48.0" prefWidth="48.0" styleClass="lobby-avatar-slot">
                                                             <children>
                                                                 <Label styleClass="lobby-avatar-letter" text="H" />
                                                             </children>
@@ -73,11 +80,11 @@
                                                     </children>
                                                 </HBox>
 
-                                                <Region prefHeight="1.0" maxHeight="1.0" styleClass="lobby-player-divider" />
+                                                <Region maxHeight="1.0" prefHeight="1.0" styleClass="lobby-player-divider" />
 
                                                 <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="lobby-player-row">
                                                     <children>
-                                                        <VBox alignment="CENTER" styleClass="lobby-avatar-slot lobby-avatar-guest" minWidth="48.0" prefWidth="48.0">
+                                                        <VBox alignment="CENTER" minWidth="48.0" prefWidth="48.0" styleClass="lobby-avatar-slot lobby-avatar-guest">
                                                             <children>
                                                                 <Label styleClass="lobby-avatar-letter" text="G" />
                                                             </children>
@@ -108,7 +115,7 @@
                             </children>
                         </VBox>
 
-                        <VBox minWidth="280.0" prefWidth="300.0" maxWidth="340.0" spacing="20.0">
+                        <VBox maxWidth="340.0" minWidth="280.0" prefWidth="300.0" spacing="20.0">
                             <children>
                                 <VBox spacing="14.0" styleClass="lobby-card lobby-side-card">
                                     <children>

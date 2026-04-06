@@ -7,10 +7,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="AnchorPane" prefHeight="680.0" prefWidth="1020.0" styleClass="app-surface" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="680.0" prefWidth="1020.0" styleClass="app-surface" stylesheets="@stylesheets/global.css" type="AnchorPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <children>
-        <VBox alignment="TOP_CENTER" spacing="18.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="28.0">
+        <VBox alignment="TOP_CENTER" layoutX="35.2" prefHeight="589.0" prefWidth="951.0" spacing="18.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="28.0">
             <children>
                 <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="12.0">
                     <children>
@@ -24,16 +24,16 @@
                     </children>
                 </HBox>
 
-                <Label fx:id="gameTitleLabel" styleClass="mode-title" style="-fx-font-size: 40px;" text="Game" />
+                <Label fx:id="gameTitleLabel" style="-fx-font-size: 40px;" styleClass="mode-title" text="Game" />
 
                 <Label fx:id="taglineLabel" styleClass="mode-subtitle" text="Rules and tips" wrapText="true" />
 
                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" minHeight="0.0" styleClass="info-scroll" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
                     <content>
-                        <VBox maxWidth="720.0" spacing="14.0" styleClass="card">
+                        <VBox maxWidth="953.0" prefHeight="349.0" prefWidth="951.0" spacing="14.0" styleClass="card">
                             <children>
-                                <Label styleClass="card-title" text="How to play" />
-                                <Label fx:id="bodyLabel" maxWidth="680.0" styleClass="info-body-text" text="Rules load when you open this screen." wrapText="true" />
+                                <Label alignment="CENTER" contentDisplay="CENTER" styleClass="card-title" text="How to play" />
+                                <Label fx:id="bodyLabel" contentDisplay="CENTER" maxWidth="680.0" styleClass="info-body-text" text="Rules load when you open this screen." textAlignment="CENTER" wrapText="true" />
                             </children>
                         </VBox>
                     </content>

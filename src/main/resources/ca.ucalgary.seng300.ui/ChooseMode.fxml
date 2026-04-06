@@ -3,42 +3,41 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<fx:root type="AnchorPane" prefHeight="680.0" prefWidth="1020.0"
-            stylesheets="@stylesheets/global.css"
-            styleClass="app-surface"
-            xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="680.0" prefWidth="1020.0" styleClass="app-surface" stylesheets="@stylesheets/global.css" type="AnchorPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <children>
-        <VBox alignment="TOP_CENTER" spacing="24"
-              AnchorPane.bottomAnchor="28.0"
-              AnchorPane.leftAnchor="34.0"
-              AnchorPane.rightAnchor="34.0"
-              AnchorPane.topAnchor="34.0">
+        <VBox alignment="TOP_CENTER" spacing="24" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="34.0">
 
             <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
                 <children>
-                    <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+                    <ImageView fx:id="pageLogo" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@stylesheets/images/pagelogo.png" />
+                        </image>
+                    </ImageView>
+                    <Label styleClass="mode-badge" text="⚡ ONLINE MULTIPLAYER" />
                     <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                         <children>
-                            <MenuButton popupSide="BOTTOM" mnemonicParsing="false" focusTraversable="false" styleClass="player-avatar-menu">
+                            <MenuButton focusTraversable="false" mnemonicParsing="false" popupSide="BOTTOM" styleClass="player-avatar-menu">
                                 <graphic>
                                     <StackPane styleClass="avatar-badge">
                                         <children>
                                             <Circle radius="18.0" styleClass="avatar-circle" />
-                                            <Label text="IMG" styleClass="avatar-label" />
+                                            <Label styleClass="avatar-label" text="IMG" />
                                         </children>
                                     </StackPane>
                                 </graphic>
                                 <items>
-                                    <MenuItem text="Profile" onAction="#handleProfileDashboard" />
-                                    <MenuItem text="Settings" onAction="#handleTeamSettings" />
+                                    <MenuItem onAction="#handleProfileDashboard" text="Profile" />
+                                    <MenuItem onAction="#handleTeamSettings" text="Settings" />
                                 </items>
                             </MenuButton>
                         </children>
@@ -46,34 +45,34 @@
                 </children>
             </HBox>
 
-            <Label text="Choose Match Type" styleClass="mode-title" />
+            <Label styleClass="mode-title" text="Choose Match Type" />
             <Label fx:id="gameTitleLabel" styleClass="mode-subtitle" text="Pick how to play this game online" />
 
             <HBox alignment="CENTER" spacing="16" VBox.vgrow="ALWAYS">
                 <VBox onMouseClicked="#handleHostGame" prefHeight="220.0" prefWidth="300.0" spacing="10.0" styleClass="mode-card">
                     <children>
-                        <Label text="🖥" styleClass="mode-icon" />
-                        <Label text="HOST" styleClass="mode-card-title" />
-                        <Label text="Create Lobby" styleClass="mode-card-subtitle" />
-                        <Label text="➔ Play Now" styleClass="mode-play" />
+                        <Label styleClass="mode-icon" text="🖥" />
+                        <Label styleClass="mode-card-title" text="HOST" />
+                        <Label styleClass="mode-card-subtitle" text="Create Lobby" />
+                        <Label styleClass="mode-play" text="➔ Play Now" />
                     </children>
                 </VBox>
 
                 <VBox onMouseClicked="#handleJoinGame" prefHeight="220.0" prefWidth="300.0" spacing="10.0" styleClass="mode-card">
                     <children>
-                        <Label text="🎮" styleClass="mode-icon" />
-                        <Label text="JOIN" styleClass="mode-card-title" />
-                        <Label text="Join Lobby" styleClass="mode-card-subtitle" />
-                        <Label text="➔ Play Now" styleClass="mode-play" />
+                        <Label styleClass="mode-icon" text="🎮" />
+                        <Label styleClass="mode-card-title" text="JOIN" />
+                        <Label styleClass="mode-card-subtitle" text="Join Lobby" />
+                        <Label styleClass="mode-play" text="➔ Play Now" />
                     </children>
                 </VBox>
 
                 <VBox fx:id="playWithAiCard" onMouseClicked="#handlePlayWithAi" prefHeight="220.0" prefWidth="300.0" spacing="10.0" styleClass="mode-card">
                     <children>
-                        <Label text="🤖" styleClass="mode-icon" />
-                        <Label text="PLAY WITH AI" styleClass="mode-card-title" />
-                        <Label text="Random opponent — Tic Tac Toe" styleClass="mode-card-subtitle" />
-                        <Label text="➔ Play Now" styleClass="mode-play" />
+                        <Label styleClass="mode-icon" text="🤖" />
+                        <Label styleClass="mode-card-title" text="PLAY WITH AI" />
+                        <Label styleClass="mode-card-subtitle" text="Random opponent — Tic Tac Toe" />
+                        <Label styleClass="mode-play" text="➔ Play Now" />
                     </children>
                 </VBox>
             </HBox>

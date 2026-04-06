@@ -760,6 +760,11 @@
     -fx-background-radius: 8;
 }
 
+.game-gui-root .history-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+
 .game-gui-root .history-box {
     -fx-background-color: #111112;
 }
