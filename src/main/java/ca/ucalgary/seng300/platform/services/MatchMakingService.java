@@ -1,11 +1,8 @@
 package ca.ucalgary.seng300.platform.services;
 
-import ca.ucalgary.seng300.platform.constants.Rank;
-import ca.ucalgary.seng300.platform.domain.Participant;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
-import ca.ucalgary.seng300.platform.utils.Helper;
-import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.game.core.GameType;
 
 import java.util.*;
 import java.util.ArrayList;
@@ -17,8 +14,8 @@ public class MatchMakingService {
 
     // game names
     private static final Map<String, Integer> GAME_TYPE_IDS = Map.of(
-            "TicTacToe", Game.TICK_TACK_TOE,
-            "ConnectFour", Game.CONNECT_FOUR
+            "TicTacToe", GameType.TIC_TAC_TOE.toId(),
+            "ConnectFour", GameType.CONNECT4.toId()
     );
 
     //validating game type
@@ -40,18 +37,18 @@ public class MatchMakingService {
 
     public void addPlayerToQueue(PlayerStats player) {
         // retrieving gameType, userId, and userScore
-        int gameType = player.getGameID();
+        GameType gameType = player.getGameType();
         int userId = player.getUserID();
         double userScore = player.getScore();
-        List<PlayerStats> statsForGame = PlayerStatsStore.getInstance().findPlayersByGameID(gameType);
+        List<PlayerStats> statsForGame = PlayerStatsStore.getInstance().findPlayersByGameType(gameType);
 
         // if gameType queue exists, add to it. If not, create a new one
-        if (queues.containsKey(gameType)) {
-            queues.get(gameType).add(player);
+        if (queues.containsKey(gameType.toId())) {
+            queues.get(gameType.toId()).add(player);
         } else {
             List<PlayerStats> newEntryList = new ArrayList<>();
             newEntryList.add(player);
-            queues.put(gameType, newEntryList);
+            queues.put(gameType.toId(), newEntryList);
         }
 
     }
@@ -67,7 +64,7 @@ public class MatchMakingService {
             List<PlayerStats> gameList = queues.get(gameType);
             for (int i = 0; i < gameList.size(); i++) {
                 //match by userId and gameId
-                if (gameList.get(i).getUserID() == player.getUserID() && gameList.get(i).getGameID() == player.getGameID()) {
+                if (gameList.get(i).getUserID() == player.getUserID() && gameList.get(i).getGameType() == player.getGameType()) {
                     gameList.remove(i);
                 }
             }

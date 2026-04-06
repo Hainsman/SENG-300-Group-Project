@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="AnchorPane" prefHeight="680.0" prefWidth="1020.0" styleClass="app-surface" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="18.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="28.0">
+            <children>
+                <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="12.0">
+                    <children>
+                        <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" styleClass="back-button" text="←  Back" />
+                    </children>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+                    <children>
+                        <Label styleClass="mode-badge" text="ⓘ  GAME GUIDE" />
+                    </children>
+                </HBox>
+
+                <Label fx:id="gameTitleLabel" styleClass="mode-title" style="-fx-font-size: 40px;" text="Game" />
+
+                <Label fx:id="taglineLabel" styleClass="mode-subtitle" text="Rules and tips" wrapText="true" />
+
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" minHeight="0.0" styleClass="info-scroll" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox maxWidth="720.0" spacing="14.0" styleClass="card">
+                            <children>
+                                <Label styleClass="card-title" text="How to play" />
+                                <Label fx:id="bodyLabel" maxWidth="680.0" styleClass="info-body-text" text="Rules load when you open this screen." wrapText="true" />
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
+    </children>
+</fx:root>

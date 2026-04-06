@@ -4,9 +4,12 @@ import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.connect4.C4Game;
+import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
+import ca.ucalgary.seng300.platform.messages.GameStateNetworkCodec;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
@@ -57,40 +60,104 @@ public class PlatformCore {
 
     /** Waiting host channels keyed by lobby code (guest joins by code). */
     private final ConcurrentHashMap<String, platformChannel> openLobbies = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> openLobbyGameTypes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> openLobbyHostPayload = new ConcurrentHashMap<>();
 
-    public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel) {
+    private static String normalizeGameType(String gameType) {
+        if (gameType == null) {
+            return "TTT";
+        }
+        String gt = gameType.trim().toUpperCase();
+        if (gt.contains("C4") || gt.contains("CONNECT")) {
+            return "C4";
+        }
+        return "TTT";
+    }
+
+    private static String gameIdForType(String gameType) {
+        return "C4".equals(gameType) ? "c4" : "test";
+    }
+
+    private static String playerIdForC4(String playerId) {
+        if ("P1".equals(playerId)) {
+            return Player.PLAYER_1.toString();
+        }
+        if ("P2".equals(playerId)) {
+            return Player.PLAYER_2.toString();
+        }
+        return playerId;
+    }
+
+    private static String[] parseNameEloPayload(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return new String[] { "Player", "1200" };
+        }
+        String[] parts = raw.split("\\|", 2);
+        String name = parts[0].trim().isEmpty() ? "Player" : parts[0].trim();
+        int elo = 1200;
+        if (parts.length > 1) {
+            try {
+                elo = Integer.parseInt(parts[1].trim());
+            } catch (NumberFormatException ignored) {
+                elo = 1200;
+            }
+        }
+        return new String[] { name, String.valueOf(elo) };
+    }
+
+    public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel, String clientPayload) {
         if (code == null || code.isBlank() || hostChannel == null) {
             return false;
         }
         String normalized = code.trim().toUpperCase();
+        String normalizedType = normalizeGameType(gameType);
         if (openLobbies.putIfAbsent(normalized, hostChannel) != null) {
             return false;
         }
+        openLobbyGameTypes.put(normalized, normalizedType);
+        openLobbyHostPayload.put(normalized, clientPayload != null ? clientPayload : "");
         hostChannel.ID = "host-" + normalized;
-        System.out.println("Lobby opened: " + normalized + " (" + gameType + ")");
+        hostChannel.setGameType(normalizedType);
+        hostChannel.setGameID(gameIdForType(normalizedType));
+        System.out.println("Lobby opened: " + normalized + " (" + normalizedType + ")");
         return true;
     }
 
-    public synchronized boolean onJoinLobby(String code, platformChannel guestChannel) {
+    public synchronized boolean onJoinLobby(String code, platformChannel guestChannel, String guestPayload) {
         if (code == null || code.isBlank() || guestChannel == null) {
             return false;
         }
         String normalized = code.trim().toUpperCase();
         platformChannel host = openLobbies.remove(normalized);
+        String gt = openLobbyGameTypes.remove(normalized);
+        String hostPayloadRaw = openLobbyHostPayload.remove(normalized);
         if (host == null) {
             return false;
         }
+        String gameType = normalizeGameType(gt != null ? gt : host.getGameType());
+        String gameId = gameIdForType(gameType);
+        host.setGameType(gameType);
+        host.setGameID(gameId);
+        guestChannel.setGameType(gameType);
+        guestChannel.setGameID(gameId);
         guestChannel.ID = "guest-" + normalized;
         p1 = host;
         p2 = guestChannel;
-        TTTGame t = (TTTGame) games.get("test");
-        Map<String, Player> turnIds = new HashMap<>();
-        turnIds.put("P1", Player.PLAYER_1);
-        turnIds.put("P2", Player.PLAYER_2);
-        t.setPlayerIdToPlayer(turnIds);
-        host.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("PARTNER_JOINED", normalized, ""));
+        if ("TTT".equals(gameType)) {
+            TTTGame t = (TTTGame) games.get("test");
+            Map<String, Player> turnIds = new HashMap<>();
+            turnIds.put("P1", Player.PLAYER_1);
+            turnIds.put("P2", Player.PLAYER_2);
+            t.setPlayerIdToPlayer(turnIds);
+        }
+        String[] h = parseNameEloPayload(hostPayloadRaw);
+        String[] g = parseNameEloPayload(guestPayload);
+        String roster = h[0] + "|" + h[1] + "|" + g[0] + "|" + g[1];
+        var rosterMsg = new ca.ucalgary.seng300.platform.messages.sysMSG("LOBBY_ROSTER", normalized, "", roster);
+        host.cliSend(rosterMsg);
+        guestChannel.cliSend(rosterMsg);
         tempGameReset();
-        System.out.println("Lobby " + normalized + " matched; game ready.");
+        System.out.println("Lobby " + normalized + " matched; game ready (" + gameType + ").");
         return true;
     }
 
@@ -183,14 +250,53 @@ public class PlatformCore {
         }
         return false;
     }
+    /**
+     * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
+     */
+    public synchronized void onForfeit(platformChannel from) {
+        if (p1 == null || p2 == null || from == null) {
+            return;
+        }
+        String normalizedType = normalizeGameType(p1.getGameType());
+        if (!"TTT".equals(normalizedType)) {
+            return;
+        }
+        Player forfeiting = null;
+        if (from == p1) {
+            forfeiting = Player.PLAYER_1;
+        } else if (from == p2) {
+            forfeiting = Player.PLAYER_2;
+        }
+        if (forfeiting == null) {
+            return;
+        }
+        TTTGame t = (TTTGame) games.get("test");
+        t.forfeit(forfeiting);
+        System.out.println("Forfeit by " + forfeiting + " — broadcasting state");
+        p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+        p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+    }
+
     public void tempGameReset(){
-        TTTGame t =(TTTGame) games.get("test");
+        String activeType = p1 != null ? normalizeGameType(p1.getGameType()) : "TTT";
+        if ("C4".equals(activeType)) {
+            C4Game c4 = (C4Game) games.get("c4");
+            c4.startGame(null, null);
+            if (p1 != null) {
+                p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            }
+            if (p2 != null) {
+                p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            }
+            return;
+        }
+        TTTGame t = (TTTGame) games.get("test");
         t.tempReset();
         if (p1 != null) {
-            p1.cliSend(t.getGameState());
+            p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
         }
         if (p2 != null) {
-            p2.cliSend(t.getGameState());
+            p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
         }
     }
 
@@ -198,15 +304,23 @@ public class PlatformCore {
         if (p1 == null || p2 == null) {
             return;
         }
-        if(type.equals("TTT")){
+        String normalizedType = normalizeGameType(type);
+        if ("TTT".equals(normalizedType)) {
             // Player channel stores the game type and ID for each client, no need to send it
             TTTGame t =(TTTGame) games.get(id);
 
             t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(), p.getRow(), p.getCol()) {
             });
             System.out.println(debugBoard((TTTGameState) t.getGameState()));
-            p1.cliSend(t.getGameState());
-            p2.cliSend(t.getGameState());
+            p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+            p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+            return;
+        }
+        if ("C4".equals(normalizedType)) {
+            C4Game c4 = (C4Game) games.get("c4");
+            c4.handleAction(new C4PlayerAction(playerIdForC4(p.getPlayerID()), p.getActionType(), p.getRow(), p.getCol()));
+            p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
         }
     }
     public String debugBoard(TTTGameState t) {
@@ -229,6 +343,10 @@ public class PlatformCore {
 
         // all of the lists of active threads
         games = new HashMap<>();
+        games.put("test", new TTTGame());
+        games.put("c4", new C4Game());
+
+        // list of threads
         users = new ArrayList<platformChannel>();
         connected = new ArrayList<Integer>();
 

@@ -28,6 +28,7 @@ public class platformChannel extends Thread {
     public void cliSend (Object o){
         try{
             outServ.writeObject(o);
+            outServ.flush();
             outServ.reset();
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,12 +70,21 @@ public class platformChannel extends Thread {
             case "HOST_LOBBY":
                 String code = sm.getFieldA();
                 String gt = sm.getFieldB() != null ? sm.getFieldB() : "TTT";
-                boolean ok = serv.onHostLobby(code, gt, this);
+                this.gameType = gt;
+                String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
+                boolean ok = serv.onHostLobby(code, gt, this, lobbyPayload);
                 if (ok) {
                     cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "HOST"));
                 } else {
                     cliSend(new sysMSG("LOBBY_ERR", "create", "Could not create lobby (code may already be in use)."));
                 }
+            }
+            case "JOIN_LOBBY" -> {
+                String code = sm.getFieldA();
+                String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
+                boolean ok = serv.onJoinLobby(code, this, lobbyPayload);
+                if (ok) {
+                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
 
             case "JOIN_LOBBY":
                 //String code = sm.getFieldA();
@@ -84,6 +94,11 @@ public class platformChannel extends Thread {
                 } else {
                     cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
                 }
+            }
+            case "GMJN" -> serv.relayToGuestIfHost(this, sm);
+            case "reset" -> serv.tempGameReset();
+            case "FORFEIT" -> serv.onForfeit(this);
+            default -> { }
 
             case "GMJN":
                 serv.relayToGuestIfHost(this, sm);
@@ -96,6 +111,22 @@ public class platformChannel extends Thread {
         }
     }
 
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
+
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameID(String gameID) {
+        this.gameID = gameID;
+    }
+
+    public String getGameID() {
+        return gameID;
+    }
+
     @Override
     public void run() {
         try {
@@ -106,7 +137,17 @@ public class platformChannel extends Thread {
             gameType = "TTT";
 
             while (!interrupted()) {
-                Object message = inCli.readObject();
+                Object message;
+                try {
+                    message = inCli.readObject();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    break;
+                } catch (RuntimeException e) {
+                    System.err.println("platformChannel: bad client message (rebuild client from same sources as server): " + e.getMessage());
+                    e.printStackTrace();
+                    break;
+                }
 
                 if (message instanceof String str && "exit".equals(str)) {
                     break;

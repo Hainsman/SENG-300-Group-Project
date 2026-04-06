@@ -34,6 +34,13 @@ public class TTTGame implements Game {
     public void tempReset(){
         gameState = new TTTGameState();
     }
+
+    /** Declares {@code forfeitingPlayer} lost; opponent wins. No-op if game already over. */
+    public void forfeit(Player forfeitingPlayer) {
+        if (gameState instanceof TTTGameState gs) {
+            gs.applyForfeit(forfeitingPlayer);
+        }
+    }
     public boolean valid;
 
     @Override

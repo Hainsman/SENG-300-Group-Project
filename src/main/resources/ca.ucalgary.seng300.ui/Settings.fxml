@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="BorderPane" prefHeight="720.0" prefWidth="1000.0"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            stylesheets="@stylesheets/global.css"
+            styleClass="root">
+
+    <center>
+        <VBox spacing="18.0" styleClass="app-surface">
+            <padding>
+                <Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/>
+            </padding>
+
+            <children>
+
+                <!-- Top row -->
+                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                    <children>
+                        <Button fx:id="backButton"
+                                text="← Back"
+                                onAction="#handleBack"
+                                mnemonicParsing="false"
+                                prefWidth="110.0"
+                                prefHeight="40.0"
+                                styleClass="back-button"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Label text="Settings"
+                               styleClass="title-label"/>
+                    </children>
+                </HBox>
+
+                <!-- Header -->
+                <VBox spacing="4.0" styleClass="header-box">
+                    <children>
+                        <Label text="Manage Your Settings" styleClass="title-label"/>
+                        <Label text="Update your account information and accessibility preferences."
+                               styleClass="subtitle-label"/>
+                    </children>
+                </VBox>
+
+                <!-- Main scrollable content -->
+                <ScrollPane fitToWidth="true"
+                            hbarPolicy="NEVER"
+                            VBox.vgrow="ALWAYS"
+                            styleClass="settings-scroll">
+                    <content>
+                        <VBox spacing="18.0" maxWidth="760.0">
+                            <padding>
+                                <Insets top="4.0" right="4.0" bottom="4.0" left="4.0"/>
+                            </padding>
+
+                            <children>
+
+                                <!-- Active account -->
+                                <VBox spacing="10.0" styleClass="card">
+                                    <children>
+                                        <Label text="Current Account" styleClass="card-title"/>
+                                        <Label text="This is the username currently signed in."
+                                               styleClass="card-subtitle"/>
+
+                                        <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                            <children>
+                                                <Label text="Active Username:" styleClass="subtitle-label"/>
+                                                <Label fx:id="activeUsernameLabel"
+                                                       text="current_user"
+                                                       styleClass="game-name"/>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- Account settings -->
+                                <VBox spacing="14.0" styleClass="card">
+                                    <children>
+                                        <Label text="Account Settings" styleClass="card-title"/>
+                                        <Label text="Change your username, email, or password."
+                                               styleClass="card-subtitle"/>
+
+                                        <Separator/>
+
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label text="New Username" styleClass="subtitle-label"/>
+                                                <TextField fx:id="usernameField"
+                                                           promptText="Enter new username"
+                                                           styleClass="input-field"/>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label text="New Email" styleClass="subtitle-label"/>
+                                                <TextField fx:id="emailField"
+                                                           promptText="Enter new email address"
+                                                           styleClass="input-field"/>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label text="New Password" styleClass="subtitle-label"/>
+                                                <PasswordField fx:id="passwordField"
+                                                               promptText="Enter new password"
+                                                               styleClass="input-field"/>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label text="Confirm Password" styleClass="subtitle-label"/>
+                                                <PasswordField fx:id="confirmPasswordField"
+                                                               promptText="Confirm new password"
+                                                               styleClass="input-field"/>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- Accessibility -->
+                                <VBox spacing="14.0" styleClass="card">
+                                    <children>
+                                        <Label text="Accessibility" styleClass="card-title"/>
+                                        <Label text="Adjust readability and visual accessibility."
+                                               styleClass="card-subtitle"/>
+
+                                        <Separator/>
+
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label text="Text Scaling" styleClass="subtitle-label"/>
+                                                <ComboBox fx:id="textScaleComboBox"
+                                                          promptText="Select text scale"
+                                                          styleClass="input-field">
+                                                    <items>
+                                                        <FXCollections fx:factory="observableArrayList">
+                                                            <String fx:value="Small (90%)"/>
+                                                            <String fx:value="Normal (100%)"/>
+                                                            <String fx:value="Large (110%)"/>
+                                                            <String fx:value="Extra Large (125%)"/>
+                                                        </FXCollections>
+                                                    </items>
+                                                </ComboBox>
+                                            </children>
+                                        </VBox>
+
+                                        <CheckBox fx:id="colorBlindModeCheckBox"
+                                                  text="Enable Colorblind Mode"
+                                                  styleClass="login-checkbox"/>
+                                    </children>
+                                </VBox>
+
+                                <!-- Save area -->
+                                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                                    <children>
+                                        <Button fx:id="saveButton"
+                                                text="Save Changes"
+                                                onAction="#handleSaveSettings"
+                                                mnemonicParsing="false"
+                                                prefWidth="150.0"
+                                                prefHeight="40.0"
+                                                styleClass="primary-button"/>
+
+                                        <Button fx:id="resetButton"
+                                                text="Reset"
+                                                onAction="#handleResetDefaults"
+                                                mnemonicParsing="false"
+                                                prefWidth="110.0"
+                                                prefHeight="40.0"
+                                                styleClass="back-button"/>
+                                    </children>
+                                </HBox>
+
+                                <Label fx:id="statusLabel"
+                                       text="Settings ready to edit."
+                                       styleClass="card-subtitle"/>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
+    </center>
+</fx:root>

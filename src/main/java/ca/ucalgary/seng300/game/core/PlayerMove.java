@@ -3,6 +3,9 @@ package ca.ucalgary.seng300.game.core;
 import java.io.Serializable;
 
 public abstract class PlayerMove implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private final String playerID;
     private final String actionType;
     private final int row;

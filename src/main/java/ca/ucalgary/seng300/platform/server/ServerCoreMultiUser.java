@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
+import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.*;
@@ -37,7 +38,7 @@ public class ServerCoreMultiUser{
     private volatile boolean running;
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
     private ExecutorService threadPool;
-    private static final int DEFAULT_PORT = 2020;
+    private static final int DEFAULT_PORT = Constants.PLATFORM_GAME_PORT;
     private static final int MAX_THREADS = 10;
     //password hashing algorithm
     public static final String HASH_ALGORITHM = "SHA-256";
@@ -54,6 +55,7 @@ public class ServerCoreMultiUser{
     }
     ServerCoreMultiUser(int port, int maxThreads) {
         this.port = port;
+        this.gameRooms = new ArrayList<>();
         this.threadPool = Executors.newFixedThreadPool(maxThreads);
     }
 
@@ -169,6 +171,8 @@ public class ServerCoreMultiUser{
         UserStore userStore = UserStore.getInstance();
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
         List<User> listOfUsers= userStore.findByUserName(createAccount.getUsername());
+        int newSessionId = sessionHistoryStore.assignNewID();
+        int newUserId = userStore.assignNewID();
         String incomingUsername = createAccount.getUsername();
         String incomingEmail = createAccount.getEmail();
         String incomingPassword = hashPassword(createAccount.getPassword(), HASH_ALGORITHM);
@@ -179,17 +183,17 @@ public class ServerCoreMultiUser{
         if (!isEmailValid(incomingEmail, EMAIL_REGEX))
             return ServerResponse.Fail("Error email is invalid please try again");
 
-        sessionHistoryStore.create(new SessionHistory(1, 1, createAccount.getGloballyUniqueSessionId()));
-        userStore.create(new User(1, incomingUsername, incomingEmail, incomingPassword));
+        sessionHistoryStore.create(new SessionHistory(newSessionId, newUserId, createAccount.getGloballyUniqueSessionId()));
+        userStore.create(new User(newUserId, incomingUsername, incomingEmail, incomingPassword));
         return ServerResponse.Success("Successfully created new user");
     }
 
     // handles authentication of users
     protected ServerResponse handleAuthenticate(Authenticate auth){
-
         UserStore userStore = UserStore.getInstance();
         SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
         List<User> listOfUsers= userStore.findByUserName(auth.getUsername());
+        int newSessionId = sessionHistoryStore.assignNewID();
         String incomingUsername = auth.getUsername();
         String incomingPassword = hashPassword(auth.getPassword(), HASH_ALGORITHM);
 
@@ -197,7 +201,7 @@ public class ServerCoreMultiUser{
             return ServerResponse.Fail("Error Username not found");
 
         if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
-            sessionHistoryStore.create(new SessionHistory(1, listOfUsers.getFirst().getID(), auth.getGloballyUniqueSessionId()));
+            sessionHistoryStore.create(new SessionHistory(newSessionId, listOfUsers.getFirst().getID(), auth.getGloballyUniqueSessionId()));
             return ServerResponse.Success("User successfully authenticated");
         }
         return ServerResponse.Fail("Error username or password incorrect");
