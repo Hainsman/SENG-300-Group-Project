@@ -986,3 +986,30 @@
     -fx-scale-y: 0.99;
     -fx-translate-y: 0;
 }
+.player-avatar-menu .context-menu {
+    -fx-background-color: transparent;
+    -fx-border-color: #00e5a0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 2px;
+    -fx-padding: 8px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 2);
+}
+
+.player-avatar-menu .context-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 20px;
+}
+
+.player-avatar-menu .context-menu .menu-item .label {
+    -fx-text-fill: #e0e0e0;
+    -fx-font-size: 13px;
+}
+
+.player-avatar-menu .context-menu .menu-item:focused .label,
+.player-avatar-menu .context-menu .menu-item:hover .label {
+    -fx-text-fill: #00e5a0;
+}
+
+.player-avatar-menu .context-menu .separator .line {
+    -fx-border-color: #333333;
+}
