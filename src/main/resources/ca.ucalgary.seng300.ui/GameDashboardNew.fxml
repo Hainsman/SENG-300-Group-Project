@@ -25,11 +25,12 @@
               AnchorPane.topAnchor="34.0">
 
             <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+
                 <children>
                     <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
                     <HBox alignment="CENTER_RIGHT" spacing="10" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                         <children>
-                            <MenuButton popupSide="BOTTOM" mnemonicParsing="false" focusTraversable="false" styleClass="player-avatar-menu">
+                            <MenuButton popupSide="LEFT" mnemonicParsing="false" focusTraversable="false" styleClass="player-avatar-menu">
                                 <graphic>
                                     <StackPane styleClass="avatar-badge">
                                         <children>
@@ -39,10 +40,10 @@
                                     </StackPane>
                                 </graphic>
                                 <items>
-                                    <MenuItem text="Profile" onAction="#handleProfileDashboard" />
-                                    <MenuItem text="Settings" onAction="#handleTeamSettings" />
+                                    <MenuItem text="Profile" onAction="#handleProfileDashboard" styleClass="dark-menu-item" />
+                                    <MenuItem text="Settings" onAction="#handleTeamSettings" styleClass="dark-menu-item" />
                                     <SeparatorMenuItem />
-                                    <MenuItem text="Log out" onAction="#handleLogout" />
+                                    <MenuItem text="Log out" onAction="#handleLogout" styleClass="dark-menu-item" />
                                 </items>
                             </MenuButton>
                         </children>
