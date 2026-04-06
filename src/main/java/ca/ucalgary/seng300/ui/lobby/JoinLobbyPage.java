@@ -7,6 +7,7 @@ import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
+import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -83,7 +84,9 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         }
         String raw = codeField.getText() != null ? codeField.getText().trim() : "";
         if (raw.isEmpty()) {
-            new Alert(Alert.AlertType.INFORMATION, "Enter the lobby code your host shared.", ButtonType.OK).showAndWait();
+            Alert empty = new Alert(Alert.AlertType.INFORMATION, "Enter the lobby code your host shared.", ButtonType.OK);
+            ThemeAlerts.apply(empty);
+            empty.showAndWait();
             return;
         }
         attemptJoin(raw.toUpperCase());
@@ -92,9 +95,11 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
     private void attemptJoin(String code) {
         ClientCore cc = rootController.getCC();
         if (cc == null || !cc.isConnected()) {
-            new Alert(Alert.AlertType.WARNING,
+            Alert warn = new Alert(Alert.AlertType.WARNING,
                     "Connect to the game server first.\n\nRun PlatformCore (port 2020), restart this app, then try again.",
-                    ButtonType.OK).showAndWait();
+                    ButtonType.OK);
+            ThemeAlerts.apply(warn);
+            warn.showAndWait();
             return;
         }
 
@@ -104,7 +109,11 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         CentralController.privacy = "Public";
         CentralController.clearLobbyRoster();
 
-        LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        LobbyBridge.onLobbyFail = msg -> {
+            Alert err = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+            ThemeAlerts.apply(err);
+            err.showAndWait();
+        };
         LobbyBridge.onJoinOk = () -> {
             CentralController.moveTo(Navigation.MAIN_LOBBY);
         };

@@ -14,6 +14,7 @@ import ca.ucalgary.seng300.ui.util.EloOverlayUtil;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
+import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -55,8 +56,12 @@ public class C4Page extends StackPane implements Navigable {
     @FXML private Label eloDeltaLabel;
     @FXML private Label eloNewRatingLabel;
     @FXML private GridPane gridPane;
+    @FXML private VBox c4Shell;
     @FXML private Label statusLabel;
     @FXML private Button resetButton;
+
+    private boolean gridLayoutConfigured;
+    private boolean boardResizeHookInstalled;
 
     public C4Page(CentralController rootController, GameGUIPage parentGUI) {
         try {
@@ -76,6 +81,55 @@ public class C4Page extends StackPane implements Navigable {
     @FXML
     public void initialize() {
         render();
+        configureGridLayout();
+        Platform.runLater(this::updateDiscRadii);
+    }
+
+    private void configureGridLayout() {
+        if (gridLayoutConfigured || gridPane == null || c4Shell == null) {
+            return;
+        }
+        gridLayoutConfigured = true;
+        VBox.setVgrow(c4Shell, Priority.ALWAYS);
+        gridPane.prefHeightProperty().bind(gridPane.widthProperty().multiply(6.0 / 7.0));
+        ensureBoardResizeHook();
+    }
+
+    private void ensureBoardResizeHook() {
+        if (boardResizeHookInstalled || gridPane == null) {
+            return;
+        }
+        boardResizeHookInstalled = true;
+        Runnable resize = this::updateDiscRadii;
+        gridPane.widthProperty().addListener((o, a, b) -> resize.run());
+        gridPane.heightProperty().addListener((o, a, b) -> resize.run());
+        gridPane.sceneProperty().addListener((obs, oldS, newS) -> {
+            if (newS != null) {
+                Platform.runLater(resize);
+            }
+        });
+    }
+
+    /** Scale piece tokens to the grid cell size so the board fits the window. */
+    private void updateDiscRadii() {
+        if (circles[0][0] == null || gridPane == null) {
+            return;
+        }
+        double w = gridPane.getWidth();
+        double h = gridPane.getHeight();
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        double hg = gridPane.getHgap();
+        double vg = gridPane.getVgap();
+        double cellW = (w - hg * 6) / 7.0;
+        double cellH = (h - vg * 5) / 6.0;
+        double r = Math.max(4, Math.min(cellW, cellH) / 2.0 * 0.88);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                circles[row][col].setRadius(r);
+            }
+        }
     }
 
     //@Override
@@ -84,7 +138,7 @@ public class C4Page extends StackPane implements Navigable {
         circles = new Circle[6][7];
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
-                Circle circle = new Circle(32);
+                Circle circle = new Circle(12);
                 circle.setFill(Color.WHITE);
                 circles[row][col] = circle;
 
@@ -93,6 +147,9 @@ public class C4Page extends StackPane implements Navigable {
 
                 gridPane.add(circle, col, row);
             }
+        }
+        if (gridLayoutConfigured) {
+            Platform.runLater(this::updateDiscRadii);
         }
     }
 
@@ -335,13 +392,62 @@ public class C4Page extends StackPane implements Navigable {
         update();
     }
 
-    @FXML
-    private void handleBackToMode(ActionEvent event) {
+    /**
+     * True while an online Connect 4 game is still in progress (use Forfeit / finish before leaving).
+     */
+    public boolean isActiveOnlineMatch() {
+        if (randomOpponentEnabled || session != null) {
+            return false;
+        }
+        if (clientCore == null || !clientCore.isConnected()) {
+            return false;
+        }
+        if (clientCore.getLastUpdate() instanceof C4GameState gs) {
+            return State.IN_PROGRESS.equals(gs.getState());
+        }
+        return true;
+    }
+
+    public void handleForfeitFromShell() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Forfeit");
+        confirm.setHeaderText("Forfeit this match?");
+        confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
+        ThemeAlerts.apply(confirm);
+        confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
+            EloOverlayUtil.hide(eloResultOverlay);
+            boolean online = !randomOpponentEnabled && clientCore != null && clientCore.isConnected();
+            if (!online) {
+                navigateBackFromGame();
+                return;
+            }
+            clientCore.msgSend(new sysMSG("FORFEIT", "", ""));
+        });
+    }
+
+    private void navigateBackFromGame() {
         CentralController.connect4LocalAiMode = false;
         randomOpponentEnabled = false;
         session = null;
         EloOverlayUtil.hide(eloResultOverlay);
-        CentralController.moveTo(CentralController.previousScreen);
+        if (CentralController.previousScreen != null) {
+            CentralController.moveTo(CentralController.previousScreen);
+        } else {
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        }
+    }
+
+    @FXML
+    private void handleBackToMode(ActionEvent event) {
+        if (isActiveOnlineMatch()) {
+            Alert a = new Alert(Alert.AlertType.INFORMATION,
+                    "You cannot leave an online match in progress without using Forfeit in the sidebar.",
+                    ButtonType.OK);
+            ThemeAlerts.apply(a);
+            a.showAndWait();
+            return;
+        }
+        navigateBackFromGame();
     }
 
     public void refreshFromGameStateUpdate(C4GameState update) {
@@ -395,6 +501,7 @@ public class C4Page extends StackPane implements Navigable {
                 .ifPresent(r -> {
                     onlineEloApplied = true;
                     EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
+                    parentGUI.refreshSidebar();
                 });
     }
 

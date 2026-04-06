@@ -14,6 +14,7 @@ import ca.ucalgary.seng300.ui.util.EloOverlayUtil;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
+import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -504,6 +505,7 @@ public class TTTPage extends StackPane implements Navigable {
                 .ifPresent(r -> {
                     onlineEloApplied = true;
                     EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
+                    parentGUI.refreshSidebar();
                 });
         refreshBackButtonVisibility();
         /* commented out depending on merging gamestate and gamestateupdate functions
@@ -535,9 +537,11 @@ public class TTTPage extends StackPane implements Navigable {
     @FXML
     private void handleBackToMode(ActionEvent event) {
         if (isActiveOnlineMatch()) {
-            new Alert(Alert.AlertType.INFORMATION,
+            Alert a = new Alert(Alert.AlertType.INFORMATION,
                     "You cannot leave an online match in progress without using Forfeit in the sidebar.",
-                    ButtonType.OK).showAndWait();
+                    ButtonType.OK);
+            ThemeAlerts.apply(a);
+            a.showAndWait();
             return;
         }
         navigateBackFromGame();
@@ -552,6 +556,7 @@ public class TTTPage extends StackPane implements Navigable {
         confirm.setTitle("Forfeit");
         confirm.setHeaderText("Forfeit this match?");
         confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
+        ThemeAlerts.apply(confirm);
         confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
             EloOverlayUtil.hide(eloResultOverlay);
             boolean online = !randomOpponentEnabled && clientCore != null && clientCore.isConnected();

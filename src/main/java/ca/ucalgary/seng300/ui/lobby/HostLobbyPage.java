@@ -7,6 +7,7 @@ import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
+import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -79,9 +80,11 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
     void handleCreateLobby(ActionEvent event) {
         ClientCore cc = rootController.getCC();
         if (cc == null || !cc.isConnected()) {
-            new Alert(Alert.AlertType.WARNING,
+            Alert warn = new Alert(Alert.AlertType.WARNING,
                     "Connect to the game server first.\n\nRun PlatformCore (listens on port 2020), restart this app, then try again.",
-                    ButtonType.OK).showAndWait();
+                    ButtonType.OK);
+            ThemeAlerts.apply(warn);
+            warn.showAndWait();
             return;
         }
 
@@ -103,7 +106,11 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
         CentralController.hostingLobby = true;
         CentralController.clearLobbyRoster();
 
-        LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        LobbyBridge.onLobbyFail = msg -> {
+            Alert err = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+            ThemeAlerts.apply(err);
+            err.showAndWait();
+        };
         LobbyBridge.onHostOk = () -> {
             CentralController.moveTo(Navigation.MAIN_LOBBY);
             CentralController.previousScreen = Navigation.GAME_DASHBOARD;

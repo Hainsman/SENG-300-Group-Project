@@ -291,6 +291,28 @@
     -fx-text-fill: #fafafa;
 }
 
+/* Game rules / Info screen (Info.fxml) */
+.info-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.info-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.info-scroll .scroll-bar:vertical,
+.info-scroll .scroll-bar:horizontal {
+    -fx-background-color: #141416;
+}
+
+.info-body-text {
+    -fx-text-fill: #d4d4d8;
+    -fx-font-size: 15px;
+    -fx-line-spacing: 2;
+}
+
 .avatar-circle {
     -fx-fill: #1c1c1f;
     -fx-stroke: #2f2f35;
@@ -404,6 +426,8 @@
     -fx-background-color: #1f2d63;
     -fx-padding: 16;
     -fx-background-radius: 12;
+    -fx-min-width: 200px;
+    -fx-min-height: 170px;
 }
 
 .c4-scroll {
@@ -674,6 +698,23 @@
     -fx-font-size: 28px;
     -fx-font-weight: 800;
     -fx-text-fill: #34d399;
+}
+
+.game-gui-root .c4-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #60a5fa;
+}
+
+.game-gui-root .sidebar-username {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+.game-gui-root .sidebar-email {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 12px;
 }
 
 .game-gui-root .card {

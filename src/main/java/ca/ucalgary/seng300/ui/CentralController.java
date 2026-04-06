@@ -19,6 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
+import javafx.stage.Window;
 
 import java.util.ArrayList;
 
@@ -188,6 +189,14 @@ public class CentralController {
 
     public static CentralController getInstance() {
         return instance;
+    }
+
+    /** Primary app window, for modal dialogs (e.g. themed {@link javafx.scene.control.Alert}s). */
+    public static Window getAppWindow() {
+        if (instance == null || instance.root == null || instance.root.getScene() == null) {
+            return null;
+        }
+        return instance.root.getScene().getWindow();
     }
 
     // call anytime to switch pages

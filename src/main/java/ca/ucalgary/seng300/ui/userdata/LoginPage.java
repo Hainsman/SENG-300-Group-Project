@@ -7,6 +7,7 @@ import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -85,6 +86,7 @@ public class LoginPage extends HBox implements Navigable {
         forgotPasswordAlert.setTitle("Forgot Password");
         forgotPasswordAlert.setHeaderText("Need to reset your password?");
         forgotPasswordAlert.setContentText("Please contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
+        ThemeAlerts.apply(forgotPasswordAlert);
         forgotPasswordAlert.showAndWait();
     }
 
