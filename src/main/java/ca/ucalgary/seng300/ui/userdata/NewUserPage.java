@@ -19,14 +19,18 @@ import java.io.IOException;
 
 public class NewUserPage extends HBox implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private TextField     usernameField;
     @FXML private TextField     emailField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label         errorLabel;
 
-    public NewUserPage() {
+    public NewUserPage(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -73,12 +77,12 @@ public class NewUserPage extends HBox implements Navigable {
         String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
         store.create(new User(newId, username, email, passwordHash));
 
-        CentralController.moveTo(Navigation.LOGIN);
+        rootController.moveTo(Navigation.LOGIN);
     }
 
     @FXML
     private void handleBack(ActionEvent event) {
-        CentralController.moveTo(Navigation.LOGIN);
+        rootController.moveTo(Navigation.LOGIN);
     }
 
     private void setError(String message) {

@@ -25,8 +25,6 @@ import java.util.ArrayList;
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
 
-    private static CentralController instance;
-
     private WindowManager windowManager;
 
     private Scale uiScaleTransform;
@@ -44,17 +42,18 @@ public class CentralController {
 
     public TTTPage tttPage;
     public C4Page c4Page;
+    public LoginPage loginPage;
 
-    public static GameType selectedGame;
-    public static int maxPlayers;
-    public static String privacy;
-    public static String lobbyCode;
+    public GameType selectedGame;
+    public int maxPlayers;
+    public String privacy;
+    public String lobbyCode;
     /** Display name from host lobby screen (optional). */
-    public static String lobbyName;
+    public String lobbyName;
     /** True if this client created the current lobby (may start the game). */
-    public static boolean hostingLobby;
-    public static Navigation previousScreen;
-    public static Navigation currentScreen;
+    public boolean hostingLobby;
+    public Navigation previousScreen;
+    public Navigation currentScreen;
 
     /**
      * When true, {@link ca.ucalgary.seng300.ui.games.CommonGameLogic} wires the game to a local session with a random-move AI
@@ -62,15 +61,15 @@ public class CentralController {
      */
     public boolean localAiMode = false;
 
-    public static int currentUserId;
-    public static String displayName = "Player";
+    public int currentUserId;
+    public String displayName = "Player";
 
-    public static String rosterHostName = "";
-    public static int rosterHostElo = 1200;
-    public static String rosterGuestName = "";
-    public static int rosterGuestElo = 1200;
+    public String rosterHostName = "";
+    public int rosterHostElo = 1200;
+    public String rosterGuestName = "";
+    public int rosterGuestElo = 1200;
 
-    public static void clearLobbyRoster() {
+    public void clearLobbyRoster() {
         rosterHostName = "";
         rosterGuestName = "";
         rosterHostElo = 1200;
@@ -80,24 +79,21 @@ public class CentralController {
     /**
      * Clears signed-in session and lobby navigation state, then shows the login screen.
      */
-    public static void logout() {
+    public void logout() {
         currentUserId = 0;
         displayName = "Player";
         previousScreen = null;
         selectedGame = null;
-        instance.localAiMode = false;
+        localAiMode = false;
         hostingLobby = false;
         lobbyCode = null;
         lobbyName = null;
         maxPlayers = 0;
         privacy = null;
         clearLobbyRoster();
-        if (instance != null) {
-            moveTo(Navigation.LOGIN);
-        }
     }
 
-    public static void applyLobbyRosterPayload(String payload) {
+    public void applyLobbyRosterPayload(String payload) {
         if (payload == null || payload.isBlank()) {
             return;
         }
@@ -132,7 +128,6 @@ public class CentralController {
 
     @FXML
     public void initialize() {
-        instance = this;
         clientCore = new ClientCore(this);
         clientCore.start();
         System.out.println("cc loaded");
@@ -164,38 +159,33 @@ public class CentralController {
         GameGUIPage gameGUIPage = new GameGUIPage(this);
         c4Page = new C4Page(this, gameGUIPage);
         tttPage = new TTTPage(this, gameGUIPage);
+        loginPage = new LoginPage(this);
         nodes.add(gameGUIPage);
         nodes.add(c4Page);
         nodes.add(tttPage);
         nodes.add(new ChooseModePage(this));
-        nodes.add(new GameDashboardPage());
+        nodes.add(new GameDashboardPage(this));
         nodes.add(new HostLobbyPage(this));
-        nodes.add(new InfoPage());
+        nodes.add(new InfoPage(this));
         nodes.add(new JoinLobbyPage(this));
-        nodes.add(new LoginPage(this));
+        nodes.add(loginPage);
         nodes.add(new MainLobbyPage(this));
-        nodes.add(new NewUserPage());
-        nodes.add(new ProfileDashboardPage());
-        nodes.add(new SettingsPage());
-    }
-
-    public static CentralController getInstance() {
-        return instance;
+        nodes.add(new NewUserPage(this));
+        nodes.add(new ProfileDashboardPage(this));
+        nodes.add(new SettingsPage(this));
     }
 
     // call anytime to switch pages
-    public static void moveTo(Navigation nav) {
+    public void moveTo(Navigation nav) {
         previousScreen = currentScreen;
-        instance.loadView(nav);
+        loadView(nav);
     }
 
     /**
      * Re-applies text scaling, window size, and colorblind root class for the whole app.
      */
-    public static void applyUiPreferences() {
-        if (instance != null) {
-            instance.syncUiPreferencesToScene();
-        }
+    public void applyUiPreferences() {
+        syncUiPreferencesToScene();
     }
 
     private Navigable getNode(Navigation nav) {

@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui.userdata;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -52,34 +53,38 @@ public class LoginPage extends HBox implements Navigable {
             return;
         }
 
-        UserStore store = UserStore.getInstance();
-        List<User> matches = store.findByUserName(username);
-        if (matches.isEmpty()) {
-            errorLabel.setText("Username not found.");
-            return;
-        }
-        User user = matches.getFirst();
-        String hash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
-        if (!hash.equals(user.getPasswordHash())) {
-            errorLabel.setText("Incorrect password.");
-            return;
-        }
-        if (!user.getIsActive()) {
-            errorLabel.setText("This account is disabled.");
-            return;
-        }
+        rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
 
-        CentralController.currentUserId = user.getID();
-        CentralController.displayName = user.getlogin();
-        CentralController.previousScreen = null;
-        rootController.localAiMode = false;
-        CentralController.moveTo(Navigation.GAME_DASHBOARD);
+//        UserStore store = UserStore.getInstance();
+//        List<User> matches = store.findByUserName(username);
+//        if (matches.isEmpty()) {
+//            errorLabel.setText("Username not found.");
+//            return;
+//        }
+//        User user = matches.getFirst();
+//        String hash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
+//        if (!hash.equals(user.getPasswordHash())) {
+//            errorLabel.setText("Incorrect password.");
+//            return;
+//        }
+//        if (!user.getIsActive()) {
+//            errorLabel.setText("This account is disabled.");
+//            return;
+//        }
+//
+//        CentralController.currentUserId = user.getID();
+//        CentralController.displayName = user.getlogin();
+
+    }
+
+    public void loginFailed(sysMSG sm) {
+
     }
 
     // Move to NewUser screen when button is triggered.
     @FXML
     private void handleNewUser(ActionEvent event) {
-        CentralController.moveTo(Navigation.NEW_USER);
+        rootController.moveTo(Navigation.NEW_USER);
     }
 
     @FXML

@@ -47,20 +47,20 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     public void initialize() {
-        String g = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Game";
+        String g = rootController.selectedGame != null ? rootController.selectedGame.toString() : "Game";
         lobbyTitle.setText(g + " Lobby");
 
         lobbyCodeLabel.setText(
-                CentralController.lobbyCode != null ? CentralController.lobbyCode : "----"
+                rootController.lobbyCode != null ? rootController.lobbyCode : "----"
         );
 
         privacyLabel.setText(
-                CentralController.privacy != null ? CentralController.privacy : "Public"
+                rootController.privacy != null ? rootController.privacy : "Public"
         );
 
-        gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Standard");
+        gameNameLabel.setText(rootController.selectedGame != null ? rootController.selectedGame.toString() : "Standard");
 
-        int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
+        int max = rootController.maxPlayers > 0 ? rootController.maxPlayers : 2;
         maxPlayersLabel.setText(String.valueOf(max));
 
         refreshPlayersFromState();
@@ -75,7 +75,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             playerList.getItems().clear();
             ClientCore cc = rootController != null ? rootController.getCC() : null;
             boolean guestThere = cc != null && cc.getLastUpdate() != null;
-            if (CentralController.hostingLobby) {
+            if (rootController.hostingLobby) {
                 playerList.getItems().add("You (host)");
                 playerList.getItems().add(guestThere ? "Guest (connected)" : "Waiting for guest…");
             } else {
@@ -87,7 +87,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             ClientCore cc = rootController != null ? rootController.getCC() : null;
             boolean paired = cc != null && cc.getLastUpdate() != null;
             int cur = paired ? 2 : 1;
-            int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
+            int max = rootController.maxPlayers > 0 ? rootController.maxPlayers : 2;
             playerCountLabel.setText("Players (" + cur + "/" + max + ")");
         }
     }
@@ -98,14 +98,14 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
         ClientCore cc = rootController != null ? rootController.getCC() : null;
         boolean paired = cc != null && cc.getLastUpdate() != null;
-        boolean host = CentralController.hostingLobby;
+        boolean host = rootController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
         refreshPlayersFromState();
     }
 
     @FXML
     private void handleStartGame() {
-        GameType game = CentralController.selectedGame;
+        GameType game = rootController.selectedGame;
         Navigation nav = GameType.getNavigation(game);
 
         if (nav == null) {
@@ -114,38 +114,38 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
 
         rootController.localAiMode = false;
-        if (CentralController.hostingLobby) {
+        if (rootController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {
                 cc.msgSend(new sysMSG("GMJN", nav.getFxml(), ""));
             }
         }
         LobbyBridge.clearLobbyUiCallbacks();
-        CentralController.moveTo(nav);
+        rootController.moveTo(nav);
     }
 
     @FXML
     private void handleCopyCode() {
-        if (CentralController.lobbyCode == null || CentralController.lobbyCode.isBlank()) {
+        if (rootController.lobbyCode == null || rootController.lobbyCode.isBlank()) {
             return;
         }
         ClipboardContent content = new ClipboardContent();
-        content.putString(CentralController.lobbyCode);
+        content.putString(rootController.lobbyCode);
         Clipboard.getSystemClipboard().setContent(content);
     }
 
     @FXML
     private void handleBack() {
         LobbyBridge.clearLobbyUiCallbacks();
-        if (Navigation.HOST_LOBBY == CentralController.previousScreen
-                || Navigation.JOIN_LOBBY == CentralController.previousScreen) {
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        if (Navigation.HOST_LOBBY == rootController.previousScreen
+                || Navigation.JOIN_LOBBY == rootController.previousScreen) {
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
             return;
         }
-        if (CentralController.previousScreen != null) {
-            CentralController.moveTo(CentralController.previousScreen);
+        if (rootController.previousScreen != null) {
+            rootController.moveTo(rootController.previousScreen);
         } else {
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
         }
     }
 

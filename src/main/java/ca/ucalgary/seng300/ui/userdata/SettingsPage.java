@@ -23,6 +23,8 @@ import java.util.List;
 
 public class SettingsPage extends BorderPane implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private Label activeUsernameLabel;
     @FXML private Label statusLabel;
 
@@ -34,8 +36,10 @@ public class SettingsPage extends BorderPane implements Navigable {
     @FXML private ComboBox<String> textScaleComboBox;
     @FXML private CheckBox colorBlindModeCheckBox;
 
-    public SettingsPage() {
+    public SettingsPage(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -64,7 +68,7 @@ public class SettingsPage extends BorderPane implements Navigable {
     }
 
     private User currentUserOrNull() {
-        int id = CentralController.currentUserId;
+        int id = rootController.currentUserId;
         if (id == 0) {
             return null;
         }
@@ -176,14 +180,14 @@ public class SettingsPage extends BorderPane implements Navigable {
         }
 
         store.update(u);
-        CentralController.displayName = u.getlogin();
+        rootController.displayName = u.getlogin();
         if (activeUsernameLabel != null) {
             activeUsernameLabel.setText(u.getlogin());
         }
 
         AppUiPreferences.textScaleFactor = AppUiPreferences.factorFromLabel(selectedTextScale);
         AppUiPreferences.colorblindMode = colorBlindModeEnabled;
-        CentralController.applyUiPreferences();
+        rootController.applyUiPreferences();
 
         if (statusLabel != null) {
             statusLabel.setText("Settings saved successfully.");
@@ -200,7 +204,7 @@ public class SettingsPage extends BorderPane implements Navigable {
         if (colorBlindModeCheckBox != null) {
             colorBlindModeCheckBox.setSelected(false);
         }
-        CentralController.applyUiPreferences();
+        rootController.applyUiPreferences();
 
         reloadAccountFieldsFromStore();
         if (statusLabel != null) {
@@ -210,10 +214,10 @@ public class SettingsPage extends BorderPane implements Navigable {
 
     @FXML
     private void handleBack(ActionEvent event) {
-        if (CentralController.previousScreen != null) {
-            CentralController.moveTo(CentralController.previousScreen);
+        if (rootController.previousScreen != null) {
+            rootController.moveTo(rootController.previousScreen);
         } else {
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
         }
     }
 

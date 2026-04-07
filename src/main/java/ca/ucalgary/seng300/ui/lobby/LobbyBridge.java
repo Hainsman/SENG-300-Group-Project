@@ -20,10 +20,10 @@ public final class LobbyBridge {
     /** First board sync after pairing (enables Start Game for host). */
     public static Runnable onGameState;
 
-    public static void notifyLobbyOk(String role, String code) {
+    public static void notifyLobbyOk(String role, String code, CentralController rootController) {
         Platform.runLater(() -> {
             if (code != null) {
-                CentralController.lobbyCode = code;
+                rootController.lobbyCode = code;
             }
             if ("HOST".equals(role) && onHostOk != null) {
                 Runnable r = onHostOk;

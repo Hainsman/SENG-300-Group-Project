@@ -323,10 +323,10 @@ public abstract class CommonGameLogic extends StackPane {
         rootController.localAiMode = false;
         hideEloOverlay();
 
-        if (CentralController.previousScreen != null)
-            CentralController.moveTo(CentralController.previousScreen);
+        if (rootController.previousScreen != null)
+            rootController.moveTo(rootController.previousScreen);
         else
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
     }
 
     private boolean isBoardBlank(Player[][] board) {

@@ -49,7 +49,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
     @FXML
     public void initialize() {
         if (gameTitleLabel != null) {
-            GameType g = CentralController.selectedGame;
+            GameType g = rootController.selectedGame;
             gameTitleLabel.setText(g != null ? g.toString() : "Game");
         }
 
@@ -98,18 +98,18 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
             return;
         }
 
-        CentralController.hostingLobby = false;
-        CentralController.lobbyCode = code;
-        CentralController.maxPlayers = 2;
-        CentralController.privacy = "Public";
-        CentralController.clearLobbyRoster();
+        rootController.hostingLobby = false;
+        rootController.lobbyCode = code;
+        rootController.maxPlayers = 2;
+        rootController.privacy = "Public";
+        rootController.clearLobbyRoster();
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onJoinOk = () -> {
-            CentralController.moveTo(Navigation.MAIN_LOBBY);
+            rootController.moveTo(Navigation.MAIN_LOBBY);
         };
 
-        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload()));
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload(rootController)));
     }
 
     private void joinLobbyFromList(String lobby) {
@@ -126,7 +126,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     private void handleBack() {
-        CentralController.moveTo(Navigation.CHOOSE_MODE);
+        rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @Override

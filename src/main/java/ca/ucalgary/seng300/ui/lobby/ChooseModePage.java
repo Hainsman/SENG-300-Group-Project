@@ -38,18 +38,18 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     public void initialize() {
-        if (CentralController.selectedGame != null)
-            gameTitleLabel.setText(CentralController.selectedGame.toString());
+        if (rootController.selectedGame != null)
+            gameTitleLabel.setText(rootController.selectedGame.toString());
         refreshAiCardVisibility();
     }
 
     /** Tic-Tac-Toe from the new dashboard uses {@code "TicTacToe"}. */
-    private static boolean isTicTacToeSelection() {
-        return CentralController.selectedGame == GameType.TIC_TAC_TOE;
+    private boolean isTicTacToeSelection() {
+        return rootController.selectedGame == GameType.TIC_TAC_TOE;
     }
 
-    private static boolean isConnectFourSelection() {
-        return CentralController.selectedGame == GameType.CONNECT4;
+    private boolean isConnectFourSelection() {
+        return rootController.selectedGame == GameType.CONNECT4;
     }
 
     private void refreshAiCardVisibility() {
@@ -63,37 +63,37 @@ public class ChooseModePage extends AnchorPane implements Navigable {
     @FXML
     void handleHostGame(MouseEvent event) {
         rootController.localAiMode = false;
-        CentralController.moveTo(Navigation.HOST_LOBBY);
+        rootController.moveTo(Navigation.HOST_LOBBY);
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
         rootController.localAiMode = false;
-        CentralController.moveTo(Navigation.JOIN_LOBBY);
+        rootController.moveTo(Navigation.JOIN_LOBBY);
     }
 
     @FXML
     void handlePlayWithAi(MouseEvent event) {
         rootController.localAiMode = true;
         if (isTicTacToeSelection())
-            CentralController.moveTo(Navigation.TTT);
+            rootController.moveTo(Navigation.TTT);
         else if (isConnectFourSelection())
-            CentralController.moveTo(Navigation.C4);
+            rootController.moveTo(Navigation.C4);
     }
 
     @FXML
     void handleProfileDashboard(ActionEvent event) {
-        CentralController.moveTo(Navigation.PROFILE_DASHBOARD);
+        rootController.moveTo(Navigation.PROFILE_DASHBOARD);
     }
 
     @FXML
     void handleTeamSettings(ActionEvent event) {
-        CentralController.moveTo(Navigation.SETTINGS);
+        rootController.moveTo(Navigation.SETTINGS);
     }
 
     @FXML
     void handleBack(MouseEvent event) {
-        CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        rootController.moveTo(Navigation.GAME_DASHBOARD);
     }
 
     @Override

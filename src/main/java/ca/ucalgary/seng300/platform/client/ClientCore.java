@@ -171,77 +171,26 @@ public class ClientCore extends Thread{
                     break;
                 }
 
-                switch(message){
-                    case sysMSG sm:
-                        switch (sm.getType()){
-                            case "LOGS":
-                                username = sm.getFieldA();
-                                CID = sm.getFieldB();
-                                flg = 's';
-                                upFlag = true;
-                                break;
-                            case "LOGF":
-                                flg = 'f';
-                                upFlag = true;
-                                break;
-                            case "GMJN":
-                                upFlag = true;
-                                {
-                                    String screen = sm.getFieldA();
-                                    if (screen != null && !screen.isBlank()) {
-                                        final String fxml = screen;
-                                        Platform.runLater(() -> {
-                                            LobbyBridge.clearLobbyUiCallbacks();
-                                            CentralController.moveTo(Navigation.getFromFxml(fxml));
-                                        });
-                                    }
-                                }
-                                break;
-                            case "LOBBY_OK":
-                                if ("HOST".equals(sm.getFieldB())) {
-                                    myPlayerId = "P1";
-                                } else if ("JOIN".equals(sm.getFieldB())) {
-                                    myPlayerId = "P2";
-                                }
-                                LobbyBridge.notifyLobbyOk(sm.getFieldB(), sm.getFieldA());
-                                break;
-                            case "LOBBY_ERR":
-                                LobbyBridge.notifyLobbyFail(sm.getFieldB() != null ? sm.getFieldB() : sm.getFieldA());
-                                break;
-                            case "PARTNER_JOINED":
-                                LobbyBridge.notifyPartnerJoined();
-                                break;
-                            default:
-                                break;
+                switch (message) {
+                    case sysMSG sm -> {
+                        switch (sm.getType()) {
+                            case "LOGS" -> logs(sm);
+                            case "LOGF" -> logf();
+                            case "GMJN" -> gmjn(sm);
+                            case "LOBBY_OK" -> lobbyOk(sm);
+                            case "LOBBY_ERR" -> lobbyErr(sm);
+                            case "PARTNER_JOINED" -> LobbyBridge.notifyPartnerJoined();
+                            case "AUTH" -> auth(sm);
+                            default -> { }
                         }
-                        break;
-
-
-                    case GameState g:
-                        System.out.println("a gamestate arrived");
-                        lastUpdate = g;
-                        if (g instanceof TTTGameState tttState) {
-                            System.out.println(debugBoard(tttState));
-                        }
-                        Platform.runLater(() -> {
-                            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.tttPage != null) {
-                                ioMain.tttPage.refreshFromGameState(tttState);
-                                System.out.println("Ui update triggered");
-                            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.c4Page != null) {
-                                ioMain.c4Page.refreshFromGameState(c4State);
-                            }
-                            LobbyBridge.notifyGameState();
-                        });
-
-                        break;
-                    case chatMessage c:
+                    }
+                    case GameState g -> gameStateArrived(g);
+                    case chatMessage c -> {
                         // CHAT SYSTEM UI COMPONENT
-                        break;
+                    }
                     //case matchMaking m:
 
-                    default:
-                        System.out.println("an object arrived");
-                        break;
+                    default -> System.out.println("an object arrived");
                 }
 
 
@@ -254,6 +203,73 @@ public class ClientCore extends Thread{
 
         }
     }
+
+    private void logs(sysMSG sm) {
+        username = sm.getFieldA();
+        CID = sm.getFieldB();
+        flg = 's';
+        upFlag = true;
+    }
+
+    private void logf() {
+        flg = 'f';
+        upFlag = true;
+    }
+
+    private void gmjn(sysMSG sm) {
+        upFlag = true;
+        {
+            String screen = sm.getFieldA();
+            if (screen != null && !screen.isBlank()) {
+                final String fxml = screen;
+                Platform.runLater(() -> {
+                    LobbyBridge.clearLobbyUiCallbacks();
+                    ioMain.moveTo(Navigation.getFromFxml(fxml));
+                });
+            }
+        }
+    }
+
+    private void lobbyOk(sysMSG sm) {
+        if ("HOST".equals(sm.getFieldB())) {
+            myPlayerId = "P1";
+        } else if ("JOIN".equals(sm.getFieldB())) {
+            myPlayerId = "P2";
+        }
+        LobbyBridge.notifyLobbyOk(sm.getFieldB(), sm.getFieldA(), ioMain);
+    }
+
+    private void lobbyErr(sysMSG sm) {
+        LobbyBridge.notifyLobbyFail(sm.getFieldB() != null ? sm.getFieldB() : sm.getFieldA());
+    }
+
+    private void gameStateArrived(GameState g) {
+        System.out.println("a gamestate arrived");
+        lastUpdate = g;
+        if (g instanceof TTTGameState tttState) {
+            System.out.println(debugBoard(tttState));
+        }
+        Platform.runLater(() -> {
+            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.tttPage != null) {
+                ioMain.tttPage.refreshFromGameState(tttState);
+                System.out.println("Ui update triggered");
+            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.c4Page != null) {
+                ioMain.c4Page.refreshFromGameState(c4State);
+            }
+            LobbyBridge.notifyGameState();
+        });
+    }
+
+    private void auth(sysMSG sm) {
+        if (sm.getFieldA().equals("PASS")) {
+            ioMain.previousScreen = null;
+            ioMain.localAiMode = false;
+            ioMain.moveTo(Navigation.GAME_DASHBOARD);
+        }
+        else
+            ioMain.loginPage.loginFailed(sm);
+    }
+
     /*public static void main(String[] args) {
         try {
             ClientCore c = new ClientCore(new CentralController()); // Start the server
