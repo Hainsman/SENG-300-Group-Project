@@ -1,5 +1,5 @@
 package ca.ucalgary.seng300.platform.messages;
-
+/*
 import java.util.UUID;
 
 public class CreateGameRoom extends Message{
@@ -10,4 +10,4 @@ public class CreateGameRoom extends Message{
         this.gameID = gameID;
     }
     public int getGameType() { return gameID; }
-}
+}*/

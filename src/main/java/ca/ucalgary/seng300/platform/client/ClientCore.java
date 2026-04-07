@@ -207,12 +207,14 @@ public class ClientCore extends Thread{
                                 }
                                 break;
                             case "LOBBY_OK":
-                                if ("HOST".equals(sm.getFieldB())) {
+                                if ("HOST".equals(sm.getFieldA())) {
                                     myPlayerId = "P1";
-                                } else if ("JOIN".equals(sm.getFieldB())) {
+                                } else if ("JOIN".equals(sm.getFieldA())) {
                                     myPlayerId = "P2";
                                 }
-                                LobbyBridge.notifyLobbyOk(sm.getFieldB(), sm.getFieldA());
+                                Platform.runLater(() -> {
+                                    LobbyBridge.notifyLobbyOk(sm.getFieldA(),sm.getFieldB());
+                                });
                                 break;
                             case "LOBBY_ERR":
                                 LobbyBridge.notifyLobbyFail(sm.getFieldB() != null ? sm.getFieldB() : sm.getFieldA());
@@ -229,14 +231,6 @@ public class ClientCore extends Thread{
                             default:
                                 break;
                         }
-                        break;
-
-
-                    case TTTWireState tw:
-                        onGameStateReceived(tw.toGameState());
-                        break;
-                    case C4WireState cw:
-                        onGameStateReceived(cw.toGameState());
                         break;
                     case GameState g:
                         onGameStateReceived(g);

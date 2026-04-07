@@ -5,11 +5,11 @@ import ca.ucalgary.seng300.game.core.Player;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-/**
- * Line-based wire format: one JSON line per message.
- * First message from client can be CreateOrJoinSession; server replies with SessionCreated.
- * Then client sends SubmitMove (JSON); server replies with GameStateUpdate (JSON).
- */
+/*
+ // Line-based wire format: one JSON line per message.
+ // First message from client can be CreateOrJoinSession; server replies with SessionCreated.
+ // Then client sends SubmitMove (JSON); server replies with GameStateUpdate (JSON).
+
 public final class WireFormat {
     private static final Gson GSON = new GsonBuilder().create();
 
@@ -49,4 +49,4 @@ public final class WireFormat {
     }
 
     private WireFormat() {}
-}
+} */

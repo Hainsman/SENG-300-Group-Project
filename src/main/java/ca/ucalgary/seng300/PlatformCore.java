@@ -1,33 +1,20 @@
 package ca.ucalgary.seng300;
 
-import ca.ucalgary.seng300.game.core.Game;
-import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
-import ca.ucalgary.seng300.game.core.PlayerMove;
-import ca.ucalgary.seng300.game.core.connect4.C4Game;
-import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
-import ca.ucalgary.seng300.platform.messages.GameStateNetworkCodec;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.server.GameSessionRecord;
+import ca.ucalgary.seng300.platform.server.ServerLobby;
 import ca.ucalgary.seng300.platform.server.platformChannel;
-import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 
 import java.net.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.UUID;
 
 import static ca.ucalgary.seng300.platform.constants.Constants.EMAIL_REGEX;
 import static ca.ucalgary.seng300.platform.constants.Constants.HASH_ALGORITHM;
@@ -47,19 +34,11 @@ public class PlatformCore {
     public UserStore userStore;
     public SessionHistoryStore sessionHistoryStore;
 
-
-    // get the next session id then increment b y1
-    public String getUUID(){
-        return Integer.toString(seshID++);
-    }
-
     // hashmap of games gettable by ID
-    HashMap<String, Game> games;
-    // would be the list of all unused game ids, up to max size
-    String availableIDs = "test";
+    //public HashMap<String, Game> games;
 
-    public platformChannel p1;
-    public platformChannel p2;
+    // hashmap of joinable lobbies
+    public HashMap<String, ServerLobby> lobbies;
 
     // list of connections for users currently logged in
     public List<platformChannel> users;
@@ -67,10 +46,10 @@ public class PlatformCore {
     private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
 
     /** Waiting host channels keyed by lobby code (guest joins by code). */
-    private final ConcurrentHashMap<String, platformChannel> openLobbies = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String> openLobbyGameTypes = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String> openLobbyHostPayload = new ConcurrentHashMap<>();
-
+    //private final ConcurrentHashMap<String, platformChannel> openLobbies = new ConcurrentHashMap<>();
+    //private final ConcurrentHashMap<String, String> openLobbyGameTypes = new ConcurrentHashMap<>();
+    //private final ConcurrentHashMap<String, String> openLobbyHostPayload = new ConcurrentHashMap<>();
+    /*
     private static String normalizeGameType(String gameType) {
         if (gameType == null) {
             return "TTT";
@@ -95,8 +74,8 @@ public class PlatformCore {
         }
         return playerId;
     }
-
-    private static String[] parseNameEloPayload(String raw) {
+    */
+    public static String[] parseNameEloPayload(String raw) {
         if (raw == null || raw.isBlank()) {
             return new String[] { "Player", "1200" };
         }
@@ -117,17 +96,19 @@ public class PlatformCore {
         if (code == null || code.isBlank() || hostChannel == null) {
             return false;
         }
-        String normalized = code.trim().toUpperCase();
-        String normalizedType = normalizeGameType(gameType);
-        if (openLobbies.putIfAbsent(normalized, hostChannel) != null) {
+        String lobbyid = code.trim().toUpperCase();
+
+        ServerLobby lob = new ServerLobby(code, gameType, hostChannel, clientPayload);
+        if (lobbies.putIfAbsent(code, lob) != null) {
             return false;
         }
+        /*
         openLobbyGameTypes.put(normalized, normalizedType);
         openLobbyHostPayload.put(normalized, clientPayload != null ? clientPayload : "");
         hostChannel.ID = "host-" + normalized;
         hostChannel.setGameType(normalizedType);
-        hostChannel.setGameID(gameIdForType(normalizedType));
-        System.out.println("Lobby opened: " + normalized + " (" + normalizedType + ")");
+        hostChannel.setGameID(gameIdForType(normalizedType));*/
+        System.out.println("Lobby opened: " + code + " (" + gameType + ")");
         return true;
     }
 
@@ -135,13 +116,15 @@ public class PlatformCore {
         if (code == null || code.isBlank() || guestChannel == null) {
             return false;
         }
-        String normalized = code.trim().toUpperCase();
-        platformChannel host = openLobbies.remove(normalized);
-        String gt = openLobbyGameTypes.remove(normalized);
-        String hostPayloadRaw = openLobbyHostPayload.remove(normalized);
-        if (host == null) {
+        String lobbyid = code.trim().toUpperCase();
+        //platformChannel host = openLobbies.remove(normalized);
+        //String gt = openLobbyGameTypes.remove(normalized);
+        //String hostPayloadRaw = openLobbyHostPayload.remove(normalized);
+        ServerLobby sl = lobbies.get(code);
+        if (sl == null) {
             return false;
         }
+        /*
         String gameType = normalizeGameType(gt != null ? gt : host.getGameType());
         String gameId = gameIdForType(gameType);
         host.setGameType(gameType);
@@ -161,18 +144,21 @@ public class PlatformCore {
         String[] h = parseNameEloPayload(hostPayloadRaw);
         String[] g = parseNameEloPayload(guestPayload);
         String roster = h[0] + "|" + h[1] + "|" + g[0] + "|" + g[1];
-        var rosterMsg = new ca.ucalgary.seng300.platform.messages.sysMSG("LOBBY_ROSTER", normalized, "", roster);
+        var rosterMsg = new sysMSG("LOBBY_ROSTER", normalized, "", roster);
         host.cliSend(rosterMsg);
-        guestChannel.cliSend(rosterMsg);
-        tempGameReset();
-        System.out.println("Lobby " + normalized + " matched; game ready (" + gameType + ").");
+        guestChannel.cliSend(rosterMsg);*/
+        sl.joinGuest(guestChannel, guestPayload);
+        sl.rosterSend();
+        sl.gameReset();
+        //tempGameReset();
+        System.out.println("Lobby " + code + " matched; game ready");
         return true;
     }
 
     /**
      * Relays host "start game" to the guest using the same {@code GMJN} sysMSG pattern as the legacy client.
-     */
-    public synchronized void relayToGuestIfHost(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+     *//*
+    public synchronized void relayToGuestIfHost(platformChannel from, sysMSG sm) {
         if (p2 == null || from == null) {
             return;
         }
@@ -188,7 +174,7 @@ public class PlatformCore {
         String b = sm.getFieldB() != null ? sm.getFieldB() : "";
         p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("GMJN", fxml, b));
         System.out.println("GMJN relayed to guest → " + fxml);
-    }
+    }*/
 
     public void sendSingle (String id, Object o){
         for(platformChannel u : users){
@@ -242,6 +228,11 @@ public class PlatformCore {
         return new sysMSG("NEWU", "PASS");
     }
 
+    public void handleMove(String id, platformChannel player, PlayerAction m){
+        ServerLobby sl = lobbies.get(id);
+        sl.gameTurn(player, m);
+    }
+    /*
     public void clientJoin(int i){
         connected.add(i);
     }
@@ -272,10 +263,11 @@ public class PlatformCore {
             return true;
         }
         return false;
-    }
+    }*/
     /**
      * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
      */
+    /*
     public synchronized void onForfeit(platformChannel from) {
         if (p1 == null || p2 == null || from == null) {
             return;
@@ -354,7 +346,7 @@ public class PlatformCore {
             }
         }
         return s;
-    }
+    }*/
 
     // Number of active users
     private int cActive = 0;
@@ -363,11 +355,11 @@ public class PlatformCore {
         /** database initialisation, replace null with the file path **/
         userStore = new UserStore(null);
         sessionHistoryStore = new SessionHistoryStore(null);
+        // MAX SESSION LIMIT
+        //generateIDList(999);
 
         // all of the lists of active threads
-        games = new HashMap<>();
-        games.put("test", new TTTGame());
-        games.put("c4", new C4Game());
+        //games = new HashMap<>();
 
         // list of threads
         users = new ArrayList<platformChannel>();
@@ -384,37 +376,38 @@ public class PlatformCore {
 
         // wait for at least 1 client to connect
         Boolean wait = true;
-        // Loop to listen for new clients
-        do{
-            try {
+        try {
+            // Loop to listen for new clients
+            do {
                 // Accept a new client connection
                 Socket socket = serverSocket.accept();
                 wait = false;
-                if(cActive < ClientMax) {
+                if (cActive < ClientMax) {
                     // Create a new thread to handle the connected client
                     users.add(CCount, new platformChannel(socket, this));
                     users.get(CCount).start();
-                    cActive ++;
+                    cActive++;
                     CCount++;
                     System.out.println("client joined");
-                }
-                else {
+                } else {
                     socket.close();
                 }
             }
-            catch(Exception e) {
-                System.out.println("Server timeout");
-                // lets the while check happen instead of blocking on accept when it times out
+            while (cActive != 0 || wait);
+        }
+        catch(Exception e) {
+            System.out.println("Server timeout");
+            // lets the while check happen instead of blocking on accept when it times out
+        }
+        finally {
+            // close the servers socket
+            serverSocket.close();
+            // join all of the threads if they exist
+            for(Thread thread : users) {
+                thread.join();
             }
+            System.out.println("Server Closed");
         }
-        while(cActive != 0 || wait);
-        // close the servers socket
-        serverSocket.close();
-        // join all of the threads if they exist
-        for(Thread thread : users) {
-            thread.join();
-        }
-        System.out.println("Server Closed");
     }
 
 

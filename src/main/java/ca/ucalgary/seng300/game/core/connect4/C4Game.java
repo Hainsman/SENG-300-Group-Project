@@ -33,9 +33,6 @@ public class C4Game implements Game {
         }
     }
 
-    public void tempReset(){
-        gameState = new C4GameState();
-    }
     public boolean valid;
 
     @Override

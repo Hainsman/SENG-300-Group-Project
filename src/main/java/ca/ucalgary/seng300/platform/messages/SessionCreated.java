@@ -1,9 +1,9 @@
 package ca.ucalgary.seng300.platform.messages;
 
-/**
- * Server -> client: response after create or join session.
- * yourPlayer = "PLAYER_1" | "PLAYER_2"
- */
+/*
+ // Server -> client: response after create or join session.
+ // yourPlayer = "PLAYER_1" | "PLAYER_2"
+
 public class SessionCreated {
     private String sessionId;
     private String yourPlayer; // "PLAYER_1" or "PLAYER_2"
@@ -27,4 +27,4 @@ public class SessionCreated {
     public void setYourPlayer(String yourPlayer) { this.yourPlayer = yourPlayer; }
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
-}
+}*/

@@ -1,5 +1,5 @@
 package ca.ucalgary.seng300.platform.messages;
-
+/*
 import java.util.UUID;
 
 public class CreateAccount extends Message{
@@ -21,4 +21,4 @@ public class CreateAccount extends Message{
     public String getUsername() {return username;}
     public void setUsername(String username) {this.username = username;}
 
-}
+}*/

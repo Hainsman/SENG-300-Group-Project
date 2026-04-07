@@ -1,13 +1,13 @@
 package ca.ucalgary.seng300.platform.messages;
-
+/*
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 
 import java.io.Serializable;
 
-/**
- * Network-safe snapshot for TTT: only primitive ints (cell ordinals), never enum arrays on the wire.
- */
+
+ //Network-safe snapshot for TTT: only primitive ints (cell ordinals), never enum arrays on the wire.
+
 public final class TTTWireState implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,3 +37,4 @@ public final class TTTWireState implements Serializable {
         return TTTGameState.fromWireSnapshot(cells, turnOrd, stateOrd);
     }
 }
+*/

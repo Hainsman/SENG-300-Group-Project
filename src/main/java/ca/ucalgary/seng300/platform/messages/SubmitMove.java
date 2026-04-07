@@ -4,6 +4,7 @@ package ca.ucalgary.seng300.platform.messages;
  * DTO for client -> server: request to submit a move in a game session.
  * Serialized with Gson for TCP wire format.
  */
+/*
 public class SubmitMove {
     private String sessionId;
     private String playerId;
@@ -35,4 +36,4 @@ public class SubmitMove {
     public void setCol(int col) { this.col = col; }
     public String getGameType() { return gameType; }
     public void setGameType(String gameType) { this.gameType = gameType; }
-}
+}*/

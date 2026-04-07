@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 
 import java.util.HashMap;
@@ -19,15 +20,19 @@ public class GameSessionRecord {
 
     public GameSessionRecord(String type, platformChannel host) {
         this.sessionId = UUID.randomUUID().toString();
-        if(ty)
-        this.game = new TTTGame();
+        if(type.equals("TTT")){
+            this.game = new TTTGame();
+        }
+        else{
+            this.game = new C4Game();
+        }
     }
 
     public String getSessionId() {
         return sessionId;
     }
 
-    public TTTGame getGame() {
+    public Game getGame() {
         return game;
     }
 

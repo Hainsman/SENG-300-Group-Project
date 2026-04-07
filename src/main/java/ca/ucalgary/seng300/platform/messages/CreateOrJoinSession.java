@@ -1,10 +1,10 @@
 package ca.ucalgary.seng300.platform.messages;
 
-/**
- * Client -> server: request to create a new game session or join an existing one.
- * type = "CREATE_SESSION" | "JOIN_SESSION"
- * For JOIN_SESSION, sessionId must be set. For CREATE_SESSION, sessionId can be null.
- */
+/*
+ // Client -> server: request to create a new game session or join an existing one.
+ // type = "CREATE_SESSION" | "JOIN_SESSION"
+ // For JOIN_SESSION, sessionId must be set. For CREATE_SESSION, sessionId can be null.
+
 public class CreateOrJoinSession {
     private String type;      // "CREATE_SESSION" or "JOIN_SESSION"
     private String sessionId; // required for JOIN
@@ -32,4 +32,4 @@ public class CreateOrJoinSession {
     public void setPlayerId(String playerId) { this.playerId = playerId; }
     public String getGameType() { return gameType; }
     public void setGameType(String gameType) { this.gameType = gameType; }
-}
+}*/

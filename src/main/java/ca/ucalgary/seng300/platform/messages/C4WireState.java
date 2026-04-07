@@ -1,13 +1,13 @@
 package ca.ucalgary.seng300.platform.messages;
-
+/*
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 
 import java.io.Serializable;
 
-/**
- * Network-safe snapshot for Connect Four: primitive cell ordinals only.
- */
+
+ //Network-safe snapshot for Connect Four: primitive cell ordinals only.
+
 public final class C4WireState implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,3 +37,4 @@ public final class C4WireState implements Serializable {
         return C4GameState.fromWireSnapshot(cells, turnOrd, stateOrd);
     }
 }
+*/

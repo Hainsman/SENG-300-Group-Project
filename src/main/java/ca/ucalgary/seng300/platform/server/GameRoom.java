@@ -1,5 +1,5 @@
 package ca.ucalgary.seng300.platform.server;
-
+/*
 import ca.ucalgary.seng300.platform.domain.User;
 
 import java.util.ArrayList;
@@ -26,4 +26,4 @@ public class GameRoom {
     public void setParticipants(ArrayList<User> participants) {this.participants = participants;}
     public UUID getGameRoomID() {return gameRoomID;}
     public void setGameRoomID(UUID gameRoomID) {this.gameRoomID = gameRoomID;}
-}
+}*/

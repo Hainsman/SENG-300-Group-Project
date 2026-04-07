@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.server;
 import ca.ucalgary.seng300.PlatformCore;
-import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 
@@ -10,8 +11,7 @@ import java.net.Socket;
 public class platformChannel extends Thread {
     private Socket socket;
     private String lobby;
-    private String gameQueue;
-    private String gameType;
+    private GameType gameType;
     private String gameID;
 
     private PlatformCore serv;
@@ -33,6 +33,10 @@ public class platformChannel extends Thread {
             e.printStackTrace();
         }
     }
+    public void setLobby(String lob, GameType game){
+        lobby = lob;
+        gameType = game;
+    }
 
     private void handleSys(sysMSG sm) {
         switch (sm.getType()) {
@@ -45,19 +49,18 @@ public class platformChannel extends Thread {
             case "HOST_LOBBY":
                 String code = sm.getFieldA();
                 String gt = sm.getFieldB() != null ? sm.getFieldB() : "TTT";
-                this.gameType = gt;
                 String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
                 boolean ok = serv.onHostLobby(code, gt, this, lobbyPayload);
                 if (ok) {
-                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "HOST"));
+                    cliSend(new sysMSG("LOBBY_OK","HOST", code.toUpperCase()));
                 } else {
-                    cliSend(new sysMSG("LOBBY_ERR", "create", "Could not create lobby (code may already be in use)."));
+                    cliSend(new sysMSG("LOBBY_ERR", "HOST", "Could not create lobby (code may already be in use)."));
                 }
                 break;
             case "JOIN_LOBBY":
                 //String code = sm.getFieldA();
                 //boolean ok = serv.onJoinLobby(sm.getFieldA(), this);
-                if (serv.onJoinLobby(sm.getFieldA(), this)) {
+                if (serv.onJoinLobby(sm.getFieldA(), this, sm.getPayload())) {
                     cliSend(new sysMSG("LOBBY_OK", sm.getFieldA(), "JOIN"));
                 } else {
                     cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
@@ -104,10 +107,6 @@ public class platformChannel extends Thread {
             return;
         }
 
-
-        gameID = "test";
-        gameType = "TTT";
-
         while (!interrupted()) {
             Object message;
             try {
@@ -122,9 +121,9 @@ public class platformChannel extends Thread {
             }
 
             switch (message) {
-                case PlayerMove p -> {
+                case PlayerAction p -> {
                     System.out.println("player action arrived");
-                    serv.gameEvent(gameID, gameType, p);
+                    serv.handleMove(lobby,this, p);
                 }
                 case sysMSG s -> handleSys(s);
                 case chatMessage cm -> {
