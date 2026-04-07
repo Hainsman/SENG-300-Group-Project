@@ -33,6 +33,6 @@ public class sysMSG implements Serializable {
     public String getType() { return type; }
     public String getFieldA() { return fieldA; }
     public String getFieldB() { return fieldB; }
-    public Object getPayload() { return payload; }
+    public String getPayload() { return payload; }
 
 }
