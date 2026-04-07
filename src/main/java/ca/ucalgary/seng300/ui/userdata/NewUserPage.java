@@ -69,7 +69,7 @@ public class NewUserPage extends HBox implements Navigable {
             return;
         }
 
-        int newId = store.assignNewID();
+        int newId = store.assignNewId();
         String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
         store.create(new User(newId, username, email, passwordHash));
 

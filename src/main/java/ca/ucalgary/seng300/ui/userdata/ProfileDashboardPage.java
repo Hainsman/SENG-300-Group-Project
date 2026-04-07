@@ -48,7 +48,8 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
     @FXML
     private void initialize() {
         refreshLoggedInLine();
-        refreshStats();
+        // TODO fix this
+        //refreshStats();
     }
 
     private void refreshLoggedInLine() {
@@ -111,21 +112,22 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
     }
 
     private void appendLeaderboardRows(GameType gameType) {
-        List<User> top = LeaderBoardService.getInstance().getLeaderBoard(true, gameType, 20);
-        if (top.isEmpty()) {
-            leaderboardList.getItems().add("  (no players yet)");
-            return;
-        }
-        for (int i = 0; i < top.size(); i++) {
-            User u = top.get(i);
-            int elo = u.getEloForGame(gameType);
-            leaderboardList.getItems().add(String.format(
-                    "  #%d  %s  —  %d ELO  (%s)",
-                    i + 1,
-                    u.getlogin(),
-                    elo,
-                    PlayerProfileHelper.eloTierLabel(elo)));
-        }
+        // TODO fix this
+//        List<User> top = LeaderBoardService.getInstance().getLeaderBoard(true, gameType, 20);
+//        if (top.isEmpty()) {
+//            leaderboardList.getItems().add("  (no players yet)");
+//            return;
+//        }
+//        for (int i = 0; i < top.size(); i++) {
+//            User u = top.get(i);
+//            int elo = u.getEloForGame(gameType);
+//            leaderboardList.getItems().add(String.format(
+//                    "  #%d  %s  —  %d ELO  (%s)",
+//                    i + 1,
+//                    u.getlogin(),
+//                    elo,
+//                    PlayerProfileHelper.eloTierLabel(elo)));
+//        }
     }
 
     @FXML

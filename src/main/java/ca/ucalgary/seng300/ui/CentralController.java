@@ -43,7 +43,7 @@ public class CentralController {
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
     public TTTPage tttPage;
-    public C4Page connect4;
+    public C4Page c4Page;
 
     public static GameType selectedGame;
     public static int maxPlayers;
@@ -162,10 +162,10 @@ public class CentralController {
 
     private void initializeNodes() {
         GameGUIPage gameGUIPage = new GameGUIPage(this);
-        connect4 = new C4Page(this, gameGUIPage);
+        c4Page = new C4Page(this, gameGUIPage);
         tttPage = new TTTPage(this, gameGUIPage);
         nodes.add(gameGUIPage);
-        nodes.add(connect4);
+        nodes.add(c4Page);
         nodes.add(tttPage);
         nodes.add(new ChooseModePage(this));
         nodes.add(new GameDashboardPage());
