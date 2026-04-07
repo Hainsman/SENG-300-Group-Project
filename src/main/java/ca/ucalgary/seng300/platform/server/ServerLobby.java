@@ -35,6 +35,11 @@ public class ServerLobby {
     public void joinGuest(platformChannel h, String ex){
         guest  = h;
         guestextra = ex;
+        guest.setLobby(lobbyCode, gameId);
+    }
+
+    public int getGameId() {
+        return gameId;
     }
 
     public void rosterSend(){

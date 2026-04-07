@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -109,7 +110,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
             rootController.moveTo(Navigation.MAIN_LOBBY);
         };
 
-        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload(rootController)));
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, String.valueOf(rootController.selectedGame.toId())));
     }
 
     private void joinLobbyFromList(String lobby) {

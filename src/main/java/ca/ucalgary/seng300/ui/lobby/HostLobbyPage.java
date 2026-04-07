@@ -109,7 +109,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
             rootController.previousScreen = Navigation.GAME_DASHBOARD;
         };
 
-        cc.msgSend(new sysMSG("HOST_LOBBY", code, rootController.selectedGame.toString(), PlayerProfileHelper.lobbyPayload(rootController)));
+        cc.msgSend(new sysMSG("HOST_LOBBY", code, String.valueOf(rootController.selectedGame.toId())));
     }
 
     @FXML
