@@ -19,6 +19,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,7 +52,9 @@ public class ClientCore extends Thread{
     public volatile  boolean upFlag = false;
     public volatile GameState lastUpdate;
     private volatile Runnable onGameStateUpdate;
-    
+    private volatile Consumer<sysMSG> authResponseHandler;
+    private volatile Consumer<sysMSG> newUserResponseHandler;
+
     public boolean isConnected() {
         return servSend != null && servRead != null;
     }
@@ -120,6 +123,14 @@ public class ClientCore extends Thread{
         return lastUpdate;
     }
 
+    public void setAuthResponseHandler(Consumer<sysMSG> handler) {
+        authResponseHandler = handler;
+    }
+
+    public void setNewUserResponseHandler(Consumer<sysMSG> handler) {
+        newUserResponseHandler = handler;
+    }
+
     public String debugBoard(TTTGameState t) {
         String s = "";
         for (Player[] p : t.getBoard()) {
@@ -141,12 +152,12 @@ public class ClientCore extends Thread{
                 socket.setSoTimeout(1000);
                 socket.connect(new InetSocketAddress("localhost", 2020));
                 socket.setSoTimeout(0);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("Client unable to connect to game server (is PlatformCore running on port 2020?): " + e.getMessage());
                 try {
                     socket.close();
-                } catch (IOException ignored) { }
+                } catch (IOException ignored) {
+                }
                 return;
             }
 
@@ -161,7 +172,7 @@ public class ClientCore extends Thread{
             // if the client is closed unexpectedly readline returns null so this catches any error
             while (!interrupted()) {
                 // wait for an incoming message from the server
-                try{
+                try {
                     message = servRead.readObject();
                 } catch (IOException e) {
                     continue;
@@ -176,12 +187,14 @@ public class ClientCore extends Thread{
                         switch (sm.getType()) {
                             case "LOGS" -> logs(sm);
                             case "LOGF" -> logf();
+                            case "AUTH" -> auth(sm);
+                            case "NEWU" -> newu(sm);
                             case "GMJN" -> gmjn(sm);
                             case "LOBBY_OK" -> lobbyOk(sm);
                             case "LOBBY_ERR" -> lobbyErr(sm);
                             case "PARTNER_JOINED" -> LobbyBridge.notifyPartnerJoined();
-                            case "AUTH" -> auth(sm);
-                            default -> { }
+                            default -> {
+                            }
                         }
                     }
                     case GameState g -> gameStateArrived(g);
@@ -192,8 +205,6 @@ public class ClientCore extends Thread{
 
                     default -> System.out.println("an object arrived");
                 }
-
-
             }
             // cleanup
             socket.close();
@@ -261,13 +272,25 @@ public class ClientCore extends Thread{
     }
 
     private void auth(sysMSG sm) {
-        if (sm.getFieldA().equals("PASS")) {
-            ioMain.previousScreen = null;
-            ioMain.localAiMode = false;
-            ioMain.moveTo(Navigation.GAME_DASHBOARD);
+        if ("PASS".equals(sm.getFieldA())) {
+            CID = sm.getFieldB();
+            username = sm.getPayload();
+            flg = 's';
+        } else {
+            flg = 'f';
         }
-        else
-            ioMain.loginPage.loginFailed(sm);
+        upFlag = true;
+        Consumer<sysMSG> handler = authResponseHandler;
+        if (handler != null) {
+            Platform.runLater(() -> handler.accept(sm));
+        }
+    }
+
+    private void newu(sysMSG sm) {
+        Consumer<sysMSG> newUserHandler = newUserResponseHandler;
+        if (newUserHandler != null) {
+            Platform.runLater(() -> newUserHandler.accept(sm));
+        }
     }
 
     /*public static void main(String[] args) {

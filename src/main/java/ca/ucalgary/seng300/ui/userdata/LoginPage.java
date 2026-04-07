@@ -29,6 +29,8 @@ public class LoginPage extends HBox implements Navigable {
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
 
+    private boolean loginPending = false;
+
     public LoginPage(CentralController rootController) {
         try {
             this.rootController = rootController;
@@ -47,38 +49,46 @@ public class LoginPage extends HBox implements Navigable {
     private void handleLogin(ActionEvent event) {
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
+        Button clickedButton = loginButton;
+        if (clickedButton == null && event.getSource() instanceof Button sourceButton) {
+            clickedButton = sourceButton;
+        }
 
         if (username.isEmpty() || password.isEmpty()) {
-            errorLabel.setText("Please enter your username and password.");
+            errorLabel.setText("Please enter your email/username and password.");
             return;
         }
 
+        loginPending = true;
+        if (clickedButton != null) {
+            clickedButton.setDisable(true);
+        }
+        errorLabel.setText("Signing in...");
+        rootController.clientCore.setAuthResponseHandler(this::handleAuthResponse);
         rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
-
-//        UserStore store = UserStore.getInstance();
-//        List<User> matches = store.findByUserName(username);
-//        if (matches.isEmpty()) {
-//            errorLabel.setText("Username not found.");
-//            return;
-//        }
-//        User user = matches.getFirst();
-//        String hash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
-//        if (!hash.equals(user.getPasswordHash())) {
-//            errorLabel.setText("Incorrect password.");
-//            return;
-//        }
-//        if (!user.getIsActive()) {
-//            errorLabel.setText("This account is disabled.");
-//            return;
-//        }
-//
-//        CentralController.currentUserId = user.getID();
-//        CentralController.displayName = user.getlogin();
-
     }
 
-    public void loginFailed(sysMSG sm) {
+    private void handleAuthResponse(sysMSG response) {
+        if (!loginPending || response == null || !"AUTH".equals(response.getType())) {
+            return;
+        }
 
+        loginPending = false;
+        if (loginButton != null) {
+            loginButton.setDisable(false);
+        }
+
+        if ("PASS".equals(response.getFieldA())) {
+            errorLabel.setText("");
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.previousScreen = null;
+        }
+        else {
+            String message = response.getFieldB();
+            errorLabel.setText(message != null && !message.isBlank()
+                    ? message
+                    : "Login failed.");
+        }
     }
 
     // Move to NewUser screen when button is triggered.

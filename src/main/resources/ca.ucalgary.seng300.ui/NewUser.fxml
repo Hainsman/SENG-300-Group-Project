@@ -78,11 +78,13 @@
         <Label fx:id="errorLabel" styleClass="error-text" text="" />
         <VBox spacing="12">
             <Button maxWidth="Infinity"
+                    fx:id="createAccountButton"
                     onAction="#handleCreateAccount"
                     prefHeight="45"
                     styleClass="auth-outline-button"
                     text="Create Account" />
             <Button maxWidth="Infinity"
+                    fx:id="backButton"
                     onAction="#handleBack"
                     prefHeight="45"
                     styleClass="auth-outline-button"
