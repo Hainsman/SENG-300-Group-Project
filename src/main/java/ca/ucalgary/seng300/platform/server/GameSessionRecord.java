@@ -48,7 +48,7 @@ public class GameSessionRecord {
         } else {
             playerIdToPlayer.put(playerId, Player.PLAYER_2);
             game.startGame(null, null);
-            game.setPlayerIdToPlayer(playerIdToPlayer);
+            //game.setPlayerIdToPlayer(playerIdToPlayer);
         }
         playerCount++;
         return playerCount == 2;

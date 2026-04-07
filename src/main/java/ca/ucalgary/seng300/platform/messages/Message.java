@@ -1,4 +1,5 @@
 package ca.ucalgary.seng300.platform.messages;
+/*
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.typeadapters.RuntimeTypeAdapterFactory;
@@ -39,4 +40,4 @@ public abstract class Message {
     public UUID getGloballyUniqueSessionId(){return globallyUniqueSessionId;}
     public static String toJson(Message message){return GSON.toJson(message);}
     public static Message fromJson(String jsonObject){return GSON.fromJson(jsonObject, Message.class);}
-}
+}*/

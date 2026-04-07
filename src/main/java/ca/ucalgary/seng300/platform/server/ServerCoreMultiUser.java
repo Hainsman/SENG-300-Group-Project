@@ -1,5 +1,5 @@
 package ca.ucalgary.seng300.platform.server;
-
+/*
 import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
@@ -29,9 +29,9 @@ import java.util.regex.Matcher;
  * <p>
  * When implemented: listen for clients, handle CreateOrJoinSession and SubmitMove,
  * reply with SessionCreated and GameStateUpdate (one JSON line per message).
- */
 
-/*
+
+
 public class ServerCoreMultiUser{
     private Game game;
     private final int port;

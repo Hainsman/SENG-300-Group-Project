@@ -66,33 +66,10 @@ public class platformChannel extends Thread {
                     cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
                 }
                 break;
+            //case "FORFEIT" -> serv.onForfeit(this);
 
-
-
-            /*
-            case "JOIN_LOBBY" -> {
-                String code = sm.getFieldA();
-                String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
-                boolean ok = serv.onJoinLobby(code, this, lobbyPayload);
-                if (ok) {
-                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
-                }
-            }
-
-            }
-            case "GMJN" -> serv.relayToGuestIfHost(this, sm);
-            case "reset" -> serv.tempGameReset();
-            case "FORFEIT" -> serv.onForfeit(this);
-            default -> { }
-
-            case "GMJN":
-                serv.relayToGuestIfHost(this, sm);
-                break;
-            case "reset":
-                serv.tempGameReset();
-                break;
             default:
-                break;*/
+                break;
         }
     }
 

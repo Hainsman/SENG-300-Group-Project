@@ -5,9 +5,7 @@ import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
-//import ca.ucalgary.seng300.platform.messages.C4WireState;
-//import ca.ucalgary.seng300.platform.messages.TTTWireState;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -71,7 +69,7 @@ public class ClientCore extends Thread{
         Object p = null;
         switch(gameType) {
             case "TTT":
-                p = new TTTPlayerMove(pid, "MOVE", row, col);
+                p = new TTTPlayerAction(pid, "MOVE", row, col);
                 break;
             case "C4":
                 p = new C4PlayerAction(pid, "MOVE" , row, col);
