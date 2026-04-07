@@ -62,7 +62,7 @@ public class LeaderBoardService {
         }
         lock.readLock().lock();
         try {
-            List<User> list = cachedLeaderBoard.get(gameType);
+            List<User> list = cachedLeaderBoard.get(gameType.toId());
             if (list == null) {
                 return new ArrayList<>();
             }

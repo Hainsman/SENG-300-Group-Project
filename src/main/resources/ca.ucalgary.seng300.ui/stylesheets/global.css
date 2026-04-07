@@ -913,6 +913,67 @@
     -fx-text-fill: #fafafa;
 }
 
+.leaderboard-game-card {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+}
+
+.leaderboard-game-title {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.leaderboard-row {
+    -fx-alignment: center-left;
+    -fx-padding: 7 8;
+    -fx-background-color: #1a1a1d;
+    -fx-border-color: #2a2a31;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.leaderboard-row:hover {
+    -fx-background-color: #202027;
+}
+
+.leaderboard-rank {
+    -fx-text-fill: #60a5fa;
+    -fx-font-weight: 700;
+    -fx-min-width: 34;
+}
+
+.leaderboard-name {
+    -fx-text-fill: #fafafa;
+    -fx-font-weight: 600;
+}
+
+.leaderboard-elo {
+    -fx-text-fill: #34d399;
+    -fx-font-weight: 700;
+}
+
+.leaderboard-tier {
+    -fx-text-fill: #d4d4d8;
+    -fx-font-size: 11px;
+    -fx-padding: 2 8;
+    -fx-border-color: #3f3f46;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.leaderboard-empty {
+    -fx-text-fill: #71717a;
+    -fx-padding: 10 0 0 2;
+}
+
 .profile-actions {
     -fx-spacing: 10;
 }
