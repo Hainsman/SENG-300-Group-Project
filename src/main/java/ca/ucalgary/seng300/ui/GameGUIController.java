@@ -3,11 +3,9 @@ package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
-import ca.ucalgary.seng300.platform.server.ServerMain;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;

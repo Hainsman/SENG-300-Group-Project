@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -77,13 +78,20 @@ class Store<T extends Record> {
         }
     };
 
+    public int assignNewId(){
+        if (records.isEmpty()) {
+            return 1;
+        }
+        return Collections.max(records.keySet()) + 1;
+    }
+
     private static Gson createGson(){
         RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class,"type")
-                .registerSubtype(User.class, "User")
-                .registerSubtype(GameHistory.class, "GameHistory")
-                .registerSubtype(Participant.class, "Participant")
-                .registerSubtype(SessionHistory.class, "SessionHistory")
-                .registerSubtype(PlayerStats.class, "PlayerStats");
+                .registerSubtype(User.class, User.class.getSimpleName())
+                .registerSubtype(GameHistory.class, GameHistory.class.getSimpleName())
+                .registerSubtype(Participant.class, Participant.class.getSimpleName())
+                .registerSubtype(SessionHistory.class, SessionHistory.class.getSimpleName())
+                .registerSubtype(PlayerStats.class, PlayerStats.class.getSimpleName());
 
         return new GsonBuilder()
                 .registerTypeAdapterFactory(entityAdapterFactory)
