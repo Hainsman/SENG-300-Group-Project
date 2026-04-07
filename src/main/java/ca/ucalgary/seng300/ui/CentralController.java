@@ -9,11 +9,15 @@ import ca.ucalgary.seng300.ui.lobby.*;
 import ca.ucalgary.seng300.ui.userdata.*;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -137,6 +141,46 @@ public class CentralController {
             return;
         }
         gameGuiPage.addChat(sender != null && !sender.isBlank() ? sender : "Player", message, javafx.scene.paint.Color.web("#86efac"));
+    }
+
+    public void onRematchRequested(String requester) {
+        String name = requester != null && !requester.isBlank() ? requester : "Opponent";
+        ButtonType accept = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
+        ButtonType reject = new ButtonType("Reject", ButtonBar.ButtonData.CANCEL_CLOSE);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                name + " requested a rematch. Do you want to play again?",
+                accept, reject);
+        confirm.setTitle("Rematch Request");
+        confirm.setHeaderText("Accept rematch?");
+        ThemeAlerts.apply(confirm);
+        ButtonType choice = confirm.showAndWait().orElse(reject);
+        if (clientCore == null || !clientCore.isConnected()) {
+            return;
+        }
+        String me = (displayName != null && !displayName.isBlank()) ? displayName.trim() : "Player";
+        if (choice == accept) {
+            clientCore.msgSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_RESPONSE", "ACCEPT", me));
+        } else {
+            clientCore.msgSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_RESPONSE", "DECLINE", me));
+        }
+    }
+
+    public void onRematchAccepted(String responder) {
+        String name = responder != null && !responder.isBlank() ? responder : "Opponent";
+        if (gameGuiPage != null) {
+            gameGuiPage.addIncomingSystemNotice("Rematch accepted by " + name + ". Starting new game...");
+        }
+    }
+
+    public void onRematchDeclined(String responder) {
+        String name = responder != null && !responder.isBlank() ? responder : "Opponent";
+        Alert info = new Alert(Alert.AlertType.INFORMATION,
+                name + " declined the rematch request.",
+                ButtonType.OK);
+        info.setTitle("Rematch Declined");
+        info.setHeaderText(null);
+        ThemeAlerts.apply(info);
+        info.showAndWait();
     }
 
     public ClientCore clientCore;

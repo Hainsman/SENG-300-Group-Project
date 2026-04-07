@@ -139,6 +139,11 @@ public class TTTPage extends StackPane implements Navigable {
         return true;
     }
 
+    /** Sidebar forfeit availability: disable after terminal win/loss/tie. */
+    public boolean canForfeitFromShell() {
+        return State.IN_PROGRESS.equals(resolveDisplayedState());
+    }
+
     private void refreshBackButtonVisibility() {
         if (backToModeButton == null) {
             return;
@@ -214,6 +219,9 @@ public class TTTPage extends StackPane implements Navigable {
             case DRAW -> turnLabel.setText("Draw!");
             default -> {
             }
+        }
+        if (parentGUI != null) {
+            parentGUI.refreshForfeitButtonState();
         }
     }
 
@@ -382,7 +390,12 @@ public class TTTPage extends StackPane implements Navigable {
         turnLabel.setText("X's Turn");
         parentGUI.clearHistory();
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
-            clientCore.msgSend(new sysMSG("reset", ""));
+            String me = (CentralController.displayName != null && !CentralController.displayName.isBlank())
+                    ? CentralController.displayName.trim()
+                    : "Player";
+            clientCore.msgSend(new sysMSG("REMATCH_REQUEST", me, ""));
+            turnLabel.setText("Rematch request sent. Waiting for opponent...");
+            return;
         }
 
         for (Node node : ticTacToeGrid.getChildren()) {
@@ -428,6 +441,9 @@ public class TTTPage extends StackPane implements Navigable {
         else if (st == State.TIE) turnLabel.setText("Draw!");
         else turnLabel.setText(session.getTurn() == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
         refreshBackButtonVisibility();
+        if (parentGUI != null) {
+            parentGUI.refreshForfeitButtonState();
+        }
     }
 
     public void setSession(TicTacToeSession s) {
@@ -508,6 +524,9 @@ public class TTTPage extends StackPane implements Navigable {
                     parentGUI.refreshSidebar();
                 });
         refreshBackButtonVisibility();
+        if (parentGUI != null) {
+            parentGUI.refreshForfeitButtonState();
+        }
         /* commented out depending on merging gamestate and gamestateupdate functions
         if (update.getMessage() != null && !update.getMessage().isEmpty()) {
             turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");

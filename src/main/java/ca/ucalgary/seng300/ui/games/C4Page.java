@@ -163,6 +163,9 @@ public class C4Page extends StackPane implements Navigable {
             default -> {
             }
         }
+        if (parentGUI != null) {
+            parentGUI.refreshForfeitButtonState();
+        }
 
     }
 
@@ -324,6 +327,9 @@ public class C4Page extends StackPane implements Navigable {
             statusLabel.setText(session.getTurn() == Player.PLAYER_1 ? "Player 1's Turn (you)" : "Player 2 (AI) is moving…");
             resetButton.setVisible(false);
         }
+        if (parentGUI != null) {
+            parentGUI.refreshForfeitButtonState();
+        }
     }
 
     private boolean checkWin(int row, int col, Color color) {
@@ -375,7 +381,11 @@ public class C4Page extends StackPane implements Navigable {
         EloOverlayUtil.hide(eloResultOverlay);
         onlineEloApplied = false;
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
-            clientCore.msgSend(new sysMSG("reset", ""));
+            String me = (CentralController.displayName != null && !CentralController.displayName.isBlank())
+                    ? CentralController.displayName.trim()
+                    : "Player";
+            clientCore.msgSend(new sysMSG("REMATCH_REQUEST", me, ""));
+            statusLabel.setText("Rematch request sent. Waiting for opponent...");
             return;
         }
         if (session != null) {
@@ -403,6 +413,17 @@ public class C4Page extends StackPane implements Navigable {
             return false;
         }
         if (clientCore.getLastUpdate() instanceof C4GameState gs) {
+            return State.IN_PROGRESS.equals(gs.getState());
+        }
+        return true;
+    }
+
+    /** Sidebar forfeit availability: disable after terminal win/loss/tie. */
+    public boolean canForfeitFromShell() {
+        if (session != null) {
+            return !session.isGameOver();
+        }
+        if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
             return State.IN_PROGRESS.equals(gs.getState());
         }
         return true;
@@ -503,6 +524,9 @@ public class C4Page extends StackPane implements Navigable {
                     EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
                     parentGUI.refreshSidebar();
                 });
+        if (parentGUI != null) {
+            parentGUI.refreshForfeitButtonState();
+        }
     }
 
     @FXML

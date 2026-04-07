@@ -46,7 +46,7 @@
 
                   <VBox spacing="12.0">
                      <children>
-                        <Button maxWidth="1.7976931348623157E308" onAction="#handleForfeit" text="✕  Forfeit" />
+                        <Button fx:id="forfeitButton" maxWidth="1.7976931348623157E308" onAction="#handleForfeit" text="✕  Forfeit" />
                         <Button fx:id="infoButton" maxWidth="1.7976931348623157E308" onAction="#handleInfoButton" text="ⓘ  Info" />
                         <Button fx:id="exit" maxWidth="1.7976931348623157E308" onAction="#handleExitButton" text="➜  Exit" />
                      </children>

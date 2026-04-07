@@ -36,6 +36,13 @@ public class C4Game implements Game {
     public void tempReset(){
         gameState = new C4GameState();
     }
+
+    /** Declares {@code forfeitingPlayer} lost; opponent wins. No-op if game already over. */
+    public void forfeit(Player forfeitingPlayer) {
+        if (gameState instanceof C4GameState gs) {
+            gs.applyForfeit(forfeitingPlayer);
+        }
+    }
     public boolean valid;
 
     @Override

@@ -47,6 +47,7 @@ public class GameGUIPage extends VBox implements Navigable {
     @FXML private Label usernameLabel;
     @FXML private Label emailLabel;
     @FXML private Button infoButton;
+    @FXML private Button forfeitButton;
 
     public GameGUIPage(CentralController rootController) {
         try {
@@ -70,6 +71,20 @@ public class GameGUIPage extends VBox implements Navigable {
         c4Page = node instanceof C4Page connect4 ? connect4 : null;
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
         refreshSidebar();
+        refreshForfeitButtonState();
+    }
+
+    public void refreshForfeitButtonState() {
+        if (forfeitButton == null) {
+            return;
+        }
+        boolean canForfeit = true;
+        if (tttPage != null) {
+            canForfeit = tttPage.canForfeitFromShell();
+        } else if (c4Page != null) {
+            canForfeit = c4Page.canForfeitFromShell();
+        }
+        forfeitButton.setDisable(!canForfeit);
     }
 
     /**
@@ -177,8 +192,19 @@ public class GameGUIPage extends VBox implements Navigable {
         }
     }
 
+    public void addIncomingSystemNotice(String message) {
+        if (message == null || message.isBlank()) {
+            return;
+        }
+        addChat("System", message, Color.web("#fbbf24"));
+    }
+
     @FXML
     private void handleForfeit(ActionEvent event) {
+        refreshForfeitButtonState();
+        if (forfeitButton != null && forfeitButton.isDisabled()) {
+            return;
+        }
         if (tttPage != null) {
             tttPage.handleForfeitFromShell();
         } else if (c4Page != null) {
@@ -246,5 +272,6 @@ public class GameGUIPage extends VBox implements Navigable {
     public void reset() {
         clearChat();
         refreshSidebar();
+        refreshForfeitButtonState();
     }
 }

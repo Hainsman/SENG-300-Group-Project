@@ -187,6 +187,39 @@ public class PlatformCore {
         target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("MATCH_CHAT", sender, body));
     }
 
+    /** Relay a rematch request from one active player to the other. */
+    public synchronized void relayRematchRequest(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+        if (from == null || sm == null || p1 == null || p2 == null) {
+            return;
+        }
+        platformChannel target = from == p1 ? p2 : (from == p2 ? p1 : null);
+        if (target == null) {
+            return;
+        }
+        String requester = sm.getFieldA() != null && !sm.getFieldA().isBlank() ? sm.getFieldA() : "Opponent";
+        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_REQUEST", requester, ""));
+    }
+
+    /** Handle rematch consent; only reset when the requested player accepts. */
+    public synchronized void onRematchResponse(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+        if (from == null || sm == null || p1 == null || p2 == null) {
+            return;
+        }
+        platformChannel target = from == p1 ? p2 : (from == p2 ? p1 : null);
+        if (target == null) {
+            return;
+        }
+        boolean accepted = "ACCEPT".equalsIgnoreCase(sm.getFieldA());
+        String responder = sm.getFieldB() != null && !sm.getFieldB().isBlank() ? sm.getFieldB() : "Opponent";
+        if (accepted) {
+            p1.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_ACCEPTED", responder, ""));
+            p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_ACCEPTED", responder, ""));
+            tempGameReset();
+            return;
+        }
+        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_DECLINED", responder, ""));
+    }
+
     public void sendSingle (String id, Object o){
         for(platformChannel u : users){
             if(u.ID.equals(id)){
@@ -233,16 +266,13 @@ public class PlatformCore {
         return false;
     }
     /**
-     * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
+     * The forfeiting client loses; both players receive updated state.
      */
     public synchronized void onForfeit(platformChannel from) {
         if (p1 == null || p2 == null || from == null) {
             return;
         }
         String normalizedType = normalizeGameType(p1.getGameType());
-        if (!"TTT".equals(normalizedType)) {
-            return;
-        }
         Player forfeiting = null;
         if (from == p1) {
             forfeiting = Player.PLAYER_1;
@@ -252,9 +282,17 @@ public class PlatformCore {
         if (forfeiting == null) {
             return;
         }
+        if ("C4".equals(normalizedType)) {
+            C4Game c4 = (C4Game) games.get("c4");
+            c4.forfeit(forfeiting);
+            System.out.println("Forfeit by " + forfeiting + " — broadcasting C4 state");
+            p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            return;
+        }
         TTTGame t = (TTTGame) games.get("test");
         t.forfeit(forfeiting);
-        System.out.println("Forfeit by " + forfeiting + " — broadcasting state");
+        System.out.println("Forfeit by " + forfeiting + " — broadcasting TTT state");
         p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
         p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
     }

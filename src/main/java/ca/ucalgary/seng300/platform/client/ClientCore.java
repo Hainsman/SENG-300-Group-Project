@@ -258,6 +258,21 @@ public class ClientCore extends Thread{
                                     Platform.runLater(() -> ioMain.addIncomingMatchChat(sender, body));
                                 }
                                 break;
+                            case "REMATCH_REQUEST":
+                                if (ioMain != null) {
+                                    Platform.runLater(() -> ioMain.onRematchRequested(sm.getFieldA()));
+                                }
+                                break;
+                            case "REMATCH_ACCEPTED":
+                                if (ioMain != null) {
+                                    Platform.runLater(() -> ioMain.onRematchAccepted(sm.getFieldA()));
+                                }
+                                break;
+                            case "REMATCH_DECLINED":
+                                if (ioMain != null) {
+                                    Platform.runLater(() -> ioMain.onRematchDeclined(sm.getFieldA()));
+                                }
+                                break;
                             default:
                                 break;
                         }

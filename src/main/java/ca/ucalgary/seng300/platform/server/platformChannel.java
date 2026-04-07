@@ -61,6 +61,8 @@ public class platformChannel extends Thread {
             }
             case "GMJN" -> serv.relayToGuestIfHost(this, sm);
             case "MATCH_CHAT" -> serv.relayMatchChat(this, sm);
+            case "REMATCH_REQUEST" -> serv.relayRematchRequest(this, sm);
+            case "REMATCH_RESPONSE" -> serv.onRematchResponse(this, sm);
             case "reset" -> serv.tempGameReset();
             case "FORFEIT" -> serv.onForfeit(this);
             default -> { }
