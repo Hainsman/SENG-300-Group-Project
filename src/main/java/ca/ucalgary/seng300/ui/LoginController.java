@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui;
 
 // import ca.ucalgary.seng300.platform.messages.Authenticate;
 // import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,6 +17,7 @@ public class LoginController {
     @FXML private Button loginButton;
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
+    public CentralController cent;
 
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -27,15 +29,9 @@ public class LoginController {
             return;
         }
 
-        UUID userSession = UUID.randomUUID();
+        cent.clientCore.msgSend(new sysMSG("AUTH", username, password));
 
-        // Authenticate auth = new Authenticate(userSession, username, password);
-        //TODO make client core work
 
-        // TODO: pass to backend auth service when user attempts to login
-        // boolean success = authService.login(username, password, rememberMeBox.isSelected());
-
-        // Placeholder: route into the current app flow after login.
         CentralController.previousScreen = null;
         CentralController.moveTo("GameDashboardNew.fxml");
     }
