@@ -29,7 +29,6 @@ public class platformChannel extends Thread {
         try{
             outServ.writeObject(o);
             outServ.flush();
-            outServ.reset();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,34 +37,10 @@ public class platformChannel extends Thread {
     private void handleSys(sysMSG sm) {
         switch (sm.getType()) {
             case "AUTH":
-                String ares = serv.authenticate(sm.getFieldA(),sm.getFieldB(),this);
-                switch(ares){
-                    case "N/A":
-                        cliSend(new sysMSG("AUTH", "User not found"));
-                        break;
-                    case "#F":
-                        cliSend(new sysMSG("AUTH", "Login failed, invalid username or password"));
-                        break;
-                    default:
-                        cliSend(new sysMSG("AUTH", "Pass"));
-                        ID = ares;
-                        break;
-                }
+                cliSend(serv.authenticate(sm.getFieldA(), sm.getFieldB(), this));
                 break;
             case "NEWU":
-                String ares = serv.authenticate(sm.getFieldA(),sm.getFieldB(),this);
-                switch(ares){
-                    case "N/A":
-                        cliSend(new sysMSG("AUTH", "User not found"));
-                        break;
-                    case "#F":
-                        cliSend(new sysMSG("AUTH", "Login failed, invalid username or password"));
-                        break;
-                    default:
-                        cliSend(new sysMSG("AUTH", "Pass"));
-                        ID = ares;
-                        break;
-                }
+                cliSend(serv.createAccount(sm.getFieldA(), sm.getFieldB(), sm.getPayload()));
                 break;
             case "HOST_LOBBY":
                 String code = sm.getFieldA();
@@ -78,14 +53,7 @@ public class platformChannel extends Thread {
                 } else {
                     cliSend(new sysMSG("LOBBY_ERR", "create", "Could not create lobby (code may already be in use)."));
                 }
-            }
-            case "JOIN_LOBBY" -> {
-                String code = sm.getFieldA();
-                String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
-                boolean ok = serv.onJoinLobby(code, this, lobbyPayload);
-                if (ok) {
-                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
-
+                break;
             case "JOIN_LOBBY":
                 //String code = sm.getFieldA();
                 //boolean ok = serv.onJoinLobby(sm.getFieldA(), this);
@@ -94,6 +62,20 @@ public class platformChannel extends Thread {
                 } else {
                     cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
                 }
+                break;
+
+
+
+            /*
+            case "JOIN_LOBBY" -> {
+                String code = sm.getFieldA();
+                String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
+                boolean ok = serv.onJoinLobby(code, this, lobbyPayload);
+                if (ok) {
+                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
+                }
+            }
+
             }
             case "GMJN" -> serv.relayToGuestIfHost(this, sm);
             case "reset" -> serv.tempGameReset();
@@ -107,71 +89,59 @@ public class platformChannel extends Thread {
                 serv.tempGameReset();
                 break;
             default:
-                break;
+                break;*/
         }
-    }
-
-    public void setGameType(String gameType) {
-        this.gameType = gameType;
-    }
-
-    public String getGameType() {
-        return gameType;
-    }
-
-    public void setGameID(String gameID) {
-        this.gameID = gameID;
-    }
-
-    public String getGameID() {
-        return gameID;
     }
 
     @Override
     public void run() {
-        try {
+        try{
             outServ = new ObjectOutputStream(socket.getOutputStream());
             inCli = new ObjectInputStream(socket.getInputStream());
 
-            gameID = "test";
-            gameType = "TTT";
+        } catch (IOException e){
+            e.printStackTrace();
+            return;
+        }
 
-            while (!interrupted()) {
-                Object message;
-                try {
-                    message = inCli.readObject();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    break;
-                } catch (RuntimeException e) {
-                    System.err.println("platformChannel: bad client message (rebuild client from same sources as server): " + e.getMessage());
-                    e.printStackTrace();
-                    break;
-                }
 
-                if (message instanceof String str && "exit".equals(str)) {
-                    break;
-                }
+        gameID = "test";
+        gameType = "TTT";
 
-                switch (message) {
-                    case PlayerMove p -> {
-                        System.out.println("player action arrived");
-                        serv.gameEvent(gameID, gameType, p);
-                    }
-                    case sysMSG s -> handleSys(s);
-                    case chatMessage cm -> {
-                        if (serv.chatservers != null && serv.chatservers.contains(cm.getServ())) {
-                            serv.sendMult(cm);
-                        }
-                    }
-                    default -> System.out.println("def " + message);
-                }
+        while (!interrupted()) {
+            Object message;
+            try {
+                message = inCli.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+                break;
             }
 
-            socket.close();
-            System.out.println("Client " + ID + " " + socket.getInetAddress() + " has disconnected.");
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (message instanceof String str && "exit".equals(str)) {
+                break;
+            }
+
+            switch (message) {
+                case PlayerMove p -> {
+                    System.out.println("player action arrived");
+                    serv.gameEvent(gameID, gameType, p);
+                }
+                case sysMSG s -> handleSys(s);
+                case chatMessage cm -> {
+                    if (serv.chatservers != null && serv.chatservers.contains(cm.getServ())) {
+                        serv.sendMult(cm);
+                    }
+                }
+                default -> System.out.println("def " + message);
+            }
         }
+
+        try{
+            socket.close();
+        }catch (Exception e){
+            System.out.println("socket already closed");
+        }
+
+        System.out.println("Client " + ID + " " + socket.getInetAddress() + " has disconnected.");
     }
 }

@@ -13,6 +13,7 @@ import ca.ucalgary.seng300.platform.messages.GameStateNetworkCodec;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.server.GameSessionRecord;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.serverreponse.ServerResponse;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.UUID;
 
 import static ca.ucalgary.seng300.platform.constants.Constants.EMAIL_REGEX;
 import static ca.ucalgary.seng300.platform.constants.Constants.HASH_ALGORITHM;
@@ -44,6 +46,12 @@ public class PlatformCore {
     /** Database setup**/
     public UserStore userStore;
     public SessionHistoryStore sessionHistoryStore;
+
+
+    // get the next session id then increment b y1
+    public String getUUID(){
+        return Integer.toString(seshID++);
+    }
 
     // hashmap of games gettable by ID
     HashMap<String, Game> games;
@@ -197,26 +205,41 @@ public class PlatformCore {
     }
 
 
-    public String authenticate(String user, String pass, platformChannel pl){
-        SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
-        List<User> listOfUsers= userStore.findByUserName(user);
+    public sysMSG authenticate(String user, String pass, platformChannel pl) {
+        List<User> listOfUsers = userStore.findByUserName(user);
+        int newSessionId = sessionHistoryStore.assignNewID();
+        UUID UID = UUID.randomUUID();
         String incomingUsername = user;
         String incomingPassword = hashPassword(pass, HASH_ALGORITHM);
 
-        return "N/A";
+        if (listOfUsers.isEmpty()){
+            return new sysMSG("AUTH", "FAIL", "Error Username not found");
+        }
 
+        if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
+            sessionHistoryStore.create(new SessionHistory(newSessionId, listOfUsers.getFirst().getID(), UID));
+            return new sysMSG("AUTH", "PASS", listOfUsers.getFirst().getID()+"",listOfUsers.getFirst().getlogin());
+        }
+        return new sysMSG("AUTH", "FAIL", "Login failed, invalid username or password");
     }
 
-    public String createAccount(String user, String pass, String email){
+    public sysMSG createAccount(String user, String pass, String email){
         List<User> check = userStore.findByUserName(user);
-        if(!check.isEmpty()){
-            //sysMSg username taken
+        int newSessionId = sessionHistoryStore.assignNewID();
+        UUID UID = UUID.randomUUID();
+        int newUserId = userStore.assignNewID();
+        if(!userStore.findByUserName(user).isEmpty()){
+            return new sysMSG("NEWU", "FAIL", "That username is already taken");
+        }
+        if(!userStore.findByUserEmail(email).isEmpty()){
+            return new sysMSG("NEWU", "FAIL", "That email is already registered");
         }
         if(!isEmailValid(email, EMAIL_REGEX)){
-            //sysmsg invalid email
+            return new sysMSG("NEWU", "FAIL", "Please enter a valid email address");
         }
-        userStore.create(new User(1,user,email,hashPassword(pass,HASH_ALGORITHM)));
-        return "done";
+        sessionHistoryStore.create(new SessionHistory(newSessionId, newUserId, UUID.randomUUID()));
+        userStore.create(new User(newUserId,user,email,hashPassword(pass,HASH_ALGORITHM)));
+        return new sysMSG("NEWU", "PASS");
     }
 
     public void clientJoin(int i){

@@ -24,7 +24,8 @@ import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
 import java.io.IOException;
-public class TicTacToeController extends GameGUI {
+/*
+public class TTTPage extends GameGUI {
 
     private CentralController root;
     private ClientCore clientCore = null;
@@ -33,10 +34,10 @@ public class TicTacToeController extends GameGUI {
         clientCore = root.getCC();
     }
 
-    /**
-     * Standalone Tic-Tac-Toe screen (lobby → start game): same wiring as {@link GameGUIController},
-     * clears local {@link TicTacToeSession} when online, and paints from the last server state if present.
-     */
+
+     Standalone Tic-Tac-Toe screen (lobby → start game): same wiring as {@link GameGUIController},
+     clears local {@link TicTacToeSession} when online, and paints from the last server state if present.
+
     public void connectToRootForLobby(CentralController root) {
         setRoot(root);
         if (clientCore != null && clientCore.isConnected()) {
@@ -48,9 +49,9 @@ public class TicTacToeController extends GameGUI {
     }
 
 
-    /** When set, moves and state use the game core session; when null, existing local board logic is used. */
+    // When set, moves and state use the game core session; when null, existing local board logic is used.
     private TicTacToeSession session = null;
-    /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
+    //When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode).
 
 
     @FXML
@@ -70,7 +71,7 @@ public class TicTacToeController extends GameGUI {
 
     @FXML
     private Button cell11;
-
+*/
 public class TTTPage extends StackPane implements Navigable {
 
     private ClientState status;
@@ -141,7 +142,7 @@ public class TTTPage extends StackPane implements Navigable {
     }
 
     /**
-     * Online Tic-Tac-Toe inside {@link GameGUIController}: no local {@link TicTacToeSession}, moves go through
+     * Online Tic-Tac-Toe inside {@link GameGUIPage}: no local {@link TicTacToeSession}, moves go through
      * {@link ClientCore}; board paints from {@link ClientCore#getLastUpdate()} when present.
      */
     public void prepareForNetworkPlayInShell() {
@@ -594,7 +595,7 @@ public class TTTPage extends StackPane implements Navigable {
     }
 
     /**
-     * Called from {@link GameGUIController} sidebar forfeit. Online: server declares opponent wins;
+     * Called from {@link GameGUIPage} sidebar forfeit. Online: server declares opponent wins;
      * local / AI: returns to the previous screen after confirm.
      */
     public void handleForfeitFromShell() {

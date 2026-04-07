@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
  * When implemented: listen for clients, handle CreateOrJoinSession and SubmitMove,
  * reply with SessionCreated and GameStateUpdate (one JSON line per message).
  */
+
+/*
 public class ServerCoreMultiUser{
     private Game game;
     private final int port;
@@ -138,10 +140,10 @@ public class ServerCoreMultiUser{
         }
     }
 
-    /**
-     * Handle one line of input from a client; return one JSON line to send back, or null.
-     * Platform core will implement: parse CreateOrJoinSession or SubmitMove, dispatch to handleCreateOrJoin / handleSubmitMove, return response.
-     */
+
+    //Handle one line of input from a client; return one JSON line to send back, or null.
+    //Platform core will implement: parse CreateOrJoinSession or SubmitMove, dispatch to handleCreateOrJoin / handleSubmitMove, return response.
+
     public ServerResponse handleLine(String line) {
         Message message = Message.fromJson(line);
 
@@ -222,10 +224,8 @@ public class ServerCoreMultiUser{
         resp.gameRoom = gameRooms.getLast();
         return resp;
     }
+     //Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
 
-    /**
-     * Handle create or join session request. Platform core will implement: create/join GameSessionRecord, return SessionCreated JSON.
-     */
     private ServerResponse handleJoinGameRoom(JoinGameRoom js, User user) {
         //check if user is present in any gameRoom
         if(gameRooms.stream().anyMatch(e -> e.getOwner().getID() == user.getID()))
@@ -276,4 +276,4 @@ public class ServerCoreMultiUser{
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
-}
+}*/

@@ -43,8 +43,12 @@ public class CentralController {
 
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
+    public ClientCore clientCore;
     public TTTPage tttPage;
     public C4Page connect4;
+    public LoginPage loginPage;
+    public NewUserPage newUserPage;
+
 
     public static GameType selectedGame;
     public static int maxPlayers;
@@ -58,7 +62,7 @@ public class CentralController {
     public static Navigation currentScreen;
 
     /**
-     * When true, {@link GameGUIController} wires Tic-Tac-Toe to a local session with a random-move AI
+     * When true, {@link GameGUIPage} wires Tic-Tac-Toe to a local session with a random-move AI
      * opponent (player is X, AI is O). Cleared when leaving that flow or the game screen.
      */
     public static boolean ticTacToeLocalAiMode = false;
@@ -166,6 +170,8 @@ public class CentralController {
         GameGUIPage gameGUIPage = new GameGUIPage(this);
         connect4 = new C4Page(this, gameGUIPage);
         tttPage = new TTTPage(this, gameGUIPage);
+        loginPage = new LoginPage(this);
+        newUserPage = new NewUserPage(this);
         nodes.add(gameGUIPage);
         nodes.add(connect4);
         nodes.add(tttPage);
@@ -174,9 +180,9 @@ public class CentralController {
         nodes.add(new HostLobbyPage(this));
         nodes.add(new InfoPage());
         nodes.add(new JoinLobbyPage(this));
-        nodes.add(new LoginPage());
+        nodes.add(loginPage);
         nodes.add(new MainLobbyPage(this));
-        nodes.add(new NewUserPage());
+        nodes.add(newUserPage);
         nodes.add(new ProfileDashboardPage());
         nodes.add(new SettingsPage());
     }

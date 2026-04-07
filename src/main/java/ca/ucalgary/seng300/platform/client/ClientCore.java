@@ -3,21 +3,16 @@ package ca.ucalgary.seng300.platform.client;
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
+import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
-import ca.ucalgary.seng300.platform.messages.C4WireState;
-import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
-import ca.ucalgary.seng300.platform.messages.TTTWireState;
+//import ca.ucalgary.seng300.platform.messages.C4WireState;
+//import ca.ucalgary.seng300.platform.messages.TTTWireState;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.lobby.LobbyBridge;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.platform.messages.*;
-import ca.ucalgary.seng300.platform.server.ServerCoreMultiUser;
-import ca.ucalgary.seng300.ui.*;
-import javafx.application.Application;
 import javafx.application.Platform;
 
 import java.io.IOException;
@@ -25,14 +20,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.UUID;
 
 // debug Server first, then as many clients as you want
 // the server will close once the last client has sent "exit"
 
 public class ClientCore extends Thread{
     public String CID;
+    public UUID uuid;
     public String username;
 
     private ObjectInputStream servRead;
@@ -43,11 +38,9 @@ public class ClientCore extends Thread{
     //public volatile char flg = 'n';
     public String UItype;
     public String gameType;
-    public TicTacToeController myTTT;
-    public Connect4Controller myC4;
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private volatile String sessionId;
+    //private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    //private volatile String sessionId;
     private volatile String myPlayerId;
     public volatile  boolean upFlag = false;
     public volatile GameState lastUpdate;
@@ -81,7 +74,7 @@ public class ClientCore extends Thread{
                 p = new TTTPlayerMove(pid, "MOVE", row, col);
                 break;
             case "C4":
-                //p = new C4move(pid, "MOVE" , row, col);
+                p = new C4PlayerAction(pid, "MOVE" , row, col);
                 break;
             default:
                 return false;
@@ -89,13 +82,8 @@ public class ClientCore extends Thread{
 
         //
         if(p != null) {
-            try {
-                servSend.writeObject(p);
-                servSend.flush();
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            msgSend(p);
+            return true;
         }
         return false;
     }
@@ -112,10 +100,6 @@ public class ClientCore extends Thread{
         }
     }
 
-    public GameStateUpdate submitMoveSync(int row, int col) {
-        submitMove(row,col);
-        return null;
-    }
     public ClientCore(CentralController c){
         ioMain = c;
     }
@@ -204,20 +188,22 @@ public class ClientCore extends Thread{
                         switch (sm.getType()){
                             case "AUTH":
                                 Platform.runLater(() -> {
-                                    ioMain.loginController.loginReply(sm);
+                                    ioMain.loginPage.loginReply(sm);
+                                });
+                                break;
+                            case "NEWU":
+                                Platform.runLater(() -> {
+                                    ioMain.newUserPage.newReply(sm);
                                 });
                                 break;
                             case "GMJN":
-                                upFlag = true;
-                                {
-                                    String screen = sm.getFieldA();
-                                    if (screen != null && !screen.isBlank()) {
-                                        final String fxml = screen;
-                                        Platform.runLater(() -> {
-                                            LobbyBridge.clearLobbyUiCallbacks();
-                                            CentralController.moveTo(Navigation.getFromFxml(fxml));
-                                        });
-                                    }
+                                String screen = sm.getFieldA();
+                                if (screen != null && !screen.isBlank()) {
+                                    final String fxml = screen;
+                                    Platform.runLater(() -> {
+                                        LobbyBridge.clearLobbyUiCallbacks();
+                                        CentralController.moveTo(Navigation.getFromFxml(fxml));
+                                    });
                                 }
                                 break;
                             case "LOBBY_OK":

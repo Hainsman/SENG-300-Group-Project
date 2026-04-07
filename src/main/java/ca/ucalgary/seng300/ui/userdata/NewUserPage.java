@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui.userdata;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -25,8 +26,11 @@ public class NewUserPage extends HBox implements Navigable {
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label         errorLabel;
 
-    public NewUserPage() {
+    public CentralController cent;
+
+    public NewUserPage(CentralController c) {
         try {
+            cent = c;
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -54,26 +58,15 @@ public class NewUserPage extends HBox implements Navigable {
             setError("Passwords do not match.");
             return;
         }
+        cent.clientCore.msgSend(new sysMSG("AUTH", username, password, email));
+    }
 
-        UserStore store = UserStore.getInstance();
-        if (!store.findByUserName(username).isEmpty()) {
-            setError("That username is already taken.");
-            return;
+    public void newReply(sysMSG s){
+        if(s.getFieldA().equals("PASS")){
+            CentralController.moveTo(Navigation.LOGIN);
+        }else{
+            errorLabel.setText(s.getFieldB());
         }
-        if (!store.findByUserEmail(email).isEmpty()) {
-            setError("That email is already registered.");
-            return;
-        }
-        if (!Helper.isEmailValid(email, Constants.EMAIL_REGEX)) {
-            setError("Please enter a valid email address.");
-            return;
-        }
-
-        int newId = store.assignNewID();
-        String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
-        store.create(new User(newId, username, email, passwordHash));
-
-        CentralController.moveTo(Navigation.LOGIN);
     }
 
     @FXML
