@@ -114,32 +114,33 @@ public class PlatformCore {
 
     public sysMSG authenticate(String user, String pass, platformChannel pl) {
         List<User> listOfUsers = userStore.findByUserName(user);
+        if (listOfUsers.isEmpty()) {
+            listOfUsers = userStore.findByUserEmail(user);
+        }
         int newSessionId = sessionHistoryStore.assignNewId();
         UUID UID = UUID.randomUUID();
         String incomingUsername = user;
         String incomingPassword = hashPassword(pass, HASH_ALGORITHM);
 
         if (listOfUsers.isEmpty()){
-            return new sysMSG("AUTH", "FAIL", "Error Username not found");
+            return new sysMSG("AUTH", "FAIL", "Login failed, invalid email/username or password");
         }
 
-        if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
-            sessionHistoryStore.create(new SessionHistory(newSessionId, listOfUsers.getFirst().getID(), UID));
-            return new sysMSG("AUTH", "PASS", listOfUsers.getFirst().getID()+"",listOfUsers.getFirst().getlogin());
+        User matchedUser = listOfUsers.getFirst();
+        boolean matchingIdentity = incomingUsername.equals(matchedUser.getlogin())
+                || incomingUsername.equals(matchedUser.getEmail());
+        if (matchingIdentity && incomingPassword.equals(matchedUser.getPasswordHash())){
+            sessionHistoryStore.create(new SessionHistory(newSessionId, matchedUser.getID(), UID));
+            return new sysMSG("AUTH", "PASS", matchedUser.getID()+"", matchedUser.getlogin());
         }
-        return new sysMSG("AUTH", "FAIL", "Login failed, invalid username or password");
+        return new sysMSG("AUTH", "FAIL", "Login failed, invalid email/username or password");
     }
 
     public sysMSG createAccount(String user, String pass, String email){
-        List<User> check = userStore.findByUserName(user);
         int newSessionId = sessionHistoryStore.assignNewId();
-        UUID UID = UUID.randomUUID();
         int newUserId = userStore.assignNewId();
         if(!userStore.findByUserName(user).isEmpty()){
             return new sysMSG("NEWU", "FAIL", "That username is already taken");
-        }
-        if(!userStore.findByUserEmail(email).isEmpty()){
-            return new sysMSG("NEWU", "FAIL", "That email is already registered");
         }
         if(!isEmailValid(email, EMAIL_REGEX)){
             return new sysMSG("NEWU", "FAIL", "Please enter a valid email address");

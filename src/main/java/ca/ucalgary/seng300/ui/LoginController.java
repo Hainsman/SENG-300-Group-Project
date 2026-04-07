@@ -6,7 +6,6 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import java.util.UUID;
 
 public class LoginController {
 
@@ -18,22 +17,64 @@ public class LoginController {
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
     public CentralController cent;
+    private boolean loginPending = false;
+
+    public void setCentralController(CentralController controller) {
+        cent = controller;
+        if (cent != null && cent.clientCore != null) {
+            cent.clientCore.setAuthResponseHandler(this::handleAuthResponse);
+        }
+    }
 
     @FXML
     private void handleLogin(ActionEvent event) {
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
+        Button clickedButton = loginButton;
+        if (clickedButton == null && event.getSource() instanceof Button sourceButton) {
+            clickedButton = sourceButton;
+        }
 
         if (username.isEmpty() || password.isEmpty()) {
-            errorLabel.setText("Please enter your username and password.");
+            errorLabel.setText("Please enter your email/username and password.");
             return;
         }
 
+        if (cent == null || cent.clientCore == null || !cent.clientCore.isConnected()) {
+            errorLabel.setText("Could not reach the platform server.");
+            return;
+        }
+
+        loginPending = true;
+        if (clickedButton != null) {
+            clickedButton.setDisable(true);
+        }
+        errorLabel.setText("Signing in...");
+        cent.clientCore.setAuthResponseHandler(this::handleAuthResponse);
         cent.clientCore.msgSend(new sysMSG("AUTH", username, password));
+    }
 
+    private void handleAuthResponse(sysMSG response) {
+        if (!loginPending || response == null || !"AUTH".equals(response.getType())) {
+            return;
+        }
 
-        CentralController.previousScreen = null;
-        CentralController.moveTo("GameDashboardNew.fxml");
+        loginPending = false;
+        if (loginButton != null) {
+            loginButton.setDisable(false);
+        }
+
+        if ("PASS".equals(response.getFieldA())) {
+            errorLabel.setText("");
+            CentralController.previousScreen = null;
+            CentralController.moveTo("GameDashboardNew.fxml");
+            return;
+        }
+
+        String message = response.getFieldB();
+        errorLabel.setText(message != null && !message.isBlank()
+                ? message
+                : "Login failed.");
     }
 
     // Move to NewUser screen when button is triggered.

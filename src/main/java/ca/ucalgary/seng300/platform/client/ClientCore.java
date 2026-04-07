@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -54,6 +55,8 @@ public class ClientCore extends Thread{
     public volatile  boolean upFlag = false;
     public volatile GameState lastUpdate;
     private volatile Runnable onGameStateUpdate;
+    private volatile Consumer<sysMSG> authResponseHandler;
+    private volatile Consumer<sysMSG> newUserResponseHandler;
     
     public boolean isConnected() {
         return servSend != null && servRead != null;
@@ -123,6 +126,14 @@ public class ClientCore extends Thread{
         return lastUpdate;
     }
 
+    public void setAuthResponseHandler(Consumer<sysMSG> handler) {
+        authResponseHandler = handler;
+    }
+
+    public void setNewUserResponseHandler(Consumer<sysMSG> handler) {
+        newUserResponseHandler = handler;
+    }
+
     public String debugBoard(TTTGameState t) {
         String s = "";
         for (Player[] p : t.getBoard()) {
@@ -186,6 +197,26 @@ public class ClientCore extends Thread{
                             case "LOGF":
                                 flg = 'f';
                                 upFlag = true;
+                                break;
+                            case "AUTH":
+                                if ("PASS".equals(sm.getFieldA())) {
+                                    CID = sm.getFieldB();
+                                    username = sm.getPayload();
+                                    flg = 's';
+                                } else {
+                                    flg = 'f';
+                                }
+                                upFlag = true;
+                                Consumer<sysMSG> handler = authResponseHandler;
+                                if (handler != null) {
+                                    Platform.runLater(() -> handler.accept(sm));
+                                }
+                                break;
+                            case "NEWU":
+                                Consumer<sysMSG> newUserHandler = newUserResponseHandler;
+                                if (newUserHandler != null) {
+                                    Platform.runLater(() -> newUserHandler.accept(sm));
+                                }
                                 break;
                             case "GMJN":
                                 upFlag = true;

@@ -100,6 +100,10 @@ public class CentralController {
             if (ctrl instanceof GameGUIController gfc) {
                 gameUI = gfc;
                 gameUI.setRoot(this);
+            } else if (ctrl instanceof LoginController lc) {
+                lc.setCentralController(this);
+            } else if (ctrl instanceof NewUserController nuc) {
+                nuc.setCentralController(this);
             } else if (ctrl instanceof TicTacToeController ttc) {
                 ttc.connectToRootForLobby(this);
             } else if (ctrl instanceof Connect4Controller c4) {
