@@ -3,7 +3,6 @@ package ca.ucalgary.seng300.platform.client;
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
-import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
@@ -12,9 +11,9 @@ import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.messages.TTTWireState;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.platform.messages.*;
 import ca.ucalgary.seng300.ui.CentralController;
-import ca.ucalgary.seng300.ui.LobbyBridge;
+import ca.ucalgary.seng300.ui.lobby.LobbyBridge;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.application.Platform;
 
 import java.io.IOException;
@@ -140,10 +139,10 @@ public class ClientCore extends Thread{
             System.out.println(debugBoard(tttState));
         }
         Platform.runLater(() -> {
-            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.ttt != null) {
-                ioMain.ttt.refreshFromGameStateUpdate(tttState);
+            if (g instanceof TTTGameState tttState && ioMain != null) {
+                ioMain.tttPage.refreshFromGameStateUpdate(tttState);
                 System.out.println("Ui update triggered");
-            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
+            } else if (g instanceof C4GameState c4State && ioMain != null) {
                 ioMain.connect4.refreshFromGameStateUpdate(c4State);
             }
             LobbyBridge.notifyGameState();
@@ -219,7 +218,7 @@ public class ClientCore extends Thread{
                                         final String fxml = screen;
                                         Platform.runLater(() -> {
                                             LobbyBridge.clearLobbyUiCallbacks();
-                                            CentralController.moveTo(fxml);
+                                            CentralController.moveTo(Navigation.getFromFxml(fxml));
                                         });
                                     }
                                 }

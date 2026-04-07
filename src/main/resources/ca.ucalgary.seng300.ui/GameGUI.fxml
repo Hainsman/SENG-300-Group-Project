@@ -5,83 +5,85 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
 
-<VBox prefHeight="680.0" prefWidth="1020.0" styleClass="game-gui-root" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.GameGUIController">
+<fx:root prefHeight="680.0" prefWidth="1020.0" styleClass="game-gui-root" stylesheets="@stylesheets/global.css" type="VBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <SplitPane dividerPositions="0.3, 0.75" prefHeight="680.0" prefWidth="1020.0">
+    <SplitPane dividerPositions="0.28, 0.72" styleClass="main-split-pane" VBox.vgrow="ALWAYS">
       <items>
 
-        <AnchorPane styleClass="sidebar">
+        <AnchorPane minWidth="220.0" styleClass="sidebar">
           <children>
-            <Label alignment="CENTER" layoutX="17.0" layoutY="14.0" prefHeight="100.0" prefWidth="270.0" styleClass="header-box" text="Bogo Solutions" textAlignment="CENTER" wrapText="true" />
+            <VBox alignment="TOP_CENTER" spacing="12.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0">
+               <children>
+                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="header-box" text="Bogo Solutions" textAlignment="CENTER" wrapText="true" />
 
-            <Label fx:id="tttLabel" layoutX="68.0" layoutY="143.0" styleClass="game-title, ttt-title" text="TIC TAC TOE">
-              <effect>
-                <DropShadow><color><Color red="0.31" green="0.88" blue="0.85" /></color></DropShadow>
-              </effect>
-            </Label>
+                  <Label fx:id="tttLabel" styleClass="game-title, ttt-title" text="Tic-Tac-Toe" />
 
-            <VBox layoutX="25.0" layoutY="209.0" prefHeight="220.0" prefWidth="250.0" styleClass="card">
-              <children>
-                <AnchorPane prefHeight="200.0">
-                  <children>
-                    <Label layoutX="15.0" layoutY="15.0" styleClass="card-title" text="Elo:" />
-                    <Label fx:id="eloValue" layoutX="100.0" layoutY="15.0" styleClass="card-value" text="—" />
-                    <Label layoutX="15.0" layoutY="50.0" styleClass="card-title" text="Rank:" />
-                    <Label fx:id="rankValue" layoutX="100.0" layoutY="50.0" styleClass="card-value" text="—" />
-                    <Label layoutX="15.0" layoutY="85.0" styleClass="card-title" text="Win:" />
-                    <Label fx:id="winValue" layoutX="100.0" layoutY="85.0" styleClass="card-value" text="—" />
-                  </children>
-                </AnchorPane>
-              </children>
-            </VBox>
+                  <Label fx:id="usernameLabel" maxWidth="1.7976931348623157E308" styleClass="sidebar-username" text="Player" wrapText="true" />
 
-            <VBox layoutX="27.0" layoutY="470.0" prefWidth="250.0" spacing="12">
-              <children>
-                <Button maxWidth="Infinity" onAction="#handleForfeit" text="✕  Forfeit" />
-                <Button fx:id="infoButton" maxWidth="Infinity" onAction="#handleInfoButton" text="ⓘ  Info" />
-                        <Button fx:id="exit" layoutX="10.0" layoutY="66.0" maxWidth="Infinity" onAction="#handleExitButton" text="➜]  Exit" />
-              </children>
+                  <Label fx:id="emailLabel" managed="false" maxWidth="1.7976931348623157E308" styleClass="sidebar-email" text="" visible="false" wrapText="true" />
+
+                  <VBox prefWidth="250.0" styleClass="card">
+                     <children>
+                        <AnchorPane prefHeight="200.0">
+                           <children>
+                              <Label layoutX="15.0" layoutY="15.0" styleClass="card-title" text="Elo" />
+                              <Label fx:id="eloValue" layoutX="100.0" layoutY="15.0" styleClass="card-value" text="—" />
+                              <Label layoutX="15.0" layoutY="50.0" styleClass="card-title" text="Tier" />
+                              <Label fx:id="rankValue" layoutX="100.0" layoutY="50.0" styleClass="card-value" text="—" />
+                              <Label layoutX="15.0" layoutY="85.0" styleClass="card-title" text="Games" />
+                              <Label fx:id="winValue" layoutX="100.0" layoutY="85.0" styleClass="card-value" text="—" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+
+                  <Region prefHeight="8.0" VBox.vgrow="ALWAYS" />
+
+                  <VBox spacing="12.0">
+                     <children>
+                        <Button maxWidth="1.7976931348623157E308" onAction="#handleForfeit" text="✕  Forfeit" />
+                        <Button fx:id="infoButton" maxWidth="1.7976931348623157E308" onAction="#handleInfoButton" text="ⓘ  Info" />
+                        <Button fx:id="exit" maxWidth="1.7976931348623157E308" onAction="#handleExitButton" text="➜  Exit" />
+                     </children>
+                  </VBox>
+               </children>
             </VBox>
           </children>
         </AnchorPane>
 
         <AnchorPane styleClass="game-pane">
           <children>
-            <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <children>
-                <fx:include fx:id="ticTacToeView" source="TicTacToe.fxml" />
-              </children>
-            </VBox>
+            <VBox fx:id="gameBox" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           </children>
         </AnchorPane>
 
         <AnchorPane minWidth="240.0" styleClass="history-sidebar">
           <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="14.0" prefHeight="50.0" prefWidth="220.0" styleClass="match-history-header" text="Match History" />
-            <ScrollPane hbarPolicy="NEVER" layoutX="20.0" layoutY="64.0" prefHeight="238.0" prefWidth="220.0" styleClass="history-scroll">
-              <content>
-                <VBox fx:id="historyBox" alignment="CENTER" prefHeight="239.0" prefWidth="198.0" styleClass="history-box" />
-              </content>
-            </ScrollPane>
-             <HBox alignment="CENTER" layoutX="8.0" layoutY="377.0" spacing="8" />
-            <TextField fx:id="chatInput" layoutX="20.0" layoutY="590.0" prefHeight="26.0" prefWidth="200.0" promptText="Type a message..." />
-            <Button fx:id="chatSend" layoutX="91.0" layoutY="620.0" onAction="#handleChatSend" prefHeight="34.0" prefWidth="77.0" styleClass="primary-button" text="Send" />
-             <Label alignment="CENTER" contentDisplay="CENTER" layoutX="17.0" layoutY="302.0" prefHeight="50.0" prefWidth="220.0" styleClass="match-history-header" text="Match Chat" />
-                  <ScrollPane hbarPolicy="NEVER" layoutX="17.0" layoutY="352.0" prefHeight="238.0" prefWidth="220.0" styleClass="history-scroll">
+            <VBox spacing="10.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0">
+               <children>
+                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="match-history-header" text="Match Chat" />
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" minHeight="0.0" styleClass="history-scroll" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox fx:id="matchChat" prefHeight="239.0" prefWidth="198.0" styleClass="history-box" />
+                        <VBox fx:id="matchChat" alignment="TOP_LEFT" minHeight="0.0" minWidth="0.0" spacing="6.0" styleClass="history-box" />
                      </content>
                   </ScrollPane>
+                  <HBox alignment="CENTER_LEFT" spacing="8.0">
+                     <children>
+                        <TextField fx:id="chatInput" maxWidth="1.7976931348623157E308" prefHeight="32.0" promptText="Type a message..." HBox.hgrow="ALWAYS" />
+                        <Button fx:id="chatSend" minWidth="72.0" onAction="#handleChatSend" prefHeight="34.0" styleClass="primary-button" text="Send" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
           </children>
         </AnchorPane>
 
       </items>
     </SplitPane>
   </children>
-</VBox>
+</fx:root>
