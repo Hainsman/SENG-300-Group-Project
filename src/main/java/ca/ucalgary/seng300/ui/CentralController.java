@@ -48,7 +48,8 @@ public class CentralController {
     public C4Page connect4;
     public LoginPage loginPage;
     public NewUserPage newUserPage;
-    //public LobbyBridge lobbyBridge;
+    public HostLobbyPage hostLobbyPage;
+    public JoinLobbyPage joinLobbyPage;
 
 
     public static GameType selectedGame;
@@ -173,15 +174,17 @@ public class CentralController {
         tttPage = new TTTPage(this, gameGUIPage);
         loginPage = new LoginPage(this);
         newUserPage = new NewUserPage(this);
+        hostLobbyPage = new HostLobbyPage(this);
+        joinLobbyPage = new JoinLobbyPage(this);
         //lobbyBridge = ;
         nodes.add(gameGUIPage);
         nodes.add(connect4);
         nodes.add(tttPage);
         nodes.add(new ChooseModePage());
         nodes.add(new GameDashboardPage());
-        nodes.add(new HostLobbyPage(this));
+        nodes.add(hostLobbyPage);
         nodes.add(new InfoPage());
-        nodes.add(new JoinLobbyPage(this));
+        nodes.add(joinLobbyPage);
         nodes.add(loginPage);
         nodes.add(new MainLobbyPage(this));
         nodes.add(newUserPage);

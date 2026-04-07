@@ -41,6 +41,7 @@ public class platformChannel extends Thread {
     private void handleSys(sysMSG sm) {
         switch (sm.getType()) {
             case "AUTH":
+                System.out.println("loginreceived");
                 cliSend(serv.authenticate(sm.getFieldA(), sm.getFieldB(), this));
                 break;
             case "NEWU":
@@ -52,18 +53,18 @@ public class platformChannel extends Thread {
                 String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
                 boolean ok = serv.onHostLobby(code, gt, this, lobbyPayload);
                 if (ok) {
-                    cliSend(new sysMSG("LOBBY_OK","HOST", code.toUpperCase()));
+                    cliSend(new sysMSG("LOBBY_HOST","OK", code.toUpperCase()));
                 } else {
-                    cliSend(new sysMSG("LOBBY_ERR", "HOST", "Could not create lobby (code may already be in use)."));
+                    cliSend(new sysMSG("LOBBY_HOST", "ERR", "Could not create lobby (code may already be in use)."));
                 }
                 break;
             case "JOIN_LOBBY":
                 //String code = sm.getFieldA();
                 //boolean ok = serv.onJoinLobby(sm.getFieldA(), this);
                 if (serv.onJoinLobby(sm.getFieldA(), this, sm.getPayload())) {
-                    cliSend(new sysMSG("LOBBY_OK", sm.getFieldA(), "JOIN"));
+                    cliSend(new sysMSG("LOBBY_JOIN", "OK", sm.getFieldA()));
                 } else {
-                    cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
+                    cliSend(new sysMSG("LOBBY_JOIN", "ERR", "No lobby with that code (check with host or try again)."));
                 }
                 break;
             //case "FORFEIT" -> serv.onForfeit(this);

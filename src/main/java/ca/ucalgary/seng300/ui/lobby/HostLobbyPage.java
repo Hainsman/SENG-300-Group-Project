@@ -107,17 +107,19 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
         CentralController.hostingLobby = true;
         CentralController.clearLobbyRoster();
 
-        LobbyBridge.onLobbyFail = msg -> {
-            Alert err = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
-            ThemeAlerts.apply(err);
-            err.showAndWait();
-        };
-        LobbyBridge.onHostOk = () -> {
+        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, CentralController.selectedGame.toString(), PlayerProfileHelper.lobbyPayload()));
+    }
+
+    public void hostLobby(String tp, String ms){
+        if(tp.equals("OK")){
             CentralController.moveTo(Navigation.MAIN_LOBBY);
             CentralController.previousScreen = Navigation.GAME_DASHBOARD;
-        };
-
-        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, CentralController.selectedGame.toString(), PlayerProfileHelper.lobbyPayload()));
+        }
+        else{
+            Alert err = new Alert(Alert.AlertType.ERROR, ms, ButtonType.OK);
+            ThemeAlerts.apply(err);
+            err.showAndWait();
+        }
     }
 
     @FXML

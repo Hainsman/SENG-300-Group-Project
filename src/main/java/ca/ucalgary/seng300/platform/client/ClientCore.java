@@ -185,6 +185,7 @@ public class ClientCore extends Thread{
                     case sysMSG sm:
                         switch (sm.getType()){
                             case "AUTH":
+                                System.out.println("loginreply got");
                                 Platform.runLater(() -> {
                                     ioMain.loginPage.loginReply(sm);
                                 });
@@ -204,18 +205,16 @@ public class ClientCore extends Thread{
                                     });
                                 }
                                 break;
-                            case "LOBBY_OK":
-                                if ("HOST".equals(sm.getFieldA())) {
-                                    myPlayerId = "P1";
-                                } else if ("JOIN".equals(sm.getFieldA())) {
-                                    myPlayerId = "P2";
-                                }
+                            case "LOBBY_HOST":
+                                myPlayerId = "P1";
                                 Platform.runLater(() -> {
-                                    LobbyBridge.notifyLobbyOk(sm.getFieldA(),sm.getFieldB());
+                                    ioMain.hostLobbyPage.hostLobby(sm.getFieldA(),sm.getFieldB());
                                 });
                                 break;
-                            case "LOBBY_ERR":
-                                LobbyBridge.notifyLobbyFail(sm.getFieldB() != null ? sm.getFieldB() : sm.getFieldA());
+                            case "LOBBY_JOIN":
+                                Platform.runLater(() -> {
+                                    ioMain.hostLobbyPage.hostLobby(sm.getFieldA(),sm.getFieldB());
+                                });
                                 break;
                             case "PARTNER_JOINED":
                                 LobbyBridge.notifyPartnerJoined();

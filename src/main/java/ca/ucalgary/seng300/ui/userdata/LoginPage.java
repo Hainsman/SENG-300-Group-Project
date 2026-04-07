@@ -52,6 +52,7 @@ public class LoginPage extends HBox implements Navigable {
             errorLabel.setText("Please enter your username and password.");
             return;
         }
+        System.out.println("loginsent");
         cent.clientCore.msgSend(new sysMSG("AUTH", username, password));
 
     }

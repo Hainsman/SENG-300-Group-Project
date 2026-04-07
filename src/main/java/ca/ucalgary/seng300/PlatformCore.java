@@ -100,18 +100,21 @@ public class PlatformCore {
     public sysMSG authenticate(String user, String pass, platformChannel pl) {
         List<User> listOfUsers = userStore.findByUserName(user);
         int newSessionId = sessionHistoryStore.assignNewID();
+        System.out.println("loginprocessed");
         UUID UID = UUID.randomUUID();
         String incomingUsername = user;
         String incomingPassword = hashPassword(pass, HASH_ALGORITHM);
 
         if (listOfUsers.isEmpty()){
+            System.out.println("loginreply sent");
             return new sysMSG("AUTH", "FAIL", "Error Username not found");
         }
 
         if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
             sessionHistoryStore.create(new SessionHistory(newSessionId, listOfUsers.getFirst().getID(), UID));
+            System.out.println("loginreply sent");
             return new sysMSG("AUTH", "PASS", listOfUsers.getFirst().getID()+"",listOfUsers.getFirst().getlogin());
-        }
+        }System.out.println("loginreply sent");
         return new sysMSG("AUTH", "FAIL", "Login failed, invalid username or password");
     }
 
@@ -176,7 +179,9 @@ public class PlatformCore {
 
         // list of threads
         users = new ArrayList<platformChannel>();
-        connected = new ArrayList<Integer>();
+        //connected = new ArrayList<Integer>();
+
+        lobbies = new HashMap<>();
 
         int ClientMax = 100;
         int CCount = 0;

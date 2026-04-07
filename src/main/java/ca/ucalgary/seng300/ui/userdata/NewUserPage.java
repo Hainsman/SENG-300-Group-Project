@@ -58,7 +58,8 @@ public class NewUserPage extends HBox implements Navigable {
             setError("Passwords do not match.");
             return;
         }
-        cent.clientCore.msgSend(new sysMSG("AUTH", username, password, email));
+        System.out.println("newuser sent");
+        cent.clientCore.msgSend(new sysMSG("NEWU", username, password, email));
     }
 
     public void newReply(sysMSG s){

@@ -109,16 +109,18 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         CentralController.privacy = "Public";
         CentralController.clearLobbyRoster();
 
-        LobbyBridge.onLobbyFail = msg -> {
-            Alert err = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload()));
+    }
+
+    public void lobbyJoin(String a, String b){
+        if(a.equals("OK")){
+            CentralController.moveTo(Navigation.MAIN_LOBBY);
+        }
+        else {
+            Alert err = new Alert(Alert.AlertType.ERROR, b, ButtonType.OK);
             ThemeAlerts.apply(err);
             err.showAndWait();
-        };
-        LobbyBridge.onJoinOk = () -> {
-            CentralController.moveTo(Navigation.MAIN_LOBBY);
-        };
-
-        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload()));
+        }
     }
 
     private void joinLobbyFromList(String lobby) {
