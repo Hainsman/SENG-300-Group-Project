@@ -80,6 +80,9 @@ public class PlatformCore {
         if (code == null || code.isBlank() || hostChannel == null) {
             return false;
         }
+        if (lobbies == null) {
+            lobbies = new HashMap<>();
+        }
         String lobbyid = code.trim().toUpperCase();
 
         ServerLobby lob = new ServerLobby(lobbyid, gameId, hostChannel, clientPayload);
@@ -90,13 +93,16 @@ public class PlatformCore {
         return true;
     }
 
-    public synchronized boolean onJoinLobby(String code, platformChannel guestChannel, String guestPayload) {
-        if (code == null || code.isBlank() || guestChannel == null) {
+    public synchronized boolean onJoinLobby(String code, int requestedGameId, platformChannel guestChannel, String guestPayload) {
+        if (code == null || code.isBlank() || guestChannel == null || lobbies == null) {
             return false;
         }
         String lobbyid = code.trim().toUpperCase();
         ServerLobby sl = lobbies.get(lobbyid);
         if (sl == null) {
+            return false;
+        }
+        if (requestedGameId > 0 && requestedGameId != sl.getGameId()) {
             return false;
         }
         sl.joinGuest(guestChannel, guestPayload);
@@ -151,7 +157,13 @@ public class PlatformCore {
     }
 
     public void handleMove(String id, platformChannel player, PlayerAction m){
+        if (id == null || lobbies == null) {
+            return;
+        }
         ServerLobby sl = lobbies.get(id);
+        if (sl == null) {
+            return;
+        }
         sl.gameTurn(player, m);
     }
     /**
@@ -196,6 +208,7 @@ public class PlatformCore {
         // list of threads
         users = new ArrayList<platformChannel>();
         connected = new ArrayList<Integer>();
+        lobbies = new HashMap<>();
 
         int ClientMax = 100;
         int CCount = 0;

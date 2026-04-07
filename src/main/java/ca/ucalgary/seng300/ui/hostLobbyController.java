@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -74,19 +75,19 @@ public class hostLobbyController {
         }
     }
 
-    private static String serverGameKey() {
+    private static int serverGameKey() {
         String g = CentralController.selectedGame;
         if (g == null) {
-            return "TTT";
+            return Game.TICK_TACK_TOE;
         }
         String lower = g.toLowerCase();
         if (lower.contains("connect") || lower.contains("c4")) {
-            return "C4";
+            return Game.CONNECT_FOUR;
         }
         if (g.contains("Tic") || g.contains("tac") || g.contains("TAC")) {
-            return "TTT";
+            return Game.TICK_TACK_TOE;
         }
-        return "TTT";
+        return Game.TICK_TACK_TOE;
     }
 
     @FXML
@@ -126,7 +127,7 @@ public class hostLobbyController {
             CentralController.moveTo("mainLobby.fxml");
         };
 
-        cc.msgSend(new sysMSG("HOST_LOBBY", code, serverGameKey()));
+        cc.msgSend(new sysMSG("HOST_LOBBY", code, String.valueOf(serverGameKey())));
     }
 
     @FXML

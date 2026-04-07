@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -40,6 +41,21 @@ public class joinLobbyController {
         if (lobbyList != null) {
             lobbyList.setOnMouseClicked(this::onLobbyListClick);
         }
+    }
+
+    private static int selectedGameId() {
+        String g = CentralController.selectedGame;
+        if (g == null) {
+            return Game.TICK_TACK_TOE;
+        }
+        String lower = g.toLowerCase();
+        if (lower.contains("connect") || lower.contains("c4")) {
+            return Game.CONNECT_FOUR;
+        }
+        if (lower.contains("tic") || lower.contains("tac")) {
+            return Game.TICK_TACK_TOE;
+        }
+        return Game.TICK_TACK_TOE;
     }
 
     private void onLobbyListClick(MouseEvent event) {
@@ -88,7 +104,7 @@ public class joinLobbyController {
             CentralController.moveTo("mainLobby.fxml");
         };
 
-        cc.msgSend(new sysMSG("JOIN_LOBBY", code, ""));
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, String.valueOf(selectedGameId())));
     }
 
     private void joinLobbyFromList(String lobby) {

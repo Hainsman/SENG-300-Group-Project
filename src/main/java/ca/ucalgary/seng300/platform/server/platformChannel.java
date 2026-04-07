@@ -46,22 +46,34 @@ public class platformChannel extends Thread {
                 break;
             case "HOST_LOBBY":
                 String code = sm.getFieldA();
-                int gt = sm.getFieldB() != null ? Integer.parseInt(sm.getFieldB()) : Game.TICK_TACK_TOE;
+                int gt;
+                try {
+                    gt = sm.getFieldB() != null ? Integer.parseInt(sm.getFieldB()) : Game.TICK_TACK_TOE;
+                } catch (NumberFormatException e) {
+                    cliSend(new sysMSG("LOBBY_ERR", "HOST", "Hosting a lobby failed: invalid game type."));
+                    break;
+                }
                 String lobbyPayload = sm.getPayload() != null ? sm.getPayload() : "";
                 boolean ok = serv.onHostLobby(code, gt, this, lobbyPayload);
                 if (ok) {
-                    cliSend(new sysMSG("LOBBY_OK","HOST", code.toUpperCase()));
+                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "HOST"));
                 } else {
-                    cliSend(new sysMSG("LOBBY_ERR", "HOST", "Could not create lobby (code may already be in use)."));
+                    cliSend(new sysMSG("LOBBY_ERR", "HOST", "Hosting a lobby failed."));
                 }
                 break;
             case "JOIN_LOBBY":
-                //String code = sm.getFieldA();
-                //boolean ok = serv.onJoinLobby(sm.getFieldA(), this);
-                if (serv.onJoinLobby(sm.getFieldA(), this, sm.getPayload())) {
+                int requestedGameId = 0;
+                try {
+                    if (sm.getFieldB() != null && !sm.getFieldB().isBlank()) {
+                        requestedGameId = Integer.parseInt(sm.getFieldB());
+                    }
+                } catch (NumberFormatException e) {
+                    requestedGameId = 0;
+                }
+                if (serv.onJoinLobby(sm.getFieldA(), requestedGameId, this, sm.getPayload())) {
                     cliSend(new sysMSG("LOBBY_OK", sm.getFieldA(), "JOIN"));
                 } else {
-                    cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
+                    cliSend(new sysMSG("LOBBY_ERR", "JOIN", "Joining a lobby failed. Ensure the code exists and both players selected the same game."));
                 }
                 break;
             //case "FORFEIT" -> serv.onForfeit(this);
