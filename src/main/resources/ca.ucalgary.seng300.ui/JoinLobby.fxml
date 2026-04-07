@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="AnchorPane" prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="22" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="24.0">
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+                <children>
+                    <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+                </children>
+            </HBox>
+
+            <Label styleClass="mode-title" style="-fx-font-size: 40px;" text="Join Lobby" />
+            <Label fx:id="gameTitleLabel" styleClass="mode-subtitle" text="Enter the code from your host" />
+
+            <VBox spacing="14" styleClass="card" style="-fx-max-width: 620px; -fx-alignment: center;">
+                <Label styleClass="card-title" text="Lobby Code" />
+                <HBox alignment="CENTER" spacing="10">
+                    <children>
+                        <TextField fx:id="codeField" maxWidth="360.0" promptText="Enter 8-character code..." />
+                        <Button fx:id="joinByCodeBtn" styleClass="primary-button" text="Join" />
+                    </children>
+                </HBox>
+                <Label styleClass="card-subtitle" text="You will enter once the host is ready." />
+
+                <Button onAction="#handleBack" styleClass="back-button" text="Back" />
+            </VBox>
+
+            <!-- Hidden optional fields kept for controller compatibility -->
+            <VBox managed="false" visible="false">
+                <children>
+                    <TextField fx:id="searchField" />
+                </children>
+            </VBox>
+
+        </VBox>
+    </children>
+
+</fx:root>
