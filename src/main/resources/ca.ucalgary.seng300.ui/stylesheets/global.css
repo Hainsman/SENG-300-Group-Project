@@ -1099,7 +1099,7 @@
 
 .player-avatar-menu .context-menu .menu-item {
     -fx-background-color: transparent;
-    -fx-padding: 10px 20px;
+    -fx-padding: 10px 14px;
 }
 
 .player-avatar-menu .context-menu .menu-item .label {
