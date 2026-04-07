@@ -168,6 +168,25 @@ public class PlatformCore {
         System.out.println("GMJN relayed to guest → " + fxml);
     }
 
+    /** Relays in-match chat between paired host/guest channels. */
+    public synchronized void relayMatchChat(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+        if (from == null || sm == null) {
+            return;
+        }
+        platformChannel target = null;
+        if (from == p1) {
+            target = p2;
+        } else if (from == p2) {
+            target = p1;
+        }
+        if (target == null) {
+            return;
+        }
+        String sender = sm.getFieldA() != null ? sm.getFieldA() : "Player";
+        String body = sm.getFieldB() != null ? sm.getFieldB() : "";
+        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("MATCH_CHAT", sender, body));
+    }
+
     public void sendSingle (String id, Object o){
         for(platformChannel u : users){
             if(u.ID.equals(id)){

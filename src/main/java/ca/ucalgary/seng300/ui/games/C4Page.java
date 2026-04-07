@@ -533,6 +533,5 @@ public class C4Page extends StackPane implements Navigable {
                 refreshFromGameStateUpdate(gs);
             }
         }
-        render();
     }
 }

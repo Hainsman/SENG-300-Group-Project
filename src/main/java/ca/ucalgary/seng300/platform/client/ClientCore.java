@@ -122,6 +122,14 @@ public class ClientCore extends Thread{
         return lastUpdate;
     }
 
+    /** Clear per-match client state before creating/joining a new lobby. */
+    public void resetMatchState() {
+        lastUpdate = null;
+        myPlayerId = null;
+        mySide = null;
+        sessionId = null;
+    }
+
     public String debugBoard(TTTGameState t) {
         String s = "";
         for (Player[] p : t.getBoard()) {
@@ -139,10 +147,10 @@ public class ClientCore extends Thread{
             System.out.println(debugBoard(tttState));
         }
         Platform.runLater(() -> {
-            if (g instanceof TTTGameState tttState && ioMain != null) {
+            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.tttPage != null) {
                 ioMain.tttPage.refreshFromGameStateUpdate(tttState);
                 System.out.println("Ui update triggered");
-            } else if (g instanceof C4GameState c4State && ioMain != null) {
+            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
                 ioMain.connect4.refreshFromGameStateUpdate(c4State);
             }
             LobbyBridge.notifyGameState();
@@ -243,6 +251,13 @@ public class ClientCore extends Thread{
                                 LobbyBridge.notifyPartnerJoined();
                                 break;
                             }
+                            case "MATCH_CHAT":
+                                if (ioMain != null) {
+                                    String sender = sm.getFieldA();
+                                    String body = sm.getFieldB();
+                                    Platform.runLater(() -> ioMain.addIncomingMatchChat(sender, body));
+                                }
+                                break;
                             default:
                                 break;
                         }

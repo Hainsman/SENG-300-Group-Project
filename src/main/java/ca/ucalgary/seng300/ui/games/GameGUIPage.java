@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
@@ -63,6 +65,7 @@ public class GameGUIPage extends VBox implements Navigable {
     public void setGameNode(Node node) {
         gameBox.getChildren().clear();
         gameBox.getChildren().add(node);
+        clearChat();
 
         c4Page = node instanceof C4Page connect4 ? connect4 : null;
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
@@ -212,6 +215,10 @@ public class GameGUIPage extends VBox implements Navigable {
                         : "You");
 
         addChat(sender, msg, Color.web("#fafafa"));
+        ClientCore cc = rootController != null ? rootController.getCC() : null;
+        if (cc != null && cc.isConnected()) {
+            cc.msgSend(new sysMSG("MATCH_CHAT", sender, msg));
+        }
         chatInput.clear();
     }
 
@@ -237,6 +244,7 @@ public class GameGUIPage extends VBox implements Navigable {
 
     @Override
     public void reset() {
+        clearChat();
         refreshSidebar();
     }
 }

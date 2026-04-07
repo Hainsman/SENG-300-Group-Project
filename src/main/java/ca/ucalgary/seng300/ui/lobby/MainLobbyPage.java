@@ -93,8 +93,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     }
 
     private boolean isPaired() {
-        ClientCore cc = rootController != null ? rootController.getCC() : null;
-        return cc != null && cc.getLastUpdate() != null;
+        return rosterPopulated();
     }
 
     private boolean rosterPopulated() {
@@ -145,7 +144,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     private void refreshPlayersFromState() {
         boolean hosting = CentralController.hostingLobby;
         boolean paired = isPaired();
-        boolean roster = rosterPopulated();
+        boolean roster = paired;
 
         setYouPills(hosting);
 
@@ -185,7 +184,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
 
         if (connectionHintLabel != null) {
-            if (paired && roster) {
+            if (paired) {
                 connectionHintLabel.setText("Both players connected. Host can start when ready.");
                 connectionHintLabel.setVisible(true);
                 connectionHintLabel.setManaged(true);
@@ -211,8 +210,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         if (startGameBtn == null) {
             return;
         }
-        ClientCore cc = rootController != null ? rootController.getCC() : null;
-        boolean paired = cc != null && cc.getLastUpdate() != null;
+        boolean paired = isPaired();
         boolean host = CentralController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
         refreshPlayersFromState();

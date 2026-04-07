@@ -108,6 +108,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         CentralController.maxPlayers = 2;
         CentralController.privacy = "Public";
         CentralController.clearLobbyRoster();
+        cc.resetMatchState();
 
         LobbyBridge.onLobbyFail = msg -> {
             Alert err = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);

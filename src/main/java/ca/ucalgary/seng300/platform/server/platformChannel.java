@@ -25,7 +25,7 @@ public class platformChannel extends Thread {
         this.serv = serv;
     }
 
-    public void cliSend (Object o){
+    public synchronized void cliSend (Object o){
         try{
             outServ.writeObject(o);
             outServ.flush();
@@ -60,6 +60,7 @@ public class platformChannel extends Thread {
                 }
             }
             case "GMJN" -> serv.relayToGuestIfHost(this, sm);
+            case "MATCH_CHAT" -> serv.relayMatchChat(this, sm);
             case "reset" -> serv.tempGameReset();
             case "FORFEIT" -> serv.onForfeit(this);
             default -> { }

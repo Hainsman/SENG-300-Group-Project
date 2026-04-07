@@ -45,6 +45,7 @@ public class CentralController {
 
     public TTTPage tttPage;
     public C4Page connect4;
+    private GameGUIPage gameGuiPage;
 
     public static GameType selectedGame;
     public static int maxPlayers;
@@ -131,6 +132,13 @@ public class CentralController {
         return clientCore;
     }
 
+    public void addIncomingMatchChat(String sender, String message) {
+        if (gameGuiPage == null || message == null || message.isBlank()) {
+            return;
+        }
+        gameGuiPage.addChat(sender != null && !sender.isBlank() ? sender : "Player", message, javafx.scene.paint.Color.web("#86efac"));
+    }
+
     public ClientCore clientCore;
     public int test1;
 
@@ -142,8 +150,6 @@ public class CentralController {
     public void initialize() {
         instance = this;
         clientCore = new ClientCore(this);
-        clientCore.start();
-        System.out.println("cc loaded");
 
         WindowManager.WindowControls controls = new WindowManager.WindowControls(
                 root,
@@ -163,16 +169,18 @@ public class CentralController {
         });
 
         initializeNodes();
+        clientCore.start();
+        System.out.println("cc loaded");
 
         // Start at auth, then GameDashboardNew → chooseModeNew → lobby or GameGUI (incl. Play with AI).
         loadView(Navigation.LOGIN);
     }
 
     private void initializeNodes() {
-        GameGUIPage gameGUIPage = new GameGUIPage(this);
-        connect4 = new C4Page(this, gameGUIPage);
-        tttPage = new TTTPage(this, gameGUIPage);
-        nodes.add(gameGUIPage);
+        gameGuiPage = new GameGUIPage(this);
+        connect4 = new C4Page(this, gameGuiPage);
+        tttPage = new TTTPage(this, gameGuiPage);
+        nodes.add(gameGuiPage);
         nodes.add(connect4);
         nodes.add(tttPage);
         nodes.add(new ChooseModePage());

@@ -105,6 +105,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
         CentralController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
         CentralController.hostingLobby = true;
         CentralController.clearLobbyRoster();
+        cc.resetMatchState();
 
         LobbyBridge.onLobbyFail = msg -> {
             Alert err = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
