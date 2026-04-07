@@ -445,7 +445,6 @@ public class TTTPage extends StackPane implements Navigable {
 
     /** Updates grid and turn label from session state (only when session is set). */
     private void refreshFromSession() {
-        System.out.println("fromSession");
         if (session == null) return;
         ca.ucalgary.seng300.game.core.Player[][] b = session.getBoard();
         for (Node node : ticTacToeGrid.getChildren()) {
@@ -477,6 +476,12 @@ public class TTTPage extends StackPane implements Navigable {
         refreshBackButtonVisibility();
     }
 
+//    @Override
+//    protected void refreshFromSession() {
+//        super.refreshFromSession();
+//        refreshBackButtonVisibility();
+//    }
+
     public void setSession(TicTacToeSession s) {
         this.session = s;
         if (s != null) refreshFromSession();
@@ -485,7 +490,6 @@ public class TTTPage extends StackPane implements Navigable {
 
     /** Use when in online mode: refresh grid and label from server update. */
     public void refreshFromGameStateUpdate(TTTGameState update) {
-        System.out.println("fromGameState");
         if (update == null || update.getBoard() == null) return;
         System.out.println("Ui update in TTTcontroller");
         State st = update.getState();
@@ -546,6 +550,7 @@ public class TTTPage extends StackPane implements Navigable {
                 turnLabel.setText(myRole == Player.PLAYER_1 ? "You are X — waiting for O" : "You are O — waiting for X");
             } else {
                 turnLabel.setText(cur == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
+                rootController.getWindowManager().showNotification("Your Turn!");
             }
         }
         OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, st, onlineEloApplied, GameType.TIC_TAC_TOE)
@@ -561,6 +566,12 @@ public class TTTPage extends StackPane implements Navigable {
         }*/
     }
 
+//    @Override
+//    public void refreshFromGameState(GameState gameState) {
+//        super.refreshFromGameState(gameState);
+//        refreshBackButtonVisibility();
+//    }
+
     /*public void setClientCore(ClientCore c) {
         this.clientCore = c;
         if (c != null && c.getLastUpdate() != null) refreshFromGameStateUpdate(c.getLastUpdate());
@@ -571,7 +582,7 @@ public class TTTPage extends StackPane implements Navigable {
     }
 
     private void navigateBackFromGame() {
-        CentralController.ticTacToeLocalAiMode = false;
+        CentralController.localAiMode = false;
         randomOpponentEnabled = false;
         EloOverlayUtil.hide(eloResultOverlay);
         if (CentralController.previousScreen != null) {
@@ -631,7 +642,7 @@ public class TTTPage extends StackPane implements Navigable {
 
         moves = 0;
 
-        boolean vsAi = CentralController.ticTacToeLocalAiMode;
+        boolean vsAi = CentralController.localAiMode;
         setRandomOpponentEnabled(vsAi);
         if (vsAi) {
             setSession(new TicTacToeSession());

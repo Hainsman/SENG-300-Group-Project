@@ -63,13 +63,11 @@ public class LoginPage extends HBox implements Navigable {
             try{
                 i = Integer.parseInt(s.getFieldB());
             }catch(Exception ignore){}
-            CentralController.currentUserId = i;
-            CentralController.displayName = s.getPayload();
+            CentralController.currentUserId = user.getID();
+            CentralController.displayName = user.getlogin();
             CentralController.previousScreen = null;
-            CentralController.ticTacToeLocalAiMode = false;
-            CentralController.connect4LocalAiMode = false;
+            CentralController.localAiMode = false;
             CentralController.moveTo(Navigation.GAME_DASHBOARD);
-        }else{
             errorLabel.setText(s.getFieldB());
         }
     }

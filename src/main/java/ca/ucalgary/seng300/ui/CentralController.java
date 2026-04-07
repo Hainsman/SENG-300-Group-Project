@@ -67,13 +67,7 @@ public class CentralController {
      * When true, {@link GameGUIPage} wires Tic-Tac-Toe to a local session with a random-move AI
      * opponent (player is X, AI is O). Cleared when leaving that flow or the game screen.
      */
-    public static boolean ticTacToeLocalAiMode = false;
-
-    /**
-     * When true, {@link C4Page} uses a local {@link ca.ucalgary.seng300.platform.session.ConnectFourSession}
-     * with a random-move AI as player 2 (same pattern as TTT vs AI).
-     */
-    public static boolean connect4LocalAiMode = false;
+    public static boolean localAiMode = false;
 
     public static int currentUserId;
     public static String displayName = "Player";
@@ -98,8 +92,7 @@ public class CentralController {
         displayName = "Player";
         previousScreen = null;
         selectedGame = null;
-        ticTacToeLocalAiMode = false;
-        connect4LocalAiMode = false;
+        localAiMode = false;
         hostingLobby = false;
         lobbyCode = null;
         lobbyName = null;
@@ -196,14 +189,6 @@ public class CentralController {
         return instance;
     }
 
-    /** Primary app window, for modal dialogs (e.g. themed {@link javafx.scene.control.Alert}s). */
-    public static Window getAppWindow() {
-        if (instance == null || instance.root == null || instance.root.getScene() == null) {
-            return null;
-        }
-        return instance.root.getScene().getWindow();
-    }
-
     // call anytime to switch pages
     public static void moveTo(Navigation nav) {
         previousScreen = currentScreen;
@@ -275,5 +260,13 @@ public class CentralController {
                             sheet.contains(path + "extraLargeText.css")
             );
         }
+    }
+
+    public boolean isGameOn() {
+        return currentScreen == Navigation.C4 || currentScreen == Navigation.TTT;
+    }
+
+    public WindowManager getWindowManager() {
+        return windowManager;
     }
 }

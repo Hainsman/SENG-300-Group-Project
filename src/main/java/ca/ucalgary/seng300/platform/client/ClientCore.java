@@ -123,10 +123,10 @@ public class ClientCore extends Thread{
             System.out.println(debugBoard(tttState));
         }
         Platform.runLater(() -> {
-            if (g instanceof TTTGameState tttState && ioMain != null) {
+            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.isGameOn()) {
                 ioMain.tttPage.refreshFromGameStateUpdate(tttState);
                 System.out.println("Ui update triggered");
-            } else if (g instanceof C4GameState c4State && ioMain != null) {
+            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.isGameOn()) {
                 ioMain.connect4.refreshFromGameStateUpdate(c4State);
             }
             LobbyBridge.notifyGameState();

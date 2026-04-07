@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.game.core;
 
+import ca.ucalgary.seng300.game.core.connect4.C4GameState;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.ui.util.Navigation;
 
 public enum GameType {
@@ -33,5 +35,14 @@ public enum GameType {
             }
             : null
         ;
+    }
+
+    public static GameType getFromGameState(GameState state) {
+        if (state instanceof TTTGameState)
+            return GameType.TIC_TAC_TOE;
+        else if (state instanceof C4GameState)
+            return GameType.CONNECT4;
+
+        return null;
     }
 }

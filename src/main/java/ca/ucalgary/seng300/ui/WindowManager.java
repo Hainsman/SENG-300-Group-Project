@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -23,6 +24,8 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import javafx.scene.media.AudioClip;
 
 public class WindowManager {
     /**
@@ -82,6 +85,10 @@ public class WindowManager {
 
     private static final int RESIZE_MARGIN = 6;
     private static final int RESIZE_RIPPLE_MARGIN = 1;
+    private static final int RESIZE_RIPPLE_DURATION_MILLIS = 300;
+
+    private static final int NOTIFICATION_DURATION_MILLIS = 1000;
+    private static final int NOTIFICATION_Y_OFFSET = 20;
 
     private final StackPane root;
     private final BorderPane titleBarPane;
@@ -107,12 +114,22 @@ public class WindowManager {
     private double unMaximizedX;
     private double unMaximizedY;
 
+    private boolean showingNotification = false;
+    private boolean showingNotificationAnimation = false;
+    private Label notificationLabel;
+
+    private Button soundOffOnButton;
+    private boolean isSoundOn = true;
+    private double settingsVolume = 1.0;
+
     public WindowManager(WindowControls controls) {
         this.root = controls.root();
         this.titleBarPane = controls.titleBarPane();
 
         initStageListener();
         initEventFilters();
+        initNotificationLabel();
+        initSoundButton(); // TODO remove later (this is for debugging)
 
         controls.quitButton().setOnAction(this::handleQuitAction);
         controls.minimizeButton().setOnAction(this::handleMinimizeAction);
@@ -134,12 +151,30 @@ public class WindowManager {
     }
 
     private void initEventFilters() {
-        root.addEventFilter(MouseEvent.MOUSE_MOVED, this::updateCursor);
+        root.addEventFilter(MouseEvent.MOUSE_MOVED, this::handleMouseMoved);
         root.addEventFilter(MouseEvent.MOUSE_ENTERED, this::updateCursor);
         root.addEventFilter(MouseEvent.MOUSE_EXITED, this::updateCursor);
         root.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
         root.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
         root.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
+    }
+
+    private void initNotificationLabel() {
+        notificationLabel = new Label();
+        notificationLabel.getStyleClass().add("notification-bar");
+    }
+
+    // TODO remove later (this is for debugging)
+    private void initSoundButton() {
+        soundOffOnButton = new Button(String.format("Sound: %s", isSoundOn ? "ON" : "OFF"));
+        soundOffOnButton.setOnAction(e -> {
+            isSoundOn = !isSoundOn;
+            soundOffOnButton.setText(String.format("Sound: %s", isSoundOn ? "ON" : "OFF"));
+        });
+
+        root.getChildren().add(soundOffOnButton);
+        StackPane.setAlignment(soundOffOnButton, Pos.TOP_LEFT);
+
     }
 
     private void handleQuitAction(ActionEvent event) {
@@ -155,6 +190,13 @@ public class WindowManager {
             unMaximizeWindow();
         else
             maximizeWindow();
+    }
+
+    private void handleMouseMoved(MouseEvent event) {
+        updateCursor(event);
+
+        if (showingNotification)
+            hideNotificationWithDelay();
     }
 
     private void handleMousePressed(MouseEvent event) {
@@ -185,6 +227,9 @@ public class WindowManager {
                 draggingWindow = true;
             }
         }
+
+        if (showingNotification)
+            hideNotification();
     }
 
     private void handleMouseDragged(MouseEvent event) {
@@ -356,7 +401,7 @@ public class WindowManager {
                         new KeyValue(ripple.opacityProperty(), 0.6)
                 ),
                 new KeyFrame(
-                        Duration.millis(300),
+                        Duration.millis(RESIZE_RIPPLE_DURATION_MILLIS),
                         new KeyValue(ripple.radiusProperty(), 50, Interpolator.EASE_OUT),
                         new KeyValue(ripple.opacityProperty(), 0)
                 )
@@ -364,6 +409,68 @@ public class WindowManager {
 
         animation.setOnFinished(e -> root.getChildren().remove(ripple));
         animation.play();
+    }
+
+    public void showNotification(String notification) {
+        notificationLabel.setText(notification);
+
+        root.getChildren().remove(notificationLabel); // added this to make sure no duplicates get added (which causes a crash)
+        root.getChildren().add(notificationLabel);
+        StackPane.setAlignment(notificationLabel, Pos.TOP_CENTER);
+
+        Timeline animation = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(notificationLabel.translateYProperty(), titleBarPane.getHeight()),
+                        new KeyValue(notificationLabel.opacityProperty(), 0)
+                ),
+                new KeyFrame(
+                        Duration.millis(NOTIFICATION_DURATION_MILLIS),
+                        new KeyValue(
+                                notificationLabel.translateYProperty(),
+                                titleBarPane.getHeight() + NOTIFICATION_Y_OFFSET ,
+                                Interpolator.EASE_OUT),
+                        new KeyValue(notificationLabel.opacityProperty(), 1)
+                )
+        );
+        AudioClip audioClip = new AudioClip(SoundEffect.YOUR_TURN_NOTIFICATION.getPath());
+        audioClip.setVolume(getActualVolume());
+
+        showingNotification = true;
+        audioClip.play();
+        animation.play();
+    }
+
+    private void hideNotification() {
+        root.getChildren().remove(notificationLabel);
+        showingNotification = false;
+        showingNotificationAnimation = false;
+    }
+
+    private void hideNotificationWithDelay() {
+        if (!showingNotificationAnimation) {
+            Timeline animation = new Timeline(
+                    new KeyFrame(
+                            Duration.ZERO,
+                            new KeyValue(notificationLabel.translateYProperty(), notificationLabel.getTranslateY()),
+                            new KeyValue(notificationLabel.opacityProperty(), 1)
+                    ),
+                    new KeyFrame(
+                            Duration.millis(NOTIFICATION_DURATION_MILLIS),
+                            new KeyValue(notificationLabel.translateYProperty(), titleBarPane.getHeight(), Interpolator.EASE_OUT),
+                            new KeyValue(notificationLabel.opacityProperty(), 0)
+                    )
+            );
+
+            showingNotificationAnimation = true;
+
+            animation.setOnFinished(e -> {
+                root.getChildren().remove(notificationLabel);
+                showingNotification = false;
+                showingNotificationAnimation = false;
+            });
+            animation.play();
+        }
     }
 
     private boolean isNearRightEdge(MouseEvent event) {
@@ -440,5 +547,9 @@ public class WindowManager {
         }
 
         shouldBeResizedOnDrag = !maximized && !(overControl && dir != Direction.NONE);
+    }
+
+    private double getActualVolume() {
+        return isSoundOn ? 1 * settingsVolume : 0;
     }
 }

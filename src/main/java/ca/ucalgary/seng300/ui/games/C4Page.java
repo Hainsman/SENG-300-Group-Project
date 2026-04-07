@@ -188,7 +188,7 @@ public class C4Page extends StackPane implements Navigable {
             return;
         }
         if (session != null) {
-            if (!session.submitMove(col)) {
+            if (!session.submitMove(0, col)) {
                 return;
             }
             Player[][] b = session.getBoard();
@@ -270,7 +270,7 @@ public class C4Page extends StackPane implements Navigable {
             if (acol == null) {
                 return;
             }
-            if (!session.submitMove(acol)) {
+            if (!session.submitMove(0, acol)) {
                 return;
             }
             Player[][] b = session.getBoard();
@@ -392,62 +392,13 @@ public class C4Page extends StackPane implements Navigable {
         update();
     }
 
-    /**
-     * True while an online Connect 4 game is still in progress (use Forfeit / finish before leaving).
-     */
-    public boolean isActiveOnlineMatch() {
-        if (randomOpponentEnabled || session != null) {
-            return false;
-        }
-        if (clientCore == null || !clientCore.isConnected()) {
-            return false;
-        }
-        if (clientCore.getLastUpdate() instanceof C4GameState gs) {
-            return State.IN_PROGRESS.equals(gs.getState());
-        }
-        return true;
-    }
-
-    public void handleForfeitFromShell() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Forfeit");
-        confirm.setHeaderText("Forfeit this match?");
-        confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
-        ThemeAlerts.apply(confirm);
-        confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
-            EloOverlayUtil.hide(eloResultOverlay);
-            boolean online = !randomOpponentEnabled && clientCore != null && clientCore.isConnected();
-            if (!online) {
-                navigateBackFromGame();
-                return;
-            }
-            clientCore.msgSend(new sysMSG("FORFEIT", "", ""));
-        });
-    }
-
-    private void navigateBackFromGame() {
-        CentralController.connect4LocalAiMode = false;
+    @FXML
+    private void handleBackToMode(ActionEvent event) {
+        CentralController.localAiMode = false;
         randomOpponentEnabled = false;
         session = null;
         EloOverlayUtil.hide(eloResultOverlay);
-        if (CentralController.previousScreen != null) {
-            CentralController.moveTo(CentralController.previousScreen);
-        } else {
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
-        }
-    }
-
-    @FXML
-    private void handleBackToMode(ActionEvent event) {
-        if (isActiveOnlineMatch()) {
-            Alert a = new Alert(Alert.AlertType.INFORMATION,
-                    "You cannot leave an online match in progress without using Forfeit in the sidebar.",
-                    ButtonType.OK);
-            ThemeAlerts.apply(a);
-            a.showAndWait();
-            return;
-        }
-        navigateBackFromGame();
+        CentralController.moveTo(CentralController.previousScreen);
     }
 
     public void refreshFromGameStateUpdate(C4GameState update) {
@@ -501,7 +452,6 @@ public class C4Page extends StackPane implements Navigable {
                 .ifPresent(r -> {
                     onlineEloApplied = true;
                     EloOverlayUtil.show(eloResultOverlay, eloOutcomeTitle, eloDeltaLabel, eloNewRatingLabel, r);
-                    parentGUI.refreshSidebar();
                 });
     }
 
@@ -521,7 +471,7 @@ public class C4Page extends StackPane implements Navigable {
 
         clientCore = rootController.getCC();
         EloOverlayUtil.hide(eloResultOverlay);
-        if (CentralController.connect4LocalAiMode) {
+        if (CentralController.localAiMode) {
             randomOpponentEnabled = true;
             session = new ConnectFourSession();
             parentGUI.clearHistory();
