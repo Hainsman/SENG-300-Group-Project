@@ -9,4 +9,5 @@ public interface Session {
     Player getTurn();
     State getState();
     boolean isGameOver();
+    void startNewGame();
 }

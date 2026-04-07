@@ -45,4 +45,13 @@ public enum GameType {
 
         return null;
     }
+
+    public static GameType getFromNavigation(Navigation nav) {
+        if (nav == Navigation.C4)
+            return GameType.CONNECT4;
+        else if (nav == Navigation.TTT)
+            return GameType.TIC_TAC_TOE;
+
+        return null;
+    }
 }

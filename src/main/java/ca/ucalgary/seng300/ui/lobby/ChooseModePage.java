@@ -16,12 +16,16 @@ import java.io.IOException;
 
 public class ChooseModePage extends AnchorPane implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private Label gameTitleLabel;
 
     @FXML private VBox playWithAiCard;
 
-    public ChooseModePage() {
+    public ChooseModePage(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -58,19 +62,19 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     void handleHostGame(MouseEvent event) {
-        CentralController.localAiMode = false;
+        rootController.localAiMode = false;
         CentralController.moveTo(Navigation.HOST_LOBBY);
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
-        CentralController.localAiMode = false;
+        rootController.localAiMode = false;
         CentralController.moveTo(Navigation.JOIN_LOBBY);
     }
 
     @FXML
     void handlePlayWithAi(MouseEvent event) {
-        CentralController.localAiMode = true;
+        rootController.localAiMode = true;
         if (isTicTacToeSelection())
             CentralController.moveTo(Navigation.TTT);
         else if (isConnectFourSelection())

@@ -26,6 +26,7 @@ public class TicTacToeSession implements Session {
     }
 
     /** Starts a new game (fresh board, PLAYER_1 to move). */
+    @Override
     public void startNewGame() {
         game.startGame("P1", "P2");
         playerIdToPlayer = new HashMap<>();

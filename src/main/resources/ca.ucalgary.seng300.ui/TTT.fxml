@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="StackPane" fx:id="boardPane" styleClass="app-surface" stylesheets="@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="boardPane" styleClass="app-surface" stylesheets="@stylesheets/global.css" type="StackPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 26 26 24 26;">
         <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
@@ -20,24 +20,9 @@
         </HBox>
 
         <Label contentDisplay="CENTER" style="-fx-font-size: 40px;" styleClass="mode-title" text="Tic Tac Toe" />
-        <Label fx:id="turnLabel" style="-fx-font-size:20px;" styleClass="mode-subtitle" text="Waiting For Turn" />
+        <Label fx:id="statusLabel" style="-fx-font-size:20px;" styleClass="mode-subtitle" text="Waiting For Turn" />
           <VBox alignment="CENTER" prefHeight="611.0" prefWidth="418.0" spacing="14" style="-fx-padding: 18 22;" styleClass="ttt-shell">
-              <GridPane fx:id="ticTacToeGrid" alignment="CENTER" hgap="12" minHeight="300.0" minWidth="300.0" styleClass="ttt-grid" vgap="12">
-
-      <!-- Row 0 -->
-      <Button fx:id="cell00" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" />
-      <Button fx:id="cell01" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.columnIndex="1" />
-      <Button fx:id="cell02" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.columnIndex="2" />
-
-      <!-- Row 1 -->
-      <Button fx:id="cell10" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.rowIndex="1" />
-      <Button fx:id="cell11" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Button fx:id="cell12" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-
-      <!-- Row 2 -->
-      <Button fx:id="cell20" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.rowIndex="2" />
-      <Button fx:id="cell21" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <Button fx:id="cell22" onAction="#handleClick" prefHeight="104.0" prefWidth="116.0" styleClass="ttt-cell" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+              <GridPane fx:id="boardGridPane" alignment="CENTER" hgap="12" minHeight="300.0" minWidth="300.0" styleClass="ttt-grid" vgap="12">
    <columnConstraints>
       <ColumnConstraints />
       <ColumnConstraints />

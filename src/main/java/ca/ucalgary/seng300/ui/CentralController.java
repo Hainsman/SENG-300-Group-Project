@@ -60,7 +60,7 @@ public class CentralController {
      * When true, {@link ca.ucalgary.seng300.ui.games.CommonGameLogic} wires the game to a local session with a random-move AI
      * opponent. Cleared when leaving that flow or the game screen.
      */
-    public static boolean localAiMode = false;
+    public boolean localAiMode = false;
 
     public static int currentUserId;
     public static String displayName = "Player";
@@ -85,7 +85,7 @@ public class CentralController {
         displayName = "Player";
         previousScreen = null;
         selectedGame = null;
-        localAiMode = false;
+        instance.localAiMode = false;
         hostingLobby = false;
         lobbyCode = null;
         lobbyName = null;
@@ -167,12 +167,12 @@ public class CentralController {
         nodes.add(gameGUIPage);
         nodes.add(connect4);
         nodes.add(tttPage);
-        nodes.add(new ChooseModePage());
+        nodes.add(new ChooseModePage(this));
         nodes.add(new GameDashboardPage());
         nodes.add(new HostLobbyPage(this));
         nodes.add(new InfoPage());
         nodes.add(new JoinLobbyPage(this));
-        nodes.add(new LoginPage());
+        nodes.add(new LoginPage(this));
         nodes.add(new MainLobbyPage(this));
         nodes.add(new NewUserPage());
         nodes.add(new ProfileDashboardPage());
@@ -212,7 +212,7 @@ public class CentralController {
         if (nav == Navigation.TTT || nav == Navigation.C4) {
             GameGUIPage gameGUIPage = (GameGUIPage) getNode(Navigation.GAME_GUI);
             viewContainer.setCenter(gameGUIPage);
-            gameGUIPage.setGameNode((Node) node);
+            gameGUIPage.setGameNode((Node) node, GameType.getFromNavigation(nav));
             gameGUIPage.reset();
             previousScreen = Navigation.CHOOSE_MODE;
         }

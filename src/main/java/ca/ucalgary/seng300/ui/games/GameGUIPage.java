@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
@@ -44,7 +45,7 @@ public class GameGUIPage extends VBox implements Navigable {
 
     // Accompanying Labels
 //    @FXML private Label connect4Label;
-    @FXML private Label tttLabel;
+    @FXML private Label gameTypeLabel;
     @FXML private Button infoButton;
 
     public GameGUIPage(CentralController rootController) {
@@ -61,12 +62,14 @@ public class GameGUIPage extends VBox implements Navigable {
         }
     }
 
-    public void setGameNode(Node node) {
+    public void setGameNode(Node node, GameType gameType) {
         gameBox.getChildren().clear();
         gameBox.getChildren().add(node);
 
         c4Page = node instanceof C4Page connect4 ? connect4 : null;
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
+
+        gameTypeLabel.setText(gameType.toString());
     }
 
 //    @FXML
@@ -192,11 +195,14 @@ public class GameGUIPage extends VBox implements Navigable {
         if (tttPage != null) {
             tttPage.handleForfeitFromShell();
         }
+        else if (c4Page != null) {
+            c4Page.handleForfeitFromShell();
+        }
     }
 
     @FXML
     private void handleInfoButton(ActionEvent event) {
-        if (tttPage != null && tttPage.isActiveOnlineMatch()) {
+        if ((tttPage != null && tttPage.isOnlineMode()) || (c4Page != null && c4Page.isOnlineMode())) {
             new Alert(Alert.AlertType.INFORMATION,
                     "Finish the match or use Forfeit before opening other screens.",
                     ButtonType.OK).showAndWait();
@@ -219,7 +225,7 @@ public class GameGUIPage extends VBox implements Navigable {
 
     @FXML
     private void handleExitButton(ActionEvent event) {
-        if (tttPage != null && tttPage.isActiveOnlineMatch()) {
+        if ((tttPage != null && tttPage.isOnlineMode()) || (c4Page != null && c4Page.isOnlineMode())) {
             new Alert(Alert.AlertType.WARNING,
                     "Use Forfeit in the sidebar to leave an online match in progress. You can quit the app afterward.",
                     ButtonType.OK).showAndWait();

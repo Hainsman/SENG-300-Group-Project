@@ -18,6 +18,8 @@ import java.util.List;
 
 public class LoginPage extends HBox implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private CheckBox rememberMeBox;
@@ -26,8 +28,10 @@ public class LoginPage extends HBox implements Navigable {
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
 
-    public LoginPage() {
+    public LoginPage(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -68,7 +72,7 @@ public class LoginPage extends HBox implements Navigable {
         CentralController.currentUserId = user.getID();
         CentralController.displayName = user.getlogin();
         CentralController.previousScreen = null;
-        CentralController.localAiMode = false;
+        rootController.localAiMode = false;
         CentralController.moveTo(Navigation.GAME_DASHBOARD);
     }
 

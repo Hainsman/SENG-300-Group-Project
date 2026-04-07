@@ -1,30 +1,35 @@
 package ca.ucalgary.seng300.ui.games;
 
-import ca.ucalgary.seng300.game.core.GameState;
-import ca.ucalgary.seng300.game.core.GameType;
-import ca.ucalgary.seng300.game.core.Player;
-import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.game.core.*;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.services.RankingService;
 import ca.ucalgary.seng300.platform.session.Session;
+import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.util.EloOverlayUtil;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+
+import java.util.Arrays;
 
 public abstract class CommonGameLogic extends StackPane {
 
     private ClientCore clientCore = null;
     private boolean onlineEloApplied = false;
-    private boolean randomOpponentEnabled = false;
 
     private Button[][] boardButtonGrid;
 
+    protected final CentralController rootController;
+    protected final GameGUIPage parentGUI;
     private final int rows;
     private final int cols;
     private final GameType gameType;
@@ -35,25 +40,24 @@ public abstract class CommonGameLogic extends StackPane {
     private final String player2Name;
 
     protected Session session = null;
+    protected Player[][] currentPlayerBoard;
 
     @FXML protected Label statusLabel;
     @FXML protected Button resetButton;
+    @FXML protected Button backToModeButton;
 
-    @FXML private GridPane boardGridPane;
-    @FXML private VBox eloResultOverlay;
-    @FXML private Label eloOutcomeTitle;
-    @FXML private Label eloDeltaLabel;
-    @FXML private Label eloNewRatingLabel;
-
-    public abstract void reset();
+    @FXML protected GridPane boardGridPane;
+    @FXML protected VBox eloResultOverlay;
+    @FXML protected Label eloOutcomeTitle;
+    @FXML protected Label eloDeltaLabel;
+    @FXML protected Label eloNewRatingLabel;
 
     protected abstract void updateButton(Button button, Player player);
-    protected abstract void addHistory(Player player, int row, int col, Color color);
-    protected abstract int getActualRow(int row, int col); // this is to figure out row for the Connect4
-    protected abstract void maybePlayRandomOpponent();
-    protected abstract void submitAgainstAiMove(int row, int col);
+    protected abstract void setNewSession();
 
-    public CommonGameLogic(int rows, int cols, GameType gameType, String styleClass, Color player1Color, Color player2Color, String player1Name, String player2Name) {
+    public CommonGameLogic(CentralController rootController, GameGUIPage parentGUI, int rows, int cols, GameType gameType, String styleClass, Color player1Color, Color player2Color, String player1Name, String player2Name) {
+        this.rootController = rootController;
+        this.parentGUI = parentGUI;
         this.rows = rows;
         this.cols = cols;
         this.gameType = gameType;
@@ -62,20 +66,81 @@ public abstract class CommonGameLogic extends StackPane {
         this.player2Color = player2Color;
         this.player1Name = player1Name;
         this.player2Name = player2Name;
+
+        createNewPlayerBoard();
     }
 
     @FXML
-    private void handleDismissEloOverlay() {
+    protected void handleBackToMode(ActionEvent event) {
+        if (isOnlineMode() && clientCore.getLastUpdate().getState() == State.IN_PROGRESS) {
+            new Alert(Alert.AlertType.INFORMATION,
+                    "You cannot leave an online match in progress without using Forfeit in the sidebar.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
+        navigateBackFromGame();
+    }
+
+    @FXML
+    protected void handleDismissEloOverlay() {
         hideEloOverlay();
     }
 
     @FXML
-    private void resetClick(ActionEvent event) {
-        reset();
+    protected void resetClick(ActionEvent event) {
+        parentGUI.clearHistory();
+        resetButton.setVisible(false);
+
+        if (isSessionMode()) {
+            session.startNewGame();
+            refreshFromSession();
+            setDisableBoard(false);
+        }
+        else if (isOnlineMode())
+            clientCore.msgSend(new sysMSG("reset", ""));
     }
 
+    @FXML
     public void initialize() {
+        VBox.setVgrow(this, Priority.ALWAYS);
         setupBoardButtons();
+    }
+
+    public void reset() {
+        createNewPlayerBoard();
+        updateBoard(currentPlayerBoard);
+        hideEloOverlay();
+        if (rootController.localAiMode) {
+            if (session == null)
+                setNewSession();
+            else
+                session.startNewGame();
+            refreshFromSession();
+        }
+        else {
+            session = null;
+            clientCore = rootController.clientCore;
+
+            refreshFromGameState(clientCore.getLastUpdate());
+        }
+        refreshBackButtonVisibility();
+        parentGUI.clearChat();
+        parentGUI.clearHistory();
+    }
+
+    public void handleForfeitFromShell() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Forfeit");
+        confirm.setHeaderText("Forfeit this match?");
+        confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
+        confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
+            EloOverlayUtil.hide(eloResultOverlay);
+            if (!isOnlineMode()) {
+                navigateBackFromGame();
+                return;
+            }
+            clientCore.msgSend(new sysMSG("FORFEIT", "", ""));
+        });
     }
 
     public void refreshFromGameState(GameState gameState) {
@@ -87,16 +152,9 @@ public abstract class CommonGameLogic extends StackPane {
             }
 
             updateBoard(gameState.getBoard());
-
-            boolean gameOver = state != State.IN_PROGRESS;
-            resetButton.setVisible(gameOver);
-
-            Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
-            boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null;
-            boolean myTurn = !onlineTurns || gameOver || myRole.equals(gameState.getPlayerTurn());
-            setDisableBoard(gameOver || !myTurn);
-
+            updateControls(gameState);
             updateStatusLabel(gameState, state);
+            updateHistoryBoard(gameState);
 
             OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, state, onlineEloApplied, gameType)
                     .ifPresent(r -> {
@@ -104,7 +162,20 @@ public abstract class CommonGameLogic extends StackPane {
                         showEloOverlay(r);
                     }
             );
+
+            refreshBackButtonVisibility();
         }
+    }
+
+    public boolean isOnlineMode() {
+        return !rootController.localAiMode
+                && clientCore != null
+                && GameType.getFromGameState(clientCore.getLastUpdate()) == gameType;
+    }
+
+    private void createNewPlayerBoard() {
+        currentPlayerBoard = new Player[rows][cols];
+        for (Player[] players : currentPlayerBoard) Arrays.fill(players, Player.EMPTY);
     }
 
     private void setupBoardButtons() {
@@ -118,9 +189,54 @@ public abstract class CommonGameLogic extends StackPane {
                 button.setOnAction(e -> submitMove(row, col));
 
                 boardButtonGrid[i][j] = button;
-                boardGridPane.add(button, i, j);
+                boardGridPane.add(button, j, i);
+
+                if (gameType == GameType.CONNECT4) {
+                    button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                    GridPane.setHgrow(button, Priority.ALWAYS);
+                    GridPane.setVgrow(button, Priority.ALWAYS);
+                }
             }
         }
+        if (gameType == GameType.CONNECT4)
+            boardGridPane.maxHeightProperty().bind(boardGridPane.widthProperty().divide(cols).multiply(rows));
+    }
+
+    private void addHistory(Player[][] newBoard, Player whoseTurn) {
+        int i = 0;
+        int j = 0;
+        boolean found = false;
+        while (!found && i < newBoard.length) {
+            j = 0;
+            while (!found && j < newBoard[i].length) {
+                if (newBoard[i][j] != currentPlayerBoard[i][j])
+                    found = true;
+                else
+                    j++;
+            }
+            if (!found)
+                i++;
+        }
+        parentGUI.addHistory(
+                gameType.toString(),
+                whoseTurn == Player.PLAYER_1 ? player1Name : player2Name,
+                String.format("(%d, %d)", i+1, j+1),
+                whoseTurn == Player.PLAYER_1 ? player1Color : player2Color);
+
+        currentPlayerBoard = newBoard;
+    }
+
+    private void maybePlayRandomOpponent() {
+        Platform.runLater(() -> {
+            if (!session.isGameOver()) {
+                int[] cell = RandomMoveGenerator.pickRandomLegalMove(session.getBoard(), gameType);
+
+                if (session.submitMove(cell[0], cell[1])) { // isGameOver() should protect from null
+                    addHistory(session.getBoard(), Player.PLAYER_2);
+                    refreshFromSession();
+                }
+            }
+        });
     }
 
     private void submitMove(int row, int col) {
@@ -128,14 +244,6 @@ public abstract class CommonGameLogic extends StackPane {
             submitOnlineMove(row, col);
         else if (isSessionMode())
             submitSessionMove(row, col);
-        else
-            submitAgainstAiMove(row, col);
-    }
-
-    private boolean isOnlineMode() {
-        return !randomOpponentEnabled
-                && clientCore != null
-                && GameType.getFromGameState(clientCore.getLastUpdate()) == gameType;
     }
 
     private void submitOnlineMove(int row, int col) {
@@ -149,8 +257,7 @@ public abstract class CommonGameLogic extends StackPane {
 
     private void submitSessionMove(int row, int col) {
         if (session.submitMove(row, col)) {
-            int actualRow = getActualRow(row, col);
-            addHistory(Player.PLAYER_1, actualRow, col, player1Color);
+            addHistory(session.getBoard(), Player.PLAYER_1);
             refreshFromSession();
             maybePlayRandomOpponent();
         }
@@ -164,13 +271,16 @@ public abstract class CommonGameLogic extends StackPane {
     private void updateStatusLabel(GameState gameState, State state) {
         switch(state) {
             case IN_PROGRESS -> {
-                Player cur = gameState.getPlayerTurn();
-                Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
-                if (isOnlineMode() && myRole != null && myRole != cur) {
+                if (isOnlineMode()) {
+                    Player cur = gameState.getPlayerTurn();
+                    Player myRole = clientCore.getMyNetworkRole();
                     String myName = myRole == Player.PLAYER_1 ? player1Name : player2Name;
                     String opponentName = myRole == Player.PLAYER_1 ? player2Name : player1Name;
 
-                    statusLabel.setText("You are " + myName + " — waiting for " + opponentName);
+                    if (myRole != cur)
+                        statusLabel.setText("You are " + myName + " — waiting for " + opponentName);
+                    else
+                        statusLabel.setText("You are " + myName + " — Your turn");
                 }
                 else {
                     statusLabel.setText(session.getTurn() == Player.PLAYER_1
@@ -194,9 +304,72 @@ public abstract class CommonGameLogic extends StackPane {
         updateStatusLabel(null, state);
     }
 
+    private State resolveDisplayedState() {
+        if (isOnlineMode())
+            return clientCore.getLastUpdate().getState();
+
+        return session.getState();
+    }
+
+    private void refreshBackButtonVisibility() {
+        if (backToModeButton == null) {
+            return;
+        }
+        State st = resolveDisplayedState();
+        boolean terminal = st == State.PLAYER_1_WIN || st == State.PLAYER_2_WIN || st == State.TIE;
+        boolean showBack = !isOnlineMode() || terminal;
+        backToModeButton.setVisible(showBack);
+    }
+
+    private void navigateBackFromGame() {
+        rootController.localAiMode = false;
+        hideEloOverlay();
+
+        if (CentralController.previousScreen != null)
+            CentralController.moveTo(CentralController.previousScreen);
+        else
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+    }
+
+    private boolean isBoardBlank(Player[][] board) {
+        for (Player[] players : board)
+            for (Player player : players)
+                if (player != Player.EMPTY)
+                    return false;
+
+        return true;
+    }
+
+    private void updateControls(GameState gameState) {
+        boolean gameOver = gameState.getState() != State.IN_PROGRESS;
+        resetButton.setVisible(gameOver);
+
+        Player myRole = clientCore.getMyNetworkRole();
+        boolean onlineTurns = clientCore.isConnected() && myRole != null;
+        boolean myTurn = !onlineTurns || gameOver || myRole == gameState.getPlayerTurn();
+        setDisableBoard(gameOver || !myTurn);
+        if (myTurn && !gameOver)
+            rootController.getWindowManager().showNotification("Your Turn!", true);
+    }
+
+    private void updateHistoryBoard(GameState gameState) {
+        if (isBoardBlank(gameState.getBoard()))
+            parentGUI.clearHistory();
+        else {
+            if (gameState.getState() != State.IN_PROGRESS)
+                addHistory(gameState.getBoard(), gameState.getPlayerTurn() == Player.PLAYER_1 ? Player.PLAYER_1 : Player.PLAYER_2);
+            else
+                addHistory(gameState.getBoard(), gameState.getPlayerTurn() == Player.PLAYER_1 ? Player.PLAYER_2 : Player.PLAYER_1);
+        }
+    }
+
     protected void refreshFromSession() {
+        if (session.getTurn() == Player.PLAYER_1 && !session.isGameOver())
+            rootController.getWindowManager().showNotification("Your Turn!", false);
+
         updateBoard(session.getBoard());
         updateStatusLabel(session.getState());
+        refreshBackButtonVisibility();
     }
 
     protected void updateBoard(Player[][] board) {

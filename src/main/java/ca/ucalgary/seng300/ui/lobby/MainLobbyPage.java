@@ -113,7 +113,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             return;
         }
 
-        CentralController.localAiMode = false;
+        rootController.localAiMode = false;
         if (CentralController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {

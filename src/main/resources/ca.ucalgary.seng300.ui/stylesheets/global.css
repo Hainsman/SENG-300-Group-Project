@@ -374,8 +374,8 @@
     -fx-border-width: 1;
     -fx-border-radius: 12;
     -fx-background-radius: 12;
-    -fx-font-size: 34px;
-    -fx-font-weight: 800;
+    -fx-pref-height: 104px;
+    -fx-pref-width: 116px;
     -fx-text-fill: #fafafa;
 }
 
@@ -393,6 +393,15 @@
     -fx-border-radius: 12;
     -fx-font-size: 14px;
     -fx-font-weight: 700;
+}
+
+.c4-cell {
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+}
+
+.c4-cell:hover {
+    -fx-border-color: #34d399;
 }
 
 .chat-shell {
@@ -766,7 +775,7 @@
 }
 
 .root.colorblind-mode .input-field:focused,
-.root.colorblind-mode .ttt-cell:hover {
+.root.colorblind-mode .ttt-cell:hover .c4-cell:hover {
     -fx-border-color: #60a5fa;
 }
 
