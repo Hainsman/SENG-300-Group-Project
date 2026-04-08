@@ -1,9 +1,13 @@
 package ca.ucalgary.seng300.platform.server;
 import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static ca.ucalgary.seng300.PlatformCore.parseNameEloPayload;
 
@@ -72,20 +76,35 @@ public class ServerLobby {
         else if(gameId == Game.TICK_TACK_TOE){
             tttgame = new TTTGame();
             tttgame.startGame(host, guest);
+            Map<String, Player> turnIds = new HashMap<>();
+            turnIds.put("P1", Player.PLAYER_1);
+            turnIds.put("P2", Player.PLAYER_2);
+            tttgame.setPlayerIdToPlayer(turnIds);
             sendBoth(new sysMSG("GMJN", getGameFxml(), ""));
             sendBoth(tttgame.getGameState());
         }
     }
 
-    public void gameTurn(platformChannel p, PlayerAction m){
+    public boolean gameTurn(platformChannel p, PlayerAction m){
         if(gameId == Game.CONNECT_FOUR){
             c4game.handleAction(m);
-            sendBoth(c4game.getGameState());
+            return c4game.wasLastMoveValid();
         }
         else if(gameId == Game.TICK_TACK_TOE){
             tttgame.handleAction(m);
-            sendBoth(tttgame.getGameState());
+            return tttgame.wasLastMoveValid();
         }
+        return false;
+    }
+
+    public Object currentGameState() {
+        if (gameId == Game.CONNECT_FOUR) {
+            return c4game != null ? c4game.getGameState() : null;
+        }
+        if (gameId == Game.TICK_TACK_TOE) {
+            return tttgame != null ? tttgame.getGameState() : null;
+        }
+        return null;
     }
 
     public void sendBoth(Object o){

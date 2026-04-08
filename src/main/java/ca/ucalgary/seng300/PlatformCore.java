@@ -188,7 +188,37 @@ public class PlatformCore {
         if (sl == null) {
             return;
         }
-        sl.gameTurn(player, m);
+        if (sl.getGameId() == ca.ucalgary.seng300.platform.constants.Game.TICK_TACK_TOE) {
+            onHandleClick(id, player, m);
+        } else if (sl.getGameId() == ca.ucalgary.seng300.platform.constants.Game.CONNECT_FOUR) {
+            onDropPiece(id, player, m);
+        }
+    }
+
+    public void onHandleClick(String id, platformChannel player, PlayerAction move) {
+        handleValidatedMove(id, player, move);
+    }
+
+    public void onDropPiece(String id, platformChannel player, PlayerAction move) {
+        handleValidatedMove(id, player, move);
+    }
+
+    private void handleValidatedMove(String id, platformChannel player, PlayerAction move) {
+        if (id == null || player == null || lobbies == null) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(id);
+        if (sl == null) {
+            return;
+        }
+        boolean valid = sl.gameTurn(player, move);
+        player.cliSend(new sysMSG("MOVE", valid ? "PASS" : "FAIL", valid ? "" : "Invalid move"));
+        if (valid) {
+            Object state = sl.currentGameState();
+            if (state != null) {
+                sl.sendBoth(state);
+            }
+        }
     }
     /**
      * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.

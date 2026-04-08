@@ -28,6 +28,7 @@ public class platformChannel extends Thread {
         try{
             outServ.writeObject(o);
             outServ.flush();
+            outServ.reset();
         } catch (Exception e) {
             e.printStackTrace();
         }

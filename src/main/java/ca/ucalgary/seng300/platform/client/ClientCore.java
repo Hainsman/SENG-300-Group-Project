@@ -3,9 +3,11 @@ package ca.ucalgary.seng300.platform.client;
 import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
@@ -57,6 +59,7 @@ public class ClientCore extends Thread{
     private volatile Runnable onGameStateUpdate;
     private volatile Consumer<sysMSG> authResponseHandler;
     private volatile Consumer<sysMSG> newUserResponseHandler;
+    private volatile Consumer<sysMSG> moveResponseHandler;
     
     public boolean isConnected() {
         return servSend != null && servRead != null;
@@ -77,28 +80,24 @@ public class ClientCore extends Thread{
         if (!isConnected()) {
             return false;
         }
-        //if(gameType == "TTT"){
-        //if(lastUpdate == null || lastUpdate.getPlayerTurn().equals(thisUser)){
-            String pid = (myPlayerId != null && !myPlayerId.isBlank())
-                    ? myPlayerId
-                    : ((CID != null && !CID.isBlank()) ? CID : "player");
-            TTTPlayerMove p = new TTTPlayerMove(pid, "MOVE" , row, col);
-            //if(cliEngine.validateMove(gstate,p)){
-            try{
-                servSend.writeObject(p);
-                servSend.flush();
-                return true;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            //else{
-            //    return false;
-            //}
-        //}
-        //else{
-        //    return false;
-        //}
-        //return false;
+        String pid = (myPlayerId != null && !myPlayerId.isBlank())
+                ? myPlayerId
+                : ((CID != null && !CID.isBlank()) ? CID : "player");
+        PlayerAction action;
+        if (lastUpdate instanceof C4GameState) {
+            Player role = getMyNetworkRole();
+            String c4PlayerId = role != null ? role.toString() : pid;
+            action = new C4PlayerAction(c4PlayerId, "MOVE", row, col);
+        } else {
+            action = new TTTPlayerAction(pid, "MOVE", row, col);
+        }
+        try{
+            servSend.writeObject(action);
+            servSend.flush();
+            return true;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void msgSend(Object o) {
@@ -132,6 +131,10 @@ public class ClientCore extends Thread{
 
     public void setNewUserResponseHandler(Consumer<sysMSG> handler) {
         newUserResponseHandler = handler;
+    }
+
+    public void setMoveResponseHandler(Consumer<sysMSG> handler) {
+        moveResponseHandler = handler;
     }
 
     public String debugBoard(TTTGameState t) {
@@ -244,6 +247,12 @@ public class ClientCore extends Thread{
                                 break;
                             case "PARTNER_JOINED":
                                 LobbyBridge.notifyPartnerJoined();
+                                break;
+                            case "MOVE":
+                                Consumer<sysMSG> moveHandler = moveResponseHandler;
+                                if (moveHandler != null) {
+                                    Platform.runLater(() -> moveHandler.accept(sm));
+                                }
                                 break;
                             default:
                                 break;

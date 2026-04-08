@@ -52,9 +52,14 @@ public class C4Game implements Game {
      */
     @Override
     public void handleAction(PlayerAction playerAction) {
-        if (validator.validateMove(gameState, playerAction)) {
+        valid = validator.validateMove(gameState, playerAction);
+        if (valid) {
             gameState.applyAction(playerAction);
         }
+    }
+
+    public boolean wasLastMoveValid() {
+        return valid;
     }
 
     @Override

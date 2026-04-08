@@ -55,6 +55,10 @@ public class TicTacToeSession {
         return game.getGameState().getBoard();
     }
 
+    public TTTGameState getGameState() {
+        return (TTTGameState) game.getGameState();
+    }
+
     public Player getTurn() {
         return game.getGameState().getPlayerTurn();
     }

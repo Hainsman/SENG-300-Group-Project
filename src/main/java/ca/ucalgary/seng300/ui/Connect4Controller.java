@@ -21,6 +21,9 @@ public class Connect4Controller extends GameGUI {
         boss = root;
         boss.setConnect4(this);
         clientCore = boss.getCC();
+        if (clientCore != null && clientCore.isConnected()) {
+            clientCore.setMoveResponseHandler(this::handleMoveResponse);
+        }
         if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
             refreshFromGameStateUpdate(gs);
         }
@@ -247,6 +250,15 @@ public class Connect4Controller extends GameGUI {
         } else {
             statusLabel.setText(update.getPlayerTurn() == Player.PLAYER_1 ? "Player 1's Turn" : "Player 2's Turn");
             resetButton.setVisible(false);
+        }
+    }
+
+    private void handleMoveResponse(sysMSG response) {
+        if (response == null || !"MOVE".equals(response.getType())) {
+            return;
+        }
+        if ("FAIL".equals(response.getFieldA())) {
+            statusLabel.setText("Invalid move");
         }
     }
 }
