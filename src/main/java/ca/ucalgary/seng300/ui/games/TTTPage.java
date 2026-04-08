@@ -46,8 +46,7 @@ public class TTTPage extends CommonGameLogic implements Navigable {
             loader.setRoot(this);
             loader.setController(this);
             loader.load();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -63,12 +62,10 @@ public class TTTPage extends CommonGameLogic implements Navigable {
         if (player == Player.PLAYER_1) {
             button.setText("X");
             button.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
-        }
-        else if (player == Player.PLAYER_2) {
+        } else if (player == Player.PLAYER_2) {
             button.setText("O");
             button.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
-        }
-        else {
+        } else {
             button.setText("");
             button.setStyle("");
         }
@@ -78,8 +75,36 @@ public class TTTPage extends CommonGameLogic implements Navigable {
     protected void setNewSession() {
         session = new TicTacToeSession();
     }
+
+    private void navigateBackFromGame() {
+        rootController.localAiMode = false;
+        //randomOpponentEnabled = false;
+        EloOverlayUtil.hide(eloResultOverlay);
+        if (rootController.previousScreen != null) {
+            rootController.moveTo(rootController.previousScreen);
+        } else {
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
+        }
+    }
+
 }
+
+
 /*
+    @FXML
+    private void handleBackToMode(ActionEvent event) {
+        if (isActiveOnlineMatch()) {
+            Alert a = new Alert(Alert.AlertType.INFORMATION,
+                    "You cannot leave an online match in progress without using Forfeit in the sidebar.",
+                    ButtonType.OK);
+            ThemeAlerts.apply(a);
+            a.showAndWait();
+            return;
+        }
+        navigateBackFromGame();
+    }
+
+
 /**
      * Online Tic-Tac-Toe inside {@link GameGUIPage}: no local {@link TicTacToeSession}, moves go through
      * {@link ClientCore}; board paints from {@link ClientCore#getLastUpdate()} when present.
@@ -494,34 +519,6 @@ public void refreshFromGameStateUpdate(TTTGameState update) {
         this.clientCore = c;
         if (c != null && c.getLastUpdate() != null) refreshFromGameStateUpdate(c.getLastUpdate());
     }*/
-
-public void setVisibility(Boolean status){
-    boardPane.setVisible(status);
-}
-
-private void navigateBackFromGame() {
-    CentralController.localAiMode = false;
-    randomOpponentEnabled = false;
-    EloOverlayUtil.hide(eloResultOverlay);
-    if (CentralController.previousScreen != null) {
-        CentralController.moveTo(CentralController.previousScreen);
-    } else {
-        CentralController.moveTo(Navigation.GAME_DASHBOARD);
-    }
-}
-
-@FXML
-private void handleBackToMode(ActionEvent event) {
-    if (isActiveOnlineMatch()) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION,
-                "You cannot leave an online match in progress without using Forfeit in the sidebar.",
-                ButtonType.OK);
-        ThemeAlerts.apply(a);
-        a.showAndWait();
-        return;
-    }
-    navigateBackFromGame();
-}
 
 /**
  * Called from {@link GameGUIPage} sidebar forfeit. Online: server declares opponent wins;

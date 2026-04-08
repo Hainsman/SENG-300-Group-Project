@@ -13,10 +13,11 @@ public final class OnlineRankingHelper {
 
     private OnlineRankingHelper() {}
 
-    public static int opponentEloFromLobby(boolean hostingLobby) {
+    // TODO FIX
+    /*public static int opponentEloFromLobby(boolean hostingLobby) {
         int e = hostingLobby ? CentralController.rosterGuestElo : CentralController.rosterHostElo;
         return e <= 0 ? 1200 : e;
-    }
+    }*/
 
     public static Optional<RankingService.OnlineEloResult> applyIfOnlineGameFinished(
             ClientCore cc, State state, boolean alreadyApplied, GameType gameTypeForStats) {
@@ -41,8 +42,9 @@ public final class OnlineRankingHelper {
         } else {
             return Optional.empty();
         }
-        int uid = PlayerProfileHelper.currentUserIdOrDefault();
-        int oppElo = opponentEloFromLobby(CentralController.hostingLobby);
-        return Optional.of(RankingService.applyOnlineLocalResult(uid, gameTypeForStats, oppElo, outcome));
+        int uid = PlayerProfileHelper.currentUserIdOrDefault(null);
+        //int oppElo = opponentEloFromLobby(CentralController.hostingLobby);
+        //return Optional.of(RankingService.applyOnlineLocalResult(uid, gameTypeForStats, oppElo, outcome));
+        return null;
     }
 }

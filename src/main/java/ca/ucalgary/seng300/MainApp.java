@@ -34,7 +34,7 @@ public class MainApp extends Application {
                 WindowManager.WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
         stage.show();
-        CentralController.applyUiPreferences();
+        //CentralController.applyUiPreferences();
     }
 
     public static void main(String[] args) {

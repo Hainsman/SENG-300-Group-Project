@@ -9,6 +9,7 @@ import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.session.Session;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.lobby.LobbyBridge;
 import ca.ucalgary.seng300.ui.util.Navigation;
@@ -44,8 +45,7 @@ public class ClientCore extends Thread{
     private volatile String myPlayerId;
     public Player myPlayer;
     public volatile  boolean upFlag = false;
-    public volatile TTTGameState lastTT;
-    public volatile C4GameState lastC4;
+    public volatile GameState lastUpdate;
     private volatile Consumer<sysMSG> authResponseHandler;
     private volatile Consumer<sysMSG> newUserResponseHandler;
     private volatile Consumer<sysMSG> moveResponseHandler;
@@ -64,6 +64,10 @@ public class ClientCore extends Thread{
             return Player.PLAYER_2;
         }
         return null;
+    }
+
+    public GameState getLastUpdate() {
+        return lastUpdate;
     }
 
     public boolean submitMove(int row, int col){
@@ -200,7 +204,7 @@ public class ClientCore extends Thread{
                                     final String fxml = screen;
                                     Platform.runLater(() -> {
                                         LobbyBridge.clearLobbyUiCallbacks();
-                                        CentralController.moveTo(Navigation.getFromFxml(fxml));
+                                        ioMain.moveTo(Navigation.getFromFxml(fxml));
                                     });
                                 }
                                 break;
@@ -225,7 +229,7 @@ public class ClientCore extends Thread{
                             case "LOBBY_ROSTER": {
                                 Object pl = sm.getPayload();
                                 System.out.println("lobby got");
-                                CentralController.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
+                                ioMain.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
                                 Platform.runLater(() -> {
                                     ioMain.mainLobbyPage.refreshPlayersFromState();
                                 });
@@ -235,20 +239,22 @@ public class ClientCore extends Thread{
                                 break;
                         }
                         break;
-                    case TTTGameState t:
-                        //lastTT = t;
-                        System.out.println("TTT update sent"+t.getBoard()[0][0].toString());
-                        System.out.println(t.getBoard());
-                        Platform.runLater(() -> {
-                            ioMain.tttPage.refreshFromGameStateUpdate(t);
-                        });
-                        break;
-                    case C4GameState c:
-                        lastC4 = c;
-                        System.out.println("C4 update sent"+c.getBoard()[0][0].toString());
-                        Platform.runLater(() -> {
-                            ioMain.connect4.refreshFromGameStateUpdate(c);
-                        });
+                    case GameState g:
+                        lastUpdate = g;
+                        switch(gameType){
+                            case GameType.TIC_TAC_TOE:
+                                Platform.runLater(() -> {
+                                    //ioMain.tttPage.refreshFromGameStateUpdate((TTTGameState) g);
+                                });
+                                break;
+                            case GameType.CONNECT4:
+                                Platform.runLater(() -> {
+                                    //ioMain.connect4.refreshFromGameStateUpdate((C4GameState) g);
+                                });
+                                break;
+                            default:
+
+                        }
                         break;
                     case chatMessage c:
                         Consumer<chatMessage> chatHandler = chatMessageHandler;
@@ -284,6 +290,7 @@ public class ClientCore extends Thread{
             }
         }
     }
+
     /*public static void main(String[] args) {
         try {
             ClientCore c = new ClientCore(new CentralController()); // Start the server

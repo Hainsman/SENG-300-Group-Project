@@ -19,6 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
+import javafx.stage.Window;
 
 import java.util.ArrayList;
 
@@ -177,16 +178,16 @@ public class CentralController {
         nodes.add(gameGUIPage);
         nodes.add(connect4);
         nodes.add(tttPage);
-        nodes.add(new ChooseModePage());
+        nodes.add(new ChooseModePage(this));
         nodes.add(new GameDashboardPage(this));
         nodes.add(hostLobbyPage);
-        nodes.add(new InfoPage());
+        nodes.add(new InfoPage(this));
         nodes.add(joinLobbyPage);
         nodes.add(loginPage);
         nodes.add(mainLobbyPage);
         nodes.add(newUserPage);
-        nodes.add(new ProfileDashboardPage());
-        nodes.add(new SettingsPage());
+        nodes.add(new ProfileDashboardPage(this));
+        nodes.add(new SettingsPage(this));
     }
 
     // call anytime to switch pages

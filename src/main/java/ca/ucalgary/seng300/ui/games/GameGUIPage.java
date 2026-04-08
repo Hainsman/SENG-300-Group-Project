@@ -215,7 +215,7 @@ public class GameGUIPage extends VBox implements Navigable {
     private void handleChatSend(ActionEvent event) {
         String msg = chatInput.getText().trim();
         if (msg.isBlank()) return;
-        String sender = rootController.tttPage != null || rootController.c4Page != null
+        String sender = rootController.tttPage != null || rootController.connect4 != null
                 ? currentPlayerID
                 : "You";
 

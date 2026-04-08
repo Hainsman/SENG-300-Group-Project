@@ -26,12 +26,12 @@ public final class LobbyBridge {
                 rootController.lobbyCode = code;
             }
             if ("HOST".equals(role) && onHostOk != null) {
-                CentralController.lobbyPaired = false;
+                //CentralController.lobbyPaired = false;
                 Runnable r = onHostOk;
                 onHostOk = null;
                 r.run();
             } else if ("JOIN".equals(role) && onJoinOk != null) {
-                CentralController.lobbyPaired = true;
+                //CentralController.lobbyPaired = true;
                 Runnable r = onJoinOk;
                 onJoinOk = null;
                 r.run();
@@ -53,7 +53,7 @@ public final class LobbyBridge {
 
     public static void notifyPartnerJoined() {
         Platform.runLater(() -> {
-            CentralController.lobbyPaired = true;
+            //CentralController.lobbyPaired = true;
             if (onPartnerJoined != null) {
                 onPartnerJoined.run();
             }

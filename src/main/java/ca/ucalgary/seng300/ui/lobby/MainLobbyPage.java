@@ -74,7 +74,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         LobbyBridge.onGameState = this::refreshStartButton;
     }
 
-    private void refreshPlayersFromState() {
+    public void refreshPlayersFromState() {
         if (playerList != null) {
             playerList.getItems().clear();
             ClientCore cc = rootController != null ? rootController.getCC() : null;
