@@ -92,6 +92,9 @@ public class PlatformCore {
             System.out.println("HOST_LOBBY rejected: duplicate code. Existing lobbies=" + lobbies.keySet());
             return false;
         }
+        if (chatservers != null && !chatservers.contains(lobbyid)) {
+            chatservers.add(lobbyid);
+        }
         System.out.println("Lobby opened: " + code + " (" + gameId + ") currentLobbies=" + lobbies.keySet());
         return true;
     }
@@ -138,7 +141,9 @@ public class PlatformCore {
 
     public void sendMult (chatMessage m){
         for(platformChannel h : users){
-            h.cliSend(m);
+            if (m.getServ() != null && m.getServ().equals(h.getLobby())) {
+                h.cliSend(m);
+            }
         }
     }
 
@@ -262,6 +267,7 @@ public class PlatformCore {
         // list of threads
         users = new ArrayList<platformChannel>();
         connected = new ArrayList<Integer>();
+        chatservers = new ArrayList<String>();
         lobbies = new HashMap<>();
 
         int ClientMax = 100;

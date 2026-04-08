@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
@@ -31,6 +32,7 @@ public class TicTacToeController extends GameGUI {
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
+            clientCore.setChatMessageHandler(this::handleChatMessage);
         }
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
             refreshFromGameStateUpdate(gs);
@@ -52,6 +54,15 @@ public class TicTacToeController extends GameGUI {
     @FXML
     private Button resetButton;
 
+    @FXML
+    private ListView<String> chatList;
+
+    @FXML
+    private TextField chatInput;
+
+    @FXML
+    private Button sendChatButton;
+
     private static final Color xColor = Color.web("#3B82F6");
     private static final Color oColor = Color.web("#A855F7");
 
@@ -65,6 +76,9 @@ public class TicTacToeController extends GameGUI {
     @FXML
     public void initialize() {
         status = GameStatus.IN_PROGRESS;
+        if (chatList != null) {
+            chatList.setPlaceholder(new Label("No messages yet."));
+        }
     }
 
     @Override
@@ -212,6 +226,36 @@ public class TicTacToeController extends GameGUI {
         if ("FAIL".equals(response.getFieldA())) {
             turnLabel.setText("Invalid move");
         }
+    }
+
+    @FXML
+    private void handleSendChat(ActionEvent event) {
+        if (chatInput == null) {
+            return;
+        }
+        String text = chatInput.getText();
+        if (text == null || text.isBlank()) {
+            return;
+        }
+        if (clientCore == null || !clientCore.isConnected()) {
+            turnLabel.setText("Chat unavailable offline.");
+            return;
+        }
+        String sender = clientCore.username != null && !clientCore.username.isBlank() ? clientCore.username : "Player";
+        String senderId = clientCore.CID != null ? clientCore.CID : "";
+        clientCore.msgSend(new chatMessage(CentralController.lobbyCode, sender, senderId, text.trim()));
+        chatInput.clear();
+    }
+
+    private void handleChatMessage(chatMessage message) {
+        if (message == null || chatList == null) {
+            return;
+        }
+        String sender = message.getUserName() != null && !message.getUserName().isBlank()
+                ? message.getUserName()
+                : "Player";
+        String content = message.getContent() != null ? message.getContent() : "";
+        chatList.getItems().add(sender + ": " + content);
     }
 
     @FXML

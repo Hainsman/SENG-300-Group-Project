@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -22,6 +23,7 @@ public class Connect4Controller extends GameGUI {
         clientCore = boss.getCC();
         if (clientCore != null && clientCore.isConnected()) {
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
+            clientCore.setChatMessageHandler(this::handleChatMessage);
         }
         if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
             refreshFromGameStateUpdate(gs);
@@ -42,12 +44,24 @@ public class Connect4Controller extends GameGUI {
     @FXML
     private Button resetButton;
 
+    @FXML
+    private ListView<String> chatList;
+
+    @FXML
+    private TextField chatInput;
+
+    @FXML
+    private Button sendChatButton;
+
     private final Color P1 = Color.web("#dd3030ff");
     private final Color P2 = Color.web("#fad44aff");
 
     @FXML
     public void initialize() {
         render();
+        if (chatList != null) {
+            chatList.setPlaceholder(new Label("No messages yet."));
+        }
     }
 
     @Override
@@ -181,5 +195,35 @@ public class Connect4Controller extends GameGUI {
         if ("FAIL".equals(response.getFieldA())) {
             statusLabel.setText("Invalid move");
         }
+    }
+
+    @FXML
+    private void handleSendChat(ActionEvent event) {
+        if (chatInput == null) {
+            return;
+        }
+        String text = chatInput.getText();
+        if (text == null || text.isBlank()) {
+            return;
+        }
+        if (clientCore == null || !clientCore.isConnected()) {
+            statusLabel.setText("Chat unavailable offline.");
+            return;
+        }
+        String sender = clientCore.username != null && !clientCore.username.isBlank() ? clientCore.username : "Player";
+        String senderId = clientCore.CID != null ? clientCore.CID : "";
+        clientCore.msgSend(new chatMessage(CentralController.lobbyCode, sender, senderId, text.trim()));
+        chatInput.clear();
+    }
+
+    private void handleChatMessage(chatMessage message) {
+        if (message == null || chatList == null) {
+            return;
+        }
+        String sender = message.getUserName() != null && !message.getUserName().isBlank()
+                ? message.getUserName()
+                : "Player";
+        String content = message.getContent() != null ? message.getContent() : "";
+        chatList.getItems().add(sender + ": " + content);
     }
 }

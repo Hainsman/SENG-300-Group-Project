@@ -37,6 +37,10 @@ public class platformChannel extends Thread {
         lobby = lob;
     }
 
+    public String getLobby() {
+        return lobby;
+    }
+
     private void handleSys(sysMSG sm) {
         switch (sm.getType()) {
             case "AUTH":

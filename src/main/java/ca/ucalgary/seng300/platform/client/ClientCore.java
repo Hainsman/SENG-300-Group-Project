@@ -60,6 +60,7 @@ public class ClientCore extends Thread{
     private volatile Consumer<sysMSG> authResponseHandler;
     private volatile Consumer<sysMSG> newUserResponseHandler;
     private volatile Consumer<sysMSG> moveResponseHandler;
+    private volatile Consumer<chatMessage> chatMessageHandler;
     
     public boolean isConnected() {
         return servSend != null && servRead != null;
@@ -135,6 +136,10 @@ public class ClientCore extends Thread{
 
     public void setMoveResponseHandler(Consumer<sysMSG> handler) {
         moveResponseHandler = handler;
+    }
+
+    public void setChatMessageHandler(Consumer<chatMessage> handler) {
+        chatMessageHandler = handler;
     }
 
     public String debugBoard(TTTGameState t) {
@@ -278,7 +283,10 @@ public class ClientCore extends Thread{
 
                         break;
                     case chatMessage c:
-                        // CHAT SYSTEM UI COMPONENT
+                        Consumer<chatMessage> chatHandler = chatMessageHandler;
+                        if (chatHandler != null) {
+                            Platform.runLater(() -> chatHandler.accept(c));
+                        }
                         break;
                     //case matchMaking m:
 

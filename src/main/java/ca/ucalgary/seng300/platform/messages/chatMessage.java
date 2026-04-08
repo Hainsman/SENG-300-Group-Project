@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.platform.messages;
 
-public class chatMessage {
+import java.io.Serializable;
+
+public class chatMessage implements Serializable {
     private String chatServer;      // which chat server the message is from
     private String userName; // required for JOIN
     private String userID;  // this client's player id
@@ -15,4 +17,7 @@ public class chatMessage {
 
     public String getServ() { return chatServer; }
     public void setServ(String srv) { this.chatServer = srv; }
+    public String getUserName() { return userName; }
+    public String getUserID() { return userID; }
+    public String getContent() { return content; }
 }
