@@ -227,6 +227,8 @@ public class WindowManager {
                 draggingWindow = true;
             }
         }
+        else
+            playAudioClip(SoundEffect.MOUSE_CLICKED);
 
         if (showingNotification)
             hideNotification();
@@ -437,11 +439,8 @@ public class WindowManager {
         animation.play();
         showingNotification = true;
 
-        if (soundOn) {
-            AudioClip audioClip = new AudioClip(SoundEffect.YOUR_TURN_NOTIFICATION.getPath());
-            audioClip.setVolume(getActualVolume());
-            audioClip.play();
-        }
+        if (soundOn)
+            playAudioClip(SoundEffect.YOUR_TURN_NOTIFICATION);
     }
 
     private void hideNotification() {
@@ -554,5 +553,11 @@ public class WindowManager {
 
     private double getActualVolume() {
         return isSoundOn ? 1 * settingsVolume : 0;
+    }
+
+    private void playAudioClip(SoundEffect soundEffect) {
+        AudioClip audioClip = new AudioClip(soundEffect.getPath());
+        audioClip.setVolume(getActualVolume() * soundEffect.getVolume());
+        audioClip.play();
     }
 }
