@@ -116,9 +116,23 @@ public class PlatformCore {
             return false;
         }
         sl.joinGuest(guestChannel, guestPayload);
+        sl.sendBoth(new sysMSG("PARTNER_JOINED", lobbyid, ""));
         sl.rosterSend();
-        sl.gameReset();
-        System.out.println("Lobby " + code + " matched; game ready (" + sl.getGameId() + ")");
+        System.out.println("Lobby " + code + " paired (" + sl.getGameId() + ")");
+        return true;
+    }
+
+    public synchronized boolean onCreateGame(String code, platformChannel requester) {
+        if (code == null || code.isBlank() || requester == null || lobbies == null) {
+            return false;
+        }
+        String lobbyid = code.trim().toUpperCase();
+        ServerLobby sl = lobbies.get(lobbyid);
+        if (sl == null || !sl.isHost(requester)) {
+            return false;
+        }
+        sl.createGame();
+        System.out.println("CREATE_GAME started for lobby " + lobbyid + " gameId=" + sl.getGameId());
         return true;
     }
 

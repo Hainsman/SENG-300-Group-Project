@@ -118,6 +118,7 @@ public class hostLobbyController {
         CentralController.maxPlayers = maxPlayers;
         CentralController.privacy = privacy;
         CentralController.lobbyCode = code;
+        CentralController.lobbyPaired = false;
         CentralController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
         CentralController.hostingLobby = true;
 

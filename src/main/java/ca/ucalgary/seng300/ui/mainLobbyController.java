@@ -52,15 +52,14 @@ public class mainLobbyController {
         refreshPlayersFromState();
         refreshStartButton();
 
-        LobbyBridge.onPartnerJoined = this::refreshPlayersFromState;
+        LobbyBridge.onPartnerJoined = this::refreshStartButton;
         LobbyBridge.onGameState = this::refreshStartButton;
     }
 
     private void refreshPlayersFromState() {
         if (playerList != null) {
             playerList.getItems().clear();
-            ClientCore cc = CentralController.getInstance() != null ? CentralController.getInstance().getCC() : null;
-            boolean guestThere = cc != null && cc.getLastUpdate() != null;
+            boolean guestThere = CentralController.lobbyPaired;
             if (CentralController.hostingLobby) {
                 playerList.getItems().add("You (host)");
                 playerList.getItems().add(guestThere ? "Guest (connected)" : "Waiting for guest…");
@@ -70,8 +69,7 @@ public class mainLobbyController {
             }
         }
         if (playerCountLabel != null) {
-            ClientCore cc = CentralController.getInstance() != null ? CentralController.getInstance().getCC() : null;
-            boolean paired = cc != null && cc.getLastUpdate() != null;
+            boolean paired = CentralController.lobbyPaired;
             int cur = paired ? 2 : 1;
             int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
             playerCountLabel.setText("Players (" + cur + "/" + max + ")");
@@ -82,8 +80,7 @@ public class mainLobbyController {
         if (startGameBtn == null) {
             return;
         }
-        ClientCore cc = CentralController.getInstance() != null ? CentralController.getInstance().getCC() : null;
-        boolean paired = cc != null && cc.getLastUpdate() != null;
+        boolean paired = CentralController.lobbyPaired;
         boolean host = CentralController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
         refreshPlayersFromState();
@@ -91,35 +88,15 @@ public class mainLobbyController {
 
     @FXML
     private void handleStartGame() {
-        String game = CentralController.selectedGame;
-        String fxml;
-        switch (game) {
-            case "Checkers":
-                fxml = "GameGUI.fxml";
-                break;
-            case "Connect 4":
-                fxml = "Connect4.fxml";
-                break;
-            case "Tic Tac Toe":
-            case "TicTacToe":
-                fxml = "TicTacToe.fxml";
-                break;
-            default:
-                System.out.println("Unknown game: " + game);
-                return;
-        }
-
         if (CentralController.hostingLobby) {
             CentralController c = CentralController.getInstance();
             if (c != null) {
                 ClientCore cc = c.getCC();
                 if (cc != null && cc.isConnected()) {
-                    cc.msgSend(new sysMSG("GMJN", fxml, ""));
+                    cc.msgSend(new sysMSG("CREATE_GAME", CentralController.lobbyCode, ""));
                 }
             }
         }
-        LobbyBridge.clearLobbyUiCallbacks();
-        CentralController.moveTo(fxml);
     }
 
     @FXML

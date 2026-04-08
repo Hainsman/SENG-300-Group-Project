@@ -77,6 +77,11 @@ public class platformChannel extends Thread {
                     cliSend(new sysMSG("LOBBY_ERR", "JOIN", "Joining a lobby failed. Ensure the code exists and both players selected the same game."));
                 }
                 break;
+            case "CREATE_GAME":
+                if (!serv.onCreateGame(sm.getFieldA(), this)) {
+                    cliSend(new sysMSG("LOBBY_ERR", "HOST", "Starting the game failed."));
+                }
+                break;
             //case "FORFEIT" -> serv.onForfeit(this);
 
             default:

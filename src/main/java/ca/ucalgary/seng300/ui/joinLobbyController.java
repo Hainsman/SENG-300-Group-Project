@@ -96,6 +96,7 @@ public class joinLobbyController {
 
         CentralController.hostingLobby = false;
         CentralController.lobbyCode = code;
+        CentralController.lobbyPaired = false;
         CentralController.maxPlayers = 2;
         CentralController.privacy = "Public";
 

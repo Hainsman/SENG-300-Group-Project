@@ -43,6 +43,17 @@ public class ServerLobby {
         return gameId;
     }
 
+    public boolean isHost(platformChannel channel) {
+        return host == channel;
+    }
+
+    public String getGameFxml() {
+        if (gameId == Game.CONNECT_FOUR) {
+            return "Connect4.fxml";
+        }
+        return "TicTacToe.fxml";
+    }
+
     public void rosterSend(){
         String[] h = parseNameEloPayload(hostextra);
         String[] g = parseNameEloPayload(guestextra);
@@ -51,15 +62,17 @@ public class ServerLobby {
         sendBoth(rosterMsg);
     }
 
-    public void gameReset(){
+    public void createGame(){
         if(gameId == Game.CONNECT_FOUR){
             c4game = new C4Game();
             c4game.startGame(host, guest);
+            sendBoth(new sysMSG("GMJN", getGameFxml(), ""));
             sendBoth(c4game.getGameState());
         }
         else if(gameId == Game.TICK_TACK_TOE){
             tttgame = new TTTGame();
             tttgame.startGame(host, guest);
+            sendBoth(new sysMSG("GMJN", getGameFxml(), ""));
             sendBoth(tttgame.getGameState());
         }
     }
