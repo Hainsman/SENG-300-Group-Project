@@ -13,7 +13,6 @@ import ca.ucalgary.seng300.platform.domain.GameHistory;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
-import ca.ucalgary.seng300.platform.server.GameSessionRecord;
 import ca.ucalgary.seng300.platform.server.ServerLobby;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.services.MatchMakingService;
@@ -57,8 +56,6 @@ public class PlatformCore {
     // list of connections for users currently logged in
     public List<platformChannel> users;
     private final MatchMakingService matchMakingService = new MatchMakingService();
-
-    private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
 
     public static String[] parseNameEloPayload(String raw) {
         if (raw == null || raw.isBlank()) {
