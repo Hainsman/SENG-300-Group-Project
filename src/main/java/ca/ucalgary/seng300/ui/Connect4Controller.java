@@ -6,7 +6,6 @@ import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -67,20 +66,13 @@ public class Connect4Controller extends GameGUI {
                 gridPane.add(circle, col, row);
             }
         }
+        resetButton.setVisible(false);
+        GameGUI.clearHistory();
     }
 
     @Override
     public void update() {
-        if (statusLabel == null)
-            return;
-        switch (status) {
-            case IN_PROGRESS -> statusLabel.setText("Player " + currentPlayer + "'s Turn");
-            case WIN -> statusLabel.setText("Player " + currentPlayer + " Wins!");
-            case DRAW -> statusLabel.setText("It's a Draw!");
-            default -> {
-            }
-        }
-
+        // State-driven rendering updates the label directly from C4GameState.
     }
 
     @Override
@@ -88,8 +80,6 @@ public class Connect4Controller extends GameGUI {
         disableBoard();
         resetButton.setVisible(true);
     }
-
-    private int currentPlayer = 1;
 
     private void dropPiece(int col) {
         if (clientCore != null && clientCore.isConnected()) {
@@ -105,79 +95,7 @@ public class Connect4Controller extends GameGUI {
             }
             return;
         }
-        for (int row = 5; row >= 0; row--) {
-            if (circles[row][col].getFill().equals(Color.WHITE)) {
-                Color playerColor;
-
-                // Used for sending match history
-                String rowString = String.valueOf(row + 1);
-                String colString = String.valueOf(col + 1);
-
-                if (currentPlayer == 1) {
-                    playerColor = P1;
-                    GameGUI.addHistory("Connect4", "1",
-                            "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
-                    GameGUI.onMoveChosen("P1", "(" + rowString + "," + colString + ")");
-                } else {
-                    playerColor = P2;
-                    GameGUI.addHistory("Connect4", "2",
-                            "(" + (row + 1) + ", " + (col + 1) + ")", playerColor);
-                    GameGUI.onMoveChosen("P2", "(" + rowString + "," + colString + ")");
-                }
-                circles[row][col].setFill(playerColor);
-
-                if (checkWin(row, col, playerColor)) {
-                    status = GameStatus.WIN;
-                    onGameCompletion();
-                } else if (isBoardFull()) {
-                    status = GameStatus.DRAW;
-                    onGameCompletion();
-                } else {
-                    status = GameStatus.IN_PROGRESS;
-                    if (currentPlayer == 1) {
-                        currentPlayer = 2;
-                    } else {
-                        currentPlayer = 1;
-                    }
-                }
-                update();
-                return;
-            }
-        }
-    }
-
-    private boolean checkWin(int row, int col, Color color) {
-        return checkDirection(row, col, color, 1, 0) // horizontal
-                || checkDirection(row, col, color, 0, 1) // vertical
-                || checkDirection(row, col, color, 1, 1) // diagonal
-                || checkDirection(row, col, color, 1, -1); // diagonal
-    }
-
-    private boolean checkDirection(int row, int col, Color color, int dr, int dc) {
-        int count = 1;
-        count += countFrom(row, col, color, dr, dc);
-        count += countFrom(row, col, color, -dr, -dc);
-        return count >= 4;
-    }
-
-    private int countFrom(int row, int col, Color color, int dr, int dc) {
-        int count = 0;
-        int r = row + dr;
-        int c = col + dc;
-        while (r >= 0 && r < rows && c >= 0 && c < cols
-                && circles[r][c].getFill().equals(color)) {
-            count++;
-            r += dr;
-            c += dc;
-        }
-        return count;
-    }
-
-    private boolean isBoardFull() {
-        for (int col = 0; col < cols; col++)
-            if (circles[0][col].getFill().equals(Color.WHITE))
-                return false;
-        return true;
+        statusLabel.setText("No active game session.");
     }
 
     private void disableBoard() {
@@ -196,11 +114,8 @@ public class Connect4Controller extends GameGUI {
             clientCore.msgSend(new sysMSG("reset", ""));
             return;
         }
-        resetButton.setVisible(false);
-        status = GameStatus.IN_PROGRESS;
-        currentPlayer = 1;
         render();
-        update();
+        statusLabel.setText("No active game session.");
     }
 
     @FXML
@@ -240,15 +155,21 @@ public class Connect4Controller extends GameGUI {
 
         if (State.PLAYER_1_WIN.equals(update.getState())) {
             statusLabel.setText("Player 1 Wins!");
-            resetButton.setVisible(true);
+            onGameCompletion();
         } else if (State.PLAYER_2_WIN.equals(update.getState())) {
             statusLabel.setText("Player 2 Wins!");
-            resetButton.setVisible(true);
+            onGameCompletion();
         } else if (State.TIE.equals(update.getState())) {
             statusLabel.setText("Draw!");
-            resetButton.setVisible(true);
+            onGameCompletion();
         } else {
-            statusLabel.setText(update.getPlayerTurn() == Player.PLAYER_1 ? "Player 1's Turn" : "Player 2's Turn");
+            Player turn = update.getPlayerTurn();
+            if (clientCore != null && clientCore.isConnected() && myRole != null && !myRole.equals(turn)) {
+                statusLabel.setText(myRole == Player.PLAYER_1 ? "You are Player 1 - waiting for Player 2"
+                        : "You are Player 2 - waiting for Player 1");
+            } else {
+                statusLabel.setText(turn == Player.PLAYER_1 ? "Player 1's Turn" : "Player 2's Turn");
+            }
             resetButton.setVisible(false);
         }
     }
