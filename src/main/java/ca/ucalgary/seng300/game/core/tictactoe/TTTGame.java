@@ -14,25 +14,16 @@ public class TTTGame implements Game {
 
     private GameState gameState = new TTTGameState();
     private final TTTRuleValidator validator = new TTTRuleValidator();
-    public platformChannel player1 = null;
-    public platformChannel player2 = null;
-
-    public boolean userJoin(platformChannel p){
-        if(player1 == null){
-            player1 = p;
-            return true;
-        }
-        else if(player2 == null){
-            player2 = p;
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 
     public void tempReset(){
         gameState = new TTTGameState();
+    }
+
+    /** Declares {@code forfeitingPlayer} lost; opponent wins. No-op if game already over. */
+    public void forfeit(Player forfeitingPlayer) {
+        if (gameState instanceof TTTGameState gs) {
+            gs.applyForfeit(forfeitingPlayer);
+        }
     }
     public boolean valid;
 
@@ -48,6 +39,10 @@ public class TTTGame implements Game {
         if (valid) {
             gameState.applyAction(playerAction);
         }
+    }
+
+    public boolean wasLastMoveValid() {
+        return valid;
     }
 
     @Override
@@ -66,7 +61,7 @@ public class TTTGame implements Game {
     }
 
     /** Optional: set mapping for turn enforcement (playerId -> PLAYER_1/PLAYER_2). When null, validator does not check turn. */
-    public void setPlayerIdToPlayer(Map<String, Player> map) {
-        validator.setPlayerIdToPlayer(map);
-    }
+    //public void setPlayerIdToPlayer(Map<String, Player> map) {
+    //    validator.setPlayerIdToPlayer(map);
+    //}
 }

@@ -26,7 +26,7 @@ public class C4CLI {
 
             // Create the action based on user input
             C4PlayerAction action =new C4PlayerAction(
-                state.getPlayerTurn().toString(),
+                state.getPlayerTurn(),
                 "MOVE",
                 -1,
                 col

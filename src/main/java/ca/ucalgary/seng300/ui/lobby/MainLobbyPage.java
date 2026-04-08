@@ -1,11 +1,15 @@
 package ca.ucalgary.seng300.ui.lobby;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -70,7 +74,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         LobbyBridge.onGameState = this::refreshStartButton;
     }
 
-    private void refreshPlayersFromState() {
+    public void refreshPlayersFromState() {
         if (playerList != null) {
             playerList.getItems().clear();
             ClientCore cc = rootController != null ? rootController.getCC() : null;
@@ -92,7 +96,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
     }
 
-    private void refreshStartButton() {
+    public void refreshStartButton() {
         if (startGameBtn == null) {
             return;
         }
@@ -117,9 +121,15 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         if (rootController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {
-                cc.msgSend(new sysMSG("GMJN", nav.getFxml(), ""));
+                System.out.println("start lobby");
+                cc.msgSend(new sysMSG("START_LOBBY",""));
             }
         }
+    }
+
+    public void gameStart(){
+        GameType game = CentralController.selectedGame;
+        Navigation nav = GameType.getNavigation(game);
         LobbyBridge.clearLobbyUiCallbacks();
         rootController.moveTo(nav);
     }

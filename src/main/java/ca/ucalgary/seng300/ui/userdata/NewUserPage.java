@@ -73,16 +73,19 @@ public class NewUserPage extends HBox implements Navigable {
             setError("Passwords do not match.");
             return;
         }
+        System.out.println("newuser sent");
 
-        createPending = true;
-        if (clickedButton != null) {
-            clickedButton.setDisable(true);
-        }
         errorLabel.setStyle("-fx-text-fill: #d8dee9; -fx-font-size: 13;");
         errorLabel.setText("Creating account...");
-        rootController.clientCore.setNewUserResponseHandler(this::handleCreateAccountResponse);
         rootController.clientCore.msgSend(new sysMSG("NEWU", username, password, email));
+    }
 
+    public void newReply(sysMSG s){
+        if(s.getFieldA().equals("PASS")){
+            rootController.moveTo(Navigation.LOGIN);
+        }else{
+            errorLabel.setText(s.getFieldB());
+        }
     }
 
     @FXML

@@ -83,11 +83,11 @@ public class GameGUIPage extends VBox implements Navigable {
      * It creates a colored dot + label entry and adds it to the historyBox.
      *
      * @param gameType "TicTacToe" or "Connect4"
-     * 
+     *
      * @param player "X", "O", "Player 1", etc.
-     * 
+     *
      * @param details "(1, 2)" or "Col 3" etc.
-     * 
+     *
      * @param color dot color matching the player's piece
      */
     public void addHistory(String gameType, String player, String details, Color color) {
@@ -130,9 +130,9 @@ public class GameGUIPage extends VBox implements Navigable {
     /**
      * onMoveChosen appends match history to an array list.
      * Returns a string containing the match history and game type.
-     * 
+     *
      * @param player send TP1/TP2 for tictactoe and CP1/CP2 for connect4.
-     * 
+     *
      * @param move "(1,2)".
      */
     public void onMoveChosen(String player, String move) {
@@ -215,7 +215,7 @@ public class GameGUIPage extends VBox implements Navigable {
     private void handleChatSend(ActionEvent event) {
         String msg = chatInput.getText().trim();
         if (msg.isBlank()) return;
-        String sender = rootController.tttPage != null || rootController.c4Page != null
+        String sender = rootController.tttPage != null || rootController.connect4 != null
                 ? currentPlayerID
                 : "You";
 

@@ -7,7 +7,6 @@ import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.RuleValidator;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 
@@ -34,9 +33,6 @@ public class C4Game implements Game {
         }
     }
 
-    public void tempReset(){
-        gameState = new TTTGameState();
-    }
     public boolean valid;
 
     @Override
@@ -52,9 +48,14 @@ public class C4Game implements Game {
      */
     @Override
     public void handleAction(PlayerAction playerAction) {
-        if (validator.validateMove(gameState, playerAction)) {
+        valid = validator.validateMove(gameState, playerAction);
+        if (valid) {
             gameState.applyAction(playerAction);
         }
+    }
+
+    public boolean wasLastMoveValid() {
+        return valid;
     }
 
     @Override

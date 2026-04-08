@@ -11,11 +11,6 @@ public interface Game {
     GameState gameState = null;
     RuleValidator validator = null;
 
-    platformChannel player1 = null;
-    platformChannel player2 = null;
-
-    boolean userJoin(platformChannel play);
-
     //probably returns the whole GameState class like getGameState,
     //but it has to create it first rather than just using what is in GameState
     //probably also does things like set the correct RuleValidator

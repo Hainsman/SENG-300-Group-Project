@@ -1,9 +1,14 @@
 package ca.ucalgary.seng300.ui.userdata;
 
+import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.io.IOException;
+import java.util.List;
 
 public class LoginPage extends HBox implements Navigable {
 
@@ -53,31 +59,28 @@ public class LoginPage extends HBox implements Navigable {
             errorLabel.setText("Please enter your email/username and password.");
             return;
         }
+        System.out.println("loginsent");
+        rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
 
         loginPending = true;
         if (clickedButton != null) {
             clickedButton.setDisable(true);
         }
         errorLabel.setText("Signing in...");
-        rootController.clientCore.setAuthResponseHandler(this::handleAuthResponse);
         rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
     }
 
-    private void handleAuthResponse(sysMSG response) {
-        if (!loginPending || response == null || !"AUTH".equals(response.getType())) {
-            return;
-        }
-
-        loginPending = false;
-        loginButton.setDisable(false);
-
-        if ("PASS".equals(response.getFieldA())) {
+    public void loginReply(sysMSG s){
+        if(s.getFieldA().equals("PASS")){
+            loginPending = false;
+            loginButton.setDisable(false);
             errorLabel.setText("");
             rootController.moveTo(Navigation.GAME_DASHBOARD);
             rootController.previousScreen = null;
+            errorLabel.setText(s.getFieldB());
         }
-        else {
-            String message = response.getFieldB();
+        else{
+            String message = s.getFieldB();
             errorLabel.setText(message != null && !message.isBlank()
                     ? message
                     : "Login failed.");
@@ -96,6 +99,7 @@ public class LoginPage extends HBox implements Navigable {
         forgotPasswordAlert.setTitle("Forgot Password");
         forgotPasswordAlert.setHeaderText("Need to reset your password?");
         forgotPasswordAlert.setContentText("Please contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
+        ThemeAlerts.apply(forgotPasswordAlert);
         forgotPasswordAlert.showAndWait();
     }
 

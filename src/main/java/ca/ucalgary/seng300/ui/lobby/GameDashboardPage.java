@@ -47,12 +47,14 @@ public class GameDashboardPage extends AnchorPane implements Navigable {
 
     @FXML
     void C4click(MouseEvent event) {
+        rootController.clientCore.gameType = GameType.CONNECT4;
         rootController.selectedGame = GameType.CONNECT4;
         rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @FXML
     void TTTclicked(MouseEvent event) {
+        rootController.clientCore.gameType = GameType.TIC_TAC_TOE;
         rootController.selectedGame = GameType.TIC_TAC_TOE;
         rootController.moveTo(Navigation.CHOOSE_MODE);
     }

@@ -27,11 +27,11 @@ public class TicTacToeSession implements Session {
     /** Starts a new game (fresh board, PLAYER_1 to move). */
     @Override
     public void startNewGame() {
-        game.startGame("P1", "P2");
+        game.startGame("P1", "P2");/*
         playerIdToPlayer = new HashMap<>();
         playerIdToPlayer.put("P1", Player.PLAYER_1);
         playerIdToPlayer.put("P2", Player.PLAYER_2);
-        game.setPlayerIdToPlayer(playerIdToPlayer);
+        game.setPlayerIdToPlayer(playerIdToPlayer);*/
     }
 
     /**
@@ -44,8 +44,8 @@ public class TicTacToeSession implements Session {
             return false;
         }
         TTTGameState gs = (TTTGameState) game.getGameState();
-        String playerId = gs.getPlayerTurn() == Player.PLAYER_1 ? "P1" : "P2";
-        TTTPlayerAction action = new TTTPlayerAction(playerId, "MOVE", row, col);
+        //String playerId = gs.getPlayerTurn() == Player.PLAYER_1 ? "P1" : "P2";
+        TTTPlayerAction action = new TTTPlayerAction(gs.getPlayerTurn(), "MOVE", row, col);
         game.handleAction(action);
         // Move was applied only if validator accepted it (cell is now filled)
         return game.getGameState().getBoard()[row][col] != Player.EMPTY;
@@ -55,6 +55,10 @@ public class TicTacToeSession implements Session {
     @Override
     public Player[][] getBoard() {
         return game.getGameState().getBoard();
+    }
+
+    public TTTGameState getGameState() {
+        return (TTTGameState) game.getGameState();
     }
 
     @Override
@@ -72,9 +76,9 @@ public class TicTacToeSession implements Session {
         return game.isGameOver();
     }
 
-    /** Optional: set custom playerId -> Player mapping (e.g. for multiplayer). */
+    /** Optional: set custom playerId -> Player mapping (e.g. for multiplayer).
     public void setPlayerIdToPlayer(Map<String, Player> map) {
         this.playerIdToPlayer = map != null ? new HashMap<>(map) : new HashMap<>();
         game.setPlayerIdToPlayer(playerIdToPlayer.isEmpty() ? null : playerIdToPlayer);
-    }
+    }*/
 }

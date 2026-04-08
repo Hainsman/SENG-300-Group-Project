@@ -19,11 +19,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
+import javafx.stage.Window;
 
 import java.util.ArrayList;
 
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
+
+    private static CentralController instance;
 
     private WindowManager windowManager;
 
@@ -40,14 +43,20 @@ public class CentralController {
 
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
+    public ClientCore clientCore;
     public TTTPage tttPage;
-    public C4Page c4Page;
+    public C4Page connect4;
     public LoginPage loginPage;
+    public NewUserPage newUserPage;
+    public HostLobbyPage hostLobbyPage;
+    public JoinLobbyPage joinLobbyPage;
+    public MainLobbyPage mainLobbyPage;
 
-    public GameType selectedGame;
-    public int maxPlayers;
-    public String privacy;
-    public String lobbyCode;
+
+    public static GameType selectedGame;
+    public static int maxPlayers;
+    public static String privacy;
+    public static String lobbyCode;
     /** Display name from host lobby screen (optional). */
     public String lobbyName;
     /** True if this client created the current lobby (may start the game). */
@@ -119,12 +128,13 @@ public class CentralController {
         return clientCore;
     }
 
-    public ClientCore clientCore;
-    public int test1;
-
-    public void uptest(int i){
-        test1 = i;
+    public static Window getAppWindow() {
+        if (instance == null || instance.root == null || instance.root.getScene() == null) {
+            return null;
+        }
+        return instance.root.getScene().getWindow();
     }
+
 
     @FXML
     public void initialize() {
@@ -157,20 +167,25 @@ public class CentralController {
 
     private void initializeNodes() {
         GameGUIPage gameGUIPage = new GameGUIPage(this);
-        c4Page = new C4Page(this, gameGUIPage);
+        connect4 = new C4Page(this, gameGUIPage);
         tttPage = new TTTPage(this, gameGUIPage);
         loginPage = new LoginPage(this);
+        newUserPage = new NewUserPage(this);
+        hostLobbyPage = new HostLobbyPage(this);
+        joinLobbyPage = new JoinLobbyPage(this);
+        mainLobbyPage = new MainLobbyPage(this);
+        //lobbyBridge = ;
         nodes.add(gameGUIPage);
-        nodes.add(c4Page);
+        nodes.add(connect4);
         nodes.add(tttPage);
         nodes.add(new ChooseModePage(this));
         nodes.add(new GameDashboardPage(this));
-        nodes.add(new HostLobbyPage(this));
+        nodes.add(hostLobbyPage);
         nodes.add(new InfoPage(this));
-        nodes.add(new JoinLobbyPage(this));
+        nodes.add(joinLobbyPage);
         nodes.add(loginPage);
-        nodes.add(new MainLobbyPage(this));
-        nodes.add(new NewUserPage(this));
+        nodes.add(mainLobbyPage);
+        nodes.add(newUserPage);
         nodes.add(new ProfileDashboardPage(this));
         nodes.add(new SettingsPage(this));
     }

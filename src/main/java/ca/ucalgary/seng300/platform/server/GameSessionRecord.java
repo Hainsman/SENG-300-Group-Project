@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.platform.server;
 
+import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 
 import java.util.HashMap;
@@ -8,24 +10,29 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Holds one TTT game and the playerId -> Player mapping for a single game session.
+ * Holds one game and the playerId -> Player mapping for a single game session.
  */
 public class GameSessionRecord {
     private final String sessionId;
-    private final TTTGame game;
+    private final Game game;
     private final Map<String, Player> playerIdToPlayer = new HashMap<>();
     private int playerCount = 0;
 
-    public GameSessionRecord() {
+    public GameSessionRecord(String type, platformChannel host) {
         this.sessionId = UUID.randomUUID().toString();
-        this.game = new TTTGame();
+        if(type.equals("TTT")){
+            this.game = new TTTGame();
+        }
+        else{
+            this.game = new C4Game();
+        }
     }
 
     public String getSessionId() {
         return sessionId;
     }
 
-    public TTTGame getGame() {
+    public Game getGame() {
         return game;
     }
 
@@ -41,7 +48,7 @@ public class GameSessionRecord {
         } else {
             playerIdToPlayer.put(playerId, Player.PLAYER_2);
             game.startGame(null, null);
-            game.setPlayerIdToPlayer(playerIdToPlayer);
+            //game.setPlayerIdToPlayer(playerIdToPlayer);
         }
         playerCount++;
         return playerCount == 2;
