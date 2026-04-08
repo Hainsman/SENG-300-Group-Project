@@ -2,10 +2,12 @@ package ca.ucalgary.seng300.ui;
 
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
+import ca.ucalgary.seng300.game.core.connect4.Connect4RandomMoveGenerator;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.session.Connect4Session;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -14,13 +16,20 @@ import javafx.scene.shape.Circle;
 import javafx.event.ActionEvent;
 
 public class Connect4Controller extends GameGUI {
+    private static final Player AI_PLAYER = Player.PLAYER_2;
     private CentralController boss;
     private ClientCore clientCore = null;
+    private Connect4Session session = null;
 
     public void connectToRootForLobby(CentralController root) {
         boss = root;
         boss.setConnect4(this);
-        clientCore = boss.getCC();
+        clientCore = CentralController.playWithAi ? null : boss.getCC();
+        if (CentralController.playWithAi) {
+            session = new Connect4Session();
+            refreshFromGameStateUpdate(session.getGameState());
+            return;
+        }
         if (clientCore != null && clientCore.isConnected()) {
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
             clientCore.setChatMessageHandler(this::handleChatMessage);
@@ -109,6 +118,16 @@ public class Connect4Controller extends GameGUI {
             }
             return;
         }
+        if (session != null) {
+            if (!session.submitMove(col)) {
+                statusLabel.setText("Invalid move");
+                return;
+            }
+            GameGUI.addHistory("Connect4", "P1", "Col " + (col + 1), P1);
+            refreshFromGameStateUpdate(session.getGameState());
+            maybeRunAiTurn();
+            return;
+        }
         statusLabel.setText("No active game session.");
     }
 
@@ -126,6 +145,12 @@ public class Connect4Controller extends GameGUI {
     private void resetClick(ActionEvent event) {
         if (clientCore != null && clientCore.isConnected()) {
             clientCore.msgSend(new sysMSG("reset", ""));
+            return;
+        }
+        if (session != null) {
+            session.startNewGame();
+            GameGUI.clearHistory();
+            refreshFromGameStateUpdate(session.getGameState());
             return;
         }
         render();
@@ -225,5 +250,17 @@ public class Connect4Controller extends GameGUI {
                 : "Player";
         String content = message.getContent() != null ? message.getContent() : "";
         chatList.getItems().add(sender + ": " + content);
+    }
+
+    private void maybeRunAiTurn() {
+        if (!CentralController.playWithAi || session == null || session.isGameOver() || session.getTurn() != AI_PLAYER) {
+            return;
+        }
+        Integer col = Connect4RandomMoveGenerator.chooseColumn(session.getGameState());
+        if (col == null || !session.submitMove(col)) {
+            return;
+        }
+        GameGUI.addHistory("Connect4", "P2", "Col " + (col + 1), P2);
+        refreshFromGameStateUpdate(session.getGameState());
     }
 }

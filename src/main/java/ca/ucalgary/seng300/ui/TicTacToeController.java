@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.ui;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
+import ca.ucalgary.seng300.game.core.tictactoe.TicTacToeRandomMoveGenerator;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -15,12 +16,13 @@ import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
 
 public class TicTacToeController extends GameGUI {
+    private static final Player AI_PLAYER = Player.PLAYER_2;
 
     private CentralController boss;
     public void setBoss(CentralController c){
         boss = c;
         boss.setTic(this);
-        clientCore = boss.getCC();
+        clientCore = CentralController.playWithAi ? null : boss.getCC();
     }
 
     /**
@@ -29,6 +31,11 @@ public class TicTacToeController extends GameGUI {
      */
     public void connectToRootForLobby(CentralController root) {
         setBoss(root);
+        if (CentralController.playWithAi) {
+            session = new TicTacToeSession();
+            refreshFromGameStateUpdate(session.getGameState());
+            return;
+        }
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
@@ -134,6 +141,7 @@ public class TicTacToeController extends GameGUI {
             Color moverColor = session.getTurn() == Player.PLAYER_1 ? oColor : xColor;
             GameGUI.addHistory("TicTacToe", mover, "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
             refreshFromGameStateUpdate(session.getGameState());
+            maybeRunAiTurn();
             return;
         }
 
@@ -168,6 +176,18 @@ public class TicTacToeController extends GameGUI {
     public void setSession(TicTacToeSession s) {
         this.session = s;
         if (s != null) refreshFromGameStateUpdate(s.getGameState());
+    }
+
+    private void maybeRunAiTurn() {
+        if (!CentralController.playWithAi || session == null || session.isGameOver() || session.getTurn() != AI_PLAYER) {
+            return;
+        }
+        int[] move = TicTacToeRandomMoveGenerator.chooseMove(session.getGameState());
+        if (move == null || !session.submitMove(move[0], move[1])) {
+            return;
+        }
+        GameGUI.addHistory("TicTacToe", "O", "(" + (move[0] + 1) + ", " + (move[1] + 1) + ")", oColor);
+        refreshFromGameStateUpdate(session.getGameState());
     }
 
     /** Use when in online mode: refresh grid and label from server update. */

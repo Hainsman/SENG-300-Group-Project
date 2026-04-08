@@ -23,7 +23,7 @@
 
             <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
                 <children>
-                    <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+                    <Label text="&#9889; ONLINE MULTIPLAYER" styleClass="mode-badge" />
                     <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                         <children>
                             <StackPane onMouseClicked="#handleOpenSettings" styleClass="avatar-badge">
@@ -41,26 +41,35 @@
             <Label fx:id="gameTitleLabel" styleClass="mode-subtitle" text="Pick how to play this game online" />
 
             <HBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
-                <VBox onMouseClicked="#handleHostGame" prefHeight="220.0" prefWidth="360.0" spacing="10.0" styleClass="mode-card">
+                <VBox onMouseClicked="#handleHostGame" prefHeight="220.0" prefWidth="290.0" spacing="10.0" styleClass="mode-card">
                     <children>
-                        <Label text="🖥" styleClass="mode-icon" />
+                        <Label text="&#128421;" styleClass="mode-icon" />
                         <Label text="HOST" styleClass="mode-card-title" />
                         <Label text="Create Lobby" styleClass="mode-card-subtitle" />
-                        <Label text="➔ Play Now" styleClass="mode-play" />
+                        <Label text="&#10132; Play Now" styleClass="mode-play" />
                     </children>
                 </VBox>
 
-                <VBox onMouseClicked="#handleJoinGame" prefHeight="220.0" prefWidth="360.0" spacing="10.0" styleClass="mode-card">
+                <VBox onMouseClicked="#handleJoinGame" prefHeight="220.0" prefWidth="290.0" spacing="10.0" styleClass="mode-card">
                     <children>
-                        <Label text="🎮" styleClass="mode-icon" />
+                        <Label text="&#127918;" styleClass="mode-icon" />
                         <Label text="JOIN" styleClass="mode-card-title" />
                         <Label text="Join Lobby" styleClass="mode-card-subtitle" />
-                        <Label text="➔ Play Now" styleClass="mode-play" />
+                        <Label text="&#10132; Play Now" styleClass="mode-play" />
+                    </children>
+                </VBox>
+
+                <VBox fx:id="playWithAiCard" onMouseClicked="#handlePlayWithAi" prefHeight="220.0" prefWidth="290.0" spacing="10.0" styleClass="mode-card">
+                    <children>
+                        <Label text="&#129302;" styleClass="mode-icon" />
+                        <Label text="PLAY WITH AI" styleClass="mode-card-title" />
+                        <Label text="Random opponent &#8212; Tic Tac Toe" styleClass="mode-card-subtitle" />
+                        <Label text="&#10132; Play Now" styleClass="mode-play" />
                     </children>
                 </VBox>
             </HBox>
 
-            <Label onMouseClicked="#handleBack" style="-fx-text-fill:#a1a1aa; -fx-font-size:14px; -fx-cursor:hand;" text="← Back to Menu" />
+            <Label onMouseClicked="#handleBack" style="-fx-text-fill:#a1a1aa; -fx-font-size:14px; -fx-cursor:hand;" text="&#8592; Back to Menu" />
 
         </VBox>
     </children>

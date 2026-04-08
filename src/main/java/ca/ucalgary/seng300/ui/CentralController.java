@@ -31,6 +31,7 @@ public class CentralController {
     public static String privacy;
     public static String lobbyCode;
     public static boolean lobbyPaired;
+    public static boolean playWithAi;
     /** Display name from host lobby screen (optional). */
     public static String lobbyName;
     /** True if this client created the current lobby (may start the game). */

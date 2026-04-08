@@ -18,12 +18,25 @@ public class ChooseModeController {
 
     @FXML
     void handleHostGame(MouseEvent event) {
+        CentralController.playWithAi = false;
         CentralController.moveTo("hostLobby.fxml");
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
+        CentralController.playWithAi = false;
         CentralController.moveTo("joinLobby.fxml");
+    }
+
+    @FXML
+    void handlePlayWithAi(MouseEvent event) {
+        CentralController.playWithAi = true;
+        String game = CentralController.selectedGame != null ? CentralController.selectedGame : "";
+        if (game.toLowerCase().contains("connect")) {
+            CentralController.moveTo("Connect4.fxml");
+            return;
+        }
+        CentralController.moveTo("TicTacToe.fxml");
     }
 
     @FXML
