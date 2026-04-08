@@ -90,8 +90,8 @@ public class C4Page extends StackPane implements Navigable {
         if (!isStrictOnlineC4()) {
             return false;
         }
-        if (clientCore.getLastUpdate() instanceof C4GameState gs) {
-            return State.IN_PROGRESS.equals(gs.getState());
+        if (clientCore.lastC4 != null) {
+            return State.IN_PROGRESS.equals(clientCore.lastC4.getState());
         }
         return true;
     }
@@ -194,7 +194,7 @@ public class C4Page extends StackPane implements Navigable {
     private void dropPiece(int col) {
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
             Player myRole = clientCore.getMyNetworkRole();
-            if (myRole != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
+            if (myRole != null && clientCore.lastC4 instanceof C4GameState gs) {
                 if (State.IN_PROGRESS.equals(gs.getState()) && !myRole.equals(gs.getPlayerTurn())) {
                     statusLabel.setText(myRole == Player.PLAYER_1 ? "Waiting for Player 2..." : "Waiting for Player 1...");
                     return;
@@ -497,7 +497,7 @@ public class C4Page extends StackPane implements Navigable {
         } else {
             randomOpponentEnabled = false;
             session = null;
-            if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
+            if (clientCore != null && clientCore.lastC4 instanceof C4GameState gs) {
                 refreshFromGameStateUpdate(gs);
             }
         }

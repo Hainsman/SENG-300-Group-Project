@@ -91,11 +91,11 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             getStyleClass().add("lobby-ttt");
         }
     }
-
+/*
     private boolean isPaired() {
         ClientCore cc = rootController != null ? rootController.getCC() : null;
         return cc != null && cc.getLastUpdate() != null;
-    }
+    }*/
 
     private boolean rosterPopulated() {
         String h = CentralController.rosterHostName;

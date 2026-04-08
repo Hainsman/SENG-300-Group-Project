@@ -41,8 +41,10 @@ public class ClientCore extends Thread{
     //private final ExecutorService executor = Executors.newSingleThreadExecutor();
     //private volatile String sessionId;
     private volatile String myPlayerId;
+    public Player myPlayer;
     public volatile  boolean upFlag = false;
-    public volatile GameState lastUpdate;
+    public volatile TTTGameState lastTT;
+    public volatile C4GameState lastC4;
     //private volatile Runnable onGameStateUpdate;
     
     public boolean isConnected() {
@@ -64,16 +66,13 @@ public class ClientCore extends Thread{
         if (!isConnected()) {
             return false;
         }
-        String pid = (myPlayerId != null && !myPlayerId.isBlank())
-                ? myPlayerId
-                : ((CID != null && !CID.isBlank()) ? CID : "player");
         Object p = null;
         switch(gameType) {
             case GameType.TIC_TAC_TOE:
-                p = new TTTPlayerAction(pid, "MOVE", row, col);
+                p = new TTTPlayerAction(myPlayer, "MOVE", row, col);
                 break;
             case GameType.CONNECT4:
-                p = new C4PlayerAction(pid, "MOVE" , row, col);
+                p = new C4PlayerAction(myPlayer, "MOVE" , row, col);
                 break;
             default:
                 return false;
@@ -93,7 +92,7 @@ public class ClientCore extends Thread{
 
         try{
             servSend.writeObject(o);
-            servSend.flush();
+            servSend.reset();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,27 +102,9 @@ public class ClientCore extends Thread{
         ioMain = c;
     }
 
-    public GameState getLastUpdate() {
-        return lastUpdate;
-    }
-
-
-    private void onGameStateReceived(GameState g) {
-        System.out.println("a gamestate arrived");
-        lastUpdate = g;
-        if (g instanceof TTTGameState tttState) {
-            //System.out.println(debugBoard(tttState));
-        }
-        Platform.runLater(() -> {
-            ioMain.tttPage.refreshFromGameStateUpdate((TTTGameState) g);
-            /*if (g instanceof TTTGameState tttState && ioMain != null && ioMain.isGameOn()) {
-
-                System.out.println("Ui update triggered");
-            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.isGameOn()) {
-                ioMain.connect4.refreshFromGameStateUpdate(c4State);
-            }*/
-        });
-    }
+    //public GameState getLastUpdate() {
+    //    return lastUpdate;
+    //}
 
     @Override
     public void run() {
@@ -210,6 +191,7 @@ public class ClientCore extends Thread{
                             case "START_LOBBY":
                                 System.out.println("start got");
                                 myPlayerId = sm.getFieldA();
+                                myPlayer = getMyNetworkRole();
                                 Platform.runLater(() -> {
                                     ioMain.mainLobbyPage.gameStart();
                                 });
@@ -227,8 +209,20 @@ public class ClientCore extends Thread{
                                 break;
                         }
                         break;
-                    case GameState g:
-                        onGameStateReceived(g);
+                    case TTTGameState t:
+                        //lastTT = t;
+                        System.out.println("TTT update sent"+t.getBoard()[0][0].toString());
+                        System.out.println(t.getBoard());
+                        Platform.runLater(() -> {
+                            ioMain.tttPage.refreshFromGameStateUpdate(t);
+                        });
+                        break;
+                    case C4GameState c:
+                        lastC4 = c;
+                        System.out.println("C4 update sent"+c.getBoard()[0][0].toString());
+                        Platform.runLater(() -> {
+                            ioMain.connect4.refreshFromGameStateUpdate(c);
+                        });
                         break;
                     case chatMessage c:
                         // CHAT SYSTEM UI COMPONENT

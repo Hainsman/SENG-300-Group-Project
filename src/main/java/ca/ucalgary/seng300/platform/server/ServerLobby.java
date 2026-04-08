@@ -40,6 +40,7 @@ public class ServerLobby {
         public void joinGuest(platformChannel h, String ex){
             guest  = h;
             guestextra = ex;
+            guest.setLobby(lobbyCode,gameType);
         }
 
         public void rosterSend(){
@@ -77,6 +78,7 @@ public class ServerLobby {
         else if(gameType.equals(GameType.TIC_TAC_TOE)){
             tttgame.handleAction(m);
             sendBoth(tttgame.getGameState());
+            System.out.println(tttgame.getGameState().getBoard());
         }
     }
 

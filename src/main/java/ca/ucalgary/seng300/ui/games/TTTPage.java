@@ -154,7 +154,7 @@ public class TTTPage extends StackPane implements Navigable {
             clientCore = rootController.getCC();
         }
         render();
-        if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
+        if (clientCore != null && clientCore.lastTT instanceof TTTGameState gs) {
             refreshFromGameStateUpdate(gs);
         }
         refreshBackButtonVisibility();
@@ -180,7 +180,7 @@ public class TTTPage extends StackPane implements Navigable {
         if (!isStrictOnlineTtt()) {
             return false;
         }
-        if (clientCore.getLastUpdate() instanceof TTTGameState gs) {
+        if (clientCore.lastTT instanceof TTTGameState gs) {
             return State.IN_PROGRESS.equals(gs.getState());
         }
         return true;
@@ -200,7 +200,7 @@ public class TTTPage extends StackPane implements Navigable {
         if (session != null) {
             return session.getState();
         }
-        if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
+        if (clientCore != null && clientCore.lastTT instanceof TTTGameState gs) {
             return gs.getState();
         }
         return State.IN_PROGRESS;
@@ -313,7 +313,7 @@ public class TTTPage extends StackPane implements Navigable {
 
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
             Player myRole = clientCore.getMyNetworkRole();
-            if (myRole != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
+            if (myRole != null && clientCore.lastTT instanceof TTTGameState gs) {
                 if (State.IN_PROGRESS.equals(gs.getState()) && !myRole.equals(gs.getPlayerTurn())) {
                     turnLabel.setText(myRole == Player.PLAYER_1 ? "Waiting for O…" : "Waiting for X…");
                     return;
@@ -498,48 +498,31 @@ public class TTTPage extends StackPane implements Navigable {
             EloOverlayUtil.hide(eloResultOverlay);
         }
         board = update.getBoard();
+        System.out.println(board[0][0].toString()+board[0][1].toString()+board[0][2].toString()+ "top row");
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button) {
                 Button btn = (Button) node;
                 Integer r = GridPane.getRowIndex(btn);
                 Integer c = GridPane.getColumnIndex(btn);
-
                 if (r == null) r = 0;
                 if (c == null) c = 0;
-                // Don't know if there is a reason not to set the style for empty buttons
-
-                btn.setText(getToken(board[r][c]));
                 if (board[r][c].equals(Player.PLAYER_1)) {
-                    btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
-                } else if (board[r][c].equals(Player.PLAYER_2)) {
-                    btn.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
-                } else {
-                    btn.setStyle("");
-                }
-                /*
-                if (r == null) r = 0;
-                if (c == null) c = 0;
-                Player cell = r < b.length && c < b[r].length ? b[r][c] : Player.EMPTY;
-
-                if (Player.PLAYER_1.equals(cell)) {
+                    System.out.println("X set");
                     btn.setText("X");
                     btn.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
-                } else if ("PLAYER_2".equals(cell)) {
+                } else if (board[r][c].equals(Player.PLAYER_2)){
+                    System.out.println("O set");
                     btn.setText("O");
                     btn.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
                 } else {
                     btn.setText("");
                     btn.setStyle("");
-                }*/
-                //btn.();
-                boolean gameOver = !State.IN_PROGRESS.equals(st);
-                resetButton.setVisible(gameOver);
-                Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
-                boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null;
-                boolean myTurn = !onlineTurns || gameOver || myRole.equals(update.getPlayerTurn());
-                btn.setDisable(gameOver || !myTurn);
+                }
+                btn.setDisable(!st.equals(State.IN_PROGRESS));
+                resetButton.setVisible(!st.equals(State.IN_PROGRESS));
             }
         }
+
         if (State.PLAYER_1_WIN.equals(st)) turnLabel.setText("X Wins!");
         else if (State.PLAYER_2_WIN.equals(st)) turnLabel.setText("O Wins!");
         else if (State.TIE.equals(st)) turnLabel.setText("Draw!");
@@ -560,10 +543,6 @@ public class TTTPage extends StackPane implements Navigable {
                     parentGUI.refreshSidebar();
                 });
         refreshBackButtonVisibility();
-        /* commented out depending on merging gamestate and gamestateupdate functions
-        if (update.getMessage() != null && !update.getMessage().isEmpty()) {
-            turnLabel.setText(turnLabel.getText() + " (" + update.getMessage() + ")");
-        }*/
     }
 
 //    @Override
@@ -656,7 +635,7 @@ public class TTTPage extends StackPane implements Navigable {
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
         }
-        if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
+        if (clientCore != null && clientCore.lastTT instanceof TTTGameState gs) {
             refreshFromGameStateUpdate(gs);
         }
         refreshBackButtonVisibility();

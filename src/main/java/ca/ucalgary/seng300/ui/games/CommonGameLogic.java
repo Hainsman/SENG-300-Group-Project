@@ -135,7 +135,7 @@ public abstract class CommonGameLogic extends StackPane {
     private boolean isOnlineMode() {
         return !randomOpponentEnabled
                 && clientCore != null
-                && GameType.getFromGameState(clientCore.getLastUpdate()) == gameType;
+                && clientCore.gameType.equals(gameType);
     }
 
     private void submitOnlineMove(int row, int col) {

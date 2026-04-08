@@ -47,8 +47,8 @@ public class ConnectFourSession implements Session {
         if (landing < 0) {
             return false;
         }
-        String playerId = gs.getPlayerTurn() == Player.PLAYER_1 ? "PLAYER_1" : "PLAYER_2";
-        C4PlayerAction action = new C4PlayerAction(playerId, "MOVE", landing, col);
+        //String playerId = gs.getPlayerTurn() == Player.PLAYER_1 ? "PLAYER_1" : "PLAYER_2";
+        C4PlayerAction action = new C4PlayerAction(gs.getPlayerTurn(), "MOVE", landing, col);
         game.handleAction(action);
         return gs.getBoard()[landing][col] != Player.EMPTY;
     }

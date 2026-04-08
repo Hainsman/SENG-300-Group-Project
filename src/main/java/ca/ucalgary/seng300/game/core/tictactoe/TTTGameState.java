@@ -24,6 +24,7 @@ public class TTTGameState implements GameState {
         if (board != null && state == State.IN_PROGRESS) {
             Player whoMoved = playerTurn;
             board[row][col] = whoMoved;
+            System.out.println("Square "+row+" "+col+" set to"+whoMoved.toString());
 
             // Check if the move wins the game (3 in a row)
             if (checkThreeInARow(row, col, whoMoved)) {
