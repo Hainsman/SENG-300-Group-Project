@@ -6,7 +6,6 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.services.RankingService;
 import ca.ucalgary.seng300.platform.session.Session;
 import ca.ucalgary.seng300.ui.CentralController;
-import ca.ucalgary.seng300.ui.util.EloOverlayUtil;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
 import javafx.application.Platform;
@@ -134,7 +133,7 @@ public abstract class CommonGameLogic extends StackPane {
         confirm.setHeaderText("Forfeit this match?");
         confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
         confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
-            EloOverlayUtil.hide(eloResultOverlay);
+            hideEloOverlay();
             if (!isOnlineMode()) {
                 navigateBackFromGame();
                 return;
@@ -156,7 +155,7 @@ public abstract class CommonGameLogic extends StackPane {
             updateStatusLabel(gameState, state);
             updateHistoryBoard(gameState);
 
-            OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, state, onlineEloApplied, gameType)
+            OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, state, onlineEloApplied, gameType, rootController)
                     .ifPresent(r -> {
                         onlineEloApplied = true;
                         showEloOverlay(r);
@@ -325,10 +324,10 @@ public abstract class CommonGameLogic extends StackPane {
         rootController.localAiMode = false;
         hideEloOverlay();
 
-        if (CentralController.previousScreen != null)
-            CentralController.moveTo(CentralController.previousScreen);
+        if (rootController.previousScreen != null)
+            rootController.moveTo(rootController.previousScreen);
         else
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
     }
 
     private boolean isBoardBlank(Player[][] board) {

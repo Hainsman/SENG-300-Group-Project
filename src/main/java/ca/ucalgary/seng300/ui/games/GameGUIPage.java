@@ -208,7 +208,7 @@ public class GameGUIPage extends VBox implements Navigable {
                     ButtonType.OK).showAndWait();
             return;
         }
-        CentralController.moveTo(Navigation.INFO);
+        rootController.moveTo(Navigation.INFO);
     }
 
     @FXML

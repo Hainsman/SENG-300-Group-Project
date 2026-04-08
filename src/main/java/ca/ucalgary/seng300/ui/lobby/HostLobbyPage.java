@@ -55,7 +55,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     private void initialize() {
-        GameType game = CentralController.selectedGame;
+        GameType game = rootController.selectedGame;
         gameLabel.setText(game != null ? game.toString() : "Game");
         previewGameLabel.setText(game != null ? game.toString() : "-");
 
@@ -96,25 +96,25 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
 
         String code = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
 
-        CentralController.maxPlayers = maxPlayers;
-        CentralController.privacy = privacy;
-        CentralController.lobbyCode = code;
-        CentralController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
-        CentralController.hostingLobby = true;
-        CentralController.clearLobbyRoster();
+        rootController.maxPlayers = maxPlayers;
+        rootController.privacy = privacy;
+        rootController.lobbyCode = code;
+        rootController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
+        rootController.hostingLobby = true;
+        rootController.clearLobbyRoster();
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onHostOk = () -> {
-            CentralController.moveTo(Navigation.MAIN_LOBBY);
-            CentralController.previousScreen = Navigation.GAME_DASHBOARD;
+            rootController.moveTo(Navigation.MAIN_LOBBY);
+            rootController.previousScreen = Navigation.GAME_DASHBOARD;
         };
 
-        cc.msgSend(new sysMSG("HOST_LOBBY", code, CentralController.selectedGame.toString(), PlayerProfileHelper.lobbyPayload()));
+        cc.msgSend(new sysMSG("HOST_LOBBY", code, rootController.selectedGame.toString(), PlayerProfileHelper.lobbyPayload(rootController)));
     }
 
     @FXML
     void handleBack(ActionEvent event) {
-        CentralController.moveTo(Navigation.CHOOSE_MODE);
+        rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @Override

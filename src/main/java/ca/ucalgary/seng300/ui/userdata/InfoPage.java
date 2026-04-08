@@ -15,6 +15,7 @@ import java.io.IOException;
 
 public class InfoPage extends BorderPane implements Navigable {
 
+    private CentralController rootController;
 
     @FXML private Button backButton;
     @FXML private Label gameTitleLabel;
@@ -22,8 +23,10 @@ public class InfoPage extends BorderPane implements Navigable {
 
     private String gameType;
 
-    public InfoPage() {
+    public InfoPage(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -36,10 +39,10 @@ public class InfoPage extends BorderPane implements Navigable {
 
     @FXML
     private void handleBack (ActionEvent event) {
-        if (CentralController.previousScreen != null) {
-            CentralController.moveTo(CentralController.previousScreen);
+        if (rootController.previousScreen != null) {
+            rootController.moveTo(rootController.previousScreen);
         } else {
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
         }
 
     }

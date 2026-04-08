@@ -14,8 +14,12 @@ import java.io.IOException;
 
 public class GameDashboardPage extends AnchorPane implements Navigable {
 
-    public GameDashboardPage() {
+    private CentralController rootController;
+
+    public GameDashboardPage(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -28,29 +32,29 @@ public class GameDashboardPage extends AnchorPane implements Navigable {
 
     @FXML
     void handleProfileDashboard(ActionEvent event) {
-        CentralController.moveTo(Navigation.PROFILE_DASHBOARD);
+        rootController.moveTo(Navigation.PROFILE_DASHBOARD);
     }
 
     @FXML
     void handleTeamSettings(ActionEvent event) {
-        CentralController.moveTo(Navigation.SETTINGS);
+        rootController.moveTo(Navigation.SETTINGS);
     }
 
     @FXML
     void handleLogout(ActionEvent event) {
-        CentralController.logout();
+        rootController.logout();
     }
 
     @FXML
     void C4click(MouseEvent event) {
-        CentralController.selectedGame = GameType.CONNECT4;
-        CentralController.moveTo(Navigation.CHOOSE_MODE);
+        rootController.selectedGame = GameType.CONNECT4;
+        rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @FXML
     void TTTclicked(MouseEvent event) {
-        CentralController.selectedGame = GameType.TIC_TAC_TOE;
-        CentralController.moveTo(Navigation.CHOOSE_MODE);
+        rootController.selectedGame = GameType.TIC_TAC_TOE;
+        rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @Override

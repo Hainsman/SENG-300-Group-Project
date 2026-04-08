@@ -218,7 +218,7 @@ public class ClientCore extends Thread{
                                         final String fxml = screen;
                                         Platform.runLater(() -> {
                                             LobbyBridge.clearLobbyUiCallbacks();
-                                            CentralController.moveTo(Navigation.getFromFxml(fxml));
+                                            ioMain.moveTo(Navigation.getFromFxml(fxml));
                                         });
                                     }
                                 }
@@ -229,7 +229,7 @@ public class ClientCore extends Thread{
                                 } else if ("JOIN".equals(sm.getFieldB())) {
                                     myPlayerId = "P2";
                                 }
-                                LobbyBridge.notifyLobbyOk(sm.getFieldB(), sm.getFieldA());
+                                LobbyBridge.notifyLobbyOk(sm.getFieldB(), sm.getFieldA(), ioMain);
                                 break;
                             case "LOBBY_ERR":
                                 LobbyBridge.notifyLobbyFail(sm.getFieldB() != null ? sm.getFieldB() : sm.getFieldA());
@@ -239,7 +239,7 @@ public class ClientCore extends Thread{
                                 break;
                             case "LOBBY_ROSTER": {
                                 Object pl = sm.getPayload();
-                                CentralController.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
+                                ioMain.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
                                 LobbyBridge.notifyPartnerJoined();
                                 break;
                             }

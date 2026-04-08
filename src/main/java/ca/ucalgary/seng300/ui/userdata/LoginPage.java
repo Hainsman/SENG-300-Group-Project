@@ -69,17 +69,17 @@ public class LoginPage extends HBox implements Navigable {
             return;
         }
 
-        CentralController.currentUserId = user.getID();
-        CentralController.displayName = user.getlogin();
-        CentralController.previousScreen = null;
+        rootController.currentUserId = user.getID();
+        rootController.displayName = user.getlogin();
+        rootController.previousScreen = null;
         rootController.localAiMode = false;
-        CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        rootController.moveTo(Navigation.GAME_DASHBOARD);
     }
 
     // Move to NewUser screen when button is triggered.
     @FXML
     private void handleNewUser(ActionEvent event) {
-        CentralController.moveTo(Navigation.NEW_USER);
+        rootController.moveTo(Navigation.NEW_USER);
     }
 
     @FXML
