@@ -19,6 +19,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.function.Consumer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.UUID;
 
 // debug Server first, then as many clients as you want
@@ -45,8 +48,11 @@ public class ClientCore extends Thread{
     public volatile  boolean upFlag = false;
     public volatile TTTGameState lastTT;
     public volatile C4GameState lastC4;
-    //private volatile Runnable onGameStateUpdate;
-    
+    private volatile Consumer<sysMSG> authResponseHandler;
+    private volatile Consumer<sysMSG> newUserResponseHandler;
+    private volatile Consumer<sysMSG> moveResponseHandler;
+    private volatile Consumer<chatMessage> chatMessageHandler;
+
     public boolean isConnected() {
         return servSend != null && servRead != null;
     }
@@ -102,9 +108,31 @@ public class ClientCore extends Thread{
         ioMain = c;
     }
 
-    //public GameState getLastUpdate() {
-    //    return lastUpdate;
-    //}
+    public void setAuthResponseHandler(Consumer<sysMSG> handler) {
+        authResponseHandler = handler;
+    }
+
+    public void setNewUserResponseHandler(Consumer<sysMSG> handler) {
+        newUserResponseHandler = handler;
+    }
+
+    public void setMoveResponseHandler(Consumer<sysMSG> handler) {
+        moveResponseHandler = handler;
+    }
+
+    public void setChatMessageHandler(Consumer<chatMessage> handler) {
+        chatMessageHandler = handler;
+    }
+
+    public String debugBoard(TTTGameState t) {
+        String s = "";
+        for (Player[] p : t.getBoard()) {
+            for (Player pp : p) {
+                s = s + pp;
+            }
+        }
+        return s;
+    }
 
     @Override
     public void run() {
@@ -225,7 +253,10 @@ public class ClientCore extends Thread{
                         });
                         break;
                     case chatMessage c:
-                        // CHAT SYSTEM UI COMPONENT
+                        Consumer<chatMessage> chatHandler = chatMessageHandler;
+                        if (chatHandler != null) {
+                            Platform.runLater(() -> chatHandler.accept(c));
+                        }
                         break;
                     //case matchMaking m:
 

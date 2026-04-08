@@ -1,6 +1,15 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.connect4.C4Game;
+import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
+import ca.ucalgary.seng300.platform.domain.GameHistory;
+import ca.ucalgary.seng300.platform.domain.PlayerStats;
+import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
@@ -10,11 +19,19 @@ import ca.ucalgary.seng300.platform.server.ServerLobby;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.store.*;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.domain.User;
 
 import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static ca.ucalgary.seng300.platform.constants.Constants.EMAIL_REGEX;
+import static ca.ucalgary.seng300.platform.constants.Constants.HASH_ALGORITHM;
+import static ca.ucalgary.seng300.platform.utils.Helper.hashPassword;
+import static ca.ucalgary.seng300.platform.utils.Helper.isEmailValid;
 
 import static ca.ucalgary.seng300.platform.constants.Constants.*;
 import static ca.ucalgary.seng300.platform.utils.Helper.hashPassword;
@@ -28,6 +45,13 @@ public class PlatformCore {
     public List<Integer> connected;
     // list of chat/lobbies
     public List<String> chatservers;
+
+    /** Database setup**/
+    public UserStore userStore;
+    public SessionHistoryStore sessionHistoryStore;
+    public GameHistoryStore gameHistoryStore;
+    public PlayerStatsStore playerStatsStore;
+    public ParticipantStore participantStore;
 
     /** Database setup**/
     public UserStore userStore;
@@ -61,8 +85,9 @@ public class PlatformCore {
         return new String[] { name, String.valueOf(elo) };
     }
 
-    public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel, String clientPayload) {
+   public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel, String clientPayload) {
         if (code == null || code.isBlank() || hostChannel == null) {
+            System.out.println("HOST_LOBBY rejected: code/hostChannel invalid");
             return false;
         }
         String lobbyid = code.trim().toUpperCase();
@@ -77,9 +102,13 @@ public class PlatformCore {
 
     public synchronized boolean onJoinLobby(String code, platformChannel guestChannel, String guestPayload) {
         if (code == null || code.isBlank() || guestChannel == null) {
+            System.out.println("JOIN_LOBBY rejected early: rawCode=" + code + " gameId=" + code
+                    + " guestNull=" + (guestChannel == null) + " lobbiesNull=" + (lobbies == null));
             return false;
         }
         String lobbyid = code.trim().toUpperCase();
+        System.out.println("JOIN_LOBBY lookup rawCode=" + code + " normalizedCode=" + lobbyid
+                + " requestedGameId=" + code + " availableLobbies=" + lobbies.keySet());
         ServerLobby sl = lobbies.get(lobbyid);
         if (sl == null) {
             return false;
@@ -178,13 +207,16 @@ public class PlatformCore {
 
     public PlatformCore() throws IOException, InterruptedException {
         /** database initialisation, replace null with the file path **/
-        userStore = new UserStore(USER_FILE_PATH);
-        sessionHistoryStore = new SessionHistoryStore(SESSION_FILE_PATH);
+        userStore = UserStore.getInstance();
+        sessionHistoryStore = SessionHistoryStore.getInstance();
+        gameHistoryStore = GameHistoryStore.getInstance();
+        playerStatsStore = PlayerStatsStore.getInstance();
+        participantStore = ParticipantStore.getInstance();
 
         // list of threads
         users = new ArrayList<platformChannel>();
-        //connected = new ArrayList<Integer>();
-
+        connected = new ArrayList<Integer>();
+        chatservers = new ArrayList<String>();
         lobbies = new HashMap<>();
 
         int ClientMax = 100;

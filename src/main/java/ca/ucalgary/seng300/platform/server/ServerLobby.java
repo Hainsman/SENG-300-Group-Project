@@ -6,7 +6,11 @@ import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static ca.ucalgary.seng300.PlatformCore.parseNameEloPayload;
 

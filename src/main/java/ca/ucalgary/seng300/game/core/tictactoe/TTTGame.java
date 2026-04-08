@@ -41,6 +41,10 @@ public class TTTGame implements Game {
         }
     }
 
+    public boolean wasLastMoveValid() {
+        return valid;
+    }
+
     @Override
     public GameState getGameState() {
         return gameState;

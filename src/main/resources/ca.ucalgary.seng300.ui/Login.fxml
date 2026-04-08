@@ -13,10 +13,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<fx:root type="HBox" alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34"
-      stylesheets="@stylesheets/global.css" styleClass="app-surface"
+<HBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34"
+      stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface"
       xmlns="http://javafx.com/javafx/23.0.1"
-      xmlns:fx="http://javafx.com/fxml/1">
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ca.ucalgary.seng300.ui.LoginController">
     <padding><Insets top="34" bottom="34" left="34" right="34"/></padding>
 
     <StackPane minWidth="500.0" prefHeight="610.0" prefWidth="500.0" maxWidth="500.0">
@@ -41,7 +42,7 @@
             <TextField fx:id="usernameField"
                        maxWidth="Infinity"
                        prefHeight="40"
-                       promptText="Username"
+                       promptText="Email or Username"
                        styleClass="input-field"
                        HBox.hgrow="ALWAYS" />
         </HBox>
@@ -58,16 +59,19 @@
         <Label fx:id="errorLabel" styleClass="error-text" text="" />
         <VBox spacing="12">
             <Button maxWidth="Infinity"
+                    fx:id="loginButton"
                     onAction="#handleLogin"
                     prefHeight="45"
                     styleClass="auth-outline-button"
                     text="Sign In" />
             <Button maxWidth="Infinity"
+                    fx:id="newUserButton"
                     onAction="#handleNewUser"
                     prefHeight="45"
                     styleClass="auth-outline-button"
                     text="Create New Account" />
             <Button alignment="CENTER"
+                    fx:id="forgotPasswordButton"
                     maxWidth="Infinity"
                     onAction="#handleForgotPassword"
                     styleClass="link-button"
@@ -75,4 +79,4 @@
         </VBox>
     </VBox>
 
-</fx:root>
+</HBox>

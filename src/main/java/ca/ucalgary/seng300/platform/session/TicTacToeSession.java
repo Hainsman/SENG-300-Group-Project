@@ -57,6 +57,10 @@ public class TicTacToeSession implements Session {
         return game.getGameState().getBoard();
     }
 
+    public TTTGameState getGameState() {
+        return (TTTGameState) game.getGameState();
+    }
+
     @Override
     public Player getTurn() {
         return game.getGameState().getPlayerTurn();

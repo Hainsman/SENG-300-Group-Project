@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
@@ -78,6 +79,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         }
     }
 
+    @FXML
     private void handleJoinByCode() {
         if (codeField == null) {
             return;
@@ -105,6 +107,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
 
         CentralController.hostingLobby = false;
         CentralController.lobbyCode = code;
+        CentralController.lobbyPaired = false;
         CentralController.maxPlayers = 2;
         CentralController.privacy = "Public";
         CentralController.clearLobbyRoster();
