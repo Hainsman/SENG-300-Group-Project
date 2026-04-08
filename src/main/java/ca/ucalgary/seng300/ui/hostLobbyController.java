@@ -46,7 +46,7 @@ public class hostLobbyController {
             previewPlayersLabel.setText(String.valueOf((int) playerSlider.getValue()));
         }
         if (previewPrivacyLabel != null) {
-            previewPrivacyLabel.setText("Public");
+            previewPrivacyLabel.setText("Private");
         }
 
         if (playerSlider != null) {
@@ -57,8 +57,8 @@ public class hostLobbyController {
             });
         }
 
-        if (publicLobby != null) {
-            publicLobby.setSelected(true);
+        if (privateLobby != null) {
+            privateLobby.setSelected(true);
         }
 
         if (privacyOptions != null) {
@@ -66,10 +66,10 @@ public class hostLobbyController {
                 if (previewPrivacyLabel == null) {
                     return;
                 }
-                if (newVal == publicLobby) {
-                    previewPrivacyLabel.setText("Public");
-                } else if (newVal == privateLobby) {
+                if (newVal == privateLobby) {
                     previewPrivacyLabel.setText("Private");
+                } else if (newVal == publicLobby) {
+                    previewPrivacyLabel.setText("Public");
                 }
             });
         }
@@ -108,9 +108,9 @@ public class hostLobbyController {
                 ? lobbyNameField.getText().trim() : "";
         int maxPlayers = playerSlider != null ? (int) playerSlider.getValue() : 2;
 
-        String privacy = "Public";
-        if (privacyOptions != null && privacyOptions.getSelectedToggle() == privateLobby) {
-            privacy = "Private";
+        String privacy = "Private";
+        if (privacyOptions != null && privacyOptions.getSelectedToggle() == publicLobby) {
+            privacy = "Public";
         }
 
         String code = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();

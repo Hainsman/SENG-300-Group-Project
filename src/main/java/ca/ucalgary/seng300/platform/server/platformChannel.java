@@ -99,8 +99,10 @@ public class platformChannel extends Thread {
                 }
                 break;
             case "CREATE_GAME":
-                if (!serv.onCreateGame(sm.getFieldA(), this)) {
-                    cliSend(new sysMSG("LOBBY_ERR", "HOST", "Starting the game failed."));
+                sysMSG createGameResponse = serv.onCreateGame(sm.getFieldA(), this);
+                if (!"PASS".equals(createGameResponse.getFieldA())) {
+                    cliSend(new sysMSG("LOBBY_ERR", "HOST",
+                            createGameResponse.getFieldB() != null ? createGameResponse.getFieldB() : "Starting the game failed."));
                 }
                 break;
             //case "FORFEIT" -> serv.onForfeit(this);

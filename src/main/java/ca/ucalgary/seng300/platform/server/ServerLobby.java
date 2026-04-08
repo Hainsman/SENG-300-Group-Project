@@ -51,6 +51,14 @@ public class ServerLobby {
         return host == channel;
     }
 
+    public platformChannel getHost() {
+        return host;
+    }
+
+    public platformChannel getGuest() {
+        return guest;
+    }
+
     public String getGameFxml() {
         if (gameId == Game.CONNECT_FOUR) {
             return "Connect4.fxml";

@@ -16,6 +16,7 @@ import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.server.GameSessionRecord;
 import ca.ucalgary.seng300.platform.server.ServerLobby;
 import ca.ucalgary.seng300.platform.server.platformChannel;
+import ca.ucalgary.seng300.platform.services.MatchMakingService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.domain.User;
@@ -55,6 +56,7 @@ public class PlatformCore {
 
     // list of connections for users currently logged in
     public List<platformChannel> users;
+    private final MatchMakingService matchMakingService = new MatchMakingService();
 
     private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
 
@@ -125,18 +127,70 @@ public class PlatformCore {
         return true;
     }
 
-    public synchronized boolean onCreateGame(String code, platformChannel requester) {
+    public synchronized sysMSG onCreateGame(String code, platformChannel requester) {
         if (code == null || code.isBlank() || requester == null || lobbies == null) {
-            return false;
+            return new sysMSG("CREATE_GAME", "FAIL", "Starting the game failed.");
         }
         String lobbyid = code.trim().toUpperCase();
         ServerLobby sl = lobbies.get(lobbyid);
         if (sl == null || !sl.isHost(requester)) {
-            return false;
+            return new sysMSG("CREATE_GAME", "FAIL", "Starting the game failed.");
+        }
+        platformChannel host = sl.getHost();
+        platformChannel guest = sl.getGuest();
+        if (host == null || guest == null) {
+            return new sysMSG("CREATE_GAME", "FAIL", "Starting the game failed: lobby is not full.");
+        }
+        Integer hostUserId = host.getAuthenticatedUserId();
+        Integer guestUserId = guest.getAuthenticatedUserId();
+        if (hostUserId == null || guestUserId == null) {
+            return new sysMSG("CREATE_GAME", "FAIL", "Starting the game failed: both players must be signed in.");
+        }
+
+        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameId(), hostUserId);
+        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameId(), guestUserId);
+        MatchMakingService.removePlayer(hostStats); //remove duplicate
+        MatchMakingService.removePlayer(guestStats); //remove duplicate
+        matchMakingService.addPlayerToQueue(hostStats);
+        matchMakingService.addPlayerToQueue(guestStats);
+        List<PlayerStats> matchedPlayers = matchMakingService.matchPlayers(sl.getGameId());
+        if (!containsMatchedPair(matchedPlayers, hostUserId, guestUserId)) {
+            MatchMakingService.removePlayer(hostStats);
+            MatchMakingService.removePlayer(guestStats);
+            return new sysMSG("CREATE_GAME", "FAIL",
+                    "Starting the game failed: player scores must be within 10 points.");
         }
         sl.createGame();
         System.out.println("CREATE_GAME started for lobby " + lobbyid + " gameId=" + sl.getGameId());
-        return true;
+        return new sysMSG("CREATE_GAME", "PASS", lobbyid);
+    }
+
+    private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
+        List<PlayerStats> playersForGame = playerStatsStore.findPlayersByGameID(gameId);
+        for (PlayerStats stats : playersForGame) {
+            if (stats.getUserID() == userId) {
+                return stats;
+            }
+        }
+        PlayerStats created = new PlayerStats(playerStatsStore.assignNewId(), gameId, userId);
+        playerStatsStore.create(created);
+        return created;
+    }
+
+    private boolean containsMatchedPair(List<PlayerStats> matchedPlayers, int hostUserId, int guestUserId) {
+        if (matchedPlayers == null || matchedPlayers.size() != 2) {
+            return false;
+        }
+        boolean foundHost = false;
+        boolean foundGuest = false;
+        for (PlayerStats player : matchedPlayers) {
+            if (player.getUserID() == hostUserId) {
+                foundHost = true;
+            } else if (player.getUserID() == guestUserId) {
+                foundGuest = true;
+            }
+        }
+        return foundHost && foundGuest;
     }
 
     public void sendMult (chatMessage m){

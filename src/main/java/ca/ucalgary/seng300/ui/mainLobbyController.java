@@ -18,26 +18,24 @@ public class mainLobbyController {
     @FXML private Label gameNameLabel;
     @FXML private Label maxPlayersLabel;
     @FXML private Label playerCountLabel;
+    @FXML private Label playerOneLabel;
+    @FXML private Label playerTwoLabel;
     @FXML private Button startGameBtn;
     @FXML private Button copyCodeBtn;
 
     @FXML
     public void initialize() {
         if (lobbyTitle != null) {
-            String g = CentralController.selectedGame != null ? CentralController.selectedGame : "Game";
-            lobbyTitle.setText(g + " Lobby");
+            String game = CentralController.selectedGame != null ? CentralController.selectedGame : "Game";
+            lobbyTitle.setText(game + " Lobby");
         }
 
         if (lobbyCodeLabel != null) {
-            lobbyCodeLabel.setText(
-                    CentralController.lobbyCode != null ? CentralController.lobbyCode : "----"
-            );
+            lobbyCodeLabel.setText(CentralController.lobbyCode != null ? CentralController.lobbyCode : "----");
         }
 
         if (privacyLabel != null) {
-            privacyLabel.setText(
-                    CentralController.privacy != null ? CentralController.privacy : "Public"
-            );
+            privacyLabel.setText(CentralController.privacy != null ? CentralController.privacy : "Private");
         }
 
         if (gameNameLabel != null) {
@@ -49,6 +47,7 @@ public class mainLobbyController {
             maxPlayersLabel.setText(String.valueOf(max));
         }
 
+        refreshPlayerSlots();
         refreshPlayersFromState();
         refreshStartButton();
 
@@ -60,12 +59,13 @@ public class mainLobbyController {
         if (playerList != null) {
             playerList.getItems().clear();
             boolean guestThere = CentralController.lobbyPaired;
+            String selfName = getLoggedInUsername();
             if (CentralController.hostingLobby) {
-                playerList.getItems().add("You (host)");
-                playerList.getItems().add(guestThere ? "Guest (connected)" : "Waiting for guest…");
+                playerList.getItems().add("Player 1 (host): " + selfName);
+                playerList.getItems().add(guestThere ? "Player 2 (guest): Guest" : "Player 2 (guest): Waiting for guest...");
             } else {
-                playerList.getItems().add(guestThere ? "Host (connected)" : "Host");
-                playerList.getItems().add("You (guest)");
+                playerList.getItems().add("Player 1 (host): Host");
+                playerList.getItems().add("Player 2 (guest): " + selfName);
             }
         }
         if (playerCountLabel != null) {
@@ -74,6 +74,7 @@ public class mainLobbyController {
             int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
             playerCountLabel.setText("Players (" + cur + "/" + max + ")");
         }
+        refreshPlayerSlots();
     }
 
     private void refreshStartButton() {
@@ -86,12 +87,45 @@ public class mainLobbyController {
         refreshPlayersFromState();
     }
 
+    private String getLoggedInUsername() {
+        CentralController controller = CentralController.getInstance();
+        if (controller != null) {
+            ClientCore cc = controller.getCC();
+            if (cc != null && cc.username != null && !cc.username.isBlank()) {
+                return cc.username;
+            }
+        }
+        return "Player";
+    }
+
+    private void refreshPlayerSlots() {
+        String selfName = getLoggedInUsername();
+        boolean guestThere = CentralController.lobbyPaired;
+
+        if (CentralController.hostingLobby) {
+            if (playerOneLabel != null) {
+                playerOneLabel.setText(selfName);
+            }
+            if (playerTwoLabel != null) {
+                playerTwoLabel.setText(guestThere ? "Guest" : "Waiting for guest...");
+            }
+            return;
+        }
+
+        if (playerOneLabel != null) {
+            playerOneLabel.setText("Host");
+        }
+        if (playerTwoLabel != null) {
+            playerTwoLabel.setText(selfName);
+        }
+    }
+
     @FXML
     private void handleStartGame() {
         if (CentralController.hostingLobby) {
-            CentralController c = CentralController.getInstance();
-            if (c != null) {
-                ClientCore cc = c.getCC();
+            CentralController controller = CentralController.getInstance();
+            if (controller != null) {
+                ClientCore cc = controller.getCC();
                 if (cc != null && cc.isConnected()) {
                     cc.msgSend(new sysMSG("CREATE_GAME", CentralController.lobbyCode, ""));
                 }

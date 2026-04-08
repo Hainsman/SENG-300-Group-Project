@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -54,8 +55,14 @@
                 <VBox prefWidth="260" spacing="20">
 
                     <!-- PLAYER CARD -->
-                    <VBox styleClass="card">
+                    <VBox spacing="8" styleClass="card">
                         <Label styleClass="card-title" text="Player 1" />
+                        <Label fx:id="playerOneLabel" styleClass="mode-subtitle" text="Player" wrapText="true" />
+                    </VBox>
+
+                    <VBox spacing="8" styleClass="card">
+                        <Label styleClass="card-title" text="Player 2" />
+                        <Label fx:id="playerTwoLabel" styleClass="mode-subtitle" text="Player" wrapText="true" />
                     </VBox>
 
                     <!-- FRIENDS -->
@@ -67,17 +74,20 @@
                     </VBox>
 
                     <!-- GAME SETTINGS -->
-                    <VBox styleClass="card">
+                    <VBox spacing="12" styleClass="card">
                         <Label styleClass="card-title" text="Game Settings" />
+                        <GridPane hgap="14" vgap="8">
+                            <children>
+                                <Label text="Max Players:" />
+                                <Label fx:id="maxPlayersLabel" text="8" GridPane.columnIndex="1" />
 
-                        <Label text="Max Players:" />
-                        <Label fx:id="maxPlayersLabel" text="8" />
+                                <Label text="Game Mode:" GridPane.rowIndex="1" />
+                                <Label fx:id="gameNameLabel" text="Standard" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                        <Label text="Game Mode:" />
-                        <Label fx:id="gameNameLabel" text="Standard" />
-
-                        <Label text="Privacy:" />
-                        <Label fx:id="privacyLabel" text="Public" />
+                                <Label text="Privacy:" GridPane.rowIndex="2" />
+                                <Label fx:id="privacyLabel" text="Private" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                            </children>
+                        </GridPane>
                     </VBox>
 
                 </VBox>

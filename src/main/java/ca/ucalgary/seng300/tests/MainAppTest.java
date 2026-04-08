@@ -76,45 +76,47 @@ public class MainAppTest {
         PlayerStatsStore playerStatsStore = PlayerStatsStore.getInstance();
         PlayerStats playerOne = new PlayerStats(1, Game.TICK_TACK_TOE, 1);
         PlayerStats playerTwo = new PlayerStats(2, Game.TICK_TACK_TOE, 2);
-        PlayerStats playerThree = new PlayerStats(3, Game.TICK_TACK_TOE, 3);
-        PlayerStats playerFour = new PlayerStats(4, Game.TICK_TACK_TOE, 4);
-
-        for (int i = 0; i < 10; i++){
-            playerOne.updateStats(5.0);
-        }
-
-        for (int i = 0; i < 10; i++){
-            playerTwo.updateStats(3.0);
-        }
-
-        for (int i = 0; i < 20; i++){
-            playerThree.updateStats(1.5);
-        }
-
-        for (int i = 0; i < 10; i++){
-            playerFour.updateStats(1.0);
-        }
-
-
         playerStatsStore.create(playerOne);
         playerStatsStore.create(playerTwo);
-        playerStatsStore.create(playerThree);
-        playerStatsStore.create(playerFour);
-        playerStatsStore.create(playerOne);
+//        PlayerStats playerThree = new PlayerStats(3, Game.TICK_TACK_TOE, 3);
+//        PlayerStats playerFour = new PlayerStats(4, Game.TICK_TACK_TOE, 4);
 //
-
-        List<PlayerStats> listOfPlayers = playerStatsStore.findPlayersByGameID(Game.TICK_TACK_TOE);
-        List<User> listOfUsers = userStorage.findByUserEmail("daniel.maximov@ucalgary.ca");
-        List<GameHistory> listOfGames = gameHistoryStore.findByGameID(Game.TICK_TACK_TOE);
-        UUID uniqueIdent = UUID.fromString("be6b47b1-2cb6-414d-a7df-945abde64c5e");
-        List<SessionHistory> listOfSessions = sessionHistoryStore.findSessionByUUID(uniqueIdent);
-        List<Participant> listOfParticipants = participantStore.findUserParticipationInGameEvents(1);
+//        for (int i = 0; i < 10; i++){
+//            playerOne.updateStats(5.0);
+//        }
 //
-        Rank rank = Helper.getRank(playerFour.getGameCounter(), playerFour.getGameCounter());
-        System.out.println(rank);
-        System.out.println(listOfPlayers.size());
-        System.out.println(listOfUsers.getFirst().getlogin());
-        System.out.println(listOfGames.size());
+//        for (int i = 0; i < 10; i++){
+//            playerTwo.updateStats(3.0);
+//        }
+//
+//        for (int i = 0; i < 20; i++){
+//            playerThree.updateStats(1.5);
+//        }
+//
+//        for (int i = 0; i < 10; i++){
+//            playerFour.updateStats(1.0);
+//        }
+//
+//
+//        playerStatsStore.create(playerOne);
+//        playerStatsStore.create(playerTwo);
+//        playerStatsStore.create(playerThree);
+//        playerStatsStore.create(playerFour);
+//        playerStatsStore.create(playerOne);
+////
+//
+//        List<PlayerStats> listOfPlayers = playerStatsStore.findPlayersByGameID(Game.TICK_TACK_TOE);
+//        List<User> listOfUsers = userStorage.findByUserEmail("daniel.maximov@ucalgary.ca");
+//        List<GameHistory> listOfGames = gameHistoryStore.findByGameID(Game.TICK_TACK_TOE);
+//        UUID uniqueIdent = UUID.fromString("be6b47b1-2cb6-414d-a7df-945abde64c5e");
+//        List<SessionHistory> listOfSessions = sessionHistoryStore.findSessionByUUID(uniqueIdent);
+//        List<Participant> listOfParticipants = participantStore.findUserParticipationInGameEvents(1);
+////
+//        Rank rank = Helper.getRank(playerFour.getGameCounter(), playerFour.getGameCounter());
+//        System.out.println(rank);
+//        System.out.println(listOfPlayers.size());
+//        System.out.println(listOfUsers.getFirst().getlogin());
+//        System.out.println(listOfGames.size());
 //        System.out.println(listOfSessions.getFirst().getGloballyUniqueSessionIdentifier());
         LeaderBoardService lbs = new LeaderBoardService();
 //        lbs.
