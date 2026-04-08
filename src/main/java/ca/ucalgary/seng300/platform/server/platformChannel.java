@@ -124,7 +124,7 @@ public class platformChannel extends Thread {
             System.out.println("socket already closed");
         }
 
-        serv.onClientDisconnected(this);
+        //serv.onClientDisconnected(this);
 
         System.out.println("Client " + ID + " " + socket.getInetAddress() + " has disconnected.");
     }

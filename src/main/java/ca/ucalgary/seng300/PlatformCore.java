@@ -1,15 +1,6 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.game.core.PlayerAction;
-import ca.ucalgary.seng300.game.core.PlayerMove;
-import ca.ucalgary.seng300.game.core.connect4.C4Game;
-import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
-import ca.ucalgary.seng300.platform.domain.GameHistory;
-import ca.ucalgary.seng300.platform.domain.PlayerStats;
-import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
@@ -21,7 +12,6 @@ import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.platform.domain.User;
 
 import java.net.*;
 import java.io.*;
@@ -52,10 +42,6 @@ public class PlatformCore {
     public GameHistoryStore gameHistoryStore;
     public PlayerStatsStore playerStatsStore;
     public ParticipantStore participantStore;
-
-    /** Database setup**/
-    public UserStore userStore;
-    public SessionHistoryStore sessionHistoryStore;
 
     // hashmap of games gettable by ID
     //public HashMap<String, Game> games;
@@ -132,7 +118,7 @@ public class PlatformCore {
 
     public sysMSG authenticate(String user, String pass, platformChannel pl) {
         List<User> listOfUsers = userStore.findByUserName(user);
-        int newSessionId = sessionHistoryStore.assignNewID();
+        int newSessionId = sessionHistoryStore.assignNewId();
         System.out.println("loginprocessed");
         UUID UID = UUID.randomUUID();
         String incomingUsername = user;
@@ -153,9 +139,9 @@ public class PlatformCore {
 
     public sysMSG createAccount(String user, String pass, String email){
         List<User> check = userStore.findByUserName(user);
-        int newSessionId = sessionHistoryStore.assignNewID();
+        int newSessionId = sessionHistoryStore.assignNewId();
         UUID UID = UUID.randomUUID();
-        int newUserId = userStore.assignNewID();
+        int newUserId = userStore.assignNewId();
         if(!userStore.findByUserName(user).isEmpty()){
             return new sysMSG("NEWU", "FAIL", "That username is already taken");
         }

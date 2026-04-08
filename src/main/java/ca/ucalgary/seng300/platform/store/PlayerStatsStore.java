@@ -11,10 +11,6 @@ public class PlayerStatsStore extends Store<PlayerStats> {
         super(filePath);
     }
 
-    @Override
-    protected Class<PlayerStats> recordType() {
-        return PlayerStats.class;
-    }
     //returns users by gameID
     public List<PlayerStats> findPlayersByGameType(GameType gameType) {
         return find(rec -> rec.getGameType() == gameType);

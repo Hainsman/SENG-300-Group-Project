@@ -9,10 +9,6 @@ import java.util.List;
 public class GameHistoryStore extends Store<GameHistory> {
     public GameHistoryStore(String filePath) {super(filePath);}
 
-    @Override
-    protected Class<GameHistory> recordType() {
-        return GameHistory.class;
-    }
     //retrieves all instances of games given a GameID
     public List<GameHistory> findByGameID(GameType gameType){return find(rec -> rec.getGameType() == gameType);}
     // Bill Pugh Singleton

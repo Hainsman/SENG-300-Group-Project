@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.platform.client;
 
-import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
@@ -20,8 +19,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.function.Consumer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.UUID;
 
 // debug Server first, then as many clients as you want

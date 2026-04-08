@@ -8,10 +8,7 @@ import java.util.List;
 public class UserStore extends Store<User> {
     public UserStore(String filePath) {super(filePath);}
 
-    @Override
-    protected Class<User> recordType() {
-        return User.class;
-    }
+
     public List<User> findByUserName(String username) {return find(rec -> rec.getlogin().equals(username));}
     public List<User> findByUserEmail(String email) {return find(rec -> rec.getEmail().equals(email));}
 
