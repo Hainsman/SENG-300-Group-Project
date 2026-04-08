@@ -227,8 +227,8 @@ public class WindowManager {
                 draggingWindow = true;
             }
         }
-        else
-            playAudioClip(SoundEffect.MOUSE_CLICKED);
+//        else
+//            playAudioClip(SoundEffect.MOUSE_CLICKED);
 
         if (showingNotification)
             hideNotification();
@@ -555,7 +555,7 @@ public class WindowManager {
         return isSoundOn ? 1 * settingsVolume : 0;
     }
 
-    private void playAudioClip(SoundEffect soundEffect) {
+    public void playAudioClip(SoundEffect soundEffect) {
         AudioClip audioClip = new AudioClip(soundEffect.getPath());
         audioClip.setVolume(getActualVolume() * soundEffect.getVolume());
         audioClip.play();

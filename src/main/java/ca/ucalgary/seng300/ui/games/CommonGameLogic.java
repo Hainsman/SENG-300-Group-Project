@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.services.RankingService;
 import ca.ucalgary.seng300.platform.session.Session;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
 import javafx.application.Platform;
@@ -262,9 +263,17 @@ public abstract class CommonGameLogic extends StackPane {
         }
     }
 
-    private void onGameOver() {
+    private void onGameOver(State state, Player client) {
         setDisableBoard(true);
         resetButton.setVisible(true);
+
+        if ((state == State.PLAYER_1_WIN && client == Player.PLAYER_1)
+            || (state == State.PLAYER_2_WIN && client == Player.PLAYER_2))
+            rootController.getWindowManager().playAudioClip(SoundEffect.GAME_WON);
+        else if (state == State.TIE)
+            rootController.getWindowManager().playAudioClip(SoundEffect.TIE);
+        else
+            rootController.getWindowManager().playAudioClip(SoundEffect.GAME_LOST);
     }
 
     private void updateStatusLabel(GameState gameState, State state) {
@@ -287,14 +296,17 @@ public abstract class CommonGameLogic extends StackPane {
                             : player2Name + " Turn");
                 }
             }
-            case TIE -> statusLabel.setText("Draw!");
+            case TIE -> {
+                statusLabel.setText("Draw!");
+                onGameOver(state, gameState != null ? clientCore.getMyNetworkRole() : Player.PLAYER_1);
+            }
             case PLAYER_1_WIN -> {
                 statusLabel.setText(player1Name + " Wins!");
-                onGameOver();
+                onGameOver(state, gameState != null ? clientCore.getMyNetworkRole() : Player.PLAYER_1);
             }
             case PLAYER_2_WIN -> {
                 statusLabel.setText(player2Name + " Wins!");
-                onGameOver();
+                onGameOver(state, gameState != null ? clientCore.getMyNetworkRole() : Player.PLAYER_1);
             }
         }
     }
