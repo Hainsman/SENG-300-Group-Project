@@ -78,37 +78,47 @@ public class PlatformCore {
 
     public synchronized boolean onHostLobby(String code, int gameId, platformChannel hostChannel, String clientPayload) {
         if (code == null || code.isBlank() || hostChannel == null) {
+            System.out.println("HOST_LOBBY rejected: code/hostChannel invalid");
             return false;
         }
         if (lobbies == null) {
             lobbies = new HashMap<>();
         }
         String lobbyid = code.trim().toUpperCase();
+        System.out.println("HOST_LOBBY requested rawCode=" + code + " normalizedCode=" + lobbyid + " gameId=" + gameId);
 
         ServerLobby lob = new ServerLobby(lobbyid, gameId, hostChannel, clientPayload);
         if (lobbies.putIfAbsent(lobbyid, lob) != null) {
+            System.out.println("HOST_LOBBY rejected: duplicate code. Existing lobbies=" + lobbies.keySet());
             return false;
         }
-        System.out.println("Lobby opened: " + code + " (" + gameId + ")");
+        System.out.println("Lobby opened: " + code + " (" + gameId + ") currentLobbies=" + lobbies.keySet());
         return true;
     }
 
     public synchronized boolean onJoinLobby(String code, int requestedGameId, platformChannel guestChannel, String guestPayload) {
         if (code == null || code.isBlank() || guestChannel == null || lobbies == null) {
+            System.out.println("JOIN_LOBBY rejected early: rawCode=" + code + " gameId=" + requestedGameId
+                    + " guestNull=" + (guestChannel == null) + " lobbiesNull=" + (lobbies == null));
             return false;
         }
         String lobbyid = code.trim().toUpperCase();
+        System.out.println("JOIN_LOBBY lookup rawCode=" + code + " normalizedCode=" + lobbyid
+                + " requestedGameId=" + requestedGameId + " availableLobbies=" + lobbies.keySet());
         ServerLobby sl = lobbies.get(lobbyid);
         if (sl == null) {
+            System.out.println("JOIN_LOBBY rejected: no lobby found for " + lobbyid);
             return false;
         }
         if (requestedGameId > 0 && requestedGameId != sl.getGameId()) {
+            System.out.println("JOIN_LOBBY rejected: game mismatch requested=" + requestedGameId
+                    + " hostGameId=" + sl.getGameId());
             return false;
         }
         sl.joinGuest(guestChannel, guestPayload);
         sl.rosterSend();
         sl.gameReset();
-        System.out.println("Lobby " + code + " matched; game ready");
+        System.out.println("Lobby " + code + " matched; game ready (" + sl.getGameId() + ")");
         return true;
     }
 

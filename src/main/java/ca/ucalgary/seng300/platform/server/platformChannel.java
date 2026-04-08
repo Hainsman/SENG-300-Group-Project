@@ -70,6 +70,7 @@ public class platformChannel extends Thread {
                 } catch (NumberFormatException e) {
                     requestedGameId = 0;
                 }
+                System.out.println("JOIN_LOBBY received for code " + sm.getFieldA() + " gameId=" + requestedGameId);
                 if (serv.onJoinLobby(sm.getFieldA(), requestedGameId, this, sm.getPayload())) {
                     cliSend(new sysMSG("LOBBY_OK", sm.getFieldA(), "JOIN"));
                 } else {

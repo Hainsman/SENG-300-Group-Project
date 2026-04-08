@@ -68,6 +68,7 @@ public class joinLobbyController {
         }
     }
 
+    @FXML
     private void handleJoinByCode() {
         if (codeField == null) {
             return;
@@ -104,6 +105,7 @@ public class joinLobbyController {
             CentralController.moveTo("mainLobby.fxml");
         };
 
+        System.out.println("JOIN_LOBBY sent for code " + code + " gameId=" + selectedGameId());
         cc.msgSend(new sysMSG("JOIN_LOBBY", code, String.valueOf(selectedGameId())));
     }
 

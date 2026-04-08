@@ -19,6 +19,7 @@ public class ServerLobby {
 
     public ServerLobby(String code, int gameId, platformChannel h, String ex){
         lobbyCode = code;
+        this.gameId = gameId;
         if(gameId == Game.TICK_TACK_TOE){
             c4game = null;
             tttgame = new TTTGame();
