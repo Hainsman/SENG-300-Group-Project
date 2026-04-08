@@ -1,10 +1,6 @@
 package ca.ucalgary.seng300.ui.userdata;
 
-import ca.ucalgary.seng300.platform.constants.Constants;
-import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.platform.store.UserStore;
-import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
@@ -15,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.io.IOException;
-import java.util.List;
 
 public class LoginPage extends HBox implements Navigable {
 
@@ -74,9 +69,7 @@ public class LoginPage extends HBox implements Navigable {
         }
 
         loginPending = false;
-        if (loginButton != null) {
-            loginButton.setDisable(false);
-        }
+        loginButton.setDisable(false);
 
         if ("PASS".equals(response.getFieldA())) {
             errorLabel.setText("");
@@ -113,6 +106,6 @@ public class LoginPage extends HBox implements Navigable {
 
     @Override
     public void reset() {
-
+        errorLabel.setText("");
     }
 }
