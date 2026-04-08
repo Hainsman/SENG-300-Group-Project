@@ -50,6 +50,7 @@ public class CentralController {
     public NewUserPage newUserPage;
     public HostLobbyPage hostLobbyPage;
     public JoinLobbyPage joinLobbyPage;
+    public MainLobbyPage mainLobbyPage;
 
 
     public static GameType selectedGame;
@@ -130,6 +131,13 @@ public class CentralController {
         return clientCore;
     }
 
+    public static Window getAppWindow() {
+        if (instance == null || instance.root == null || instance.root.getScene() == null) {
+            return null;
+        }
+        return instance.root.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize() {
@@ -169,17 +177,18 @@ public class CentralController {
         newUserPage = new NewUserPage(this);
         hostLobbyPage = new HostLobbyPage(this);
         joinLobbyPage = new JoinLobbyPage(this);
+        mainLobbyPage = new MainLobbyPage(this);
         //lobbyBridge = ;
         nodes.add(gameGUIPage);
         nodes.add(connect4);
         nodes.add(tttPage);
         nodes.add(new ChooseModePage());
-        nodes.add(new GameDashboardPage());
+        nodes.add(new GameDashboardPage(this));
         nodes.add(hostLobbyPage);
         nodes.add(new InfoPage());
         nodes.add(joinLobbyPage);
         nodes.add(loginPage);
-        nodes.add(new MainLobbyPage(this));
+        nodes.add(mainLobbyPage);
         nodes.add(newUserPage);
         nodes.add(new ProfileDashboardPage());
         nodes.add(new SettingsPage());

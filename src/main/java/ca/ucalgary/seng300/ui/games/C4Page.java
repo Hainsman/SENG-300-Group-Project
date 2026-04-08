@@ -5,6 +5,7 @@ import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.connect4.ConnectFourRandomMoveGenerator;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -76,6 +77,23 @@ public class C4Page extends StackPane implements Navigable {
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isStrictOnlineC4() {
+        return !randomOpponentEnabled
+                && session == null
+                && clientCore != null
+                && clientCore.isConnected();
+    }
+
+    public boolean isActiveOnlineMatch() {
+        if (!isStrictOnlineC4()) {
+            return false;
+        }
+        if (clientCore.getLastUpdate() instanceof C4GameState gs) {
+            return State.IN_PROGRESS.equals(gs.getState());
+        }
+        return true;
     }
 
     @FXML

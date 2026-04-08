@@ -86,9 +86,13 @@ public class PlatformCore {
         }
         sl.joinGuest(guestChannel, guestPayload);
         sl.rosterSend();
-        sl.gameReset();
         System.out.println("Lobby " + code + " matched; game ready");
         return true;
+    }
+
+    public void startLobby(String code){
+        ServerLobby sl = lobbies.get(code);
+        sl.gameStart();
     }
 
     public void sendMult (chatMessage m){

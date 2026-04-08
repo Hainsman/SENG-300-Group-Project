@@ -176,7 +176,7 @@ public class GameGUIPage extends VBox implements Navigable {
         if (tttPage != null) {
             tttPage.handleForfeitFromShell();
         } else if (c4Page != null) {
-            c4Page.handleForfeitFromShell();
+            //c4Page.handleForfeitFromShell();
         }
     }
 

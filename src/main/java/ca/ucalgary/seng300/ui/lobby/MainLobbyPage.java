@@ -142,9 +142,10 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
     }
 
-    private void refreshPlayersFromState() {
+    public void refreshPlayersFromState() {
+
         boolean hosting = CentralController.hostingLobby;
-        boolean paired = isPaired();
+        //boolean paired = isPaired();
         boolean roster = rosterPopulated();
 
         setYouPills(hosting);
@@ -162,13 +163,13 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         } else if (hosting) {
             hostName = currentUserDisplayName();
             hostElo = myEloForSelectedGame();
-            guestName = paired ? "Opponent" : "Waiting for opponent…";
-            guestElo = paired ? Math.max(0, CentralController.rosterGuestElo) : -1;
+            guestName = "Waiting for opponent…";
+            guestElo = -1;
         } else {
             guestName = currentUserDisplayName();
             guestElo = myEloForSelectedGame();
-            hostName = paired ? "Host" : "Waiting…";
-            hostElo = paired ? Math.max(0, CentralController.rosterHostElo) : -1;
+            hostName = "Waiting…";
+            hostElo = -1;
         }
 
         if (hostNameLabel != null) {
@@ -185,11 +186,11 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
 
         if (connectionHintLabel != null) {
-            if (paired && roster) {
+            if (roster) {
                 connectionHintLabel.setText("Both players connected. Host can start when ready.");
                 connectionHintLabel.setVisible(true);
                 connectionHintLabel.setManaged(true);
-            } else if (!paired) {
+            } else if (hosting) {
                 connectionHintLabel.setText("Waiting for your opponent to join…");
                 connectionHintLabel.setVisible(true);
                 connectionHintLabel.setManaged(true);
@@ -201,21 +202,23 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
 
         if (playerCountLabel != null) {
-            int cur = paired ? 2 : 1;
+            int cur = roster ? 2 : 1;
             int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
             playerCountLabel.setText("Players · " + cur + " / " + max);
         }
+        refreshStartButton();
+        System.out.println("refreshedfromstate");
+
     }
 
-    private void refreshStartButton() {
+    public void refreshStartButton() {
         if (startGameBtn == null) {
             return;
         }
         ClientCore cc = rootController != null ? rootController.getCC() : null;
-        boolean paired = cc != null && cc.getLastUpdate() != null;
+        boolean paired = rosterPopulated();
         boolean host = CentralController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
-        refreshPlayersFromState();
     }
 
     @FXML
@@ -232,9 +235,15 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         if (CentralController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {
-                cc.msgSend(new sysMSG("GMJN", nav.getFxml(), ""));
+                System.out.println("start lobby");
+                cc.msgSend(new sysMSG("START_LOBBY",""));
             }
         }
+    }
+
+    public void gameStart(){
+        GameType game = CentralController.selectedGame;
+        Navigation nav = GameType.getNavigation(game);
         LobbyBridge.clearLobbyUiCallbacks();
         CentralController.moveTo(nav);
     }

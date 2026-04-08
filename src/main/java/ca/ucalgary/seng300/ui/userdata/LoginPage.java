@@ -63,8 +63,8 @@ public class LoginPage extends HBox implements Navigable {
             try{
                 i = Integer.parseInt(s.getFieldB());
             }catch(Exception ignore){}
-            CentralController.currentUserId = user.getID();
-            CentralController.displayName = user.getlogin();
+            //CentralController.currentUserId = user.getID();
+            //CentralController.displayName = user.getlogin();
             CentralController.previousScreen = null;
             CentralController.localAiMode = false;
             CentralController.moveTo(Navigation.GAME_DASHBOARD);

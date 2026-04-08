@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.client;
 
 import ca.ucalgary.seng300.game.core.GameState;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
@@ -35,7 +36,7 @@ public class ClientCore extends Thread{
 
     //public volatile char flg = 'n';
     public String UItype;
-    public String gameType;
+    public GameType gameType;
 
     //private final ExecutorService executor = Executors.newSingleThreadExecutor();
     //private volatile String sessionId;
@@ -68,10 +69,10 @@ public class ClientCore extends Thread{
                 : ((CID != null && !CID.isBlank()) ? CID : "player");
         Object p = null;
         switch(gameType) {
-            case "TTT":
+            case GameType.TIC_TAC_TOE:
                 p = new TTTPlayerAction(pid, "MOVE", row, col);
                 break;
-            case "C4":
+            case GameType.CONNECT4:
                 p = new C4PlayerAction(pid, "MOVE" , row, col);
                 break;
             default:
@@ -106,30 +107,21 @@ public class ClientCore extends Thread{
         return lastUpdate;
     }
 
-    public String debugBoard(TTTGameState t) {
-        String s = "";
-        for (Player[] p : t.getBoard()) {
-            for (Player pp : p) {
-                s = s + pp;
-            }
-        }
-        return s;
-    }
 
     private void onGameStateReceived(GameState g) {
         System.out.println("a gamestate arrived");
         lastUpdate = g;
         if (g instanceof TTTGameState tttState) {
-            System.out.println(debugBoard(tttState));
+            //System.out.println(debugBoard(tttState));
         }
         Platform.runLater(() -> {
-            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.isGameOn()) {
-                ioMain.tttPage.refreshFromGameStateUpdate(tttState);
+            ioMain.tttPage.refreshFromGameStateUpdate((TTTGameState) g);
+            /*if (g instanceof TTTGameState tttState && ioMain != null && ioMain.isGameOn()) {
+
                 System.out.println("Ui update triggered");
             } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.isGameOn()) {
                 ioMain.connect4.refreshFromGameStateUpdate(c4State);
-            }
-            LobbyBridge.notifyGameState();
+            }*/
         });
     }
 
@@ -206,23 +198,29 @@ public class ClientCore extends Thread{
                                 }
                                 break;
                             case "LOBBY_HOST":
-                                myPlayerId = "P1";
                                 Platform.runLater(() -> {
                                     ioMain.hostLobbyPage.hostLobby(sm.getFieldA(),sm.getFieldB());
                                 });
                                 break;
                             case "LOBBY_JOIN":
                                 Platform.runLater(() -> {
-                                    ioMain.hostLobbyPage.hostLobby(sm.getFieldA(),sm.getFieldB());
+                                    ioMain.joinLobbyPage.lobbyJoin(sm.getFieldA(),sm.getFieldB());
                                 });
                                 break;
-                            case "PARTNER_JOINED":
-                                LobbyBridge.notifyPartnerJoined();
+                            case "START_LOBBY":
+                                System.out.println("start got");
+                                myPlayerId = sm.getFieldA();
+                                Platform.runLater(() -> {
+                                    ioMain.mainLobbyPage.gameStart();
+                                });
                                 break;
                             case "LOBBY_ROSTER": {
                                 Object pl = sm.getPayload();
+                                System.out.println("lobby got");
                                 CentralController.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
-                                LobbyBridge.notifyPartnerJoined();
+                                Platform.runLater(() -> {
+                                    ioMain.mainLobbyPage.refreshPlayersFromState();
+                                });
                                 break;
                             }
                             default:

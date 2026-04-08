@@ -12,7 +12,6 @@ public class platformChannel extends Thread {
     private Socket socket;
     private String lobby;
     private GameType gameType;
-    private String gameID;
 
     private PlatformCore serv;
     private ObjectOutputStream outServ;
@@ -66,6 +65,9 @@ public class platformChannel extends Thread {
                 } else {
                     cliSend(new sysMSG("LOBBY_JOIN", "ERR", "No lobby with that code (check with host or try again)."));
                 }
+                break;
+            case "START_LOBBY":
+                serv.startLobby(lobby);
                 break;
             //case "FORFEIT" -> serv.onForfeit(this);
 

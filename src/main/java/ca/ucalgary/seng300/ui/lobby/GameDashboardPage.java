@@ -14,8 +14,10 @@ import java.io.IOException;
 
 public class GameDashboardPage extends AnchorPane implements Navigable {
 
-    public GameDashboardPage() {
+    private CentralController cent;
+    public GameDashboardPage(CentralController c) {
         try {
+            cent = c;
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -43,12 +45,14 @@ public class GameDashboardPage extends AnchorPane implements Navigable {
 
     @FXML
     void C4click(MouseEvent event) {
+        cent.clientCore.gameType = GameType.CONNECT4;
         CentralController.selectedGame = GameType.CONNECT4;
         CentralController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @FXML
     void TTTclicked(MouseEvent event) {
+        cent.clientCore.gameType = GameType.TIC_TAC_TOE;
         CentralController.selectedGame = GameType.TIC_TAC_TOE;
         CentralController.moveTo(Navigation.CHOOSE_MODE);
     }

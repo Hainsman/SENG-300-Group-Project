@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.platform.server;
 
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
@@ -47,6 +48,12 @@ public class ServerLobby {
             String roster = h[0] + "|" + h[1] + "|" + g[0] + "|" + g[1];
             sysMSG rosterMsg = new sysMSG("LOBBY_ROSTER", lobbyCode, "", roster);
             sendBoth(rosterMsg);
+        }
+
+        public void gameStart(){
+            host.cliSend(new sysMSG("START_LOBBY", "P1"));
+            guest.cliSend(new sysMSG("START_LOBBY", "P2"));
+            gameReset();
         }
 
         public void gameReset(){
