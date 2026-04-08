@@ -152,8 +152,6 @@ public class PlatformCore {
         if (listOfUsers.isEmpty()) {
             listOfUsers = userStore.findByUserEmail(user);
         }
-        int newSessionId = sessionHistoryStore.assignNewId();
-        UUID UID = UUID.randomUUID();
         String incomingUsername = user;
         String incomingPassword = hashPassword(pass, HASH_ALGORITHM);
 
@@ -164,15 +162,22 @@ public class PlatformCore {
         User matchedUser = listOfUsers.getFirst();
         boolean matchingIdentity = incomingUsername.equals(matchedUser.getlogin())
                 || incomingUsername.equals(matchedUser.getEmail());
+        if (!sessionHistoryStore.findSessionsByUserID(matchedUser.getID()).isEmpty()) {
+            return new sysMSG("AUTH", "FAIL", "Login failed, user is already signed in");
+        }
         if (matchingIdentity && incomingPassword.equals(matchedUser.getPasswordHash())){
+            int newSessionId = sessionHistoryStore.assignNewId();
+            UUID UID = UUID.randomUUID();
             sessionHistoryStore.create(new SessionHistory(newSessionId, matchedUser.getID(), UID));
+            if (pl != null) {
+                pl.setAuthenticatedSession(matchedUser.getID(), UID);
+            }
             return new sysMSG("AUTH", "PASS", matchedUser.getID()+"", matchedUser.getlogin());
         }
         return new sysMSG("AUTH", "FAIL", "Login failed, invalid email/username or password");
     }
 
     public sysMSG createAccount(String user, String pass, String email){
-        int newSessionId = sessionHistoryStore.assignNewId();
         int newUserId = userStore.assignNewId();
         if(!userStore.findByUserName(user).isEmpty()){
             return new sysMSG("NEWU", "FAIL", "That username is already taken");
@@ -180,9 +185,22 @@ public class PlatformCore {
         if(!isEmailValid(email, EMAIL_REGEX)){
             return new sysMSG("NEWU", "FAIL", "Please enter a valid email address");
         }
-        sessionHistoryStore.create(new SessionHistory(newSessionId, newUserId, UUID.randomUUID()));
         userStore.create(new User(newUserId,user,email,hashPassword(pass,HASH_ALGORITHM)));
         return new sysMSG("NEWU", "PASS");
+    }
+
+    public synchronized void onClientDisconnected(platformChannel channel) {
+        if (channel == null) {
+            return;
+        }
+        UUID sessionId = channel.getAuthenticatedSessionId();
+        if (sessionId == null) {
+            return;
+        }
+        List<SessionHistory> sessionsForUser = sessionHistoryStore.findSessionByUUID(sessionId);
+        for (SessionHistory session : sessionsForUser) {
+            sessionHistoryStore.delete(session);
+        }
     }
 
     public void handleMove(String id, platformChannel player, PlayerAction m){

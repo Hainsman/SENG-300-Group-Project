@@ -8,6 +8,7 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.UUID;
 
 public class platformChannel extends Thread {
     private Socket socket;
@@ -17,6 +18,8 @@ public class platformChannel extends Thread {
     private ObjectOutputStream outServ;
     private ObjectInputStream inCli;
     public  String ID;
+    private Integer authenticatedUserId;
+    private UUID authenticatedSessionId;
 
 
     public platformChannel(Socket socket, PlatformCore serv) {
@@ -39,6 +42,19 @@ public class platformChannel extends Thread {
 
     public String getLobby() {
         return lobby;
+    }
+
+    public void setAuthenticatedSession(int userId, UUID sessionId) {
+        this.authenticatedUserId = userId;
+        this.authenticatedSessionId = sessionId;
+    }
+
+    public Integer getAuthenticatedUserId() {
+        return authenticatedUserId;
+    }
+
+    public UUID getAuthenticatedSessionId() {
+        return authenticatedSessionId;
     }
 
     private void handleSys(sysMSG sm) {
@@ -138,6 +154,8 @@ public class platformChannel extends Thread {
         }catch (Exception e){
             System.out.println("socket already closed");
         }
+
+        serv.onClientDisconnected(this);
 
         System.out.println("Client " + ID + " " + socket.getInetAddress() + " has disconnected.");
     }
