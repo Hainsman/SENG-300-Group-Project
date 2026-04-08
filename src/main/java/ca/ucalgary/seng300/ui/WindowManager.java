@@ -411,7 +411,7 @@ public class WindowManager {
         animation.play();
     }
 
-    public void showNotification(String notification) {
+    public void showNotification(String notification, boolean soundOn) {
         notificationLabel.setText(notification);
 
         root.getChildren().remove(notificationLabel); // added this to make sure no duplicates get added (which causes a crash)
@@ -433,12 +433,15 @@ public class WindowManager {
                         new KeyValue(notificationLabel.opacityProperty(), 1)
                 )
         );
-        AudioClip audioClip = new AudioClip(SoundEffect.YOUR_TURN_NOTIFICATION.getPath());
-        audioClip.setVolume(getActualVolume());
 
-        showingNotification = true;
-        audioClip.play();
         animation.play();
+        showingNotification = true;
+
+        if (soundOn) {
+            AudioClip audioClip = new AudioClip(SoundEffect.YOUR_TURN_NOTIFICATION.getPath());
+            audioClip.setVolume(getActualVolume());
+            audioClip.play();
+        }
     }
 
     private void hideNotification() {

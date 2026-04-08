@@ -58,7 +58,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     private void initialize() {
-        GameType game = CentralController.selectedGame;
+        GameType game = rootController.selectedGame;
         gameLabel.setText(game != null ? game.toString() : "Game");
         previewGameLabel.setText(game != null ? game.toString() : "-");
 
@@ -81,11 +81,9 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
     @FXML
     void handleCreateLobby(ActionEvent event) {
         if (clientCore == null || !clientCore.isConnected()) {
-            Alert warn = new Alert(Alert.AlertType.WARNING,
+            new Alert(Alert.AlertType.WARNING,
                     "Connect to the game server first.\n\nRun PlatformCore (listens on port 2020), restart this app, then try again.",
-                    ButtonType.OK);
-            ThemeAlerts.apply(warn);
-            warn.showAndWait();
+                    ButtonType.OK).showAndWait();
             return;
         }
 
@@ -100,22 +98,27 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
 
         String code = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
 
-        CentralController.maxPlayers = maxPlayers;
-        CentralController.privacy = privacy;
-        CentralController.lobbyCode = code;
-        CentralController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
-        CentralController.hostingLobby = true;
-        CentralController.clearLobbyRoster();
+        rootController.maxPlayers = maxPlayers;
+        rootController.privacy = privacy;
+        rootController.lobbyCode = code;
+        rootController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
+        rootController.hostingLobby = true;
+        rootController.clearLobbyRoster();
 
-        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, CentralController.selectedGame.toString(), PlayerProfileHelper.lobbyPayload()));
+        LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        LobbyBridge.onHostOk = () -> {
+            rootController.moveTo(Navigation.MAIN_LOBBY);
+            rootController.previousScreen = Navigation.GAME_DASHBOARD;
+        };
+
+        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, String.valueOf(rootController.selectedGame.toId())));
     }
 
-    public void hostLobby(String tp, String ms){
-        if(tp.equals("OK")){
-            CentralController.moveTo(Navigation.MAIN_LOBBY);
-            CentralController.previousScreen = Navigation.GAME_DASHBOARD;
-        }
-        else{
+    public void hostLobby(String tp, String ms) {
+        if (tp.equals("OK")) {
+            rootController.moveTo(Navigation.MAIN_LOBBY);
+            rootController.previousScreen = Navigation.GAME_DASHBOARD;
+        } else {
             Alert err = new Alert(Alert.AlertType.ERROR, ms, ButtonType.OK);
             ThemeAlerts.apply(err);
             err.showAndWait();
@@ -124,7 +127,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     void handleBack(ActionEvent event) {
-        CentralController.moveTo(Navigation.CHOOSE_MODE);
+        rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @Override

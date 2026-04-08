@@ -5,42 +5,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.ucalgary.seng300.game.core.GameType;
-import ca.ucalgary.seng300.platform.domain.User;
-import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.ui.util.ThemeAlerts;
-import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 public class GameGUIPage extends VBox implements Navigable {
 
     private CentralController rootController;
 
+    private String currentPlayerID;
     private C4Page c4Page;
     private TTTPage tttPage;
 
     @FXML private VBox gameBox;
 
-    @FXML private Label eloValue;
-    @FXML private Label winValue;
-    @FXML private Label rankValue;
+    // ELO Table Variables
+    @FXML private Label eloValue; // Value of elo to be displayed
+    @FXML private Label winValue; // Elo change based on win
+    //    @FXML private Label lossValue; // Elo change based on loss
+//    @FXML private Label drawValue; // Elo change based on draw
+    @FXML private Label rankValue; // Elo description string
+
+    // History Box
+    @FXML public VBox historyBox;
 
     @FXML private VBox matchChat;
     @FXML private TextField chatInput;
 
-    @FXML private Label tttLabel;
-    @FXML private Label usernameLabel;
-    @FXML private Label emailLabel;
+    // Accompanying Labels
+//    @FXML private Label connect4Label;
+    @FXML private Label gameTypeLabel;
     @FXML private Button infoButton;
 
     public GameGUIPage(CentralController rootController) {
@@ -57,108 +62,96 @@ public class GameGUIPage extends VBox implements Navigable {
         }
     }
 
-    public void setGameNode(Node node) {
+    public void setGameNode(Node node, GameType gameType) {
         gameBox.getChildren().clear();
         gameBox.getChildren().add(node);
 
         c4Page = node instanceof C4Page connect4 ? connect4 : null;
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
-        refreshSidebar();
+
+        gameTypeLabel.setText(gameType.toString());
     }
 
-    /**
-     * Left sidebar: game name (Tic-Tac-Toe vs Connect 4), signed-in user, ELO/tier/games for this game mode.
-     */
-    public void refreshSidebar() {
-        GameType g = CentralController.selectedGame != null
-                ? CentralController.selectedGame
-                : GameType.TIC_TAC_TOE;
-
-        if (tttLabel != null) {
-            tttLabel.getStyleClass().removeAll("ttt-title", "c4-title");
-            if (c4Page != null) {
-                tttLabel.setText("Connect 4");
-                tttLabel.getStyleClass().add("c4-title");
-                tttLabel.setEffect(null);
-            } else {
-                tttLabel.setText("Tic-Tac-Toe");
-                tttLabel.getStyleClass().add("ttt-title");
-                tttLabel.setEffect(new DropShadow(8, Color.color(0.31, 0.88, 0.85)));
-            }
-        }
-
-        int uid = CentralController.currentUserId;
-        User u = uid > 0 ? UserStore.getInstance().get(uid) : null;
-        String display = "Player";
-        if (u != null) {
-            display = u.getlogin();
-        } else if (CentralController.displayName != null && !CentralController.displayName.isBlank()) {
-            display = CentralController.displayName.trim();
-        }
-        if (usernameLabel != null) {
-            usernameLabel.setText(display);
-        }
-
-        if (emailLabel != null) {
-            String em = u != null && u.getEmail() != null ? u.getEmail().trim() : "";
-            if (!em.isEmpty()) {
-                emailLabel.setText(em);
-                emailLabel.setVisible(true);
-                emailLabel.setManaged(true);
-            } else {
-                emailLabel.setText("");
-                emailLabel.setVisible(false);
-                emailLabel.setManaged(false);
-            }
-        }
-
-        int elo = 1200;
-        int games = 0;
-        if (u != null) {
-            elo = u.getEloForGame(g);
-            games = u.getGamesForGame(g);
-        }
-        if (eloValue != null) {
-            eloValue.setText(String.valueOf(elo));
-        }
-        if (rankValue != null) {
-            rankValue.setText(PlayerProfileHelper.eloTierLabel(elo));
-        }
-        if (winValue != null) {
-            winValue.setText(String.valueOf(games));
-        }
-    }
+//    @FXML
+//    public void initialize() {
+//        GameGUI.setEloLabels(eloValue, winValue, lossValue, drawValue, rankValue);
+//        GameGUI.setEloLabels(eloValue, winValue, rankValue);
+//    }
 
     /**
-     * Match history panel was removed; moves are still tracked in {@link #matchHistory} for networking.
+     * addHistory() is the single method any game controller calls to log a move.
+     * It creates a colored dot + label entry and adds it to the historyBox.
+     *
+     * @param gameType "TicTacToe" or "Connect4"
+     *
+     * @param player "X", "O", "Player 1", etc.
+     *
+     * @param details "(1, 2)" or "Col 3" etc.
+     *
+     * @param color dot color matching the player's piece
      */
     public void addHistory(String gameType, String player, String details, Color color) {
-        // No on-screen history list; data remains in matchHistory via onMoveChosen.
+        if (historyBox == null) {
+            return;
+        }
+
+        HBox entry = new HBox(8);
+        entry.setAlignment(Pos.CENTER_LEFT);
+        entry.setStyle("-fx-padding: 4 8;");
+
+        Circle dot = new Circle(7);
+        dot.setFill(color);
+
+        Label label = new Label(gameType + "  |  " + player + "  →  " + details);
+        label.setStyle("-fx-text-fill: white; -fx-font-size: 12px;");
+
+        entry.getChildren().addAll(dot, label);
+        historyBox.getChildren().add(entry);
     }
 
+    /**
+     * clearHistory() wipes the history panel.
+     * Call this when starting a new game or resetting one.
+     */
     public void clearHistory() {
+        if (historyBox != null) {
+            historyBox.getChildren().clear();
+        }
+
+        // Clearing array list for the sending the match history.
         matchHistory.clear();
     }
 
+    // Array list is used for storing the match history.
+    // The match history inside the array should look something like this:
+    // "[TP1(0,0), TP2(1,0), TP1(1,1)".
     private final List<String> matchHistory = new ArrayList<>();
 
+    /**
+     * onMoveChosen appends match history to an array list.
+     * Returns a string containing the match history and game type.
+     *
+     * @param player send TP1/TP2 for tictactoe and CP1/CP2 for connect4.
+     *
+     * @param move "(1,2)".
+     */
     public void onMoveChosen(String player, String move) {
         String playerMove = player + move;
         matchHistory.add(playerMove);
     }
 
+    // Match history getter method
     public String getMatchHistory() {
-        return matchHistory.toString();
+        return matchHistory.toString(); // e.g. "[TP1(0,0), TP2(1,0), TP1(1,1)" OR "[CP1(0,0), CP2(1,0), CP1(1,1)".
     }
 
+    // Player move getter method
     public String getMove() {
-        return matchHistory.isEmpty() ? "" : matchHistory.getLast();
+        return matchHistory.getLast(); // The latest move e.g. "[TP1(0,0)]".
     }
 
     public void addChat(String sender, String message, Color color) {
-        if (matchChat == null) {
-            return;
-        }
+        if (matchChat == null) return;
         Label entry = new Label(sender + ": " + message);
         entry.setTextFill(color);
         entry.setWrapText(true);
@@ -166,47 +159,65 @@ public class GameGUIPage extends VBox implements Navigable {
     }
 
     public void clearChat() {
-        if (matchChat != null) {
-            Platform.runLater(() -> matchChat.getChildren().clear());
-        }
+        if (matchChat != null) Platform.runLater(() -> matchChat.getChildren().clear());
     }
+
+//    public static void setEloLabels(Label elo, Label win, Label loss, Label draw, Label rank) {
+//    public static void setEloLabels(Label elo, Label win, Label rank) {
+//        eloLabel = elo;
+//        winLabel = win;
+////        lossLabel = loss;
+////        drawLabel = draw;
+//        rankLabel = rank;
+//    }
+
+    // backend can call with necessary data inputs
+//    public static void displayElo(int elo, int win, int loss, int draw, String rank) {
+//        if (eloLabel == null)
+//            return;
+//        eloLabel.setText(String.valueOf(elo));
+//        winLabel.setText(String.valueOf(win));
+////        lossLabel.setText(String.valueOf(loss));
+////        drawLabel.setText(String.valueOf(draw));
+//        rankLabel.setText("PlaceHolder");
+//
+//        // RESOLVE PLEASE: Need to connect to backend constants / rank.java
+//        // for (Rank rank : Rank.values()) {
+//        // if (rank.isInRank(elo)) {
+//        // rankLabel.setText(rank.getDisplayName());
+//        // break;
+//        // }
+//        // }
+//    }
 
     @FXML
     private void handleForfeit(ActionEvent event) {
         if (tttPage != null) {
             tttPage.handleForfeitFromShell();
-        } else if (c4Page != null) {
-            //c4Page.handleForfeitFromShell();
+        }
+        else if (c4Page != null) {
+            c4Page.handleForfeitFromShell();
         }
     }
 
     @FXML
     private void handleInfoButton(ActionEvent event) {
-        boolean onlineBlock = (tttPage != null && tttPage.isActiveOnlineMatch())
-                || (c4Page != null && c4Page.isActiveOnlineMatch());
-        if (onlineBlock) {
-            Alert a = new Alert(Alert.AlertType.INFORMATION,
+        if ((tttPage != null && tttPage.isOnlineMode()) || (c4Page != null && c4Page.isOnlineMode())) {
+            new Alert(Alert.AlertType.INFORMATION,
                     "Finish the match or use Forfeit before opening other screens.",
-                    ButtonType.OK);
-            ThemeAlerts.apply(a);
-            a.showAndWait();
+                    ButtonType.OK).showAndWait();
             return;
         }
-        CentralController.moveTo(Navigation.INFO);
+        rootController.moveTo(Navigation.INFO);
     }
 
     @FXML
     private void handleChatSend(ActionEvent event) {
         String msg = chatInput.getText().trim();
-        if (msg.isBlank()) {
-            return;
-        }
-        int uid = CentralController.currentUserId;
-        User u = uid > 0 ? UserStore.getInstance().get(uid) : null;
-        String sender = u != null ? u.getlogin()
-                : (CentralController.displayName != null && !CentralController.displayName.isBlank()
-                        ? CentralController.displayName.trim()
-                        : "You");
+        if (msg.isBlank()) return;
+        String sender = rootController.tttPage != null || rootController.c4Page != null
+                ? currentPlayerID
+                : "You";
 
         addChat(sender, msg, Color.web("#fafafa"));
         chatInput.clear();
@@ -214,14 +225,10 @@ public class GameGUIPage extends VBox implements Navigable {
 
     @FXML
     private void handleExitButton(ActionEvent event) {
-        boolean onlineBlock = (tttPage != null && tttPage.isActiveOnlineMatch())
-                || (c4Page != null && c4Page.isActiveOnlineMatch());
-        if (onlineBlock) {
-            Alert a = new Alert(Alert.AlertType.WARNING,
+        if ((tttPage != null && tttPage.isOnlineMode()) || (c4Page != null && c4Page.isOnlineMode())) {
+            new Alert(Alert.AlertType.WARNING,
                     "Use Forfeit in the sidebar to leave an online match in progress. You can quit the app afterward.",
-                    ButtonType.OK);
-            ThemeAlerts.apply(a);
-            a.showAndWait();
+                    ButtonType.OK).showAndWait();
             return;
         }
         Platform.exit();
@@ -234,6 +241,11 @@ public class GameGUIPage extends VBox implements Navigable {
 
     @Override
     public void reset() {
-        refreshSidebar();
+
     }
 }
+
+// TO ADD:
+// finish restart() method
+// History implementation. Check info from Platform Core.
+// Settings.

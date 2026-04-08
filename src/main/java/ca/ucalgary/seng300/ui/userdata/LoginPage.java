@@ -20,6 +20,8 @@ import java.util.List;
 
 public class LoginPage extends HBox implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private CheckBox rememberMeBox;
@@ -28,11 +30,12 @@ public class LoginPage extends HBox implements Navigable {
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
 
-    public CentralController cent;
+    private boolean loginPending = false;
 
-    public LoginPage(CentralController c) {
+    public LoginPage(CentralController rootController) {
         try {
-            cent = c;
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -47,35 +50,47 @@ public class LoginPage extends HBox implements Navigable {
     private void handleLogin(ActionEvent event) {
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
+        Button clickedButton = loginButton;
+        if (clickedButton == null && event.getSource() instanceof Button sourceButton) {
+            clickedButton = sourceButton;
+        }
 
         if (username.isEmpty() || password.isEmpty()) {
-            errorLabel.setText("Please enter your username and password.");
+            errorLabel.setText("Please enter your email/username and password.");
             return;
         }
         System.out.println("loginsent");
-        cent.clientCore.msgSend(new sysMSG("AUTH", username, password));
+        rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
 
+        loginPending = true;
+        if (clickedButton != null) {
+            clickedButton.setDisable(true);
+        }
+        errorLabel.setText("Signing in...");
+        rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
     }
 
     public void loginReply(sysMSG s){
         if(s.getFieldA().equals("PASS")){
-            int i = -1;
-            try{
-                i = Integer.parseInt(s.getFieldB());
-            }catch(Exception ignore){}
-            //CentralController.currentUserId = user.getID();
-            //CentralController.displayName = user.getlogin();
-            CentralController.previousScreen = null;
-            CentralController.localAiMode = false;
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+            loginPending = false;
+            loginButton.setDisable(false);
+            errorLabel.setText("");
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.previousScreen = null;
             errorLabel.setText(s.getFieldB());
+        }
+        else{
+            String message = s.getFieldB();
+            errorLabel.setText(message != null && !message.isBlank()
+                    ? message
+                    : "Login failed.");
         }
     }
 
     // Move to NewUser screen when button is triggered.
     @FXML
     private void handleNewUser(ActionEvent event) {
-        CentralController.moveTo(Navigation.NEW_USER);
+        rootController.moveTo(Navigation.NEW_USER);
     }
 
     @FXML
@@ -95,6 +110,6 @@ public class LoginPage extends HBox implements Navigable {
 
     @Override
     public void reset() {
-
+        errorLabel.setText("");
     }
 }

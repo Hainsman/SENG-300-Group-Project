@@ -19,7 +19,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
-import javafx.stage.Window;
 
 import java.util.ArrayList;
 
@@ -57,29 +56,28 @@ public class CentralController {
     public static int maxPlayers;
     public static String privacy;
     public static String lobbyCode;
-    public static boolean lobbyPaired;
     /** Display name from host lobby screen (optional). */
-    public static String lobbyName;
+    public String lobbyName;
     /** True if this client created the current lobby (may start the game). */
-    public static boolean hostingLobby;
-    public static Navigation previousScreen;
-    public static Navigation currentScreen;
+    public boolean hostingLobby;
+    public Navigation previousScreen;
+    public Navigation currentScreen;
 
     /**
-     * When true, {@link GameGUIPage} wires Tic-Tac-Toe to a local session with a random-move AI
-     * opponent (player is X, AI is O). Cleared when leaving that flow or the game screen.
+     * When true, {@link ca.ucalgary.seng300.ui.games.CommonGameLogic} wires the game to a local session with a random-move AI
+     * opponent. Cleared when leaving that flow or the game screen.
      */
-    public static boolean localAiMode = false;
+    public boolean localAiMode = false;
 
-    public static int currentUserId;
-    public static String displayName = "Player";
+    public int currentUserId;
+    public String displayName = "Player";
 
-    public static String rosterHostName = "";
-    public static int rosterHostElo = 1200;
-    public static String rosterGuestName = "";
-    public static int rosterGuestElo = 1200;
+    public String rosterHostName = "";
+    public int rosterHostElo = 1200;
+    public String rosterGuestName = "";
+    public int rosterGuestElo = 1200;
 
-    public static void clearLobbyRoster() {
+    public void clearLobbyRoster() {
         rosterHostName = "";
         rosterGuestName = "";
         rosterHostElo = 1200;
@@ -89,7 +87,7 @@ public class CentralController {
     /**
      * Clears signed-in session and lobby navigation state, then shows the login screen.
      */
-    public static void logout() {
+    public void logout() {
         currentUserId = 0;
         displayName = "Player";
         previousScreen = null;
@@ -101,12 +99,9 @@ public class CentralController {
         maxPlayers = 0;
         privacy = null;
         clearLobbyRoster();
-        if (instance != null) {
-            moveTo(Navigation.LOGIN);
-        }
     }
 
-    public static void applyLobbyRosterPayload(String payload) {
+    public void applyLobbyRosterPayload(String payload) {
         if (payload == null || payload.isBlank()) {
             return;
         }
@@ -142,7 +137,6 @@ public class CentralController {
 
     @FXML
     public void initialize() {
-        instance = this;
         clientCore = new ClientCore(this);
         clientCore.start();
         System.out.println("cc loaded");
@@ -195,23 +189,17 @@ public class CentralController {
         nodes.add(new SettingsPage());
     }
 
-    public static CentralController getInstance() {
-        return instance;
-    }
-
     // call anytime to switch pages
-    public static void moveTo(Navigation nav) {
+    public void moveTo(Navigation nav) {
         previousScreen = currentScreen;
-        instance.loadView(nav);
+        loadView(nav);
     }
 
     /**
      * Re-applies text scaling, window size, and colorblind root class for the whole app.
      */
-    public static void applyUiPreferences() {
-        if (instance != null) {
-            instance.syncUiPreferencesToScene();
-        }
+    public void applyUiPreferences() {
+        syncUiPreferencesToScene();
     }
 
     private Navigable getNode(Navigation nav) {
@@ -228,7 +216,7 @@ public class CentralController {
         if (nav == Navigation.TTT || nav == Navigation.C4) {
             GameGUIPage gameGUIPage = (GameGUIPage) getNode(Navigation.GAME_GUI);
             viewContainer.setCenter(gameGUIPage);
-            gameGUIPage.setGameNode((Node) node);
+            gameGUIPage.setGameNode((Node) node, GameType.getFromNavigation(nav));
             gameGUIPage.reset();
             previousScreen = Navigation.CHOOSE_MODE;
         }
@@ -270,6 +258,10 @@ public class CentralController {
                             sheet.contains(path + "extraLargeText.css")
             );
         }
+    }
+
+    public boolean isGameOn() {
+        return currentScreen == Navigation.C4 || currentScreen == Navigation.TTT;
     }
 
     public WindowManager getWindowManager() {

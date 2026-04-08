@@ -1,13 +1,15 @@
 package ca.ucalgary.seng300.ui;
 
 public enum SoundEffect {
-    YOUR_TURN_NOTIFICATION;
+    YOUR_TURN_NOTIFICATION("your_turn_notification");
+
+    private final String path;
+
+    SoundEffect(String path) {
+        this.path = path;
+    }
 
     public String getPath() {
-        String path = switch (this) {
-            case YOUR_TURN_NOTIFICATION -> "your_turn_notification";
-        };
-
         return getClass().getResource(String.format("/ca.ucalgary.seng300.ui/sound/%s.mp3", path)).toExternalForm();
     }
 }

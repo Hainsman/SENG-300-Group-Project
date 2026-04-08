@@ -18,6 +18,7 @@ public class ConnectFourSession implements Session {
         startNewGame();
     }
 
+    @Override
     public void startNewGame() {
         game.startGame(null, null);
     }

@@ -1,12 +1,11 @@
 package ca.ucalgary.seng300.ui.lobby;
 
-import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -50,7 +49,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
     @FXML
     public void initialize() {
         if (gameTitleLabel != null) {
-            GameType g = CentralController.selectedGame;
+            GameType g = rootController.selectedGame;
             gameTitleLabel.setText(g != null ? g.toString() : "Game");
         }
 
@@ -104,19 +103,22 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
             return;
         }
 
-        CentralController.hostingLobby = false;
-        CentralController.lobbyCode = code;
-        CentralController.lobbyPaired = false;
-        CentralController.maxPlayers = 2;
-        CentralController.privacy = "Public";
-        CentralController.clearLobbyRoster();
+        rootController.hostingLobby = false;
+        rootController.lobbyCode = code;
+        rootController.maxPlayers = 2;
+        rootController.privacy = "Public";
+        rootController.clearLobbyRoster();
 
-        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload()));
+        LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        LobbyBridge.onJoinOk = () -> {
+            rootController.moveTo(Navigation.MAIN_LOBBY);
+        };
+
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, String.valueOf(rootController.selectedGame.toId())));
     }
-
     public void lobbyJoin(String a, String b){
         if(a.equals("OK")){
-            CentralController.moveTo(Navigation.MAIN_LOBBY);
+            rootController.moveTo(Navigation.MAIN_LOBBY);
         }
         else {
             Alert err = new Alert(Alert.AlertType.ERROR, b, ButtonType.OK);
@@ -139,7 +141,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     private void handleBack() {
-        CentralController.moveTo(Navigation.CHOOSE_MODE);
+        rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @Override

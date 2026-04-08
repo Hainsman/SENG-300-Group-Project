@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.ui.lobby;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -13,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
@@ -24,19 +26,12 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     private CentralController rootController;
 
     @FXML private Label lobbyTitle;
-    @FXML private Label lobbySubtitle;
+    @FXML private ListView<String> playerList;
     @FXML private Label lobbyCodeLabel;
     @FXML private Label privacyLabel;
     @FXML private Label gameNameLabel;
     @FXML private Label maxPlayersLabel;
     @FXML private Label playerCountLabel;
-    @FXML private Label hostNameLabel;
-    @FXML private Label hostEloLabel;
-    @FXML private Label guestNameLabel;
-    @FXML private Label guestEloLabel;
-    @FXML private Label hostYouPill;
-    @FXML private Label guestYouPill;
-    @FXML private Label connectionHintLabel;
     @FXML private Button startGameBtn;
     @FXML private Button copyCodeBtn;
 
@@ -56,24 +51,20 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     public void initialize() {
-        applyGameAccent();
-        GameType g = CentralController.selectedGame != null ? CentralController.selectedGame : GameType.TIC_TAC_TOE;
-        String gameTitle = g.toString();
-        lobbyTitle.setText(gameTitle + " · Lobby");
-        lobbySubtitle.setText(
-                "Share the lobby code with your opponent. When both players are connected, the host can start the match.");
+        String g = rootController.selectedGame != null ? rootController.selectedGame.toString() : "Game";
+        lobbyTitle.setText(g + " Lobby");
 
         lobbyCodeLabel.setText(
-                CentralController.lobbyCode != null ? CentralController.lobbyCode : "----"
+                rootController.lobbyCode != null ? rootController.lobbyCode : "----"
         );
 
         privacyLabel.setText(
-                CentralController.privacy != null ? CentralController.privacy : "Public"
+                rootController.privacy != null ? rootController.privacy : "Public"
         );
 
-        gameNameLabel.setText(gameTitle);
+        gameNameLabel.setText(rootController.selectedGame != null ? rootController.selectedGame.toString() : "Standard");
 
-        int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
+        int max = rootController.maxPlayers > 0 ? rootController.maxPlayers : 2;
         maxPlayersLabel.setText(String.valueOf(max));
 
         refreshPlayersFromState();
@@ -83,132 +74,26 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         LobbyBridge.onGameState = this::refreshStartButton;
     }
 
-    private void applyGameAccent() {
-        getStyleClass().removeAll("lobby-ttt", "lobby-c4");
-        if (CentralController.selectedGame == GameType.CONNECT4) {
-            getStyleClass().add("lobby-c4");
-        } else {
-            getStyleClass().add("lobby-ttt");
-        }
-    }
-/*
-    private boolean isPaired() {
-        ClientCore cc = rootController != null ? rootController.getCC() : null;
-        return cc != null && cc.getLastUpdate() != null;
-    }*/
-
-    private boolean rosterPopulated() {
-        String h = CentralController.rosterHostName;
-        String guest = CentralController.rosterGuestName;
-        return h != null && !h.isBlank() && guest != null && !guest.isBlank();
-    }
-
-    private String currentUserDisplayName() {
-        int uid = CentralController.currentUserId;
-        if (uid > 0) {
-            User u = UserStore.getInstance().get(uid);
-            if (u != null && u.getlogin() != null && !u.getlogin().isBlank()) {
-                return u.getlogin().trim();
-            }
-        }
-        if (CentralController.displayName != null && !CentralController.displayName.isBlank()) {
-            return CentralController.displayName.trim();
-        }
-        return "Player";
-    }
-
-    private int myEloForSelectedGame() {
-        GameType g = CentralController.selectedGame != null ? CentralController.selectedGame : GameType.TIC_TAC_TOE;
-        int uid = CentralController.currentUserId;
-        if (uid > 0) {
-            User u = UserStore.getInstance().get(uid);
-            if (u != null) {
-                return u.getEloForGame(g);
-            }
-        }
-        return PlayerProfileHelper.eloForGameType(g);
-    }
-
-    private void setYouPills(boolean hosting) {
-        boolean showHost = hosting;
-        boolean showGuest = !hosting;
-        if (hostYouPill != null) {
-            hostYouPill.setVisible(showHost);
-            hostYouPill.setManaged(showHost);
-        }
-        if (guestYouPill != null) {
-            guestYouPill.setVisible(showGuest);
-            guestYouPill.setManaged(showGuest);
-        }
-    }
-
-    public void refreshPlayersFromState() {
-
-        boolean hosting = CentralController.hostingLobby;
-        //boolean paired = isPaired();
-        boolean roster = rosterPopulated();
-
-        setYouPills(hosting);
-
-        String hostName;
-        String guestName;
-        int hostElo;
-        int guestElo;
-
-        if (roster) {
-            hostName = CentralController.rosterHostName.trim();
-            guestName = CentralController.rosterGuestName.trim();
-            hostElo = CentralController.rosterHostElo;
-            guestElo = CentralController.rosterGuestElo;
-        } else if (hosting) {
-            hostName = currentUserDisplayName();
-            hostElo = myEloForSelectedGame();
-            guestName = "Waiting for opponent…";
-            guestElo = -1;
-        } else {
-            guestName = currentUserDisplayName();
-            guestElo = myEloForSelectedGame();
-            hostName = "Waiting…";
-            hostElo = -1;
-        }
-
-        if (hostNameLabel != null) {
-            hostNameLabel.setText(hostName);
-        }
-        if (guestNameLabel != null) {
-            guestNameLabel.setText(guestName);
-        }
-        if (hostEloLabel != null) {
-            hostEloLabel.setText(hostElo >= 0 ? ("Elo " + hostElo) : "Elo —");
-        }
-        if (guestEloLabel != null) {
-            guestEloLabel.setText(guestElo >= 0 ? ("Elo " + guestElo) : "Elo —");
-        }
-
-        if (connectionHintLabel != null) {
-            if (roster) {
-                connectionHintLabel.setText("Both players connected. Host can start when ready.");
-                connectionHintLabel.setVisible(true);
-                connectionHintLabel.setManaged(true);
-            } else if (hosting) {
-                connectionHintLabel.setText("Waiting for your opponent to join…");
-                connectionHintLabel.setVisible(true);
-                connectionHintLabel.setManaged(true);
+    private void refreshPlayersFromState() {
+        if (playerList != null) {
+            playerList.getItems().clear();
+            ClientCore cc = rootController != null ? rootController.getCC() : null;
+            boolean guestThere = cc != null && cc.getLastUpdate() != null;
+            if (rootController.hostingLobby) {
+                playerList.getItems().add("You (host)");
+                playerList.getItems().add(guestThere ? "Guest (connected)" : "Waiting for guest…");
             } else {
-                connectionHintLabel.setText("Syncing player info…");
-                connectionHintLabel.setVisible(true);
-                connectionHintLabel.setManaged(true);
+                playerList.getItems().add(guestThere ? "Host (connected)" : "Host");
+                playerList.getItems().add("You (guest)");
             }
         }
-
         if (playerCountLabel != null) {
-            int cur = roster ? 2 : 1;
-            int max = CentralController.maxPlayers > 0 ? CentralController.maxPlayers : 2;
-            playerCountLabel.setText("Players · " + cur + " / " + max);
+            ClientCore cc = rootController != null ? rootController.getCC() : null;
+            boolean paired = cc != null && cc.getLastUpdate() != null;
+            int cur = paired ? 2 : 1;
+            int max = rootController.maxPlayers > 0 ? rootController.maxPlayers : 2;
+            playerCountLabel.setText("Players (" + cur + "/" + max + ")");
         }
-        refreshStartButton();
-        System.out.println("refreshedfromstate");
-
     }
 
     public void refreshStartButton() {
@@ -216,14 +101,15 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             return;
         }
         ClientCore cc = rootController != null ? rootController.getCC() : null;
-        boolean paired = rosterPopulated();
-        boolean host = CentralController.hostingLobby;
+        boolean paired = cc != null && cc.getLastUpdate() != null;
+        boolean host = rootController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
+        refreshPlayersFromState();
     }
 
     @FXML
     private void handleStartGame() {
-        GameType game = CentralController.selectedGame;
+        GameType game = rootController.selectedGame;
         Navigation nav = GameType.getNavigation(game);
 
         if (nav == null) {
@@ -231,8 +117,8 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             return;
         }
 
-        CentralController.localAiMode = false;
-        if (CentralController.hostingLobby) {
+        rootController.localAiMode = false;
+        if (rootController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {
                 System.out.println("start lobby");
@@ -245,31 +131,31 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         GameType game = CentralController.selectedGame;
         Navigation nav = GameType.getNavigation(game);
         LobbyBridge.clearLobbyUiCallbacks();
-        CentralController.moveTo(nav);
+        rootController.moveTo(nav);
     }
 
     @FXML
     private void handleCopyCode() {
-        if (CentralController.lobbyCode == null || CentralController.lobbyCode.isBlank()) {
+        if (rootController.lobbyCode == null || rootController.lobbyCode.isBlank()) {
             return;
         }
         ClipboardContent content = new ClipboardContent();
-        content.putString(CentralController.lobbyCode);
+        content.putString(rootController.lobbyCode);
         Clipboard.getSystemClipboard().setContent(content);
     }
 
     @FXML
     private void handleBack() {
         LobbyBridge.clearLobbyUiCallbacks();
-        if (Navigation.HOST_LOBBY == CentralController.previousScreen
-                || Navigation.JOIN_LOBBY == CentralController.previousScreen) {
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        if (Navigation.HOST_LOBBY == rootController.previousScreen
+                || Navigation.JOIN_LOBBY == rootController.previousScreen) {
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
             return;
         }
-        if (CentralController.previousScreen != null) {
-            CentralController.moveTo(CentralController.previousScreen);
+        if (rootController.previousScreen != null) {
+            rootController.moveTo(rootController.previousScreen);
         } else {
-            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
         }
     }
 

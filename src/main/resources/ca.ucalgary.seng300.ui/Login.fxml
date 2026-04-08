@@ -13,11 +13,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<HBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34"
-      stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface"
+<fx:root type="HBox" alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34"
+      stylesheets="@stylesheets/global.css" styleClass="app-surface"
       xmlns="http://javafx.com/javafx/23.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="ca.ucalgary.seng300.ui.LoginController">
+      xmlns:fx="http://javafx.com/fxml/1">
     <padding><Insets top="34" bottom="34" left="34" right="34"/></padding>
 
     <StackPane minWidth="500.0" prefHeight="610.0" prefWidth="500.0" maxWidth="500.0">
@@ -79,4 +78,4 @@
         </VBox>
     </VBox>
 
-</HBox>
+</fx:root>

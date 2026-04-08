@@ -10,20 +10,24 @@ public final class PlayerProfileHelper {
 
     private PlayerProfileHelper() {}
 
-    public static int currentUserIdOrDefault() {
-        int id = CentralController.currentUserId;
+    public static int currentUserIdOrDefault(CentralController rootController) {
+        int id = rootController.currentUserId;
         return id != 0 ? id : 1;
     }
 
     /** ELO for the logged-in user from persisted {@link User} data. */
-    public static int eloForGameType(GameType gameType) {
-        User u = UserStore.getInstance().get(currentUserIdOrDefault());
-        return u == null ? 1200 : u.getEloForGame(gameType);
+    public static int eloForGameType(GameType gameType, CentralController rootController) {
+        User u = UserStore.getInstance().get(currentUserIdOrDefault(rootController));
+        // TODO fix this
+//        return u == null ? 1200 : u.getEloForGame(gameType);
+        return 1200;
     }
 
-    public static int gamesForGameType(GameType gameType) {
-        User u = UserStore.getInstance().get(currentUserIdOrDefault());
-        return u == null ? 0 : u.getGamesForGame(gameType);
+    public static int gamesForGameType(GameType gameType, CentralController rootController) {
+        User u = UserStore.getInstance().get(currentUserIdOrDefault(rootController));
+        // TODO fix this
+//        return u == null ? 0 : u.getGamesForGame(gameType);
+        return 0;
     }
 
     /**
@@ -31,20 +35,22 @@ public final class PlayerProfileHelper {
      * Mutating the returned object does not persist; use {@link UserStore#update(User)}.
      */
     public static PlayerStats statsForGameType(GameType gameType) {
-        int uid = currentUserIdOrDefault();
-        User u = UserStore.getInstance().get(uid);
-        PlayerStats ps = new PlayerStats(0, gameType, uid);
-        if (u != null) {
-            ps.setElo(u.getEloForGame(gameType));
-            for (int i = 0; i < u.getGamesForGame(gameType); i++) {
-                ps.updateStats(0);
-            }
-        }
-        return ps;
+        // TODO fix this
+//        int uid = currentUserIdOrDefault();
+//        User u = UserStore.getInstance().get(uid);
+//        PlayerStats ps = new PlayerStats(0, gameType, uid);
+//        if (u != null) {
+//            ps.setElo(u.getEloForGame(gameType));
+//            for (int i = 0; i < u.getGamesForGame(gameType); i++) {
+//                ps.updateStats(0);
+//            }
+//        }
+//        return ps;
+        return null;
     }
 
-    public static PlayerStats statsForCurrentGame() {
-        return statsForGameType(CentralController.selectedGame);
+    public static PlayerStats statsForCurrentGame(CentralController rootController) {
+        return statsForGameType(rootController.selectedGame);
     }
 
     public static String sanitizeForPayload(String name) {
@@ -55,9 +61,9 @@ public final class PlayerProfileHelper {
         return t.isEmpty() ? "Player" : t;
     }
 
-    public static String lobbyPayload() {
-        String name = sanitizeForPayload(CentralController.displayName);
-        int elo = eloForGameType(CentralController.selectedGame);
+    public static String lobbyPayload(CentralController rootController) {
+        String name = sanitizeForPayload(rootController.displayName);
+        int elo = eloForGameType(rootController.selectedGame, rootController);
         return name + "|" + elo;
     }
 

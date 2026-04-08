@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.client;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
@@ -142,12 +143,12 @@ public class ClientCore extends Thread{
                 socket.setSoTimeout(1000);
                 socket.connect(new InetSocketAddress("localhost", 2020));
                 socket.setSoTimeout(0);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("Client unable to connect to game server (is PlatformCore running on port 2020?): " + e.getMessage());
                 try {
                     socket.close();
-                } catch (IOException ignored) { }
+                } catch (IOException ignored) {
+                }
                 return;
             }
 
@@ -162,7 +163,7 @@ public class ClientCore extends Thread{
             // if the client is closed unexpectedly readline returns null so this catches any error
             while (!interrupted()) {
                 // wait for an incoming message from the server
-                try{
+                try {
                     message = servRead.readObject();
                 } catch (IOException e) {
                     continue;

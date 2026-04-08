@@ -16,12 +16,16 @@ import java.io.IOException;
 
 public class ChooseModePage extends AnchorPane implements Navigable {
 
+    private CentralController rootController;
+
     @FXML private Label gameTitleLabel;
 
     @FXML private VBox playWithAiCard;
 
-    public ChooseModePage() {
+    public ChooseModePage(CentralController rootController) {
         try {
+            this.rootController = rootController;
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
             loader.setRoot(this);
             loader.setController(this);
@@ -34,18 +38,18 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     public void initialize() {
-        if (CentralController.selectedGame != null)
-            gameTitleLabel.setText(CentralController.selectedGame.toString());
+        if (rootController.selectedGame != null)
+            gameTitleLabel.setText(rootController.selectedGame.toString());
         refreshAiCardVisibility();
     }
 
     /** Tic-Tac-Toe from the new dashboard uses {@code "TicTacToe"}. */
-    private static boolean isTicTacToeSelection() {
-        return CentralController.selectedGame == GameType.TIC_TAC_TOE;
+    private boolean isTicTacToeSelection() {
+        return rootController.selectedGame == GameType.TIC_TAC_TOE;
     }
 
-    private static boolean isConnectFourSelection() {
-        return CentralController.selectedGame == GameType.CONNECT4;
+    private boolean isConnectFourSelection() {
+        return rootController.selectedGame == GameType.CONNECT4;
     }
 
     private void refreshAiCardVisibility() {
@@ -58,38 +62,38 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     void handleHostGame(MouseEvent event) {
-        CentralController.localAiMode = false;
-        CentralController.moveTo(Navigation.HOST_LOBBY);
+        rootController.localAiMode = false;
+        rootController.moveTo(Navigation.HOST_LOBBY);
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
-        CentralController.localAiMode = false;
-        CentralController.moveTo(Navigation.JOIN_LOBBY);
+        rootController.localAiMode = false;
+        rootController.moveTo(Navigation.JOIN_LOBBY);
     }
 
     @FXML
     void handlePlayWithAi(MouseEvent event) {
-        CentralController.localAiMode = true;
+        rootController.localAiMode = true;
         if (isTicTacToeSelection())
-            CentralController.moveTo(Navigation.TTT);
+            rootController.moveTo(Navigation.TTT);
         else if (isConnectFourSelection())
-            CentralController.moveTo(Navigation.C4);
+            rootController.moveTo(Navigation.C4);
     }
 
     @FXML
     void handleProfileDashboard(ActionEvent event) {
-        CentralController.moveTo(Navigation.PROFILE_DASHBOARD);
+        rootController.moveTo(Navigation.PROFILE_DASHBOARD);
     }
 
     @FXML
     void handleTeamSettings(ActionEvent event) {
-        CentralController.moveTo(Navigation.SETTINGS);
+        rootController.moveTo(Navigation.SETTINGS);
     }
 
     @FXML
     void handleBack(MouseEvent event) {
-        CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        rootController.moveTo(Navigation.GAME_DASHBOARD);
     }
 
     @Override

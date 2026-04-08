@@ -5,7 +5,6 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTActionType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +25,7 @@ public class TicTacToeSession implements Session {
     }
 
     /** Starts a new game (fresh board, PLAYER_1 to move). */
+    @Override
     public void startNewGame() {
         game.startGame("P1", "P2");/*
         playerIdToPlayer = new HashMap<>();

@@ -28,13 +28,13 @@ public enum GameType {
 
     public static Navigation getNavigation(GameType type) {
         return type != null ?
-            switch (type) {
-                case CHECKERS -> Navigation.GAME_GUI;
-                case CONNECT4 -> Navigation.C4;
-                case TIC_TAC_TOE -> Navigation.TTT;
-            }
-            : null
-        ;
+                switch (type) {
+                    case CHECKERS -> Navigation.GAME_GUI;
+                    case CONNECT4 -> Navigation.C4;
+                    case TIC_TAC_TOE -> Navigation.TTT;
+                }
+                : null
+                ;
     }
 
     public static GameType getFromGameState(GameState state) {
@@ -42,6 +42,15 @@ public enum GameType {
             return GameType.TIC_TAC_TOE;
         else if (state instanceof C4GameState)
             return GameType.CONNECT4;
+
+        return null;
+    }
+
+    public static GameType getFromNavigation(Navigation nav) {
+        if (nav == Navigation.C4)
+            return GameType.CONNECT4;
+        else if (nav == Navigation.TTT)
+            return GameType.TIC_TAC_TOE;
 
         return null;
     }
