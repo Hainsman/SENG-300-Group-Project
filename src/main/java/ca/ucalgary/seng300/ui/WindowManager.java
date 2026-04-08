@@ -121,6 +121,7 @@ public class WindowManager {
     private Button soundOffOnButton;
     private boolean isSoundOn = true;
     private double settingsVolume = 1.0;
+    private AudioClip currentlyPlaying = null;
 
     public WindowManager(WindowControls controls) {
         this.root = controls.root();
@@ -170,6 +171,8 @@ public class WindowManager {
         soundOffOnButton.setOnAction(e -> {
             isSoundOn = !isSoundOn;
             soundOffOnButton.setText(String.format("Sound: %s", isSoundOn ? "ON" : "OFF"));
+            if (!isSoundOn && currentlyPlaying != null)
+                currentlyPlaying.stop();
         });
 
         root.getChildren().add(soundOffOnButton);
@@ -556,8 +559,16 @@ public class WindowManager {
     }
 
     public void playAudioClip(SoundEffect soundEffect) {
-        AudioClip audioClip = new AudioClip(soundEffect.getPath());
-        audioClip.setVolume(getActualVolume() * soundEffect.getVolume());
-        audioClip.play();
+        playAudioClip(soundEffect, false);
+    }
+
+    public void playAudioClip(SoundEffect soundEffect, boolean cycle) {
+        if (currentlyPlaying != null)
+            currentlyPlaying.stop();
+        currentlyPlaying = new AudioClip(soundEffect.getPath());
+        currentlyPlaying.setVolume(getActualVolume() * soundEffect.getVolume());
+        if (cycle)
+            currentlyPlaying.setCycleCount(AudioClip.INDEFINITE);
+        currentlyPlaying.play();
     }
 }

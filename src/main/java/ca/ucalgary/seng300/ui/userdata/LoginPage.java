@@ -5,6 +5,7 @@ import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
@@ -73,6 +74,7 @@ public class LoginPage extends HBox implements Navigable {
         rootController.displayName = user.getlogin();
         rootController.previousScreen = null;
         rootController.localAiMode = false;
+        rootController.getWindowManager().playAudioClip(SoundEffect.USER_LOGGED_IN);
         rootController.moveTo(Navigation.GAME_DASHBOARD);
     }
 

@@ -9,7 +9,8 @@ public enum SoundEffect {
     GAME_STARTED("game_started", 1),
     WAITING_LOBBY("waiting_lobby", 1),
     MOUSE_CLICKED("mouse_clicked", 0.5),
-    TIE("vineboom", 1);
+    TIE("vineboom", 1),
+    APP_STARTUP("app_startup", 1);
 
     private final String path;
     private final double volume;

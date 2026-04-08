@@ -249,6 +249,8 @@ public abstract class CommonGameLogic extends StackPane {
     private void submitOnlineMove(int row, int col) {
         if (!clientCore.submitMove(row, col))
             statusLabel.setText("Could not send move");
+        else if (clientCore.getLastUpdate().getState() == State.IN_PROGRESS)
+            rootController.getWindowManager().playAudioClip(SoundEffect.MOVE_SUBMITTED);
     }
 
     private boolean isSessionMode() {
@@ -260,6 +262,8 @@ public abstract class CommonGameLogic extends StackPane {
             addHistory(session.getBoard(), Player.PLAYER_1);
             refreshFromSession();
             maybePlayRandomOpponent();
+            if (session.getState() == State.IN_PROGRESS)
+                rootController.getWindowManager().playAudioClip(SoundEffect.MOVE_SUBMITTED);
         }
     }
 
@@ -360,7 +364,7 @@ public abstract class CommonGameLogic extends StackPane {
         boolean myTurn = !onlineTurns || gameOver || myRole == gameState.getPlayerTurn();
         setDisableBoard(gameOver || !myTurn);
         if (myTurn && !gameOver)
-            rootController.getWindowManager().showNotification("Your Turn!", true);
+            rootController.getWindowManager().showNotification("Your Turn!", !isBoardBlank(gameState.getBoard()));
     }
 
     private void updateHistoryBoard(GameState gameState) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.application.Platform;
@@ -70,6 +71,7 @@ public class GameGUIPage extends VBox implements Navigable {
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
 
         gameTypeLabel.setText(gameType.toString());
+        rootController.getWindowManager().playAudioClip(SoundEffect.GAME_STARTED);
     }
 
 //    @FXML

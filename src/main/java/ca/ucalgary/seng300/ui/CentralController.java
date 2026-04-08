@@ -141,6 +141,7 @@ public class CentralController {
         );
 
         windowManager = new WindowManager(controls);
+        windowManager.playAudioClip(SoundEffect.APP_STARTUP);
 
         root.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {

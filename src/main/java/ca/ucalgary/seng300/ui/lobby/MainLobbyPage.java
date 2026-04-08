@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.fxml.FXML;
@@ -157,5 +158,6 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     @Override
     public void reset() {
         initialize();
+        rootController.getWindowManager().playAudioClip(SoundEffect.WAITING_LOBBY, true);
     }
 }
