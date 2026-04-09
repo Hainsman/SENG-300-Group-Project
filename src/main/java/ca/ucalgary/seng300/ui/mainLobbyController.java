@@ -53,6 +53,10 @@ public class mainLobbyController {
 
         LobbyBridge.onPartnerJoined = this::refreshStartButton;
         LobbyBridge.onGameState = this::refreshStartButton;
+        LobbyBridge.onLobbyRoster = this::handleLobbyRoster;
+        LobbyBridge.onPlayerStatsUpdated = this::handlePlayerStatsUpdate;
+        
+        requestRosterUpdate();
     }
 
     private void refreshPlayersFromState() {
@@ -62,7 +66,10 @@ public class mainLobbyController {
             String selfName = getLoggedInUsername();
             if (CentralController.hostingLobby) {
                 playerList.getItems().add("Player 1 (host): " + selfName);
-                playerList.getItems().add(guestThere ? "Player 2 (guest): Guest" : "Player 2 (guest): Waiting for guest...");
+                String guest2Name = CentralController.player2Name != null && !CentralController.player2Name.isEmpty() 
+                    ? CentralController.player2Name 
+                    : "Guest";
+                playerList.getItems().add(guestThere ? "Player 2 (guest): " + guest2Name : "Player 2 (guest): Waiting for guest...");
             } else {
                 playerList.getItems().add("Player 1 (host): Host");
                 playerList.getItems().add("Player 2 (guest): " + selfName);
@@ -104,19 +111,97 @@ public class mainLobbyController {
 
         if (CentralController.hostingLobby) {
             if (playerOneLabel != null) {
-                playerOneLabel.setText(selfName);
+                String p1Display = selfName;
+                if (CentralController.player1Elo != null && !CentralController.player1Elo.isEmpty()) {
+                    p1Display += " (ELO: " + CentralController.player1Elo + ")";
+                }
+                playerOneLabel.setText(p1Display);
             }
             if (playerTwoLabel != null) {
-                playerTwoLabel.setText(guestThere ? "Guest" : "Waiting for guest...");
+                String p2Display;
+                if (guestThere) {
+                    p2Display = CentralController.player2Name != null && !CentralController.player2Name.isEmpty() 
+                        ? CentralController.player2Name 
+                        : "Guest";
+                    if (CentralController.player2Elo != null && !CentralController.player2Elo.isEmpty()) {
+                        p2Display += " (ELO: " + CentralController.player2Elo + ")";
+                    }
+                } else {
+                    p2Display = "Waiting for guest...";
+                }
+                playerTwoLabel.setText(p2Display);
             }
             return;
         }
 
         if (playerOneLabel != null) {
-            playerOneLabel.setText("Host");
+            String p1Display = CentralController.player1Name != null && !CentralController.player1Name.isEmpty()
+                ? CentralController.player1Name
+                : "Host";
+            if (CentralController.player1Elo != null && !CentralController.player1Elo.isEmpty()) {
+                p1Display += " (ELO: " + CentralController.player1Elo + ")";
+            }
+            playerOneLabel.setText(p1Display);
         }
         if (playerTwoLabel != null) {
-            playerTwoLabel.setText(selfName);
+            String p2Display = selfName;
+            if (CentralController.player2Elo != null && !CentralController.player2Elo.isEmpty()) {
+                p2Display += " (ELO: " + CentralController.player2Elo + ")";
+            }
+            playerTwoLabel.setText(p2Display);
+        }
+    }
+
+    private void handleLobbyRoster(String rosterData) {
+        System.out.println("handleLobbyRoster called with data: " + rosterData);
+        if (rosterData == null || rosterData.isEmpty()) {
+            System.out.println("handleLobbyRoster: data is null or empty");
+            return;
+        }
+        String[] parts = rosterData.split("\\|");
+        System.out.println("handleLobbyRoster: parsed " + parts.length + " parts");
+        if (parts.length >= 6) {
+            CentralController.player1Name = parts[0];
+            CentralController.player1Elo = parts[1];
+            CentralController.player1GamesPlayed = parts[2];
+            CentralController.player2Name = parts[3];
+            CentralController.player2Elo = parts[4];
+            CentralController.player2GamesPlayed = parts[5];
+            System.out.println("handleLobbyRoster: set p1=" + parts[0] + " elo=" + parts[1] + " games=" + parts[2] 
+                + " p2=" + parts[3] + " elo=" + parts[4] + " games=" + parts[5]);
+            refreshPlayerSlots();
+            refreshPlayersFromState();
+        } else {
+            System.out.println("handleLobbyRoster: not enough parts, expected 6, got " + parts.length);
+        }
+    }
+
+    private void handlePlayerStatsUpdate(String statsData) {
+        if (statsData == null || statsData.isEmpty()) {
+            return;
+        }
+        String[] parts = statsData.split("\\|");
+        if (parts.length >= 1) {
+            String newScore = parts[0];
+            String myUsername = getLoggedInUsername();
+            if (myUsername != null) {
+                if (CentralController.hostingLobby && myUsername.equals(CentralController.player1Name)) {
+                    CentralController.player1Elo = newScore;
+                } else if (!CentralController.hostingLobby && myUsername.equals(CentralController.player2Name)) {
+                    CentralController.player2Elo = newScore;
+                }
+            }
+            refreshPlayerSlots();
+        }
+    }
+
+    private void requestRosterUpdate() {
+        CentralController controller = CentralController.getInstance();
+        if (controller != null) {
+            ClientCore cc = controller.getCC();
+            if (cc != null && cc.isConnected()) {
+                cc.msgSend(new sysMSG("ROSTER_REQUEST", CentralController.lobbyCode, ""));
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -53,5 +54,16 @@ public class ChooseModeController {
     @FXML
     void handleBack(MouseEvent event) {
         CentralController.moveTo("GameDashboardNew.fxml");
+    }
+
+    @FXML
+    void handleLogout(MouseEvent event) {
+        // Send logout message to server
+        CentralController central = CentralController.getInstance();
+        if (central != null && central.clientCore != null && central.clientCore.isConnected()) {
+            central.clientCore.sendLogout();
+        }
+        // Navigate to login page
+        CentralController.moveTo("LoginPage.fxml");
     }
 }

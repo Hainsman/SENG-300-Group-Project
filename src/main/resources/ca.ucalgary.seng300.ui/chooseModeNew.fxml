@@ -78,7 +78,10 @@
                 </VBox>
             </HBox>
 
-            <Label onMouseClicked="#handleBack" style="-fx-text-fill:#a1a1aa; -fx-font-size:14px; -fx-cursor:hand;" text="&#8592; Back to Menu" />
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <Label onMouseClicked="#handleBack" style="-fx-text-fill:#a1a1aa; -fx-font-size:14px; -fx-cursor:hand;" text="&#8592; Back to Menu" />
+                <Label onMouseClicked="#handleLogout" style="-fx-text-fill:#ff6b6b; -fx-font-size:14px; -fx-cursor:hand;" text="Log Out" />
+            </HBox>
 
         </VBox>
     </children>

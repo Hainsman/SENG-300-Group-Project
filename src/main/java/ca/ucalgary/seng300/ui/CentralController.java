@@ -38,6 +38,12 @@ public class CentralController {
     /** True if this client created the current lobby (may start the game). */
     public static boolean hostingLobby;
     public static String previousScreen;
+    public static String player1Name;
+    public static String player1Elo;
+    public static String player1GamesPlayed;
+    public static String player2Name;
+    public static String player2Elo;
+    public static String player2GamesPlayed;
     private GameGUIController gameUI;
 
     public TicTacToeController ttt;

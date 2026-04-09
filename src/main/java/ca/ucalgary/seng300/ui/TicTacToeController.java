@@ -47,7 +47,13 @@ public class TicTacToeController extends GameGUI {
             clientCore.setPlayerStatsHandler(this::handlePlayerStatsUpdate);
             clientCore.setRematchHandler(this::handleRematchMessage);
             clientCore.setChatMessageHandler(this::handleChatMessage);
+
+            // Request fresh stats from server as source of truth
+            if (clientCore.CID != null && !clientCore.CID.isBlank()) {
+                clientCore.msgSend(new sysMSG("PLAYER_STATS_REQUEST", clientCore.CID, String.valueOf(Game.TICK_TACK_TOE)));
+            }
         }
+        populateProfileSidebar();
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
             refreshFromGameStateUpdate(gs);
         }
@@ -344,6 +350,26 @@ public class TicTacToeController extends GameGUI {
     }
 
     private void populateProfileSidebar() {
+        // For online games, only display server data (don't load stale local profile)
+        if (!CentralController.playWithAi && clientCore != null && clientCore.isConnected()) {
+            // Online game: wait for PLAYER_STATS message from server to populate fields
+            // Initial state: labels will be empty until server sends update
+            if (sidebarGameTitleLabel != null) {
+                sidebarGameTitleLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Game");
+            }
+            if (profileNameLabel != null) {
+                String myUsername = clientCore.username != null ? clientCore.username : "Player";
+                profileNameLabel.setText(myUsername + " - " + getPlayerRoleLabel());
+            }
+            if (profileEmailLabel != null) {
+                profileEmailLabel.setText(""); // Don't show stale local email
+            }
+            // Don't set eloValueLabel, gamesPlayedValueLabel, tierValueLabel here
+            // They will be populated by handlePlayerStatsUpdate() from server
+            return;
+        }
+        
+        // AI game: load local profile
         GameProfileHelper.ProfileData data = GameProfileHelper.loadProfile(Game.TICK_TACK_TOE);
         if (sidebarGameTitleLabel != null) {
             sidebarGameTitleLabel.setText(data.gameTitle());
@@ -369,6 +395,7 @@ public class TicTacToeController extends GameGUI {
         if (message == null) {
             return;
         }
+        // Display fresh server data directly - this is the source of truth
         if (eloValueLabel != null && message.getFieldA() != null) {
             eloValueLabel.setText(message.getFieldA());
         }
@@ -378,7 +405,6 @@ public class TicTacToeController extends GameGUI {
         if (tierValueLabel != null && message.getPayload() != null) {
             tierValueLabel.setText(message.getPayload());
         }
-        populateProfileSidebar();
     }
 
     private void handleRematchMessage(sysMSG message) {

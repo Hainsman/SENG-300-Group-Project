@@ -58,22 +58,47 @@ public class PlatformCore {
     public List<platformChannel> users;
     private final MatchMakingService matchMakingService = new MatchMakingService();
 
-    public static String[] parseNameEloPayload(String raw) {
-        if (raw == null || raw.isBlank()) {
-            return new String[] { "Player", "1200" };
+    private String getUsername(int userId) {
+        List<User> users = userStore.findByUserID(userId);
+        if (users != null && !users.isEmpty()) {
+            return users.get(0).getlogin();
         }
+        return "Player";
+    }
 
-        String[] parts = raw.split("\\|", 2);
-        String name = parts[0].trim().isEmpty() ? "Player" : parts[0].trim();
-        int elo = 1200;
-        if (parts.length > 1) {
-            try {
-                elo = Integer.parseInt(parts[1].trim());
-            } catch (NumberFormatException ignored) {
-                elo = 1200;
+    public String getPlayerScoreForLobby(String username, int userId, int gameId) {
+        if (username == null || username.isEmpty()) {
+            username = "Player";
+        }
+        if (playerStatsStore == null) {
+            return "0";
+        }
+        List<PlayerStats> playersForGame = playerStatsStore.findPlayersByGameID(gameId);
+        if (playersForGame == null) {
+            return "0";
+        }
+        for (PlayerStats stats : playersForGame) {
+            if (stats.getUserID() == userId) {
+                return formatScore(stats.getScore());
             }
         }
-        return new String[] { name, String.valueOf(elo) };
+        return "0";
+    }
+
+    public String getPlayerGamesPlayedForLobby(int userId, int gameId) {
+        if (playerStatsStore == null) {
+            return "0";
+        }
+        List<PlayerStats> playersForGame = playerStatsStore.findPlayersByGameID(gameId);
+        if (playersForGame == null) {
+            return "0";
+        }
+        for (PlayerStats stats : playersForGame) {
+            if (stats.getUserID() == userId) {
+                return String.valueOf(stats.getGameCounter());
+            }
+        }
+        return "0";
     }
 
     public synchronized boolean onHostLobby(String code, int gameId, platformChannel hostChannel, String clientPayload) {
@@ -84,10 +109,17 @@ public class PlatformCore {
         if (lobbies == null) {
             lobbies = new HashMap<>();
         }
+        Integer hostUserId = hostChannel.getAuthenticatedUserId();
+        if (hostUserId == null) {
+            System.out.println("HOST_LOBBY rejected: host not authenticated");
+            return false;
+        }
+        String hostUsername = hostChannel.getAuthenticatedSessionId() != null ? getUsername(hostUserId) : "Player";
+        
         String lobbyid = code.trim().toUpperCase();
         System.out.println("HOST_LOBBY requested rawCode=" + code + " normalizedCode=" + lobbyid + " gameId=" + gameId);
 
-        ServerLobby lob = new ServerLobby(lobbyid, gameId, hostChannel, clientPayload);
+        ServerLobby lob = new ServerLobby(lobbyid, gameId, hostChannel, hostUserId, hostUsername, this);
         if (lobbies.putIfAbsent(lobbyid, lob) != null) {
             System.out.println("HOST_LOBBY rejected: duplicate code. Existing lobbies=" + lobbies.keySet());
             return false;
@@ -105,6 +137,13 @@ public class PlatformCore {
                     + " guestNull=" + (guestChannel == null) + " lobbiesNull=" + (lobbies == null));
             return false;
         }
+        Integer guestUserId = guestChannel.getAuthenticatedUserId();
+        if (guestUserId == null) {
+            System.out.println("JOIN_LOBBY rejected: guest not authenticated");
+            return false;
+        }
+        String guestUsername = getUsername(guestUserId);
+        
         String lobbyid = code.trim().toUpperCase();
         System.out.println("JOIN_LOBBY lookup rawCode=" + code + " normalizedCode=" + lobbyid
                 + " requestedGameId=" + requestedGameId + " availableLobbies=" + lobbies.keySet());
@@ -118,7 +157,7 @@ public class PlatformCore {
                     + " hostGameId=" + sl.getGameId());
             return false;
         }
-        sl.joinGuest(guestChannel, guestPayload);
+        sl.joinGuest(guestChannel, guestUserId, guestUsername);
         sl.sendBoth(new sysMSG("PARTNER_JOINED", lobbyid, ""));
         sl.rosterSend();
         System.out.println("Lobby " + code + " paired (" + sl.getGameId() + ")");
@@ -141,7 +180,7 @@ public class PlatformCore {
         }
         Integer hostUserId = host.getAuthenticatedUserId();
         Integer guestUserId = guest.getAuthenticatedUserId();
-        if (hostUserId == null || guestUserId == null) {
+        if (hostUserId == null || hostUserId <= 0 || guestUserId == null || guestUserId <= 0) {
             return new sysMSG("CREATE_GAME", "FAIL", "Starting the game failed: both players must be signed in.");
         }
 
@@ -253,6 +292,11 @@ public class PlatformCore {
         for (SessionHistory session : sessionsForUser) {
             sessionHistoryStore.delete(session);
         }
+    }
+
+    public synchronized void onClientLogout(platformChannel channel) {
+        // Same as onClientDisconnected: delete the session UUID
+        onClientDisconnected(channel);
     }
 
     public void handleMove(String id, platformChannel player, PlayerAction m){
@@ -453,6 +497,62 @@ public class PlatformCore {
 
         sendPlayerStatsUpdate(host, hostStats);
         sendPlayerStatsUpdate(guest, guestStats);
+        
+        sendUpdatedRosterAfterGame(sl);
+    }
+
+    private void sendUpdatedRosterAfterGame(ServerLobby sl) {
+        if (sl == null) {
+            return;
+        }
+        platformChannel host = sl.getHost();
+        platformChannel guest = sl.getGuest();
+        if (host == null || guest == null) {
+            return;
+        }
+        Integer hostUserId = host.getAuthenticatedUserId();
+        Integer guestUserId = guest.getAuthenticatedUserId();
+        if (hostUserId == null || hostUserId <= 0 || guestUserId == null || guestUserId <= 0) {
+            return;
+        }
+        
+        String hostUsername = getUsername(hostUserId);
+        String guestUsername = getUsername(guestUserId);
+        String hostScore = getPlayerScoreForLobby(hostUsername, hostUserId, sl.getGameId());
+        String guestScore = getPlayerScoreForLobby(guestUsername, guestUserId, sl.getGameId());
+        String hostGamesPlayed = getPlayerGamesPlayedForLobby(hostUserId, sl.getGameId());
+        String guestGamesPlayed = getPlayerGamesPlayedForLobby(guestUserId, sl.getGameId());
+        
+        String roster = hostUsername + "|" + hostScore + "|" + hostGamesPlayed + "|" + guestUsername + "|" + guestScore + "|" + guestGamesPlayed;
+        sysMSG rosterMsg = new sysMSG("LOBBY_ROSTER", sl.getLobbyCode(), "", roster);
+        host.cliSend(rosterMsg);
+        guest.cliSend(rosterMsg);
+    }
+
+    public void onRosterRequest(String lobbyCode, platformChannel requester) {
+        System.out.println("PlatformCore.onRosterRequest: code=" + lobbyCode);
+        ServerLobby sl = lobbies.get(lobbyCode);
+        if (sl != null) {
+            System.out.println("PlatformCore.onRosterRequest: found lobby, calling rosterSend");
+            sl.rosterSend(requester);
+        } else {
+            System.out.println("PlatformCore.onRosterRequest: lobby not found for code: " + lobbyCode);
+        }
+    }
+
+    public void onPlayerStatsRequest(String userIdStr, String gameIdStr, platformChannel requester) {
+        if (userIdStr == null || gameIdStr == null || requester == null) {
+            return;
+        }
+        try {
+            int userId = Integer.parseInt(userIdStr);
+            int gameId = Integer.parseInt(gameIdStr);
+            
+            PlayerStats stats = getOrCreatePlayerStats(gameId, userId);
+            sendPlayerStatsUpdate(requester, stats);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendPlayerStatsUpdate(platformChannel channel, PlayerStats stats) {

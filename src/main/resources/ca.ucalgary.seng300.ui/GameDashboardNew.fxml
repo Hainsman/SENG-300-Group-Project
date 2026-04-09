@@ -26,6 +26,12 @@
                     <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
                     <HBox alignment="CENTER_RIGHT" spacing="10" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                         <children>
+                            <StackPane onMouseClicked="#handleLogout" styleClass="avatar-badge">
+                                <children>
+                                    <Circle radius="18.0" styleClass="avatar-circle" fill="#ef4444" />
+                                    <Label text="EXIT" styleClass="avatar-label" textFill="WHITE" />
+                                </children>
+                            </StackPane>
                             <StackPane onMouseClicked="#handleOpenSettings" styleClass="avatar-badge">
                                 <children>
                                     <Circle radius="18.0" styleClass="avatar-circle" />

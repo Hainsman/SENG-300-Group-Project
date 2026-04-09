@@ -114,6 +114,17 @@ public class platformChannel extends Thread {
             case "REMATCH_RESPONSE":
                 serv.onRematchResponse(this, "ACCEPT".equalsIgnoreCase(sm.getFieldA()));
                 break;
+            case "ROSTER_REQUEST":
+                System.out.println("platformChannel.handleSys: ROSTER_REQUEST received for code: " + sm.getFieldA());
+                serv.onRosterRequest(sm.getFieldA(), this);
+                break;
+            case "PLAYER_STATS_REQUEST":
+                // fieldA: userId (string), fieldB: gameId (string)
+                serv.onPlayerStatsRequest(sm.getFieldA(), sm.getFieldB(), this);
+                break;
+            case "LOGOUT":
+                serv.onClientLogout(this);
+                break;
 
             default:
                 break;

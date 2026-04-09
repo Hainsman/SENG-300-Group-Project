@@ -18,6 +18,10 @@ public final class LobbyBridge {
     public static Runnable onPartnerJoined;
     /** First board sync after pairing (enables Start Game for host). */
     public static Runnable onGameState;
+    /** Roster info received with player names and ELO. */
+    public static Consumer<String> onLobbyRoster;
+    /** Player stats updated after game ends (score/rank changes). */
+    public static Consumer<String> onPlayerStatsUpdated;
 
     public static void notifyLobbyOk(String role, String code) {
         Platform.runLater(() -> {
@@ -67,9 +71,27 @@ public final class LobbyBridge {
         });
     }
 
+    public static void notifyLobbyRoster(String rosterData) {
+        Platform.runLater(() -> {
+            if (onLobbyRoster != null) {
+                onLobbyRoster.accept(rosterData);
+            }
+        });
+    }
+
+    public static void notifyPlayerStatsUpdated(String statsData) {
+        Platform.runLater(() -> {
+            if (onPlayerStatsUpdated != null) {
+                onPlayerStatsUpdated.accept(statsData);
+            }
+        });
+    }
+
     /** Call when leaving the lobby screen so callbacks do not target disposed controllers. */
     public static void clearLobbyUiCallbacks() {
         onPartnerJoined = null;
         onGameState = null;
+        onLobbyRoster = null;
+        onPlayerStatsUpdated = null;
     }
 }

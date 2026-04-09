@@ -152,6 +152,18 @@ public class ClientCore extends Thread{
         chatMessageHandler = handler;
     }
 
+    public void sendLogout() {
+        if (!isConnected()) {
+            return;
+        }
+        try {
+            servSend.writeObject(new sysMSG("LOGOUT", "", ""));
+            servSend.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String debugBoard(TTTGameState t) {
         String s = "";
         for (Player[] p : t.getBoard()) {
@@ -263,6 +275,12 @@ public class ClientCore extends Thread{
                             case "PARTNER_JOINED":
                                 LobbyBridge.notifyPartnerJoined();
                                 break;
+                            case "LOBBY_ROSTER":
+                                LobbyBridge.notifyLobbyRoster(sm.getPayload());
+                                break;
+                            case "LOBBY_ROSTER_UPDATED":
+                                LobbyBridge.notifyLobbyRoster(sm.getPayload());
+                                break;
                             case "MOVE":
                                 Consumer<sysMSG> moveHandler = moveResponseHandler;
                                 if (moveHandler != null) {
@@ -274,6 +292,8 @@ public class ClientCore extends Thread{
                                 if (statsHandler != null) {
                                     Platform.runLater(() -> statsHandler.accept(sm));
                                 }
+                                String score = sm.getFieldA() != null ? sm.getFieldA() : "0";
+                                LobbyBridge.notifyPlayerStatsUpdated(score);
                                 break;
                             case "REMATCH_REQUEST":
                             case "REMATCH_DECLINED":

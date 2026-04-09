@@ -1,4 +1,5 @@
 package ca.ucalgary.seng300.platform.server;
+import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.GameState;
@@ -11,8 +12,6 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ca.ucalgary.seng300.PlatformCore.parseNameEloPayload;
-
 public class ServerLobby {
     private String lobbyCode;
     private int gameId;
@@ -20,14 +19,20 @@ public class ServerLobby {
     private C4Game c4game;
     private platformChannel host;
     private platformChannel guest;
-    private String hostextra;
-    private String guestextra;
+    private int hostUserId = -1;
+    private int guestUserId = -1;
+    private String hostUsername;
+    private String guestUsername;
     private boolean resultRecorded;
     private platformChannel pendingRematchRequester;
+    private PlatformCore platformCore;
 
-    public ServerLobby(String code, int gameId, platformChannel h, String ex){
+    public ServerLobby(String code, int gameId, platformChannel h, int hostUserId, String hostUsername, PlatformCore platformCore){
         lobbyCode = code;
         this.gameId = gameId;
+        this.hostUserId = hostUserId;
+        this.hostUsername = hostUsername;
+        this.platformCore = platformCore;
         if(gameId == Game.TICK_TACK_TOE){
             c4game = null;
             tttgame = new TTTGame();
@@ -37,20 +42,24 @@ public class ServerLobby {
             c4game = new C4Game();
         }
         host = h;
-        hostextra = ex;
         host.setLobby(lobbyCode, gameId);
         resultRecorded = false;
         pendingRematchRequester = null;
     }
 
-    public void joinGuest(platformChannel h, String ex){
-        guest  = h;
-        guestextra = ex;
+    public void joinGuest(platformChannel h, int guestUserId, String guestUsername){
+        guest = h;
+        this.guestUserId = guestUserId;
+        this.guestUsername = guestUsername;
         guest.setLobby(lobbyCode, gameId);
     }
 
     public int getGameId() {
         return gameId;
+    }
+
+    public String getLobbyCode() {
+        return lobbyCode;
     }
 
     public boolean isHost(platformChannel channel) {
@@ -73,11 +82,61 @@ public class ServerLobby {
     }
 
     public void rosterSend(){
-        String[] h = parseNameEloPayload(hostextra);
-        String[] g = parseNameEloPayload(guestextra);
-        String roster = h[0] + "|" + h[1] + "|" + g[0] + "|" + g[1];
+        if (platformCore == null) {
+            System.out.println("rosterSend skipped: platformCore is null");
+            return;
+        }
+        if (guestUserId <= 0) {
+            System.out.println("rosterSend skipped: guestUserId=" + guestUserId + " (not set yet)");
+            return;
+        }
+        if (hostUserId <= 0) {
+            System.out.println("rosterSend skipped: hostUserId=" + hostUserId + " (not set)");
+            return;
+        }
+        
+        System.out.println("rosterSend: hostUserId=" + hostUserId + " guestUserId=" + guestUserId + " hostUsername=" + hostUsername + " guestUsername=" + guestUsername);
+        
+        String hostName = hostUsername != null && !hostUsername.isEmpty() ? hostUsername : "Player";
+        String guestName = guestUsername != null && !guestUsername.isEmpty() ? guestUsername : "Player";
+        String hostScore = platformCore.getPlayerScoreForLobby(hostName, hostUserId, gameId);
+        String guestScore = platformCore.getPlayerScoreForLobby(guestName, guestUserId, gameId);
+        String hostGamesPlayed = platformCore.getPlayerGamesPlayedForLobby(hostUserId, gameId);
+        String guestGamesPlayed = platformCore.getPlayerGamesPlayedForLobby(guestUserId, gameId);
+        String roster = hostName + "|" + hostScore + "|" + hostGamesPlayed + "|" + guestName + "|" + guestScore + "|" + guestGamesPlayed;
+        System.out.println("rosterSend sending: " + roster);
         sysMSG rosterMsg = new sysMSG("LOBBY_ROSTER", lobbyCode, "", roster);
         sendBoth(rosterMsg);
+    }
+
+    public void rosterSend(platformChannel requester) {
+        if (platformCore == null) {
+            System.out.println("rosterSend(requester) skipped: platformCore is null");
+            return;
+        }
+        if (guestUserId <= 0) {
+            System.out.println("rosterSend(requester) skipped: guestUserId=" + guestUserId + " (not set yet)");
+            return;
+        }
+        if (hostUserId <= 0) {
+            System.out.println("rosterSend(requester) skipped: hostUserId=" + hostUserId + " (not set)");
+            return;
+        }
+        
+        System.out.println("rosterSend(requester): hostUserId=" + hostUserId + " guestUserId=" + guestUserId + " hostUsername=" + hostUsername + " guestUsername=" + guestUsername);
+        
+        String hostName = hostUsername != null && !hostUsername.isEmpty() ? hostUsername : "Player";
+        String guestName = guestUsername != null && !guestUsername.isEmpty() ? guestUsername : "Player";
+        String hostScore = platformCore.getPlayerScoreForLobby(hostName, hostUserId, gameId);
+        String guestScore = platformCore.getPlayerScoreForLobby(guestName, guestUserId, gameId);
+        String hostGamesPlayed = platformCore.getPlayerGamesPlayedForLobby(hostUserId, gameId);
+        String guestGamesPlayed = platformCore.getPlayerGamesPlayedForLobby(guestUserId, gameId);
+        String roster = hostName + "|" + hostScore + "|" + hostGamesPlayed + "|" + guestName + "|" + guestScore + "|" + guestGamesPlayed;
+        System.out.println("rosterSend(requester) sending: " + roster);
+        sysMSG rosterMsg = new sysMSG("LOBBY_ROSTER", lobbyCode, "", roster);
+        if (requester != null) {
+            requester.cliSend(rosterMsg);
+        }
     }
 
     public void createGame(){
@@ -194,8 +253,12 @@ public class ServerLobby {
     }
 
     public void sendBoth(Object o){
-        host.cliSend(o);
-        guest.cliSend(o);
+        if (host != null) {
+            host.cliSend(o);
+        }
+        if (guest != null) {
+            guest.cliSend(o);
+        }
     }
 
 
