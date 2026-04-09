@@ -11,6 +11,7 @@ import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import ca.ucalgary.seng300.ui.Popup;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
@@ -86,11 +87,8 @@ public class LoginPage extends HBox implements Navigable {
 
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        Alert forgotPasswordAlert = new Alert(Alert.AlertType.INFORMATION);
-        forgotPasswordAlert.setTitle("Forgot Password");
-        forgotPasswordAlert.setHeaderText("Need to reset your password?");
-        forgotPasswordAlert.setContentText("Please contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
-        forgotPasswordAlert.showAndWait();
+        Popup.showInfo(getScene().getWindow(),
+                "Need to reset your password?\n\nPlease contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
     }
 
     @Override
