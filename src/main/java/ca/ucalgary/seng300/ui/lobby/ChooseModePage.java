@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -20,6 +21,8 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML private Label gameTitleLabel;
 
+    @FXML private VBox hostCard;
+    @FXML private VBox joinCard;
     @FXML private VBox playWithAiCard;
 
     public ChooseModePage(CentralController rootController) {
@@ -41,6 +44,19 @@ public class ChooseModePage extends AnchorPane implements Navigable {
         if (rootController.selectedGame != null)
             gameTitleLabel.setText(rootController.selectedGame.toString());
         refreshAiCardVisibility();
+
+        hostCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handleHostGame(null);
+        });
+        joinCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handleJoinGame(null);
+        });
+        playWithAiCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handlePlayWithAi(null);
+        });
     }
 
     /** Tic-Tac-Toe from the new dashboard uses {@code "TicTacToe"}. */

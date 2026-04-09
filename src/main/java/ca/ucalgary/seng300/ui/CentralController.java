@@ -15,6 +15,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
@@ -149,6 +151,8 @@ public class CentralController {
             }
         });
 
+        root.addEventFilter(KeyEvent.KEY_PRESSED, this::handleGlobalKeyPress);
+
         initializeNodes();
 
         // Start at auth, then GameDashboardNew → chooseModeNew → lobby or GameGUI (incl. Play with AI).
@@ -242,6 +246,22 @@ public class CentralController {
                             sheet.contains(path + "largeText.css") ||
                             sheet.contains(path + "extraLargeText.css")
             );
+        }
+    }
+
+    private void handleGlobalKeyPress(KeyEvent event) {
+        if (event.getCode() != KeyCode.ESCAPE) return;
+        if (currentScreen == null) return;
+
+        // Don't handle Escape on login, game screens, or game dashboard (top-level)
+        switch (currentScreen) {
+            case LOGIN, NEW_USER, TTT, C4, GAME_GUI, GAME_DASHBOARD -> { return; }
+            default -> {}
+        }
+
+        if (previousScreen != null) {
+            moveTo(previousScreen);
+            event.consume();
         }
     }
 
