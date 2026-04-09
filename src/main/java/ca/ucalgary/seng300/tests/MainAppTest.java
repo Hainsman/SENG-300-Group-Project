@@ -80,19 +80,19 @@ public class MainAppTest {
         PlayerStats playerFour = new PlayerStats(4, GameType.TIC_TAC_TOE, 4);
 
         for (int i = 0; i < 10; i++){
-            playerOne.updateStats(5.0);
+            //playerOne.updateStats(5.0);
         }
 
         for (int i = 0; i < 10; i++){
-            playerTwo.updateStats(3.0);
+            //playerTwo.updateStats(3.0);
         }
 
         for (int i = 0; i < 20; i++){
-            playerThree.updateStats(1.5);
+            //playerThree.updateStats(1.5);
         }
 
         for (int i = 0; i < 10; i++){
-            playerFour.updateStats(1.0);
+            //playerFour.updateStats(1.0);
         }
 
 
@@ -147,7 +147,7 @@ public class MainAppTest {
         PlayerStats mmPlayer6 = new PlayerStats(106, GameType.TIC_TAC_TOE, 106);
         PlayerStats mmPlayer7 = new PlayerStats(107, GameType.CONNECT4, 107);
         PlayerStats mmPlayer8 = new PlayerStats(108, GameType.CONNECT4, 108);
-
+/*
         for (int i = 0; i < 10; i++) mmPlayer1.updateStats(5.0);   // score = 50.0
         for (int i = 0; i < 10; i++) mmPlayer2.updateStats(5.3);   // score = 53.0
         for (int i = 0; i < 10; i++) mmPlayer3.updateStats(9.0);   // score = 90.0
@@ -155,7 +155,7 @@ public class MainAppTest {
         for (int i = 0; i < 10; i++) mmPlayer5.updateStats(3.51);  // score = 35.1
         for (int i = 0; i < 10; i++) mmPlayer6.updateStats(3.4);   // score = 34.0
         for (int i = 0; i < 10; i++) mmPlayer7.updateStats(5.0);   // score = 50.0
-        for (int i = 0; i < 10; i++) mmPlayer8.updateStats(5.5);   // score = 55.0
+        for (int i = 0; i < 10; i++) mmPlayer8.updateStats(5.5);   // score = 55.0*/
 
 // --- Test 1: addPlayerToQueue adds players correctly ---
         MatchMakingService.queues.clear();

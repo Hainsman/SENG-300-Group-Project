@@ -111,13 +111,14 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
             rootController.previousScreen = Navigation.GAME_DASHBOARD;
         };
 
-        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, String.valueOf(rootController.selectedGame.toId())));
+        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, rootController.selectedGame.toString()));
     }
 
     public void hostLobby(String tp, String ms) {
         if (tp.equals("OK")) {
             rootController.moveTo(Navigation.MAIN_LOBBY);
             rootController.previousScreen = Navigation.GAME_DASHBOARD;
+            rootController.hostingLobby = true;
         } else {
             Alert err = new Alert(Alert.AlertType.ERROR, ms, ButtonType.OK);
             ThemeAlerts.apply(err);

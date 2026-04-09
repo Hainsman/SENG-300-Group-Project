@@ -1,7 +1,6 @@
 package ca.ucalgary.seng300.ui;
-
+/*
 import ca.ucalgary.seng300.platform.client.ClientCore;
-import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
@@ -124,3 +123,4 @@ public final class GameProfileHelper {
             String gameTitle
     ) {}
 }
+*/

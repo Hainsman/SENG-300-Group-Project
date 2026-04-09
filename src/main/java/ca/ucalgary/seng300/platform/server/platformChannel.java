@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class platformChannel extends Thread {
     private Socket socket;
-    private String lobby;
+    public String lobby;
     private GameType gameType;
 
     private PlatformCore serv;
@@ -20,6 +20,13 @@ public class platformChannel extends Thread {
     public  String ID;
     private Integer authenticatedUserId;
     private UUID authenticatedSessionId;
+
+    public void setUserID(Integer id){
+        authenticatedUserId = id;
+    }
+    public int getAuthenticatedUserId(){
+        return authenticatedUserId;
+    }
 
 
     public platformChannel(Socket socket, PlatformCore serv) {
@@ -73,15 +80,11 @@ public class platformChannel extends Thread {
                 serv.startLobby(lobby);
                 break;
             case "FORFEIT":
-                serv.onForfeit(this);
+                serv.onForfeit(this, sm.getFieldA());
                 break;
-            case "reset":
-                serv.onRematch(this);
+            case "REMATCH":
+                serv.onRematch(this, sm.getFieldA());
                 break;
-            case "REMATCH_RESPONSE":
-                serv.onRematchResponse(this, "ACCEPT".equalsIgnoreCase(sm.getFieldA()));
-                break;
-
             default:
                 break;
         }
@@ -117,11 +120,11 @@ public class platformChannel extends Thread {
                     serv.handleMove(lobby,this, p);
                 }
                 case sysMSG s -> handleSys(s);
-                case chatMessage cm -> {
-                    if (serv.chatservers != null && serv.chatservers.contains(cm.getServ())) {
-                        serv.sendMult(cm);
-                    }
-                }
+                //case chatMessage cm -> {
+               //     if (serv.chatservers != null && serv.chatservers.contains(cm.getServ())) {
+                //        serv.sendMult(cm);
+                //    }
+                //}
                 default -> System.out.println("def " + message);
             }
         }

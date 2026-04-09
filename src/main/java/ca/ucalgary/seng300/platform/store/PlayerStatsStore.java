@@ -34,6 +34,10 @@ public class PlayerStatsStore extends Store<PlayerStats> {
         return ps;
     }
 
+    public List<PlayerStats> findPlayersByGameID(int gameId) {
+        return null;
+    }
+
     // Bill Pugh Singleton
     private static class PlayerStatsStoreHolder{
         private static final PlayerStatsStore INSTANCE = new PlayerStatsStore(Constants.PLAYER_STATS_FILE_PATH);

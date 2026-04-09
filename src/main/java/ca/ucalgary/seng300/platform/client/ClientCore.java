@@ -11,7 +11,7 @@ import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.Session;
 import ca.ucalgary.seng300.ui.CentralController;
-import ca.ucalgary.seng300.ui.lobby.LobbyBridge;
+//import ca.ucalgary.seng300.ui.lobby.LobbyBridge;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.application.Platform;
 
@@ -44,7 +44,7 @@ public class ClientCore extends Thread{
     //private volatile String sessionId;
     private volatile String myPlayerId;
     public Player myPlayer;
-    public volatile  boolean upFlag = false;
+    public boolean otherjoined = false;
     public volatile GameState lastUpdate;
     private volatile Consumer<sysMSG> authResponseHandler;
     private volatile Consumer<sysMSG> newUserResponseHandler;
@@ -111,7 +111,7 @@ public class ClientCore extends Thread{
     public ClientCore(CentralController c){
         ioMain = c;
     }
-
+/*
     public void setAuthResponseHandler(Consumer<sysMSG> handler) {
         authResponseHandler = handler;
     }
@@ -144,7 +144,7 @@ public class ClientCore extends Thread{
             }
         }
         return s;
-    }
+    }*/
 
     @Override
     public void run() {
@@ -213,17 +213,19 @@ public class ClientCore extends Thread{
                                 if (screen != null && !screen.isBlank()) {
                                     final String fxml = screen;
                                     Platform.runLater(() -> {
-                                        LobbyBridge.clearLobbyUiCallbacks();
+                                        //LobbyBridge.clearLobbyUiCallbacks();
                                         ioMain.moveTo(Navigation.getFromFxml(fxml));
                                     });
                                 }
                                 break;
                             case "LOBBY_HOST":
+                                myPlayerId = "P1";
                                 Platform.runLater(() -> {
                                     ioMain.hostLobbyPage.hostLobby(sm.getFieldA(),sm.getFieldB());
                                 });
                                 break;
                             case "LOBBY_JOIN":
+                                myPlayerId = "P2";
                                 Platform.runLater(() -> {
                                     ioMain.joinLobbyPage.lobbyJoin(sm.getFieldA(),sm.getFieldB());
                                 });
@@ -238,19 +240,26 @@ public class ClientCore extends Thread{
                                 break;
                             case "LOBBY_ROSTER":
                                 Object pl = sm.getPayload();
+                                otherjoined = true;
                                 System.out.println("lobby got");
                                 ioMain.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
                                 Platform.runLater(() -> {
                                     ioMain.mainLobbyPage.refreshPlayersFromState();
                                 });
                                 break;
-                            case "REMATCH_REQUEST":
-                            case "REMATCH_DECLINED":
-                            case "FORFEIT_NOTICE":
-                            case "FORFEIT_COMPLETE":
-                                Consumer<sysMSG> currentRematchHandler = rematchHandler;
-                                if (currentRematchHandler != null) {
-                                    Platform.runLater(() -> currentRematchHandler.accept(sm));
+                            case "REMATCH":
+                                if(gameType.equals(GameType.TIC_TAC_TOE)){
+                                    ioMain.tttPage.reset();
+                                }else{
+                                    ioMain.connect4.reset();
+                                }
+                                break;
+
+                            case "FORFEIT":
+                                if(gameType.equals(GameType.TIC_TAC_TOE)){
+                                    ioMain.tttPage.reset();
+                                }else{
+                                    ioMain.connect4.reset();
                                 }
                                 break;
                             default:
@@ -262,12 +271,12 @@ public class ClientCore extends Thread{
                         switch(gameType){
                             case GameType.TIC_TAC_TOE:
                                 Platform.runLater(() -> {
-                                    //ioMain.tttPage.refreshFromGameStateUpdate((TTTGameState) g);
+                                    ioMain.tttPage.refreshFromGameState((TTTGameState) g);
                                 });
                                 break;
                             case GameType.CONNECT4:
                                 Platform.runLater(() -> {
-                                    //ioMain.connect4.refreshFromGameStateUpdate((C4GameState) g);
+                                    ioMain.connect4.refreshFromGameState((C4GameState) g);
                                 });
                                 break;
                             default:

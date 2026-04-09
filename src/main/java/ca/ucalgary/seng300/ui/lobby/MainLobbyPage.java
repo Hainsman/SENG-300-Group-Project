@@ -70,15 +70,16 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         refreshPlayersFromState();
         refreshStartButton();
 
-        LobbyBridge.onPartnerJoined = this::refreshPlayersFromState;
-        LobbyBridge.onGameState = this::refreshStartButton;
+        //LobbyBridge.onPartnerJoined = this::refreshPlayersFromState;
+        //LobbyBridge.onGameState = this::refreshStartButton;
     }
 
     public void refreshPlayersFromState() {
+        System.out.println(" player update triggered");
         if (playerList != null) {
             playerList.getItems().clear();
             ClientCore cc = rootController != null ? rootController.getCC() : null;
-            boolean guestThere = cc != null && cc.getLastUpdate() != null;
+            boolean guestThere = cc.otherjoined;
             if (rootController.hostingLobby) {
                 playerList.getItems().add("You (host)");
                 playerList.getItems().add(guestThere ? "Guest (connected)" : "Waiting for guest…");
@@ -89,11 +90,12 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
         if (playerCountLabel != null) {
             ClientCore cc = rootController != null ? rootController.getCC() : null;
-            boolean paired = cc != null && cc.getLastUpdate() != null;
+            boolean paired = cc.otherjoined;
             int cur = paired ? 2 : 1;
             int max = rootController.maxPlayers > 0 ? rootController.maxPlayers : 2;
             playerCountLabel.setText("Players (" + cur + "/" + max + ")");
         }
+        refreshStartButton();
     }
 
     public void refreshStartButton() {
@@ -101,10 +103,10 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             return;
         }
         ClientCore cc = rootController != null ? rootController.getCC() : null;
-        boolean paired = cc != null && cc.getLastUpdate() != null;
+        boolean paired = cc.otherjoined;
         boolean host = rootController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
-        refreshPlayersFromState();
+        System.out.println(" start button updated pair"+ paired + " host"+ host);
     }
 
     @FXML

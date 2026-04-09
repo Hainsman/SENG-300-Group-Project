@@ -1,39 +1,26 @@
 package ca.ucalgary.seng300;
 
+import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
-import ca.ucalgary.seng300.game.core.PlayerMove;
-import ca.ucalgary.seng300.game.core.GameState;
-import ca.ucalgary.seng300.game.core.connect4.C4Game;
-import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
-import ca.ucalgary.seng300.platform.domain.GameHistory;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.platform.server.GameSessionRecord;
 import ca.ucalgary.seng300.platform.server.ServerLobby;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.services.MatchMakingService;
 import ca.ucalgary.seng300.platform.store.*;
-import ca.ucalgary.seng300.platform.messages.sysMSG;
 
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static ca.ucalgary.seng300.platform.constants.Constants.EMAIL_REGEX;
 import static ca.ucalgary.seng300.platform.constants.Constants.HASH_ALGORITHM;
-import static ca.ucalgary.seng300.platform.utils.Helper.hashPassword;
-import static ca.ucalgary.seng300.platform.utils.Helper.isEmailValid;
-
-import static ca.ucalgary.seng300.platform.constants.Constants.*;
 import static ca.ucalgary.seng300.platform.utils.Helper.hashPassword;
 import static ca.ucalgary.seng300.platform.utils.Helper.isEmailValid;
 
@@ -135,18 +122,20 @@ public class PlatformCore {
 
 
  */
-private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
-    List<PlayerStats> playersForGame = playerStatsStore.findPlayersByGameID(gameId);
-    for (PlayerStats stats : playersForGame) {
-        if (stats.getUserID() == userId) {
-            return stats;
-        }
-    }
+    // TODO UPDATE WITH FINDBYUSER?
+
+private PlayerStats getOrCreatePlayerStats(GameType gameId, int userId) {
+    //List<PlayerStats> playersForGame = playerStatsStore.findPlayersByGameID(1);
+    //for (PlayerStats stats : playersForGame) {
+    //    if (stats.getUserID() == userId) {
+    //        return stats;
+    //    }
+    //}
     PlayerStats created = new PlayerStats(playerStatsStore.assignNewId(), gameId, userId);
     playerStatsStore.create(created);
     return created;
 }
-
+/*
     private boolean containsMatchedPair(List<PlayerStats> matchedPlayers, int hostUserId, int guestUserId) {
         if (matchedPlayers == null || matchedPlayers.size() != 2) {
             return false;
@@ -166,7 +155,7 @@ private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
         for(platformChannel h : users){
             h.cliSend(m);
         }
-    }
+    }*/
 
     public sysMSG authenticate(String user, String pass, platformChannel pl) {
         List<User> listOfUsers = userStore.findByUserName(user);
@@ -184,6 +173,7 @@ private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
         if (incomingUsername.equals(listOfUsers.getFirst().getlogin()) && incomingPassword.equals(listOfUsers.getFirst().getPasswordHash())){
             sessionHistoryStore.create(new SessionHistory(newSessionId, listOfUsers.getFirst().getID(), UID));
             System.out.println("loginreply sent");
+            pl.setUserID(listOfUsers.getFirst().getID());
             return new sysMSG("AUTH", "PASS", listOfUsers.getFirst().getID()+"",listOfUsers.getFirst().getlogin());
         }System.out.println("loginreply sent");
         return new sysMSG("AUTH", "FAIL", "Login failed, invalid username or password");
@@ -210,87 +200,63 @@ private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
 
     public void handleMove(String id, platformChannel player, PlayerAction m){
         ServerLobby sl = lobbies.get(id);
-        sl.gameTurn(player, m);
+        sl.gameTurn(m);
     }
     /**
      * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
      */
-    public synchronized void onForfeit(platformChannel from) {
-        if (from == null || lobbies == null) {
-            return;
+    public void onForfeit(platformChannel sender, String type) {
+        ServerLobby sl = lobbies.get(sender.lobby);
+        switch (type){
+            /*
+            case "REQUEST":
+                if(sl.getHost().equals(sender)){
+                    sl.getGuest().cliSend(new sysMSG("FORFEIT", "REQUEST"));
+                }
+                else{
+                    sl.getHost().cliSend(new sysMSG("FORFEIT", "REQUEST"));
+                }
+                break;
+            case "REJECT":
+                if(sl.getHost().equals(sender)){
+                    sl.getGuest().cliSend(new sysMSG("FORFEIT", "REJECT"));
+                }
+                else{
+                    sl.getHost().cliSend(new sysMSG("FORFEIT", "REJECT"));
+                }*/
+            case "REQUEST":
+                applyMatchOutcome(sl, null, true);
+                sl.sendBoth(new sysMSG("FORFEIT", "ACCEPT"));
+                break;
+
         }
-        String lobbyId = from.getLobby();
-        if (lobbyId == null || lobbyId.isBlank()) {
-            return;
-        }
-        ServerLobby sl = lobbies.get(lobbyId);
-        if (sl == null || !sl.isParticipant(from) || sl.hasRecordedResult()) {
-            return;
-        }
-        platformChannel opponent = sl.getOpponent(from);
-        if (opponent != null) {
-            opponent.cliSend(new sysMSG("FORFEIT_NOTICE", lobbyId, "", "The other player has forfeited."));
-        }
-        applyMatchOutcome(sl, null, true);
-        sl.sendBoth(new sysMSG("FORFEIT_COMPLETE", lobbyId, ""));
     }
 
-    public synchronized void onRematch(platformChannel requester) {
-        if (requester == null || lobbies == null) {
-            return;
+    public synchronized void onRematch(platformChannel requester, String type) {
+        ServerLobby sl = lobbies.get(requester.lobby);
+        switch (type){
+            /*case "REQUEST":
+                sl.setPendingRematchRequester(requester);
+                if(sl.getHost().equals(requester)){
+                    sl.getGuest().cliSend(new sysMSG("REMATCH", "REQUEST"));
+                }
+                else{
+                    sl.getHost().cliSend(new sysMSG("REMATCH", "REQUEST"));
+                }
+                break;
+            case "ACCEPT":
+                applyMatchOutcome(sl, null, true);
+                sl.gameReset();
+                sl.sendBoth(new sysMSG("REMATCH", "ACCEPT"));
+                break;*/
+            default:
+                sl.setPendingRematchRequester(null);
+                sl.sendBoth(new sysMSG("REMATCH", "ACCEPT"));
+                break;
+
         }
-        String lobbyId = requester.getLobby();
-        if (lobbyId == null || lobbyId.isBlank()) {
-            return;
-        }
-        ServerLobby sl = lobbies.get(lobbyId);
-        if (sl == null || !sl.isParticipant(requester)) {
-            return;
-        }
-        if (sl.getHost() == null || sl.getGuest() == null || !sl.isGameOver()) {
-            return;
-        }
-        platformChannel opponent = sl.getOpponent(requester);
-        if (opponent == null) {
-            return;
-        }
-        if (sl.getPendingRematchRequester() != null) {
-            return;
-        }
-        sl.setPendingRematchRequester(requester);
-        opponent.cliSend(new sysMSG("REMATCH_REQUEST", lobbyId, ""));
     }
-
-    public synchronized void onRematchResponse(platformChannel responder, boolean accepted) {
-        if (responder == null || lobbies == null) {
-            return;
-        }
-        String lobbyId = responder.getLobby();
-        if (lobbyId == null || lobbyId.isBlank()) {
-            return;
-        }
-        ServerLobby sl = lobbies.get(lobbyId);
-        if (sl == null || !sl.isParticipant(responder)) {
-            return;
-        }
-        platformChannel requester = sl.getPendingRematchRequester();
-        if (requester == null || requester == responder) {
-            return;
-        }
-        platformChannel opponent = sl.getOpponent(responder);
-        if (opponent != requester) {
-            return;
-        }
-
-        if (accepted) {
-            sl.resetGame();
-            return;
-        }
-
-        sl.setPendingRematchRequester(null);
-        sl.sendBoth(new sysMSG("REMATCH_DECLINED", lobbyId, ""));
-    }
-
+/*
     private void finalizeMatchIfNeeded(ServerLobby sl) {
         if (sl == null || sl.hasRecordedResult() || !sl.isGameOver()) {
             return;
@@ -306,7 +272,7 @@ private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
             winner = Player.PLAYER_2;
         }
         applyMatchOutcome(sl, winner, false);
-    }
+    }*/
 
     private void applyMatchOutcome(ServerLobby sl, Player winner, boolean forfeit) {
         if (sl == null || sl.hasRecordedResult()) {
@@ -323,8 +289,8 @@ private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
             return;
         }
 
-        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameId(), hostUserId);
-        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameId(), guestUserId);
+        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameType(), hostUserId);
+        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameType(), guestUserId);
         double delta = forfeit ? 0.0 : 1.0;
 
         if (winner == Player.PLAYER_1) {

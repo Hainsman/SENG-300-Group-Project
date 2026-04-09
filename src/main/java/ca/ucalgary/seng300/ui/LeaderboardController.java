@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.ui;
-
-import ca.ucalgary.seng300.platform.constants.Game;
+/*
 import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
@@ -81,4 +80,4 @@ public class LeaderboardController {
         }
         return String.format("%.1f", score);
     }
-}
+}*/

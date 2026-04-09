@@ -136,7 +136,7 @@ public abstract class CommonGameLogic extends StackPane {
                 navigateBackFromGame();
                 return;
             }
-            clientCore.msgSend(new sysMSG("FORFEIT", "", ""));
+            clientCore.msgSend(new sysMSG("FORFEIT", "REQUEST"));
         });
     }
 
@@ -303,10 +303,13 @@ public abstract class CommonGameLogic extends StackPane {
     }
 
     private State resolveDisplayedState() {
-        if (isOnlineMode())
+        if (isOnlineMode()) {
             return clientCore.getLastUpdate().getState();
-
-        return session.getState();
+        }
+        if(session != null){
+            return session.getState();
+        }
+        return State.IN_PROGRESS;
     }
 
     private void refreshBackButtonVisibility() {
