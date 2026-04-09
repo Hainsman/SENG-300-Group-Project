@@ -28,3 +28,71 @@
     -fx-wrap-text: true;
     -fx-text-alignment: center;
 }
+
+/* ========== Button row ========== */
+.popup-button-row {
+    -fx-spacing: 10;
+    -fx-alignment: center;
+    -fx-padding: 0 0 4 0;
+}
+
+.popup-ok-button {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #34d399;
+    -fx-border-width: 1;
+    -fx-padding: 8 28;
+    -fx-cursor: hand;
+}
+
+.popup-ok-button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #4ade80;
+    -fx-effect: null;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+.popup-ok-button:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+.popup-cancel-button {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-padding: 8 28;
+    -fx-cursor: hand;
+}
+
+.popup-cancel-button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #3f3f46;
+    -fx-effect: null;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+.popup-cancel-button:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ========== Colorblind overrides ========== */
+.root.colorblind-mode .popup-ok-button {
+    -fx-border-color: #60a5fa;
+}
+
+.root.colorblind-mode .popup-ok-button:hover {
+    -fx-border-color: #93c5fd;
+}
