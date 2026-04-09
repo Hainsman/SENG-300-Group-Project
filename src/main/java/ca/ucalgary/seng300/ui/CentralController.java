@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import ca.ucalgary.seng300.MainApp;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -85,6 +86,7 @@ public class CentralController {
         );
 
         windowManager = new WindowManager(controls);
+        titleLabel.setText(MainApp.TITLE);
 
         loadView("Login.fxml");
     }

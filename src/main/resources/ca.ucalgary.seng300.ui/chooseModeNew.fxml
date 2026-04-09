@@ -63,7 +63,7 @@
                     <children>
                         <Label text="&#129302;" styleClass="mode-icon" />
                         <Label text="PLAY WITH AI" styleClass="mode-card-title" />
-                        <Label text="Random opponent &#8212; Tic Tac Toe" styleClass="mode-card-subtitle" />
+                        <Label fx:id="aiOpponentLabel" text="Random opponent" styleClass="mode-card-subtitle" />
                         <Label text="&#10132; Play Now" styleClass="mode-play" />
                     </children>
                 </VBox>

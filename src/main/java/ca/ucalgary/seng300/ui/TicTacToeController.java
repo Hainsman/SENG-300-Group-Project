@@ -9,6 +9,8 @@ import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
+import ca.ucalgary.seng300.platform.domain.SessionHistory;
+import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import javafx.fxml.FXML;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -16,6 +18,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
+import javafx.scene.input.MouseEvent;
+
+import java.util.List;
 
 public class TicTacToeController extends GameGUI {
     private static final Player AI_PLAYER = Player.PLAYER_2;
@@ -345,8 +350,24 @@ public class TicTacToeController extends GameGUI {
     }
 
     @FXML
-    private void handleExit(ActionEvent event) {
-        Platform.exit();
+    private void handleExit(MouseEvent event) {
+        if (CentralController.getInstance().clientCore != null) {
+            String cid = CentralController.getInstance().clientCore.CID;
+            if (cid != null && !cid.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(cid);
+                    SessionHistoryStore store = SessionHistoryStore.getInstance();
+                    List<SessionHistory> sessions = store.findSessionsByUserID(userId);
+                    for (SessionHistory session : sessions) {
+                        store.delete(new SessionHistory(session.getID(), session.getUserId(), session.getGloballyUniqueSessionIdentifier()));
+                    }
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            CentralController.getInstance().clientCore.sendLogout();
+        }
+        CentralController.moveTo("Login.fxml");
     }
 
     private void populateProfileSidebar() {

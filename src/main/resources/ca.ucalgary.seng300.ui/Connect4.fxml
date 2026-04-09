@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -47,7 +48,12 @@
                     <Region VBox.vgrow="ALWAYS" />
                     <Button onAction="#handleForfeit" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="✕  Forfeit" />
                     <Button onAction="#handleInfo" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="ⓘ  Info" />
-                    <Button onAction="#handleExit" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="➜  Exit" />
+                            <StackPane onMouseClicked="#handleExit" styleClass="avatar-badge">
+                                <children>
+                                    <Circle radius="18.0" styleClass="avatar-circle" fill="#ef4444" />
+                                    <Label text="EXIT" styleClass="avatar-label" textFill="WHITE" />
+                                </children>
+                            </StackPane>
                 </children>
             </VBox>
 
