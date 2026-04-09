@@ -12,9 +12,8 @@ import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import ca.ucalgary.seng300.ui.Popup;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -73,9 +72,8 @@ public abstract class CommonGameLogic extends StackPane {
     @FXML
     protected void handleBackToMode(ActionEvent event) {
         if (isOnlineMode() && clientCore.getLastUpdate().getState() == State.IN_PROGRESS) {
-            new Alert(Alert.AlertType.INFORMATION,
-                    "You cannot leave an online match in progress without using Forfeit in the sidebar.",
-                    ButtonType.OK).showAndWait();
+            Popup.showInfo(getScene().getWindow(),
+                    "You cannot leave an online match in progress without using Forfeit in the sidebar.");
             return;
         }
         navigateBackFromGame();
@@ -129,18 +127,18 @@ public abstract class CommonGameLogic extends StackPane {
     }
 
     public void handleForfeitFromShell() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Forfeit");
-        confirm.setHeaderText("Forfeit this match?");
-        confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
-        confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
+        boolean ok = Popup.showConfirm(getScene().getWindow(),
+                "Forfeit",
+                "Forfeit this match?",
+                "Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
+        if (ok) {
             hideEloOverlay();
             if (!isOnlineMode()) {
                 navigateBackFromGame();
                 return;
             }
             clientCore.msgSend(new sysMSG("FORFEIT", "", ""));
-        });
+        }
     }
 
     public void refreshFromGameState(GameState gameState) {
