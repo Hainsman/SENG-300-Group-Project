@@ -115,6 +115,8 @@ public class CentralController {
                 lc.setCentralController(this);
             } else if (ctrl instanceof NewUserController nuc) {
                 nuc.setCentralController(this);
+            } else if (ctrl instanceof SettingsController sc) {
+                sc.setCentralController(this);
             } else if (ctrl instanceof TicTacToeController ttc) {
                 ttc.connectToRootForLobby(this);
             } else if (ctrl instanceof Connect4Controller c4) {

@@ -144,6 +144,12 @@ public class ClientCore extends Thread{
         playerStatsHandler = handler;
     }
 
+    private Consumer<sysMSG> profileUpdateResponseHandler;
+
+    public void setProfileUpdateResponseHandler(Consumer<sysMSG> handler) {
+        profileUpdateResponseHandler = handler;
+    }
+
     public void setRematchHandler(Consumer<sysMSG> handler) {
         rematchHandler = handler;
     }
@@ -294,6 +300,12 @@ public class ClientCore extends Thread{
                                 }
                                 String score = sm.getFieldA() != null ? sm.getFieldA() : "0";
                                 LobbyBridge.notifyPlayerStatsUpdated(score);
+                                break;
+                            case "UPDATE_PROFILE":
+                                Consumer<sysMSG> updateHandler = profileUpdateResponseHandler;
+                                if (updateHandler != null) {
+                                    Platform.runLater(() -> updateHandler.accept(sm));
+                                }
                                 break;
                             case "REMATCH_REQUEST":
                             case "REMATCH_DECLINED":

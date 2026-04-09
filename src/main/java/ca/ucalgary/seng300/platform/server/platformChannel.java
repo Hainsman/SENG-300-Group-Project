@@ -125,6 +125,10 @@ public class platformChannel extends Thread {
             case "LOGOUT":
                 serv.onClientLogout(this);
                 break;
+            case "UPDATE_PROFILE":
+                // fieldA: new login, fieldB: new email
+                cliSend(serv.updateProfile(this, sm.getFieldA(), sm.getFieldB()));
+                break;
 
             default:
                 break;

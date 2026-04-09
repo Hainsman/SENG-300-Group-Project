@@ -11,7 +11,6 @@ public class LoginController {
 
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
-    @FXML private CheckBox rememberMeBox;
     @FXML private Label errorLabel;
     @FXML private Button loginButton;
     @FXML private Button newUserButton;

@@ -55,7 +55,6 @@
                            styleClass="input-field"
                            HBox.hgrow="ALWAYS" />
         </HBox>
-        <CheckBox fx:id="rememberMeBox" styleClass="login-checkbox" text="Remember Me" />
         <Label fx:id="errorLabel" styleClass="error-text" text="" />
         <VBox spacing="12">
             <Button maxWidth="Infinity"

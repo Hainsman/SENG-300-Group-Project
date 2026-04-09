@@ -280,6 +280,37 @@ public class PlatformCore {
         return new sysMSG("NEWU", "PASS");
     }
 
+    public sysMSG updateProfile(platformChannel channel, String newLogin, String newEmail) {
+        Integer userId = channel.getAuthenticatedUserId();
+        if (userId == null) {
+            return new sysMSG("UPDATE_PROFILE", "FAIL", "Not authenticated");
+        }
+
+        User user = userStore.get(userId);
+        if (user == null) {
+            return new sysMSG("UPDATE_PROFILE", "FAIL", "User not found");
+        }
+
+        // Validate login (if changed)
+        if (!user.getlogin().equals(newLogin)) {
+            if (!userStore.findByUserName(newLogin).isEmpty()) {
+                return new sysMSG("UPDATE_PROFILE", "FAIL", "Display name is already taken");
+            }
+        }
+
+        // Validate email format
+        if (!isEmailValid(newEmail, EMAIL_REGEX)) {
+            return new sysMSG("UPDATE_PROFILE", "FAIL", "Invalid email address");
+        }
+
+        // Update user
+        user.setlogin(newLogin);
+        user.setEmail(newEmail);
+        userStore.update(user);
+
+        return new sysMSG("UPDATE_PROFILE", "PASS", "Profile updated successfully");
+    }
+
     public synchronized void onClientDisconnected(platformChannel channel) {
         if (channel == null) {
             return;
