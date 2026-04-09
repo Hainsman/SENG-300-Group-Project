@@ -21,6 +21,8 @@ public class TicTacToeController extends GameGUI {
     private static final Player AI_PLAYER = Player.PLAYER_2;
 
     private CentralController boss;
+    private boolean aiResultRecorded;
+
     public void setBoss(CentralController c){
         boss = c;
         boss.setTic(this);
@@ -35,6 +37,7 @@ public class TicTacToeController extends GameGUI {
         setBoss(root);
         if (CentralController.playWithAi) {
             session = new TicTacToeSession();
+            aiResultRecorded = false;
             refreshFromGameStateUpdate(session.getGameState());
             return;
         }
@@ -42,6 +45,7 @@ public class TicTacToeController extends GameGUI {
             session = null;
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
             clientCore.setPlayerStatsHandler(this::handlePlayerStatsUpdate);
+            clientCore.setRematchHandler(this::handleRematchMessage);
             clientCore.setChatMessageHandler(this::handleChatMessage);
         }
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
@@ -176,6 +180,7 @@ public class TicTacToeController extends GameGUI {
     void resetClick(ActionEvent event) {
         if (session != null) {
             session.startNewGame();
+            aiResultRecorded = false;
             GameGUI.clearHistory();
             refreshFromGameStateUpdate(session.getGameState());
             return;
@@ -183,6 +188,7 @@ public class TicTacToeController extends GameGUI {
         GameGUI.clearHistory();
         if (clientCore != null && clientCore.isConnected()) {
             clientCore.msgSend(new sysMSG("reset",""));
+            turnLabel.setText("Rematch request sent.");
             return;
         }
         render();
@@ -235,6 +241,7 @@ public class TicTacToeController extends GameGUI {
         }
         resetButton.setVisible(gameOver);
         State status = update.getState();
+        recordAiResultIfNeeded(status);
         if (State.PLAYER_1_WIN.equals(status)) {
             turnLabel.setText("X Wins!");
             onGameCompletion();
@@ -307,8 +314,13 @@ public class TicTacToeController extends GameGUI {
             turnLabel.setText("Forfeit submitted.");
             return;
         }
+        if (CentralController.playWithAi && !aiResultRecorded) {
+            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.FORFEIT);
+            aiResultRecorded = true;
+            populateProfileSidebar();
+        }
         turnLabel.setText("You forfeited.");
-        onGameCompletion();
+        exitToChooseMode();
     }
 
     @FXML
@@ -337,7 +349,7 @@ public class TicTacToeController extends GameGUI {
             sidebarGameTitleLabel.setText(data.gameTitle());
         }
         if (profileNameLabel != null) {
-            profileNameLabel.setText(data.username());
+            profileNameLabel.setText(data.username() + " - " + getPlayerRoleLabel());
         }
         if (profileEmailLabel != null) {
             profileEmailLabel.setText(data.email());
@@ -366,5 +378,82 @@ public class TicTacToeController extends GameGUI {
         if (tierValueLabel != null && message.getPayload() != null) {
             tierValueLabel.setText(message.getPayload());
         }
+        populateProfileSidebar();
+    }
+
+    private void handleRematchMessage(sysMSG message) {
+        if (message == null) {
+            return;
+        }
+        if ("FORFEIT_NOTICE".equals(message.getType())) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Opponent Forfeited");
+            alert.setHeaderText("Match ended");
+            alert.setContentText(message.getPayload() != null && !message.getPayload().isBlank()
+                    ? message.getPayload()
+                    : "The other player has forfeited.");
+            alert.showAndWait();
+            return;
+        }
+        if ("REMATCH_REQUEST".equals(message.getType())) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Rematch Request");
+            alert.setHeaderText("Your opponent wants a rematch");
+            alert.setContentText("Do you want to play another game?");
+            ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
+            alert.getButtonTypes().setAll(yes, no);
+            ButtonType result = alert.showAndWait().orElse(no);
+            if (clientCore != null && clientCore.isConnected()) {
+                clientCore.msgSend(new sysMSG("REMATCH_RESPONSE", result == yes ? "ACCEPT" : "DECLINE", ""));
+            }
+            return;
+        }
+        if ("REMATCH_DECLINED".equals(message.getType())) {
+            turnLabel.setText("Rematch declined.");
+            exitToChooseMode();
+            return;
+        }
+        if ("FORFEIT_COMPLETE".equals(message.getType())) {
+            turnLabel.setText("Match ended by forfeit.");
+            exitToChooseMode();
+        }
+    }
+
+    private String getPlayerRoleLabel() {
+        if (CentralController.playWithAi || session != null) {
+            return "Player 1";
+        }
+        if (clientCore != null) {
+            Player role = clientCore.getMyNetworkRole();
+            if (role == Player.PLAYER_2) {
+                return "Player 2";
+            }
+        }
+        return "Player 1";
+    }
+
+    private void recordAiResultIfNeeded(State state) {
+        if (!CentralController.playWithAi || aiResultRecorded || state == null || State.IN_PROGRESS.equals(state)) {
+            return;
+        }
+        if (State.PLAYER_1_WIN.equals(state)) {
+            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.WIN);
+        } else if (State.PLAYER_2_WIN.equals(state)) {
+            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.LOSS);
+        } else {
+            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.DRAW);
+        }
+        aiResultRecorded = true;
+        populateProfileSidebar();
+    }
+
+    private void exitToChooseMode() {
+        CentralController.lobbyCode = null;
+        CentralController.lobbyPaired = false;
+        CentralController.hostingLobby = false;
+        CentralController.playWithAi = false;
+        CentralController.previousScreen = "GameDashboardNew.fxml";
+        CentralController.moveTo("chooseModeNew.fxml");
     }
 }

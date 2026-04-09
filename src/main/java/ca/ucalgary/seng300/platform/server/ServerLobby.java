@@ -23,6 +23,7 @@ public class ServerLobby {
     private String hostextra;
     private String guestextra;
     private boolean resultRecorded;
+    private platformChannel pendingRematchRequester;
 
     public ServerLobby(String code, int gameId, platformChannel h, String ex){
         lobbyCode = code;
@@ -39,6 +40,7 @@ public class ServerLobby {
         hostextra = ex;
         host.setLobby(lobbyCode, gameId);
         resultRecorded = false;
+        pendingRematchRequester = null;
     }
 
     public void joinGuest(platformChannel h, String ex){
@@ -80,6 +82,7 @@ public class ServerLobby {
 
     public void createGame(){
         resultRecorded = false;
+        pendingRematchRequester = null;
         if(gameId == Game.CONNECT_FOUR){
             c4game = new C4Game();
             c4game.startGame(host, guest);
@@ -100,6 +103,7 @@ public class ServerLobby {
 
     public void resetGame() {
         resultRecorded = false;
+        pendingRematchRequester = null;
         if (gameId == Game.CONNECT_FOUR) {
             c4game = new C4Game();
             c4game.startGame(host, guest);
@@ -169,6 +173,24 @@ public class ServerLobby {
     public boolean isGameOver() {
         GameState state = currentTypedGameState();
         return state != null && state.getState() != State.IN_PROGRESS;
+    }
+
+    public platformChannel getOpponent(platformChannel channel) {
+        if (channel == host) {
+            return guest;
+        }
+        if (channel == guest) {
+            return host;
+        }
+        return null;
+    }
+
+    public platformChannel getPendingRematchRequester() {
+        return pendingRematchRequester;
+    }
+
+    public void setPendingRematchRequester(platformChannel pendingRematchRequester) {
+        this.pendingRematchRequester = pendingRematchRequester;
     }
 
     public void sendBoth(Object o){

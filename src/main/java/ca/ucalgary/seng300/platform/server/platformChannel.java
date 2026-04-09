@@ -111,6 +111,9 @@ public class platformChannel extends Thread {
             case "reset":
                 serv.onRematch(this);
                 break;
+            case "REMATCH_RESPONSE":
+                serv.onRematchResponse(this, "ACCEPT".equalsIgnoreCase(sm.getFieldA()));
+                break;
 
             default:
                 break;

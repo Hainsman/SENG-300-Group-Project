@@ -61,6 +61,7 @@ public class ClientCore extends Thread{
     private volatile Consumer<sysMSG> newUserResponseHandler;
     private volatile Consumer<sysMSG> moveResponseHandler;
     private volatile Consumer<sysMSG> playerStatsHandler;
+    private volatile Consumer<sysMSG> rematchHandler;
     private volatile Consumer<chatMessage> chatMessageHandler;
     
     public boolean isConnected() {
@@ -141,6 +142,10 @@ public class ClientCore extends Thread{
 
     public void setPlayerStatsHandler(Consumer<sysMSG> handler) {
         playerStatsHandler = handler;
+    }
+
+    public void setRematchHandler(Consumer<sysMSG> handler) {
+        rematchHandler = handler;
     }
 
     public void setChatMessageHandler(Consumer<chatMessage> handler) {
@@ -268,6 +273,15 @@ public class ClientCore extends Thread{
                                 Consumer<sysMSG> statsHandler = playerStatsHandler;
                                 if (statsHandler != null) {
                                     Platform.runLater(() -> statsHandler.accept(sm));
+                                }
+                                break;
+                            case "REMATCH_REQUEST":
+                            case "REMATCH_DECLINED":
+                            case "FORFEIT_NOTICE":
+                            case "FORFEIT_COMPLETE":
+                                Consumer<sysMSG> currentRematchHandler = rematchHandler;
+                                if (currentRematchHandler != null) {
+                                    Platform.runLater(() -> currentRematchHandler.accept(sm));
                                 }
                                 break;
                             default:

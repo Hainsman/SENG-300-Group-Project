@@ -40,6 +40,11 @@ public class ChooseModeController {
     }
 
     @FXML
+    void handleOpenLeaderboard(MouseEvent event) {
+        CentralController.moveTo("Leaderboard.fxml");
+    }
+
+    @FXML
     void handleOpenSettings(MouseEvent event) {
         CentralController.previousScreen = "chooseModeNew.fxml";
         CentralController.moveTo("Settings.fxml");

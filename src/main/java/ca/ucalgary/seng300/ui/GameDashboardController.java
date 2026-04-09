@@ -75,6 +75,7 @@ public class GameDashboardController {
     void C4click(MouseEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
         CentralController.selectedGame = "Connect 4";
+        CentralController.selectedGameId = 2;
         CentralController.moveTo("chooseModeNew.fxml");
     }
 
@@ -82,6 +83,7 @@ public class GameDashboardController {
     void TTTclicked(MouseEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
         CentralController.selectedGame = "TicTacToe";
+        CentralController.selectedGameId = 1;
         CentralController.moveTo("chooseModeNew.fxml");
     }
 

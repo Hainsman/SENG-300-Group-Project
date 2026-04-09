@@ -336,7 +336,12 @@ public class PlatformCore {
         if (sl == null || !sl.isParticipant(from) || sl.hasRecordedResult()) {
             return;
         }
+        platformChannel opponent = sl.getOpponent(from);
+        if (opponent != null) {
+            opponent.cliSend(new sysMSG("FORFEIT_NOTICE", lobbyId, "", "The other player has forfeited."));
+        }
         applyMatchOutcome(sl, null, true);
+        sl.sendBoth(new sysMSG("FORFEIT_COMPLETE", lobbyId, ""));
     }
 
     public synchronized void onRematch(platformChannel requester) {
@@ -351,10 +356,48 @@ public class PlatformCore {
         if (sl == null || !sl.isParticipant(requester)) {
             return;
         }
-        if (sl.getHost() == null || sl.getGuest() == null) {
+        if (sl.getHost() == null || sl.getGuest() == null || !sl.isGameOver()) {
             return;
         }
-        sl.resetGame();
+        platformChannel opponent = sl.getOpponent(requester);
+        if (opponent == null) {
+            return;
+        }
+        if (sl.getPendingRematchRequester() != null) {
+            return;
+        }
+        sl.setPendingRematchRequester(requester);
+        opponent.cliSend(new sysMSG("REMATCH_REQUEST", lobbyId, ""));
+    }
+
+    public synchronized void onRematchResponse(platformChannel responder, boolean accepted) {
+        if (responder == null || lobbies == null) {
+            return;
+        }
+        String lobbyId = responder.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(responder)) {
+            return;
+        }
+        platformChannel requester = sl.getPendingRematchRequester();
+        if (requester == null || requester == responder) {
+            return;
+        }
+        platformChannel opponent = sl.getOpponent(responder);
+        if (opponent != requester) {
+            return;
+        }
+
+        if (accepted) {
+            sl.resetGame();
+            return;
+        }
+
+        sl.setPendingRematchRequester(null);
+        sl.sendBoth(new sysMSG("REMATCH_DECLINED", lobbyId, ""));
     }
 
     private void finalizeMatchIfNeeded(ServerLobby sl) {

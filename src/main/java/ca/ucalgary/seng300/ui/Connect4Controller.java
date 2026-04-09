@@ -22,6 +22,7 @@ public class Connect4Controller extends GameGUI {
     private CentralController boss;
     private ClientCore clientCore = null;
     private Connect4Session session = null;
+    private boolean aiResultRecorded;
 
     public void connectToRootForLobby(CentralController root) {
         boss = root;
@@ -29,12 +30,14 @@ public class Connect4Controller extends GameGUI {
         clientCore = CentralController.playWithAi ? null : boss.getCC();
         if (CentralController.playWithAi) {
             session = new Connect4Session();
+            aiResultRecorded = false;
             refreshFromGameStateUpdate(session.getGameState());
             return;
         }
         if (clientCore != null && clientCore.isConnected()) {
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
             clientCore.setPlayerStatsHandler(this::handlePlayerStatsUpdate);
+            clientCore.setRematchHandler(this::handleRematchMessage);
             clientCore.setChatMessageHandler(this::handleChatMessage);
         }
         if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
@@ -162,10 +165,12 @@ public class Connect4Controller extends GameGUI {
         if (clientCore != null && clientCore.isConnected()) {
             GameGUI.clearHistory();
             clientCore.msgSend(new sysMSG("reset", ""));
+            statusLabel.setText("Rematch request sent.");
             return;
         }
         if (session != null) {
             session.startNewGame();
+            aiResultRecorded = false;
             GameGUI.clearHistory();
             refreshFromGameStateUpdate(session.getGameState());
             return;
@@ -210,12 +215,15 @@ public class Connect4Controller extends GameGUI {
         }
 
         if (State.PLAYER_1_WIN.equals(update.getState())) {
+            recordAiResultIfNeeded(update.getState());
             statusLabel.setText("Player 1 Wins!");
             onGameCompletion();
         } else if (State.PLAYER_2_WIN.equals(update.getState())) {
+            recordAiResultIfNeeded(update.getState());
             statusLabel.setText("Player 2 Wins!");
             onGameCompletion();
         } else if (State.TIE.equals(update.getState())) {
+            recordAiResultIfNeeded(update.getState());
             statusLabel.setText("Draw!");
             onGameCompletion();
         } else {
@@ -288,8 +296,13 @@ public class Connect4Controller extends GameGUI {
             statusLabel.setText("Forfeit submitted.");
             return;
         }
+        if (CentralController.playWithAi && !aiResultRecorded) {
+            GameProfileHelper.applyLocalResult(Game.CONNECT_FOUR, GameProfileHelper.LocalMatchResult.FORFEIT);
+            aiResultRecorded = true;
+            populateProfileSidebar();
+        }
         statusLabel.setText("You forfeited.");
-        onGameCompletion();
+        exitToChooseMode();
     }
 
     @FXML
@@ -319,7 +332,7 @@ public class Connect4Controller extends GameGUI {
             sidebarGameTitleLabel.setText(data.gameTitle());
         }
         if (profileNameLabel != null) {
-            profileNameLabel.setText(data.username());
+            profileNameLabel.setText(data.username() + " - " + getPlayerRoleLabel());
         }
         if (profileEmailLabel != null) {
             profileEmailLabel.setText(data.email());
@@ -348,5 +361,82 @@ public class Connect4Controller extends GameGUI {
         if (tierValueLabel != null && message.getPayload() != null) {
             tierValueLabel.setText(message.getPayload());
         }
+        populateProfileSidebar();
+    }
+
+    private void handleRematchMessage(sysMSG message) {
+        if (message == null) {
+            return;
+        }
+        if ("FORFEIT_NOTICE".equals(message.getType())) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Opponent Forfeited");
+            alert.setHeaderText("Match ended");
+            alert.setContentText(message.getPayload() != null && !message.getPayload().isBlank()
+                    ? message.getPayload()
+                    : "The other player has forfeited.");
+            alert.showAndWait();
+            return;
+        }
+        if ("REMATCH_REQUEST".equals(message.getType())) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Rematch Request");
+            alert.setHeaderText("Your opponent wants a rematch");
+            alert.setContentText("Do you want to play another game?");
+            ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
+            alert.getButtonTypes().setAll(yes, no);
+            ButtonType result = alert.showAndWait().orElse(no);
+            if (clientCore != null && clientCore.isConnected()) {
+                clientCore.msgSend(new sysMSG("REMATCH_RESPONSE", result == yes ? "ACCEPT" : "DECLINE", ""));
+            }
+            return;
+        }
+        if ("REMATCH_DECLINED".equals(message.getType())) {
+            statusLabel.setText("Rematch declined.");
+            exitToChooseMode();
+            return;
+        }
+        if ("FORFEIT_COMPLETE".equals(message.getType())) {
+            statusLabel.setText("Match ended by forfeit.");
+            exitToChooseMode();
+        }
+    }
+
+    private String getPlayerRoleLabel() {
+        if (CentralController.playWithAi || session != null) {
+            return "Player 1";
+        }
+        if (clientCore != null) {
+            Player role = clientCore.getMyNetworkRole();
+            if (role == Player.PLAYER_2) {
+                return "Player 2";
+            }
+        }
+        return "Player 1";
+    }
+
+    private void recordAiResultIfNeeded(State state) {
+        if (!CentralController.playWithAi || aiResultRecorded || state == null || State.IN_PROGRESS.equals(state)) {
+            return;
+        }
+        if (State.PLAYER_1_WIN.equals(state)) {
+            GameProfileHelper.applyLocalResult(Game.CONNECT_FOUR, GameProfileHelper.LocalMatchResult.WIN);
+        } else if (State.PLAYER_2_WIN.equals(state)) {
+            GameProfileHelper.applyLocalResult(Game.CONNECT_FOUR, GameProfileHelper.LocalMatchResult.LOSS);
+        } else {
+            GameProfileHelper.applyLocalResult(Game.CONNECT_FOUR, GameProfileHelper.LocalMatchResult.DRAW);
+        }
+        aiResultRecorded = true;
+        populateProfileSidebar();
+    }
+
+    private void exitToChooseMode() {
+        CentralController.lobbyCode = null;
+        CentralController.lobbyPaired = false;
+        CentralController.hostingLobby = false;
+        CentralController.playWithAi = false;
+        CentralController.previousScreen = "GameDashboardNew.fxml";
+        CentralController.moveTo("chooseModeNew.fxml");
     }
 }

@@ -27,6 +27,7 @@ public class CentralController {
     @FXML private Button maximizeButton;
 
     public static String selectedGame;
+    public static int selectedGameId;
     public static int maxPlayers;
     public static String privacy;
     public static String lobbyCode;
