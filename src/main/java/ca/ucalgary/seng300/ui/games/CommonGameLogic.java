@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.Session;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -154,12 +155,12 @@ public abstract class CommonGameLogic extends StackPane {
             updateHistoryBoard(gameState);
 
             // TODO fix this
-//            OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, state, onlineEloApplied, gameType)
-//                    .ifPresent(r -> {
-//                        onlineEloApplied = true;
-//                        showEloOverlay(r);
-//                    }
-//            );
+            OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, state, onlineEloApplied, gameType)
+                    .ifPresent(r -> {
+                        onlineEloApplied = true;
+                        //showEloOverlay(r);
+                    }
+            );
 
             refreshBackButtonVisibility();
         }

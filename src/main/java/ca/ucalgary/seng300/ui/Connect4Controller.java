@@ -1,5 +1,5 @@
 package ca.ucalgary.seng300.ui;
-
+/*
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.Connect4RandomMoveGenerator;
@@ -466,3 +466,4 @@ public class Connect4Controller extends GameGUI {
         CentralController.moveTo("chooseModeNew.fxml");
     }
 }
+*/
