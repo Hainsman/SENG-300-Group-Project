@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.platform.server;
 
 
+import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.Player;
@@ -9,8 +10,6 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-
-import static ca.ucalgary.seng300.PlatformCore.parseNameEloPayload;
 
 public class ServerLobby {
     private String lobbyCode;
@@ -46,6 +45,22 @@ public class ServerLobby {
         guest = h;
         guestextra = ex;
         guest.setLobby(lobbyCode, gameType);
+    }
+    public String[] parseNameEloPayload(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return new String[] { "Player", "1200" };
+        }
+        String[] parts = raw.split("\\|", 2);
+        String name = parts[0].trim().isEmpty() ? "Player" : parts[0].trim();
+        int elo = 1200;
+        if (parts.length > 1) {
+            try {
+                elo = Integer.parseInt(parts[1].trim());
+            } catch (NumberFormatException ignored) {
+                elo = 1200;
+            }
+        }
+        return new String[] { name, String.valueOf(elo) };
     }
 
     public void rosterSend() {
@@ -90,6 +105,15 @@ public class ServerLobby {
     public void sendBoth(Object o) {
         host.cliSend(o);
         guest.cliSend(o);
+    }
+
+    public void sendOther(platformChannel p, Object o){
+        if(p.equals(host)){
+            guest.cliSend(o);
+        }
+        else{
+            host.cliSend(o);
+        }
     }
 
     //public GameState currentTypedGameState() {

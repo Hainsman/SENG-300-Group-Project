@@ -50,23 +50,6 @@ public class PlatformCore {
     public List<platformChannel> users;
     private final MatchMakingService matchMakingService = new MatchMakingService();
 
-    public static String[] parseNameEloPayload(String raw) {
-        if (raw == null || raw.isBlank()) {
-            return new String[] { "Player", "1200" };
-        }
-        String[] parts = raw.split("\\|", 2);
-        String name = parts[0].trim().isEmpty() ? "Player" : parts[0].trim();
-        int elo = 1200;
-        if (parts.length > 1) {
-            try {
-                elo = Integer.parseInt(parts[1].trim());
-            } catch (NumberFormatException ignored) {
-                elo = 1200;
-            }
-        }
-        return new String[] { name, String.valueOf(elo) };
-    }
-
    public synchronized boolean onHostLobby(String code, String gameType, platformChannel hostChannel, String clientPayload) {
         if (code == null || code.isBlank() || hostChannel == null) {
             System.out.println("HOST_LOBBY rejected: code/hostChannel invalid");
@@ -105,80 +88,13 @@ public class PlatformCore {
         ServerLobby sl = lobbies.get(code);
         sl.gameStart();
     }
-/*
-        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameId(), hostUserId);
-        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameId(), guestUserId);
-        MatchMakingService.removePlayer(hostStats); //remove duplicate
-        MatchMakingService.removePlayer(guestStats); //remove duplicate
-        matchMakingService.addPlayerToQueue(hostStats);
-        matchMakingService.addPlayerToQueue(guestStats);
-        List<PlayerStats> matchedPlayers = matchMakingService.matchPlayers(sl.getGameId());
-        if (!containsMatchedPair(matchedPlayers, hostUserId, guestUserId)) {
-            MatchMakingService.removePlayer(hostStats);
-            MatchMakingService.removePlayer(guestStats);
-            return new sysMSG("CREATE_GAME", "FAIL",
-                    "Starting the game failed: player scores must be within 10 points.");
-        }
-        String fxml = sm.getFieldA();
-        if (fxml == null || fxml.isBlank()) {
-            return;
-        }
-        String b = sm.getFieldB() != null ? sm.getFieldB() : "";
-        p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("GMJN", fxml, b));
-        System.out.println("GMJN relayed to guest → " + fxml);
-    }
 
     /** Relays in-match chat between paired host/guest channels. */
-    public synchronized void relayMatchChat(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
-        if (from == null || sm == null) {
-            return;
-        }
-        platformChannel target = null;
-        if (from == p1) {
-            target = p2;
-        } else if (from == p2) {
-            target = p1;
-        }
-        if (target == null) {
-            return;
-        }
-        String sender = sm.getFieldA() != null ? sm.getFieldA() : "Player";
-        String body = sm.getFieldB() != null ? sm.getFieldB() : "";
-        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("MATCH_CHAT", sender, body));
+    public synchronized void relayMatchChat(String lobbyid, String sender, String Msg) {
+        ServerLobby sl = lobbies.get(lobbyid);
+        sl.sendBoth(new sysMSG("MATCH_CHAT", sender, Msg));
     }
 
-    /** Relay a rematch request from one active player to the other. */
-    public synchronized void relayRematchRequest(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
-        if (from == null || sm == null || p1 == null || p2 == null) {
-            return;
-        }
-        platformChannel target = from == p1 ? p2 : (from == p2 ? p1 : null);
-        if (target == null) {
-            return;
-        }
-        String requester = sm.getFieldA() != null && !sm.getFieldA().isBlank() ? sm.getFieldA() : "Opponent";
-        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_REQUEST", requester, ""));
-    }
-
-    /** Handle rematch consent; only reset when the requested player accepts. */
-    public synchronized void onRematchResponse(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
-        if (from == null || sm == null || p1 == null || p2 == null) {
-            return;
-        }
-        platformChannel target = from == p1 ? p2 : (from == p2 ? p1 : null);
-        if (target == null) {
-            return;
-        }
-        boolean accepted = "ACCEPT".equalsIgnoreCase(sm.getFieldA());
-        String responder = sm.getFieldB() != null && !sm.getFieldB().isBlank() ? sm.getFieldB() : "Opponent";
-        if (accepted) {
-            p1.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_ACCEPTED", responder, ""));
-            p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_ACCEPTED", responder, ""));
-            tempGameReset();
-            return;
-        }
-        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_DECLINED", responder, ""));
-    }
 
     public void sendSingle (String id, Object o){
         for(platformChannel u : users){
@@ -186,13 +102,12 @@ public class PlatformCore {
                 u.cliSend(o);
             }
         }
-        return foundHost && foundGuest;
     }
     public void sendMult (chatMessage m){
         for(platformChannel h : users){
             h.cliSend(m);
         }
-    }*/
+    }
 
     public sysMSG authenticate(String user, String pass, platformChannel pl) {
         List<User> listOfUsers = userStore.findByUserName(user);
@@ -242,53 +157,31 @@ public class PlatformCore {
     /**
      * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
      */
-    public void onForfeit(platformChannel sender, String type) {
-        ServerLobby sl = lobbies.get(sender.lobby);
-        switch (type){
-            /*
-            case "REQUEST":
-                if(sl.getHost().equals(sender)){
-                    sl.getGuest().cliSend(new sysMSG("FORFEIT", "REQUEST"));
-                }
-                else{
-                    sl.getHost().cliSend(new sysMSG("FORFEIT", "REQUEST"));
-                }
-                break;
-            case "REJECT":
-                if(sl.getHost().equals(sender)){
-                    sl.getGuest().cliSend(new sysMSG("FORFEIT", "REJECT"));
-                }
-                else{
-                    sl.getHost().cliSend(new sysMSG("FORFEIT", "REJECT"));
-                }*/
-            case "REQUEST":
-                applyMatchOutcome(sl, null, true);
-                sl.sendBoth(new sysMSG("FORFEIT", "ACCEPT"));
-                break;
+    public void onForfeit(String lobbyid) {
+        ServerLobby sl = lobbies.get(lobbyid);
+        applyMatchOutcome(sl, null, true);
+        sl.sendBoth(new sysMSG("FORFEIT", "ACCEPT"));
 
-        }
     }
 
     public synchronized void onRematch(platformChannel requester, String type) {
         ServerLobby sl = lobbies.get(requester.lobby);
         switch (type){
-            /*case "REQUEST":
+            case "REQUEST":
+                //target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_REQUEST", requester, ""));
                 sl.setPendingRematchRequester(requester);
-                if(sl.getHost().equals(requester)){
-                    sl.getGuest().cliSend(new sysMSG("REMATCH", "REQUEST"));
-                }
-                else{
-                    sl.getHost().cliSend(new sysMSG("REMATCH", "REQUEST"));
-                }
+                sl.sendOther(requester, new sysMSG("REMATCH", "REQUEST"));
                 break;
             case "ACCEPT":
+                //p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_ACCEPTED", responder, ""));
                 applyMatchOutcome(sl, null, true);
                 sl.gameReset();
                 sl.sendBoth(new sysMSG("REMATCH", "ACCEPT"));
-                break;*/
+                break;
             default:
                 sl.setPendingRematchRequester(null);
-                sl.sendBoth(new sysMSG("REMATCH", "ACCEPT"));
+                sl.sendOther(requester, new sysMSG("REMATCH", "DECLINED"));
+                //target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_DECLINED", responder, ""));
                 break;
 
         }
@@ -326,8 +219,8 @@ public class PlatformCore {
             return;
         }
 
-        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameType(), hostUserId);
-        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameType(), guestUserId);
+        PlayerStats hostStats = null;//getOrCreatePlayerStats(sl.getGameType(), hostUserId);
+        PlayerStats guestStats = null;//getOrCreatePlayerStats(sl.getGameType(), guestUserId);
         double delta = forfeit ? 0.0 : 1.0;
 
         if (winner == Player.PLAYER_1) {

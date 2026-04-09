@@ -75,7 +75,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     }
     private void applyGameAccent() {
         getStyleClass().removeAll("lobby-ttt", "lobby-c4");
-        if (CentralController.selectedGame == GameType.CONNECT4) {
+        if (rootController.selectedGame == GameType.CONNECT4) {
             getStyleClass().add("lobby-c4");
         } else {
             getStyleClass().add("lobby-ttt");
@@ -87,37 +87,37 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     }
 
     private boolean rosterPopulated() {
-        String h = CentralController.rosterHostName;
-        String guest = CentralController.rosterGuestName;
+        String h = rootController.rosterHostName;
+        String guest = rootController.rosterGuestName;
         return h != null && !h.isBlank() && guest != null && !guest.isBlank();
     }
 
     private String currentUserDisplayName() {
-        int uid = CentralController.currentUserId;
+        int uid = rootController.currentUserId;
         if (uid > 0) {
             User u = UserStore.getInstance().get(uid);
             if (u != null && u.getlogin() != null && !u.getlogin().isBlank()) {
                 return u.getlogin().trim();
             }
         }
-        if (CentralController.displayName != null && !CentralController.displayName.isBlank()) {
-            return CentralController.displayName.trim();
+        if (rootController.displayName != null && !rootController.displayName.isBlank()) {
+            return rootController.displayName.trim();
         }
         return "Player";
     }
 
     private int myEloForSelectedGame() {
-        GameType g = CentralController.selectedGame != null ? CentralController.selectedGame : GameType.TIC_TAC_TOE;
-        int uid = CentralController.currentUserId;
+        GameType g = rootController.selectedGame != null ? rootController.selectedGame : GameType.TIC_TAC_TOE;
+        int uid = rootController.currentUserId;
         if (uid > 0) {
             User u = UserStore.getInstance().get(uid);
             if (u != null) {
                 return u.getEloForGame(g);
             }
         }
-        return PlayerProfileHelper.eloForGameType(g);
+        return PlayerProfileHelper.eloForGameType(g,rootController);
     }
-
+    /*
     private void setYouPills(boolean hosting) {
         boolean showHost = hosting;
         boolean showGuest = !hosting;
@@ -129,7 +129,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             guestYouPill.setVisible(showGuest);
             guestYouPill.setManaged(showGuest);
         }
-    }/*
+    }
     boolean paired = isPaired();
         boolean roster = paired;
 
@@ -141,20 +141,20 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         int guestElo;
 
         if (roster) {
-            hostName = CentralController.rosterHostName.trim();
-            guestName = CentralController.rosterGuestName.trim();
-            hostElo = CentralController.rosterHostElo;
-            guestElo = CentralController.rosterGuestElo;
+            hostName = rootController.rosterHostName.trim();
+            guestName = rootController.rosterGuestName.trim();
+            hostElo = rootController.rosterHostElo;
+            guestElo = rootController.rosterGuestElo;
         } else if (hosting) {
             hostName = currentUserDisplayName();
             hostElo = myEloForSelectedGame();
             guestName = paired ? "Opponent" : "Waiting for opponent…";
-            guestElo = paired ? Math.max(0, CentralController.rosterGuestElo) : -1;
+            guestElo = paired ? Math.max(0, rootController.rosterGuestElo) : -1;
         } else {
             guestName = currentUserDisplayName();
             guestElo = myEloForSelectedGame();
             hostName = paired ? "Host" : "Waiting…";
-            hostElo = paired ? Math.max(0, CentralController.rosterHostElo) : -1;
+            hostElo = paired ? Math.max(0, rootController.rosterHostElo) : -1;
         }
 
         if (hostNameLabel != null) {
@@ -238,7 +238,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     }
 
     public void gameStart(){
-        GameType game = CentralController.selectedGame;
+        GameType game = rootController.selectedGame;
         Navigation nav = GameType.getNavigation(game);
         LobbyBridge.clearLobbyUiCallbacks();
         rootController.moveTo(nav);

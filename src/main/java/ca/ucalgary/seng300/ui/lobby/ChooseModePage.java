@@ -93,7 +93,7 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     void handleLogout(ActionEvent event) {
-        CentralController.logout();
+        rootController.logout();
     }
 
     @FXML

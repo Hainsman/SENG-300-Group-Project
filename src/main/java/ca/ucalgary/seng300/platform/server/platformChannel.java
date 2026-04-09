@@ -80,21 +80,18 @@ public class platformChannel extends Thread {
                 serv.startLobby(lobby);
                 break;
             case "FORFEIT":
-                serv.onForfeit(this, sm.getFieldA());
+                serv.onForfeit(lobby);
                 break;
             case "REMATCH":
                 serv.onRematch(this, sm.getFieldA());
                 break;
+
+            case "MATCH_CHAT":
+                serv.relayMatchChat(lobby,sm.getFieldA(), sm.getFieldB());
+                break;
+            //case "reset" -> serv.reset();
             default:
                 break;
-            }
-            case "GMJN" -> serv.relayToGuestIfHost(this, sm);
-            case "MATCH_CHAT" -> serv.relayMatchChat(this, sm);
-            case "REMATCH_REQUEST" -> serv.relayRematchRequest(this, sm);
-            case "REMATCH_RESPONSE" -> serv.onRematchResponse(this, sm);
-            case "reset" -> serv.tempGameReset();
-            case "FORFEIT" -> serv.onForfeit(this);
-            default -> { }
         }
     }
 

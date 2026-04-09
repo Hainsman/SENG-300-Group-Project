@@ -140,8 +140,8 @@ public class ClientCore extends Thread{
     public void resetMatchState() {
         lastUpdate = null;
         myPlayerId = null;
-        mySide = null;
-        sessionId = null;
+        //mySide = null;
+        //sessionId = null;
     }
 
     public String debugBoard(TTTGameState t) {
@@ -154,7 +154,7 @@ public class ClientCore extends Thread{
         return s;
     }
 
-    private void onGameStateReceived(GameState g) {
+   /* private void onGameStateReceived(GameState g) {
         System.out.println("a gamestate arrived");
         lastUpdate = g;
         if (g instanceof TTTGameState tttState) {
@@ -169,7 +169,7 @@ public class ClientCore extends Thread{
             }
             LobbyBridge.notifyGameState();
         });
-    }
+    }*/
 
     @Override
     public void run() {
@@ -272,14 +272,6 @@ public class ClientCore extends Thread{
                                     ioMain.mainLobbyPage.refreshPlayersFromState();
                                 });
                                 break;
-                            case "REMATCH":
-                                if(gameType.equals(GameType.TIC_TAC_TOE)){
-                                    ioMain.tttPage.reset();
-                                }else{
-                                    ioMain.connect4.reset();
-                                }
-                                break;
-
                             case "FORFEIT":
                                 if(gameType.equals(GameType.TIC_TAC_TOE)){
                                     ioMain.tttPage.reset();
@@ -287,7 +279,6 @@ public class ClientCore extends Thread{
                                     ioMain.connect4.reset();
                                 }
                                 break;
-                            }
                             case "MATCH_CHAT":
                                 if (ioMain != null) {
                                     String sender = sm.getFieldA();
@@ -295,21 +286,18 @@ public class ClientCore extends Thread{
                                     Platform.runLater(() -> ioMain.addIncomingMatchChat(sender, body));
                                 }
                                 break;
-                            case "REMATCH_REQUEST":
-                                if (ioMain != null) {
-                                    Platform.runLater(() -> ioMain.onRematchRequested(sm.getFieldA()));
+                            case "REMATCH":
+                                switch (sm.getFieldA()){
+                                    case "ACCEPT":
+                                        Platform.runLater(() -> ioMain.gameui.reset());
+                                        break;
+                                    case "REQUEST":
+                                        Platform.runLater(() -> ioMain.gameui.onRematchRequested(sm.getFieldB()));
+                                        break;
+                                    case "REJECTED":
+                                        Platform.runLater(() -> ioMain.gameui.addIncomingSystemNotice("Rematch request rejected."));
+                                        break;
                                 }
-                                break;
-                            case "REMATCH_ACCEPTED":
-                                if (ioMain != null) {
-                                    Platform.runLater(() -> ioMain.onRematchAccepted(sm.getFieldA()));
-                                }
-                                break;
-                            case "REMATCH_DECLINED":
-                                if (ioMain != null) {
-                                    Platform.runLater(() -> ioMain.onRematchDeclined(sm.getFieldA()));
-                                }
-                                break;
                             default:
                                 break;
                         }
