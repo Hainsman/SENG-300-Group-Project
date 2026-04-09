@@ -5,11 +5,44 @@
 
 .popup-surface {
     -fx-background-color: #111112;
-    -fx-background-radius: 10;
-    -fx-border-color: #2f2f35;
-    -fx-border-width: 1;
-    -fx-border-radius: 10;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 0;
 }
+
+/* ========== Title bar (smaller version of main window) ========== */
+#popup-title-bar {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-radius: 0;
+}
+
+#popup-close-button {
+    -fx-pref-width: 36;
+    -fx-pref-height: 36;
+    -fx-min-width: 36;
+    -fx-background-color: #141416;
+    -fx-font-size: 13px;
+    -fx-text-fill: #fafafa;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+}
+
+#popup-close-button:hover {
+    -fx-background-color: #7f1d1d;
+    -fx-text-fill: #fecaca;
+}
+
+#popup-title-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #fafafa;
+    -fx-font-weight: 700;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
 /* ========== Content area ========== */
 .popup-body {
     -fx-padding: 20 24;
@@ -27,6 +60,7 @@
     -fx-font-size: 14px;
     -fx-wrap-text: true;
     -fx-text-alignment: center;
+    -fx-alignment: center;
 }
 
 /* ========== Button row ========== */

@@ -30,7 +30,6 @@ public class Popup {
     @FXML private StackPane root;
     @FXML private BorderPane titleBarPane;
     @FXML private Label titleLabel;
-    @FXML private Button closeButton;
     @FXML private Label iconLabel;
     @FXML private Label messageLabel;
     @FXML private Button okButton;
@@ -41,20 +40,17 @@ public class Popup {
 
     @FXML
     private void initialize() {
-        // WindowManager for drag support (resizing disabled)
+        // Dummy button for WindowControls (no close/minimize/maximize in popup)
+        Button dummy = new Button();
+
         WindowManager.WindowControls controls = new WindowManager.WindowControls(
                 root, titleBarPane, titleLabel,
-                closeButton,   // quit button = close button
-                closeButton,   // minimize not used, just reuse close reference
-                closeButton    // maximize not used, just reuse close reference
+                dummy, dummy, dummy
         );
 
         WindowManager wm = new WindowManager(controls, true);
         wm.setResizable(false);
 
-        // Override the button actions that WindowManager set (it would try to
-        // minimize/maximize when clicking close — we only want close behaviour)
-        closeButton.setOnAction(e -> close());
         okButton.setOnAction(e -> { confirmed = true; close(); });
         cancelButton.setOnAction(e -> close());
     }

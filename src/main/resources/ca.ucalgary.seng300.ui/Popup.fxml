@@ -9,7 +9,7 @@
 <?import javafx.geometry.Insets?>
 
 <StackPane fx:id="root" prefHeight="220.0" prefWidth="440.0"
-           stylesheets="@stylesheets/popup.css"
+           stylesheets="@stylesheets/popup.css,@stylesheets/global.css"
            xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="ca.ucalgary.seng300.ui.Popup">
@@ -22,12 +22,7 @@
                     <right>
                         <HBox maxHeight="-Infinity" maxWidth="-Infinity"
                               prefHeight="36.0" prefWidth="36.0"
-                              BorderPane.alignment="CENTER">
-                            <children>
-                                <Button id="popup-close-button" fx:id="closeButton"
-                                        mnemonicParsing="false" text="&#10005;" />
-                            </children>
-                        </HBox>
+                              BorderPane.alignment="CENTER" />
                     </right>
                     <center>
                         <Label id="popup-title-label" fx:id="titleLabel"
