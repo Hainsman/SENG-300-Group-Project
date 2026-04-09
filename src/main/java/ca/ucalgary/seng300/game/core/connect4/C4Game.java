@@ -33,6 +33,16 @@ public class C4Game implements Game {
         }
     }
 
+    public void tempReset(){
+        gameState = new C4GameState();
+    }
+
+    /** Declares {@code forfeitingPlayer} lost; opponent wins. No-op if game already over. */
+    public void forfeit(Player forfeitingPlayer) {
+        if (gameState instanceof C4GameState gs) {
+            gs.applyForfeit(forfeitingPlayer);
+        }
+    }
     public boolean valid;
 
     @Override
@@ -48,8 +58,7 @@ public class C4Game implements Game {
      */
     @Override
     public void handleAction(PlayerAction playerAction) {
-        valid = validator.validateMove(gameState, playerAction);
-        if (valid) {
+        if (validator.validateMove(gameState, playerAction)) {
             gameState.applyAction(playerAction);
         }
     }

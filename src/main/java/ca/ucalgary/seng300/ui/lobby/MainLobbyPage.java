@@ -73,6 +73,114 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         //LobbyBridge.onPartnerJoined = this::refreshPlayersFromState;
         //LobbyBridge.onGameState = this::refreshStartButton;
     }
+    private void applyGameAccent() {
+        getStyleClass().removeAll("lobby-ttt", "lobby-c4");
+        if (CentralController.selectedGame == GameType.CONNECT4) {
+            getStyleClass().add("lobby-c4");
+        } else {
+            getStyleClass().add("lobby-ttt");
+        }
+    }
+
+    private boolean isPaired() {
+        return rosterPopulated();
+    }
+
+    private boolean rosterPopulated() {
+        String h = CentralController.rosterHostName;
+        String guest = CentralController.rosterGuestName;
+        return h != null && !h.isBlank() && guest != null && !guest.isBlank();
+    }
+
+    private String currentUserDisplayName() {
+        int uid = CentralController.currentUserId;
+        if (uid > 0) {
+            User u = UserStore.getInstance().get(uid);
+            if (u != null && u.getlogin() != null && !u.getlogin().isBlank()) {
+                return u.getlogin().trim();
+            }
+        }
+        if (CentralController.displayName != null && !CentralController.displayName.isBlank()) {
+            return CentralController.displayName.trim();
+        }
+        return "Player";
+    }
+
+    private int myEloForSelectedGame() {
+        GameType g = CentralController.selectedGame != null ? CentralController.selectedGame : GameType.TIC_TAC_TOE;
+        int uid = CentralController.currentUserId;
+        if (uid > 0) {
+            User u = UserStore.getInstance().get(uid);
+            if (u != null) {
+                return u.getEloForGame(g);
+            }
+        }
+        return PlayerProfileHelper.eloForGameType(g);
+    }
+
+    private void setYouPills(boolean hosting) {
+        boolean showHost = hosting;
+        boolean showGuest = !hosting;
+        if (hostYouPill != null) {
+            hostYouPill.setVisible(showHost);
+            hostYouPill.setManaged(showHost);
+        }
+        if (guestYouPill != null) {
+            guestYouPill.setVisible(showGuest);
+            guestYouPill.setManaged(showGuest);
+        }
+    }/*
+    boolean paired = isPaired();
+        boolean roster = paired;
+
+        setYouPills(hosting);
+
+        String hostName;
+        String guestName;
+        int hostElo;
+        int guestElo;
+
+        if (roster) {
+            hostName = CentralController.rosterHostName.trim();
+            guestName = CentralController.rosterGuestName.trim();
+            hostElo = CentralController.rosterHostElo;
+            guestElo = CentralController.rosterGuestElo;
+        } else if (hosting) {
+            hostName = currentUserDisplayName();
+            hostElo = myEloForSelectedGame();
+            guestName = paired ? "Opponent" : "Waiting for opponent…";
+            guestElo = paired ? Math.max(0, CentralController.rosterGuestElo) : -1;
+        } else {
+            guestName = currentUserDisplayName();
+            guestElo = myEloForSelectedGame();
+            hostName = paired ? "Host" : "Waiting…";
+            hostElo = paired ? Math.max(0, CentralController.rosterHostElo) : -1;
+        }
+
+        if (hostNameLabel != null) {
+            hostNameLabel.setText(hostName);
+        }
+        if (guestNameLabel != null) {
+            guestNameLabel.setText(guestName);
+        }
+        if (hostEloLabel != null) {
+            hostEloLabel.setText(hostElo >= 0 ? ("Elo " + hostElo) : "Elo —");
+        }
+        if (guestEloLabel != null) {
+            guestEloLabel.setText(guestElo >= 0 ? ("Elo " + guestElo) : "Elo —");
+        }
+
+        if (connectionHintLabel != null) {
+            if (paired) {
+                connectionHintLabel.setText("Both players connected. Host can start when ready.");
+                connectionHintLabel.setVisible(true);
+                connectionHintLabel.setManaged(true);
+            } else if (!paired) {
+                connectionHintLabel.setText("Waiting for your opponent to join…");
+                connectionHintLabel.setVisible(true);
+                connectionHintLabel.setManaged(true);
+            } else {
+    */
 
     public void refreshPlayersFromState() {
         System.out.println(" player update triggered");

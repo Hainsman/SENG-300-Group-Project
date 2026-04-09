@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
@@ -47,6 +51,7 @@ public class GameGUIPage extends VBox implements Navigable {
 //    @FXML private Label connect4Label;
     @FXML private Label gameTypeLabel;
     @FXML private Button infoButton;
+    @FXML private Button forfeitButton;
 
     public GameGUIPage(CentralController rootController) {
         try {
@@ -65,9 +70,34 @@ public class GameGUIPage extends VBox implements Navigable {
     public void setGameNode(Node node, GameType gameType) {
         gameBox.getChildren().clear();
         gameBox.getChildren().add(node);
+        clearChat();
 
         c4Page = node instanceof C4Page connect4 ? connect4 : null;
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
+        refreshSidebar();
+        refreshForfeitButtonState();
+    }
+
+    public void refreshForfeitButtonState() {
+        if (forfeitButton == null) {
+            return;
+        }
+        boolean canForfeit = true;
+        if (tttPage != null) {
+            canForfeit = tttPage.canForfeitFromShell();
+        } else if (c4Page != null) {
+            canForfeit = c4Page.canForfeitFromShell();
+        }
+        forfeitButton.setDisable(!canForfeit);
+    }
+
+    /**
+     * Left sidebar: game name (Tic-Tac-Toe vs Connect 4), signed-in user, ELO/tier/games for this game mode.
+     */
+    public void refreshSidebar() {
+        GameType g = CentralController.selectedGame != null
+                ? CentralController.selectedGame
+                : GameType.TIC_TAC_TOE;
 
         gameTypeLabel.setText(gameType.toString());
     }
@@ -190,8 +220,19 @@ public class GameGUIPage extends VBox implements Navigable {
 //        // }
 //    }
 
+    public void addIncomingSystemNotice(String message) {
+        if (message == null || message.isBlank()) {
+            return;
+        }
+        addChat("System", message, Color.web("#fbbf24"));
+    }
+
     @FXML
     private void handleForfeit(ActionEvent event) {
+        refreshForfeitButtonState();
+        if (forfeitButton != null && forfeitButton.isDisabled()) {
+            return;
+        }
         if (tttPage != null) {
             tttPage.handleForfeitFromShell();
         }
@@ -220,6 +261,10 @@ public class GameGUIPage extends VBox implements Navigable {
                 : "You";
 
         addChat(sender, msg, Color.web("#fafafa"));
+        ClientCore cc = rootController != null ? rootController.getCC() : null;
+        if (cc != null && cc.isConnected()) {
+            cc.msgSend(new sysMSG("MATCH_CHAT", sender, msg));
+        }
         chatInput.clear();
     }
 
@@ -241,7 +286,9 @@ public class GameGUIPage extends VBox implements Navigable {
 
     @Override
     public void reset() {
-
+        clearChat();
+        refreshSidebar();
+        refreshForfeitButtonState();
     }
 }
 

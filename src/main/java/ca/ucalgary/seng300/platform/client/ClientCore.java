@@ -136,6 +136,14 @@ public class ClientCore extends Thread{
         chatMessageHandler = handler;
     }
 
+    /** Clear per-match client state before creating/joining a new lobby. */
+    public void resetMatchState() {
+        lastUpdate = null;
+        myPlayerId = null;
+        mySide = null;
+        sessionId = null;
+    }
+
     public String debugBoard(TTTGameState t) {
         String s = "";
         for (Player[] p : t.getBoard()) {
@@ -144,7 +152,24 @@ public class ClientCore extends Thread{
             }
         }
         return s;
-    }*/
+    }
+
+    private void onGameStateReceived(GameState g) {
+        System.out.println("a gamestate arrived");
+        lastUpdate = g;
+        if (g instanceof TTTGameState tttState) {
+            System.out.println(debugBoard(tttState));
+        }
+        Platform.runLater(() -> {
+            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.tttPage != null) {
+                ioMain.tttPage.refreshFromGameStateUpdate(tttState);
+                System.out.println("Ui update triggered");
+            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
+                ioMain.connect4.refreshFromGameStateUpdate(c4State);
+            }
+            LobbyBridge.notifyGameState();
+        });
+    }
 
     @Override
     public void run() {
@@ -260,6 +285,29 @@ public class ClientCore extends Thread{
                                     ioMain.tttPage.reset();
                                 }else{
                                     ioMain.connect4.reset();
+                                }
+                                break;
+                            }
+                            case "MATCH_CHAT":
+                                if (ioMain != null) {
+                                    String sender = sm.getFieldA();
+                                    String body = sm.getFieldB();
+                                    Platform.runLater(() -> ioMain.addIncomingMatchChat(sender, body));
+                                }
+                                break;
+                            case "REMATCH_REQUEST":
+                                if (ioMain != null) {
+                                    Platform.runLater(() -> ioMain.onRematchRequested(sm.getFieldA()));
+                                }
+                                break;
+                            case "REMATCH_ACCEPTED":
+                                if (ioMain != null) {
+                                    Platform.runLater(() -> ioMain.onRematchAccepted(sm.getFieldA()));
+                                }
+                                break;
+                            case "REMATCH_DECLINED":
+                                if (ioMain != null) {
+                                    Platform.runLater(() -> ioMain.onRematchDeclined(sm.getFieldA()));
                                 }
                                 break;
                             default:

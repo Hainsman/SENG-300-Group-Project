@@ -92,6 +92,11 @@ public class ChooseModePage extends AnchorPane implements Navigable {
     }
 
     @FXML
+    void handleLogout(ActionEvent event) {
+        CentralController.logout();
+    }
+
+    @FXML
     void handleBack(MouseEvent event) {
         rootController.moveTo(Navigation.GAME_DASHBOARD);
     }

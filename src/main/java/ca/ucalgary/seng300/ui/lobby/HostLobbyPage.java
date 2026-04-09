@@ -104,7 +104,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
         rootController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
         rootController.hostingLobby = true;
         rootController.clearLobbyRoster();
-
+        clientCore.resetMatchState();
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onHostOk = () -> {
             rootController.moveTo(Navigation.MAIN_LOBBY);

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -23,9 +25,13 @@
               AnchorPane.topAnchor="34.0">
 
             <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+
                 <children>
                     <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
                     <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                        <padding>
+                            <Insets right="12.0"/>
+                        </padding>
                         <children>
                             <MenuButton popupSide="BOTTOM" mnemonicParsing="false" focusTraversable="false" styleClass="player-avatar-menu">
                                 <graphic>
@@ -37,8 +43,10 @@
                                     </StackPane>
                                 </graphic>
                                 <items>
-                                    <MenuItem text="Profile" onAction="#handleProfileDashboard" />
-                                    <MenuItem text="Settings" onAction="#handleTeamSettings" />
+                                    <MenuItem text="Profile" onAction="#handleProfileDashboard" styleClass="dark-menu-item" />
+                                    <MenuItem text="Settings" onAction="#handleTeamSettings" styleClass="dark-menu-item" />
+                                    <SeparatorMenuItem />
+                                    <MenuItem text="Log out" onAction="#handleLogout" styleClass="dark-menu-item" />
                                 </items>
                             </MenuButton>
                         </children>
