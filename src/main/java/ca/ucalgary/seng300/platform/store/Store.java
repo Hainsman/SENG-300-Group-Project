@@ -98,6 +98,7 @@ class Store<T extends Record> {
                 .registerSubtype(GameHistory.class, GameHistory.class.getSimpleName())
                 .registerSubtype(Participant.class, Participant.class.getSimpleName())
                 .registerSubtype(SessionHistory.class, SessionHistory.class.getSimpleName())
+                .registerSubtype(FriendHistory.class, FriendHistory.class.getSimpleName())
                 .registerSubtype(PlayerStats.class, PlayerStats.class.getSimpleName());
 
         GsonBuilder builder = new GsonBuilder()

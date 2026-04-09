@@ -28,35 +28,17 @@ import java.util.function.Consumer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-// debug Server first, then as many clients as you want
-// the server will close once the last client has sent "exit"
-
 public class ClientCore extends Thread{
     public String CID;
     public String username;
-
     private ObjectInputStream servRead;
     private ObjectOutputStream servSend;
-
     private CentralController ioMain;
-
-    public boolean running = false;
     public volatile char flg = 'n';
-
     public String gameType;
-    public Player thisUser;
-    public String Player1 = "X";
-    public String Player2 = "O";
-    private TTTRuleValidator cliEngine;
-    public GameState gstate;
-
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private volatile String sessionId;
     private volatile String myPlayerId;
-    private volatile String mySide; // "PLAYER_1" or "PLAYER_2"
     public volatile  boolean upFlag = false;
     public volatile GameState lastUpdate;
-    private volatile Runnable onGameStateUpdate;
     private volatile Consumer<sysMSG> authResponseHandler;
     private volatile Consumer<sysMSG> newUserResponseHandler;
     private volatile Consumer<sysMSG> moveResponseHandler;
@@ -115,14 +97,7 @@ public class ClientCore extends Thread{
         }
     }
 
-    public GameStateUpdate submitMoveSync(int row, int col) {
-        submitMove(row,col);
-        return null;
-    }
-    public ClientCore(CentralController c){
-        ioMain = c;
-        cliEngine = new TTTRuleValidator();
-    }
+    public ClientCore(CentralController c){ioMain = c;}
 
     public GameState getLastUpdate() {
         return lastUpdate;
@@ -144,10 +119,15 @@ public class ClientCore extends Thread{
         playerStatsHandler = handler;
     }
 
-    private Consumer<sysMSG> profileUpdateResponseHandler;
+    private volatile Consumer<sysMSG> profileUpdateResponseHandler;
+    private volatile Consumer<sysMSG> friendsListHandler;
 
     public void setProfileUpdateResponseHandler(Consumer<sysMSG> handler) {
         profileUpdateResponseHandler = handler;
+    }
+
+    public void setFriendsListHandler(Consumer<sysMSG> handler) {
+        friendsListHandler = handler;
     }
 
     public void setRematchHandler(Consumer<sysMSG> handler) {
@@ -307,6 +287,12 @@ public class ClientCore extends Thread{
                                     Platform.runLater(() -> updateHandler.accept(sm));
                                 }
                                 break;
+                            case "GET_FRIENDS":
+                                Consumer<sysMSG> fHandler = friendsListHandler;
+                                if (fHandler != null) {
+                                    Platform.runLater(() -> fHandler.accept(sm));
+                                }
+                                break;
                             case "REMATCH_REQUEST":
                             case "REMATCH_DECLINED":
                             case "FORFEIT_NOTICE":
@@ -362,17 +348,4 @@ public class ClientCore extends Thread{
 
         }
     }
-    /*public static void main(String[] args) {
-        try {
-            ClientCore c = new ClientCore(new CentralController()); // Start the server
-            c.start();
-            System.out.println("client launched");
-            sleep(1000);
-            c.submitMove(1,1);
-            System.out.println("gst sent");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
 }

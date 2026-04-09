@@ -16,24 +16,6 @@ import java.util.ArrayList;
 public class GameDashboardController {
 
     @FXML
-    private Label C4Label;
-
-    @FXML
-    private Button ExitButton;
-
-    @FXML
-    private Button ProfileButton;
-
-    @FXML
-    private Button SettingsButton;
-
-    @FXML
-    private Label TTTLabel;
-
-    @FXML
-    private Button infoButton;
-
-    @FXML
     private AnchorPane friendsListPane;
 
     private ArrayList<Label> FriendList = new ArrayList<>();

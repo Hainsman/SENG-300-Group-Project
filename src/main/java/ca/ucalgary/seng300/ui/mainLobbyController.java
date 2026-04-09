@@ -13,6 +13,7 @@ public class mainLobbyController {
 
     @FXML private Label lobbyTitle;
     @FXML private ListView<String> playerList;
+    @FXML private ListView<String> friendsList;
     @FXML private Label lobbyCodeLabel;
     @FXML private Label privacyLabel;
     @FXML private Label gameNameLabel;
@@ -21,7 +22,6 @@ public class mainLobbyController {
     @FXML private Label playerOneLabel;
     @FXML private Label playerTwoLabel;
     @FXML private Button startGameBtn;
-    @FXML private Button copyCodeBtn;
 
     @FXML
     public void initialize() {
@@ -56,7 +56,35 @@ public class mainLobbyController {
         LobbyBridge.onLobbyRoster = this::handleLobbyRoster;
         LobbyBridge.onPlayerStatsUpdated = this::handlePlayerStatsUpdate;
         
+        ClientCore cc = getCC();
+        if (cc != null) {
+            cc.setFriendsListHandler(this::handleFriendsList);
+            cc.msgSend(new sysMSG("GET_FRIENDS", ""));
+        }
+
         requestRosterUpdate();
+    }
+
+    private void handleFriendsList(sysMSG msg) {
+        if ("PASS".equals(msg.getFieldA()) && msg.getFieldB() != null) {
+            String[] friends = msg.getFieldB().split(",");
+            javafx.application.Platform.runLater(() -> {
+                friendsList.getItems().clear();
+                for (String friend : friends) {
+                    if (!friend.isEmpty()) {
+                        friendsList.getItems().add(friend);
+                    }
+                }
+            });
+        }
+    }
+
+    private ClientCore getCC() {
+        CentralController controller = CentralController.getInstance();
+        if (controller != null) {
+            return controller.getCC();
+        }
+        return null;
     }
 
     private void refreshPlayersFromState() {

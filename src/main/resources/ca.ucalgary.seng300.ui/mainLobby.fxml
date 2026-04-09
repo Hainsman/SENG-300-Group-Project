@@ -66,11 +66,9 @@
                     </VBox>
 
                     <!-- FRIENDS -->
-                    <VBox styleClass="card">
+                    <VBox styleClass="card" VBox.vgrow="ALWAYS">
                         <Label styleClass="card-title" text="Friends" />
-                        <Label text="Username2" />
-                        <Label text="Username3" />
-                        <Label text="Username4" />
+                        <ListView fx:id="friendsList" VBox.vgrow="ALWAYS" />
                     </VBox>
 
                     <!-- GAME SETTINGS -->

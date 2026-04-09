@@ -78,10 +78,6 @@ public class SettingsController {
             statusLabel.setText("Failed: " + reason);
             statusLabel.setStyle("-fx-text-fill: #ff4d4d;");
 
-            // Requirements state: "otherwise send an email stating that it failed and why"
-            // Interpreting this as showing an alert that mimics an email or just a failure alert.
-            // Given the context of a game app, a real email might be overkill or not implemented.
-            // But let's show an alert as requested.
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Update Failed");
             alert.setHeaderText("Profile Update Failed");

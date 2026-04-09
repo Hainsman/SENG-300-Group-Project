@@ -292,28 +292,4 @@ public abstract class GameGUI {
         drawLabel = draw;
         rankLabel = rank;
     }
-
-    // backend can call with necessary data inputs
-    public static void displayElo(int elo, int win, int loss, int draw, String rank) {
-        if (eloLabel == null)
-            return;
-        eloLabel.setText(String.valueOf(elo));
-        winLabel.setText(String.valueOf(win));
-        lossLabel.setText(String.valueOf(loss));
-        drawLabel.setText(String.valueOf(draw));
-        rankLabel.setText("PlaceHolder");
-
-        // RESOLVE PLEASE: Need to connect to backend constants / rank.java
-        // for (Rank rank : Rank.values()) {
-        // if (rank.isInRank(elo)) {
-        // rankLabel.setText(rank.getDisplayName());
-        // break;
-        // }
-        // }
-    }
 }
-
-// TO ADD:
-// finish restart() method
-// History implementation. Check info from Platform Core.
-// Settings.

@@ -129,6 +129,9 @@ public class platformChannel extends Thread {
                 // fieldA: new login, fieldB: new email
                 cliSend(serv.updateProfile(this, sm.getFieldA(), sm.getFieldB()));
                 break;
+            case "GET_FRIENDS":
+                cliSend(serv.getAllFriendsByUserID(this));
+                break;
 
             default:
                 break;

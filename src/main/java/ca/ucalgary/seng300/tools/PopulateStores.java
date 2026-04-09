@@ -1,10 +1,13 @@
 package ca.ucalgary.seng300.tools;
 
+import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.platform.domain.FriendHistory;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.FriendHistoryStore;
 import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
@@ -29,6 +32,9 @@ public class PopulateStores {
     private record NewUser(String login, String email, String passwordHash) {}
 
     public static void main(String[] args) {
+        // Prevent PlatformCore from starting a real server if it's initialized
+        PlatformCore.main(new String[]{"NO_SERVER"});
+
         boolean reset = args != null && args.length > 0 && "--reset".equalsIgnoreCase(args[0]);
         if (reset) {
             safeResetDataFiles();
@@ -37,15 +43,17 @@ public class PopulateStores {
         UserStore userStore = UserStore.getInstance();
         SessionHistoryStore sessionStore = SessionHistoryStore.getInstance();
         PlayerStatsStore statsStore = PlayerStatsStore.getInstance();
+        FriendHistoryStore friendStore = FriendHistoryStore.getInstance();
 
         List<Integer> createdUserIds = new ArrayList<>();
         List<UUID> createdSessionUuids = new ArrayList<>();
 
         // 1) Create Users
         List<NewUser> usersToCreate = List.of(
-                new NewUser("alice", "alice@example.com", "hash_alice"),
-                new NewUser("bob", "bob@example.com", "hash_bob"),
-                new NewUser("carol", "carol@example.com", "hash_carol")
+                new NewUser("Daniel M", "danielM@ucalgary.ca", "hash1"),
+                new NewUser("Alex", "alex.smith@ucalgary.ca", "hash2"),
+                new NewUser("John W", "JohnW@ucalgary.ca", "hash3"),
+                new NewUser("Paul", "Paul.C@ucalgary.ca", "hash4")
         );
 
         for (NewUser u : usersToCreate) {
@@ -83,6 +91,23 @@ public class PopulateStores {
             statsStore.create(c4);
         }
 
+        // 4) Create Friends
+        // Daniel M (index 0) is friends with Alex (index 1) and Paul (index 3)
+        // John W (index 2) is friends with Alex (index 1)
+        if (createdUserIds.size() >= 4) {
+            int danielId = createdUserIds.get(0);
+            int alexId = createdUserIds.get(1);
+            int johnId = createdUserIds.get(2);
+            int paulId = createdUserIds.get(3);
+
+            // Daniel M <-> Alex
+            addFriend(friendStore, danielId, alexId);
+            // Daniel M <-> Paul
+            addFriend(friendStore, danielId, paulId);
+            // John W <-> Alex
+            addFriend(friendStore, johnId, alexId);
+        }
+
         // Summary
         System.out.println("PopulateStores finished.");
         System.out.println("  Users created:  " + createdUserIds.size() + " -> " + createdUserIds);
@@ -92,6 +117,26 @@ public class PopulateStores {
         System.out.println("  - " + Constants.USER_FILE_PATH);
         System.out.println("  - " + Constants.SESSION_FILE_PATH);
         System.out.println("  - " + Constants.PLAYER_STATS_FILE_PATH);
+        System.out.println("  - " + Constants.FRIENDS_FILE_PATH);
+    }
+
+    private static void addFriend(FriendHistoryStore store, int userId, int friendId) {
+        int id = store.assignNewId();
+        FriendHistory fh = new FriendHistory(id);
+        fh.setUserId(userId);
+        fh.setFriendUserId(friendId);
+        fh.setFriendShipActive(true);
+        store.create(fh);
+
+        // Usually friendship is mutual in these apps, but instructions say "Daniel M be friends with Alex and Paul"
+        // and "JohnW be friends with just Alex".
+        // I will add the reverse too just in case the UI expects it for both sides.
+        int id2 = store.assignNewId();
+        FriendHistory fh2 = new FriendHistory(id2);
+        fh2.setUserId(friendId);
+        fh2.setFriendUserId(userId);
+        fh2.setFriendShipActive(true);
+        store.create(fh2);
     }
 
     private static void safeResetDataFiles() {
@@ -99,12 +144,13 @@ public class PopulateStores {
         writeEmptyJson(Constants.USER_FILE_PATH);
         writeEmptyJson(Constants.SESSION_FILE_PATH);
         writeEmptyJson(Constants.PLAYER_STATS_FILE_PATH);
+        writeEmptyJson(Constants.FRIENDS_FILE_PATH);
         System.out.println("Data files reset to empty objects.");
     }
 
     private static void writeEmptyJson(String relativePath) {
         try {
-            Path p = Path.of(relativePath);
+            Path p = Path.of(relativePath).toAbsolutePath();
             if (p.getParent() != null) {
                 Files.createDirectories(p.getParent());
             }
