@@ -3,6 +3,9 @@ package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.GameState;
+import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -18,6 +21,8 @@ public class ServerLobby {
         private platformChannel guest;
         private String hostextra;
         private String guestextra;
+    private boolean resultRecorded;
+    private platformChannel pendingRematchRequester;
 
         public ServerLobby(String code, String type, platformChannel h, String ex){
             lobbyCode = code;
@@ -34,6 +39,8 @@ public class ServerLobby {
             host = h;
             hostextra = ex;
             host.setLobby(lobbyCode,gameType);
+            resultRecorded = false;
+            pendingRematchRequester = null;
         }
 
         public void joinGuest(platformChannel h, String ex){
@@ -57,6 +64,8 @@ public class ServerLobby {
         }
 
         public void gameReset(){
+            resultRecorded = false;
+            pendingRematchRequester = null;
             if(gameType.equals(GameType.CONNECT4)){
                 c4game = new C4Game();
                 c4game.startGame(host, guest);
@@ -85,4 +94,54 @@ public class ServerLobby {
             host.cliSend(o);
             guest.cliSend(o);
         }
+    }
+    public GameState currentTypedGameState() {
+        Object state = currentGameState();
+        return state instanceof GameState gameState ? gameState : null;
+    }
+
+    public boolean hasRecordedResult() {
+        return resultRecorded;
+    }
+
+    public void markResultRecorded() {
+        resultRecorded = true;
+    }
+
+    public boolean isParticipant(platformChannel channel) {
+        return channel != null && (channel == host || channel == guest);
+    }
+
+    public Player getRole(platformChannel channel) {
+        if (channel == host) {
+            return Player.PLAYER_1;
+        }
+        if (channel == guest) {
+            return Player.PLAYER_2;
+        }
+        return null;
+    }
+
+    public boolean isGameOver() {
+        GameState state = currentTypedGameState();
+        return state != null && state.getState() != State.IN_PROGRESS;
+    }
+
+    public platformChannel getOpponent(platformChannel channel) {
+        if (channel == host) {
+            return guest;
+        }
+        if (channel == guest) {
+            return host;
+        }
+        return null;
+    }
+
+    public platformChannel getPendingRematchRequester() {
+        return pendingRematchRequester;
+    }
+
+    public void setPendingRematchRequester(platformChannel pendingRematchRequester) {
+        this.pendingRematchRequester = pendingRematchRequester;
+    }
     }

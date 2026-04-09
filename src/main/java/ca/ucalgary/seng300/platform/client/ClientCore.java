@@ -49,6 +49,8 @@ public class ClientCore extends Thread{
     private volatile Consumer<sysMSG> authResponseHandler;
     private volatile Consumer<sysMSG> newUserResponseHandler;
     private volatile Consumer<sysMSG> moveResponseHandler;
+    private volatile Consumer<sysMSG> playerStatsHandler;
+    private volatile Consumer<sysMSG> rematchHandler;
     private volatile Consumer<chatMessage> chatMessageHandler;
 
     public boolean isConnected() {
@@ -120,6 +122,14 @@ public class ClientCore extends Thread{
 
     public void setMoveResponseHandler(Consumer<sysMSG> handler) {
         moveResponseHandler = handler;
+    }
+
+    public void setPlayerStatsHandler(Consumer<sysMSG> handler) {
+        playerStatsHandler = handler;
+    }
+
+    public void setRematchHandler(Consumer<sysMSG> handler) {
+        rematchHandler = handler;
     }
 
     public void setChatMessageHandler(Consumer<chatMessage> handler) {
@@ -226,7 +236,7 @@ public class ClientCore extends Thread{
                                     ioMain.mainLobbyPage.gameStart();
                                 });
                                 break;
-                            case "LOBBY_ROSTER": {
+                            case "LOBBY_ROSTER":
                                 Object pl = sm.getPayload();
                                 System.out.println("lobby got");
                                 ioMain.applyLobbyRosterPayload(pl != null ? pl.toString() : "");
@@ -234,7 +244,15 @@ public class ClientCore extends Thread{
                                     ioMain.mainLobbyPage.refreshPlayersFromState();
                                 });
                                 break;
-                            }
+                            case "REMATCH_REQUEST":
+                            case "REMATCH_DECLINED":
+                            case "FORFEIT_NOTICE":
+                            case "FORFEIT_COMPLETE":
+                                Consumer<sysMSG> currentRematchHandler = rematchHandler;
+                                if (currentRematchHandler != null) {
+                                    Platform.runLater(() -> currentRematchHandler.accept(sm));
+                                }
+                                break;
                             default:
                                 break;
                         }

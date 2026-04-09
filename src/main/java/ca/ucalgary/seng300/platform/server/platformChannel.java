@@ -72,7 +72,15 @@ public class platformChannel extends Thread {
             case "START_LOBBY":
                 serv.startLobby(lobby);
                 break;
-            //case "FORFEIT" -> serv.onForfeit(this);
+            case "FORFEIT":
+                serv.onForfeit(this);
+                break;
+            case "reset":
+                serv.onRematch(this);
+                break;
+            case "REMATCH_RESPONSE":
+                serv.onRematchResponse(this, "ACCEPT".equalsIgnoreCase(sm.getFieldA()));
+                break;
 
             default:
                 break;

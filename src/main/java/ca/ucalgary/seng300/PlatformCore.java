@@ -1,6 +1,15 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.GameState;
+import ca.ucalgary.seng300.game.core.connect4.C4Game;
+import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
+import ca.ucalgary.seng300.platform.domain.GameHistory;
+import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
@@ -10,6 +19,7 @@ import ca.ucalgary.seng300.platform.server.ServerLobby;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.services.MatchMakingService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 
@@ -51,8 +61,7 @@ public class PlatformCore {
 
     // list of connections for users currently logged in
     public List<platformChannel> users;
-
-    private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
+    private final MatchMakingService matchMakingService = new MatchMakingService();
 
     public static String[] parseNameEloPayload(String raw) {
         if (raw == null || raw.isBlank()) {
@@ -109,7 +118,50 @@ public class PlatformCore {
         ServerLobby sl = lobbies.get(code);
         sl.gameStart();
     }
+/*
+        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameId(), hostUserId);
+        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameId(), guestUserId);
+        MatchMakingService.removePlayer(hostStats); //remove duplicate
+        MatchMakingService.removePlayer(guestStats); //remove duplicate
+        matchMakingService.addPlayerToQueue(hostStats);
+        matchMakingService.addPlayerToQueue(guestStats);
+        List<PlayerStats> matchedPlayers = matchMakingService.matchPlayers(sl.getGameId());
+        if (!containsMatchedPair(matchedPlayers, hostUserId, guestUserId)) {
+            MatchMakingService.removePlayer(hostStats);
+            MatchMakingService.removePlayer(guestStats);
+            return new sysMSG("CREATE_GAME", "FAIL",
+                    "Starting the game failed: player scores must be within 10 points.");
+        }
 
+
+ */
+private PlayerStats getOrCreatePlayerStats(int gameId, int userId) {
+    List<PlayerStats> playersForGame = playerStatsStore.findPlayersByGameID(gameId);
+    for (PlayerStats stats : playersForGame) {
+        if (stats.getUserID() == userId) {
+            return stats;
+        }
+    }
+    PlayerStats created = new PlayerStats(playerStatsStore.assignNewId(), gameId, userId);
+    playerStatsStore.create(created);
+    return created;
+}
+
+    private boolean containsMatchedPair(List<PlayerStats> matchedPlayers, int hostUserId, int guestUserId) {
+        if (matchedPlayers == null || matchedPlayers.size() != 2) {
+            return false;
+        }
+        boolean foundHost = false;
+        boolean foundGuest = false;
+        for (PlayerStats player : matchedPlayers) {
+            if (player.getUserID() == hostUserId) {
+                foundHost = true;
+            } else if (player.getUserID() == guestUserId) {
+                foundGuest = true;
+            }
+        }
+        return foundHost && foundGuest;
+    }
     public void sendMult (chatMessage m){
         for(platformChannel h : users){
             h.cliSend(m);
@@ -163,31 +215,159 @@ public class PlatformCore {
     /**
      * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
      */
-    /*
     public synchronized void onForfeit(platformChannel from) {
-        if (p1 == null || p2 == null || from == null) {
+        if (from == null || lobbies == null) {
             return;
         }
-        String normalizedType = normalizeGameType(p1.getGameType());
-        if (!"TTT".equals(normalizedType)) {
+        String lobbyId = from.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
             return;
         }
-        Player forfeiting = null;
-        if (from == p1) {
-            forfeiting = Player.PLAYER_1;
-        } else if (from == p2) {
-            forfeiting = Player.PLAYER_2;
-        }
-        if (forfeiting == null) {
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(from) || sl.hasRecordedResult()) {
             return;
         }
-        TTTGame t = (TTTGame) games.get("test");
-        t.forfeit(forfeiting);
-        System.out.println("Forfeit by " + forfeiting + " — broadcasting state");
-        p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
-        p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
-    }*/
+        platformChannel opponent = sl.getOpponent(from);
+        if (opponent != null) {
+            opponent.cliSend(new sysMSG("FORFEIT_NOTICE", lobbyId, "", "The other player has forfeited."));
+        }
+        applyMatchOutcome(sl, null, true);
+        sl.sendBoth(new sysMSG("FORFEIT_COMPLETE", lobbyId, ""));
+    }
 
+    public synchronized void onRematch(platformChannel requester) {
+        if (requester == null || lobbies == null) {
+            return;
+        }
+        String lobbyId = requester.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(requester)) {
+            return;
+        }
+        if (sl.getHost() == null || sl.getGuest() == null || !sl.isGameOver()) {
+            return;
+        }
+        platformChannel opponent = sl.getOpponent(requester);
+        if (opponent == null) {
+            return;
+        }
+        if (sl.getPendingRematchRequester() != null) {
+            return;
+        }
+        sl.setPendingRematchRequester(requester);
+        opponent.cliSend(new sysMSG("REMATCH_REQUEST", lobbyId, ""));
+    }
+
+    public synchronized void onRematchResponse(platformChannel responder, boolean accepted) {
+        if (responder == null || lobbies == null) {
+            return;
+        }
+        String lobbyId = responder.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(responder)) {
+            return;
+        }
+        platformChannel requester = sl.getPendingRematchRequester();
+        if (requester == null || requester == responder) {
+            return;
+        }
+        platformChannel opponent = sl.getOpponent(responder);
+        if (opponent != requester) {
+            return;
+        }
+
+        if (accepted) {
+            sl.resetGame();
+            return;
+        }
+
+        sl.setPendingRematchRequester(null);
+        sl.sendBoth(new sysMSG("REMATCH_DECLINED", lobbyId, ""));
+    }
+
+    private void finalizeMatchIfNeeded(ServerLobby sl) {
+        if (sl == null || sl.hasRecordedResult() || !sl.isGameOver()) {
+            return;
+        }
+        GameState state = sl.currentTypedGameState();
+        if (state == null) {
+            return;
+        }
+        Player winner = null;
+        if (state.getState() == ca.ucalgary.seng300.game.core.State.PLAYER_1_WIN) {
+            winner = Player.PLAYER_1;
+        } else if (state.getState() == ca.ucalgary.seng300.game.core.State.PLAYER_2_WIN) {
+            winner = Player.PLAYER_2;
+        }
+        applyMatchOutcome(sl, winner, false);
+    }
+
+    private void applyMatchOutcome(ServerLobby sl, Player winner, boolean forfeit) {
+        if (sl == null || sl.hasRecordedResult()) {
+            return;
+        }
+        platformChannel host = sl.getHost();
+        platformChannel guest = sl.getGuest();
+        if (host == null || guest == null) {
+            return;
+        }
+        Integer hostUserId = host.getAuthenticatedUserId();
+        Integer guestUserId = guest.getAuthenticatedUserId();
+        if (hostUserId == null || guestUserId == null) {
+            return;
+        }
+
+        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameId(), hostUserId);
+        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameId(), guestUserId);
+        double delta = forfeit ? 0.0 : 1.0;
+
+        if (winner == Player.PLAYER_1) {
+            hostStats.updateStatsWin(delta);
+            guestStats.updateStatsLose(delta);
+        } else if (winner == Player.PLAYER_2) {
+            hostStats.updateStatsLose(delta);
+            guestStats.updateStatsWin(delta);
+        } else {
+            hostStats.updateStatsWin(0.0);
+            guestStats.updateStatsLose(0.0);
+        }
+
+        playerStatsStore.update(hostStats);
+        playerStatsStore.update(guestStats);
+        sl.markResultRecorded();
+
+        sendPlayerStatsUpdate(host, hostStats);
+        sendPlayerStatsUpdate(guest, guestStats);
+    }
+
+    private void sendPlayerStatsUpdate(platformChannel channel, PlayerStats stats) {
+        if (channel == null || stats == null) {
+            return;
+        }
+        String rank = ca.ucalgary.seng300.platform.utils.Helper
+                .getRank(stats.getGameCounter(), stats.getScore())
+                .getDisplayName();
+        channel.cliSend(new sysMSG(
+                "PLAYER_STATS",
+                formatScore(stats.getScore()),
+                String.valueOf(stats.getGameCounter()),
+                rank
+        ));
+    }
+
+    private String formatScore(double score) {
+        if (score == Math.rint(score)) {
+            return String.valueOf((int) score);
+        }
+        return String.format("%.1f", score);
+    }
+    // MESS ENDS
     // Number of active users
     private int cActive = 0;
 
