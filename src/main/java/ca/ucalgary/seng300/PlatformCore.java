@@ -2,17 +2,21 @@ package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
-import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
+import ca.ucalgary.seng300.platform.constants.Constants;
+import ca.ucalgary.seng300.platform.constants.Rank;
+import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.GameStateNetworkCodec;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
-import ca.ucalgary.seng300.platform.server.GameSessionRecord;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.server.platformChannel;
+import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
 
 import java.net.*;
 import java.io.*;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 // debug Server first, then as many clients as you want
@@ -42,12 +47,55 @@ public class PlatformCore {
     // list of connections for users currently logged in
     public List<platformChannel> users;
 
-    private final Map<String, GameSessionRecord> sessions = new ConcurrentHashMap<>();
-
     /** Waiting host channels keyed by lobby code (guest joins by code). */
     private final ConcurrentHashMap<String, platformChannel> openLobbies = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> openLobbyGameTypes = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> openLobbyHostPayload = new ConcurrentHashMap<>();
+
+    private static final int MAX_LOBBY_RANK_GAP = 1; // allow up to one adjacent rank difference (~200 Elo)
+
+    // Session management for authentication
+    private final ConcurrentHashMap<String, Integer> activeSessions = new ConcurrentHashMap<>(); // sessionToken -> userId
+    private final ConcurrentHashMap<Integer, String> userToSession = new ConcurrentHashMap<>(); // userId -> sessionToken
+
+    public synchronized sysMSG handleLogin(platformChannel channel, String username, String password) {
+        UserStore store = UserStore.getInstance();
+        List<User> matches = store.findByUserName(username);
+        if (matches.isEmpty()) {
+            return new sysMSG("LOGIN_FAIL", "Username not found");
+        }
+        User user = matches.getFirst();
+        String hash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
+        if (!hash.equals(user.getPasswordHash())) {
+            return new sysMSG("LOGIN_FAIL", "Incorrect password");
+        }
+        if (!user.getIsActive()) {
+            return new sysMSG("LOGIN_FAIL", "Account disabled");
+        }
+        // Check if already logged in
+        if (userToSession.containsKey(user.getID())) {
+            return new sysMSG("LOGIN_FAIL", "Already logged in from another location");
+        }
+        // Generate session token
+        String token = UUID.randomUUID().toString();
+        activeSessions.put(token, user.getID());
+        userToSession.put(user.getID(), token);
+        // Set on channel
+        channel.setSessionToken(token);
+        channel.setUserId(user.getID());
+        return new sysMSG("LOGIN_SUCCESS", token, user.getlogin(), String.valueOf(user.getID()));
+    }
+
+    public synchronized void handleLogout(platformChannel channel) {
+        if (channel.getSessionToken() != null) {
+            Integer userId = activeSessions.remove(channel.getSessionToken());
+            if (userId != null) {
+                userToSession.remove(userId);
+            }
+        }
+        channel.setSessionToken(null);
+        channel.setUserId(0);
+    }
 
     private static String normalizeGameType(String gameType) {
         if (gameType == null) {
@@ -109,19 +157,31 @@ public class PlatformCore {
         return true;
     }
 
-    public synchronized boolean onJoinLobby(String code, platformChannel guestChannel, String guestPayload) {
+    public synchronized sysMSG onJoinLobby(String code, platformChannel guestChannel, String guestPayload) {
         if (code == null || code.isBlank() || guestChannel == null) {
-            return false;
+            return new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."
+            );
         }
         String normalized = code.trim().toUpperCase();
-        platformChannel host = openLobbies.remove(normalized);
-        String gt = openLobbyGameTypes.remove(normalized);
-        String hostPayloadRaw = openLobbyHostPayload.remove(normalized);
+        platformChannel host = openLobbies.get(normalized);
         if (host == null) {
-            return false;
+            return new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."
+            );
         }
+        String gt = openLobbyGameTypes.get(normalized);
+        String hostPayloadRaw = openLobbyHostPayload.get(normalized);
         String gameType = normalizeGameType(gt != null ? gt : host.getGameType());
         String gameId = gameIdForType(gameType);
+
+        Rank hostRank = effectiveRankForChannel(host, gameType);
+        Rank guestRank = effectiveRankForChannel(guestChannel, gameType);
+        if (Math.abs(hostRank.getRankValue() - guestRank.getRankValue()) > MAX_LOBBY_RANK_GAP) {
+            return new sysMSG(
+                    "LOBBY_ERR",
+                    "join",
+                    "Opponent rank differs too much for this lobby. Try a different lobby or play a game at a closer rank.");
+        }
+
         host.setGameType(gameType);
         host.setGameID(gameId);
         guestChannel.setGameType(gameType);
@@ -136,21 +196,56 @@ public class PlatformCore {
             turnIds.put("P2", Player.PLAYER_2);
             t.setPlayerIdToPlayer(turnIds);
         }
-        String[] h = parseNameEloPayload(hostPayloadRaw);
-        String[] g = parseNameEloPayload(guestPayload);
+        String[] h = rosterEntryForChannel(host, hostPayloadRaw, gameType);
+        String[] g = rosterEntryForChannel(guestChannel, guestPayload, gameType);
         String roster = h[0] + "|" + h[1] + "|" + g[0] + "|" + g[1];
-        var rosterMsg = new ca.ucalgary.seng300.platform.messages.sysMSG("LOBBY_ROSTER", normalized, "", roster);
+        var rosterMsg = new sysMSG("LOBBY_ROSTER", normalized, "", roster);
         host.cliSend(rosterMsg);
         guestChannel.cliSend(rosterMsg);
+        openLobbies.remove(normalized);
+        openLobbyGameTypes.remove(normalized);
+        openLobbyHostPayload.remove(normalized);
         tempGameReset();
         System.out.println("Lobby " + normalized + " matched; game ready (" + gameType + ").");
-        return true;
+        return new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN");
+    }
+
+    private Rank effectiveRankForChannel(platformChannel channel, String gameType) {
+        if (channel == null || channel.getUserId() <= 0) {
+            return Rank.fromElo(1200);
+        }
+        User user = UserStore.getInstance().get(channel.getUserId());
+        if (user == null) {
+            return Rank.fromElo(1200);
+        }
+        ca.ucalgary.seng300.game.core.GameType gt = "C4".equals(gameType)
+                ? ca.ucalgary.seng300.game.core.GameType.CONNECT4
+                : ca.ucalgary.seng300.game.core.GameType.TIC_TAC_TOE;
+        return Rank.fromElo(user.getEloForGame(gt));
+    }
+
+    private String[] rosterEntryForChannel(platformChannel channel, String payload, String gameType) {
+        String name = "Player";
+        int elo = 1200;
+        if (channel != null && channel.getUserId() > 0) {
+            User user = UserStore.getInstance().get(channel.getUserId());
+            if (user != null) {
+                name = user.getlogin();
+                elo = user.getEloForGame("C4".equals(gameType) ? 
+                        ca.ucalgary.seng300.game.core.GameType.CONNECT4 : ca.ucalgary.seng300.game.core.GameType.TIC_TAC_TOE);
+            }
+        }
+        if (name == null || name.isBlank()) {
+            String[] parsed = parseNameEloPayload(payload);
+            name = parsed[0];
+        }
+        return new String[] { name, String.valueOf(elo) };
     }
 
     /**
      * Relays host "start game" to the guest using the same {@code GMJN} sysMSG pattern as the legacy client.
      */
-    public synchronized void relayToGuestIfHost(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+    public synchronized void relayToGuestIfHost(platformChannel from, sysMSG sm) {
         if (p2 == null || from == null) {
             return;
         }
@@ -164,12 +259,12 @@ public class PlatformCore {
             return;
         }
         String b = sm.getFieldB() != null ? sm.getFieldB() : "";
-        p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("GMJN", fxml, b));
+        p2.cliSend(new sysMSG("GMJN", fxml, b));
         System.out.println("GMJN relayed to guest → " + fxml);
     }
 
     /** Relays in-match chat between paired host/guest channels. */
-    public synchronized void relayMatchChat(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+    public synchronized void relayMatchChat(platformChannel from, sysMSG sm) {
         if (from == null || sm == null) {
             return;
         }
@@ -184,11 +279,11 @@ public class PlatformCore {
         }
         String sender = sm.getFieldA() != null ? sm.getFieldA() : "Player";
         String body = sm.getFieldB() != null ? sm.getFieldB() : "";
-        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("MATCH_CHAT", sender, body));
+        target.cliSend(new sysMSG("MATCH_CHAT", sender, body));
     }
 
     /** Relay a rematch request from one active player to the other. */
-    public synchronized void relayRematchRequest(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+    public synchronized void relayRematchRequest(platformChannel from, sysMSG sm) {
         if (from == null || sm == null || p1 == null || p2 == null) {
             return;
         }
@@ -197,11 +292,11 @@ public class PlatformCore {
             return;
         }
         String requester = sm.getFieldA() != null && !sm.getFieldA().isBlank() ? sm.getFieldA() : "Opponent";
-        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_REQUEST", requester, ""));
+        target.cliSend(new sysMSG("REMATCH_REQUEST", requester, ""));
     }
 
     /** Handle rematch consent; only reset when the requested player accepts. */
-    public synchronized void onRematchResponse(platformChannel from, ca.ucalgary.seng300.platform.messages.sysMSG sm) {
+    public synchronized void onRematchResponse(platformChannel from, sysMSG sm) {
         if (from == null || sm == null || p1 == null || p2 == null) {
             return;
         }
@@ -212,12 +307,12 @@ public class PlatformCore {
         boolean accepted = "ACCEPT".equalsIgnoreCase(sm.getFieldA());
         String responder = sm.getFieldB() != null && !sm.getFieldB().isBlank() ? sm.getFieldB() : "Opponent";
         if (accepted) {
-            p1.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_ACCEPTED", responder, ""));
-            p2.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_ACCEPTED", responder, ""));
+            p1.cliSend(new sysMSG("REMATCH_ACCEPTED", responder, ""));
+            p2.cliSend(new sysMSG("REMATCH_ACCEPTED", responder, ""));
             tempGameReset();
             return;
         }
-        target.cliSend(new ca.ucalgary.seng300.platform.messages.sysMSG("REMATCH_DECLINED", responder, ""));
+        target.cliSend(new sysMSG("REMATCH_DECLINED", responder, ""));
     }
 
     public void sendSingle (String id, Object o){
@@ -320,7 +415,7 @@ public class PlatformCore {
         }
     }
 
-    public void gameEvent(String id, String type, PlayerMove p){
+    public void gameEvent(platformChannel sender, String id, String type, PlayerMove p){
         if (p1 == null || p2 == null) {
             return;
         }
@@ -329,18 +424,28 @@ public class PlatformCore {
             // Player channel stores the game type and ID for each client, no need to send it
             TTTGame t =(TTTGame) games.get(id);
 
-            t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(), p.getRow(), p.getCol()) {
+            boolean valid = t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(), p.getRow(), p.getCol()) {
             });
-            System.out.println(debugBoard((TTTGameState) t.getGameState()));
-            p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
-            p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+            if (valid) {
+                System.out.println(debugBoard((TTTGameState) t.getGameState()));
+                p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+                p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+            } else {
+                // Send invalid move message to the sender
+                sender.cliSend(new sysMSG("MOVE_INVALID", "Invalid move"));
+            }
             return;
         }
         if ("C4".equals(normalizedType)) {
             C4Game c4 = (C4Game) games.get("c4");
-            c4.handleAction(new C4PlayerAction(playerIdForC4(p.getPlayerID()), p.getActionType(), p.getRow(), p.getCol()));
-            p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
-            p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            boolean valid = c4.handleAction(new C4PlayerAction(playerIdForC4(p.getPlayerID()), p.getActionType(), p.getRow(), p.getCol()));
+            if (valid) {
+                p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+                p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            } else {
+                // Send invalid move message to the sender
+                sender.cliSend(new sysMSG("MOVE_INVALID", "Invalid move"));
+            }
         }
     }
     public String debugBoard(TTTGameState t) {

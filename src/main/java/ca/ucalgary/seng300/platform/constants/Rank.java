@@ -27,7 +27,39 @@ public enum Rank {
 
     public int getRankValue(){return rankValue;}
     public String getDisplayName(){return displayName;}
+    public String getBadge() {
+        return switch (this) {
+            case BRONZE -> "Br";
+            case SILVER -> "Si";
+            case GOLD -> "Go";
+            case PLATINUM -> "Pt";
+            case DIAMOND -> "Di";
+            case MASTER -> "Ma";
+            case GRAND_MASTER -> "GM";
+        };
+    }
     public double getMinScoreThreshold(){return minScoreThreshold;}
     public double getMaxScoreThreshold(){return maxScoreThreshold;}
 
+    public static Rank fromElo(int elo) {
+        if (elo < 1200) {
+            return BRONZE;
+        }
+        if (elo < 1400) {
+            return SILVER;
+        }
+        if (elo < 1600) {
+            return GOLD;
+        }
+        if (elo < 1800) {
+            return PLATINUM;
+        }
+        if (elo < 2000) {
+            return DIAMOND;
+        }
+        if (elo < 2200) {
+            return MASTER;
+        }
+        return GRAND_MASTER;
+    }
 }

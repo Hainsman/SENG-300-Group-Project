@@ -55,12 +55,15 @@ public class C4Game implements Game {
      * Handles an action submitted to the game. Must be of type C4PlayerAction.
      * Will reject invalid actions if submitted.
      * @param playerAction A PlayerAction object containing information about the player turn being submitted
+     * @return true if the action was valid and applied, false otherwise
      */
     @Override
-    public void handleAction(PlayerAction playerAction) {
-        if (validator.validateMove(gameState, playerAction)) {
+    public boolean handleAction(PlayerAction playerAction) {
+        boolean valid = validator.validateMove(gameState, playerAction);
+        if (valid) {
             gameState.applyAction(playerAction);
         }
+        return valid;
     }
 
     @Override

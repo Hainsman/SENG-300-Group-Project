@@ -76,10 +76,11 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
     }
 
     private void refreshStats() {
-        int tttElo = PlayerProfileHelper.eloForGameType(GameType.TIC_TAC_TOE);
-        int c4Elo = PlayerProfileHelper.eloForGameType(GameType.CONNECT4);
-        int tttGames = PlayerProfileHelper.gamesForGameType(GameType.TIC_TAC_TOE);
-        int c4Games = PlayerProfileHelper.gamesForGameType(GameType.CONNECT4);
+        User u = currentUser();
+        int tttElo = u != null ? u.getEloForGame(GameType.TIC_TAC_TOE) : 1200;
+        int c4Elo = u != null ? u.getEloForGame(GameType.CONNECT4) : 1200;
+        int tttGames = u != null ? u.getGamesForGame(GameType.TIC_TAC_TOE) : 0;
+        int c4Games = u != null ? u.getGamesForGame(GameType.CONNECT4) : 0;
 
         if (tttEloLabel != null) {
             tttEloLabel.setText(String.valueOf(tttElo));

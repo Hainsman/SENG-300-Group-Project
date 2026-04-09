@@ -19,6 +19,9 @@ public class platformChannel extends Thread {
     private ObjectInputStream inCli;
     public  String ID;
 
+    private String sessionToken;
+    private int userId;
+
 
     public platformChannel(Socket socket, PlatformCore serv) {
         this.socket = socket;
@@ -52,11 +55,9 @@ public class platformChannel extends Thread {
             case "JOIN_LOBBY" -> {
                 String code = sm.getFieldA();
                 String lobbyPayload = sm.getPayload() != null ? sm.getPayload().toString() : "";
-                boolean ok = serv.onJoinLobby(code, this, lobbyPayload);
-                if (ok) {
-                    cliSend(new sysMSG("LOBBY_OK", code.toUpperCase(), "JOIN"));
-                } else {
-                    cliSend(new sysMSG("LOBBY_ERR", "join", "No lobby with that code (check with host or try again)."));
+                sysMSG result = serv.onJoinLobby(code, this, lobbyPayload);
+                if (result != null) {
+                    cliSend(result);
                 }
             }
             case "GMJN" -> serv.relayToGuestIfHost(this, sm);
@@ -65,6 +66,13 @@ public class platformChannel extends Thread {
             case "REMATCH_RESPONSE" -> serv.onRematchResponse(this, sm);
             case "reset" -> serv.tempGameReset();
             case "FORFEIT" -> serv.onForfeit(this);
+            case "LOGIN" -> {
+                String username = sm.getFieldA();
+                String password = sm.getFieldB();
+                sysMSG result = serv.handleLogin(this, username, password);
+                cliSend(result);
+            }
+            case "LOGOUT" -> serv.handleLogout(this);
             default -> { }
         }
     }
@@ -85,6 +93,22 @@ public class platformChannel extends Thread {
         return gameID;
     }
 
+    public void setSessionToken(String token) {
+        this.sessionToken = token;
+    }
+
+    public String getSessionToken() {
+        return sessionToken;
+    }
+
+    public void setUserId(int id) {
+        this.userId = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
     @Override
     public void run() {
         try {
@@ -98,6 +122,12 @@ public class platformChannel extends Thread {
                 Object message;
                 try {
                     message = inCli.readObject();
+                } catch (java.io.EOFException | java.io.StreamCorruptedException e) {
+                    System.err.println("platformChannel: client stream ended or corrupted: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                    break;
+                } catch (java.io.IOException e) {
+                    System.err.println("platformChannel: I/O error reading client message: " + e.getMessage());
+                    break;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                     break;
@@ -114,7 +144,7 @@ public class platformChannel extends Thread {
                 switch (message) {
                     case PlayerMove p -> {
                         System.out.println("player action arrived");
-                        serv.gameEvent(gameID, gameType, p);
+                        serv.gameEvent(this, gameID, gameType, p);
                     }
                     case sysMSG s -> handleSys(s);
                     case chatMessage cm -> {
@@ -126,6 +156,7 @@ public class platformChannel extends Thread {
                 }
             }
 
+            serv.handleLogout(this);
             socket.close();
             System.out.println("Client " + ID + " " + socket.getInetAddress() + " has disconnected.");
         } catch (Exception e) {

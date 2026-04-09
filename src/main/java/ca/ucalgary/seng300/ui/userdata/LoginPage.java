@@ -1,9 +1,6 @@
 package ca.ucalgary.seng300.ui.userdata;
 
-import ca.ucalgary.seng300.platform.constants.Constants;
-import ca.ucalgary.seng300.platform.domain.User;
-import ca.ucalgary.seng300.platform.store.UserStore;
-import ca.ucalgary.seng300.platform.utils.Helper;
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
@@ -15,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.io.IOException;
-import java.util.List;
 
 public class LoginPage extends HBox implements Navigable {
 
@@ -49,35 +45,40 @@ public class LoginPage extends HBox implements Navigable {
             return;
         }
 
-        UserStore store = UserStore.getInstance();
-        List<User> matches = store.findByUserName(username);
-        if (matches.isEmpty()) {
-            errorLabel.setText("Username not found.");
-            return;
-        }
-        User user = matches.getFirst();
-        String hash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
-        if (!hash.equals(user.getPasswordHash())) {
-            errorLabel.setText("Incorrect password.");
-            return;
-        }
-        if (!user.getIsActive()) {
-            errorLabel.setText("This account is disabled.");
+        if (!ensureClientConnection()) {
+            errorLabel.setText("Unable to connect to server. Please try again later.");
             return;
         }
 
-        CentralController.currentUserId = user.getID();
-        CentralController.displayName = user.getlogin();
-        CentralController.previousScreen = null;
-        CentralController.ticTacToeLocalAiMode = false;
-        CentralController.connect4LocalAiMode = false;
-        CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        if (CentralController.getInstance().clientCore.login(username, password)) {
+            CentralController.currentUserId = CentralController.getInstance().clientCore.getUserId();
+            CentralController.displayName = CentralController.getInstance().clientCore.username;
+            CentralController.previousScreen = null;
+            CentralController.ticTacToeLocalAiMode = false;
+            CentralController.connect4LocalAiMode = false;
+            CentralController.moveTo(Navigation.GAME_DASHBOARD);
+        } else {
+            errorLabel.setText("Login failed. Please check your credentials.");
+        }
     }
 
     // Move to NewUser screen when button is triggered.
     @FXML
     private void handleNewUser(ActionEvent event) {
         CentralController.moveTo(Navigation.NEW_USER);
+    }
+
+    private boolean ensureClientConnection() {
+        if (CentralController.getInstance().clientCore == null || !CentralController.getInstance().clientCore.isConnected()) {
+            CentralController.getInstance().clientCore = new ClientCore(CentralController.getInstance());
+            CentralController.getInstance().clientCore.start();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return CentralController.getInstance().clientCore != null && CentralController.getInstance().clientCore.isConnected();
     }
 
     @FXML

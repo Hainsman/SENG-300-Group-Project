@@ -73,7 +73,34 @@ public class NewUserPage extends HBox implements Navigable {
         String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
         store.create(new User(newId, username, email, passwordHash));
 
-        CentralController.moveTo(Navigation.LOGIN);
+        if (ensureClientConnection()) {
+            if (CentralController.getInstance().clientCore.login(username, password)) {
+                CentralController.currentUserId = CentralController.getInstance().clientCore.getUserId();
+                CentralController.displayName = CentralController.getInstance().clientCore.username;
+                CentralController.previousScreen = null;
+                CentralController.ticTacToeLocalAiMode = false;
+                CentralController.connect4LocalAiMode = false;
+                CentralController.moveTo(Navigation.GAME_DASHBOARD);
+                return;
+            }
+            setError("Account created, but automatic sign-in failed. Please try logging in.");
+            return;
+        }
+
+        setError("Account created, but unable to connect to server. Please check your network and try logging in.");
+    }
+
+    private boolean ensureClientConnection() {
+        if (CentralController.getInstance().clientCore == null || !CentralController.getInstance().clientCore.isConnected()) {
+            CentralController.getInstance().clientCore = new ca.ucalgary.seng300.platform.client.ClientCore(CentralController.getInstance());
+            CentralController.getInstance().clientCore.start();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return CentralController.getInstance().clientCore != null && CentralController.getInstance().clientCore.isConnected();
     }
 
     @FXML

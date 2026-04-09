@@ -28,7 +28,10 @@ public class TTTCLI {
             );
 
             // TTTGame validates the move via TTTRuleValidator, then applies it to the state
-            game.handleAction(action);
+            if (!game.handleAction(action)) {
+                System.out.println("Invalid move, try again.");
+                continue;
+            }
 
             // print board
             for (Player[] r : state.getBoard())

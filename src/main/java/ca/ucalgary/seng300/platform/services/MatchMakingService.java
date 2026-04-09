@@ -9,30 +9,29 @@ import java.util.ArrayList;
 
 import static java.lang.Math.abs;
 
-
 public class MatchMakingService {
 
     // game names
     private static final Map<String, Integer> GAME_TYPE_IDS = Map.of(
             "TicTacToe", GameType.TIC_TAC_TOE.toId(),
-            "ConnectFour", GameType.CONNECT4.toId()
-    );
+            "ConnectFour", GameType.CONNECT4.toId());
 
-    //validating game type
+    // validating game type
     private int validateGameId(String gameType) {
         Integer id = GAME_TYPE_IDS.get(gameType);
-        if (id == null) throw new IllegalArgumentException("Unknown gameType: " + gameType);
+        if (id == null)
+            throw new IllegalArgumentException("Unknown gameType: " + gameType);
         return id;
     }
 
-
-    //Key is gameType, value is player id and score
+    // Key is gameType, value is player id and score
     public static Map<Integer, List<PlayerStats>> queues = new HashMap<>();
 
     /**
      * Add a player to matchmaking queue for the given gameType
      *
-     * @param player the player's stats object containing their gameID, userID and score
+     * @param player the player's stats object containing their gameID, userID and
+     *               score
      **/
 
     public void addPlayerToQueue(PlayerStats player) {
@@ -63,8 +62,9 @@ public class MatchMakingService {
         for (Integer gameType : queues.keySet()) {
             List<PlayerStats> gameList = queues.get(gameType);
             for (int i = 0; i < gameList.size(); i++) {
-                //match by userId and gameId
-                if (gameList.get(i).getUserID() == player.getUserID() && gameList.get(i).getGameType() == player.getGameType()) {
+                // match by userId and gameId
+                if (gameList.get(i).getUserID() == player.getUserID()
+                        && gameList.get(i).getGameType() == player.getGameType()) {
                     gameList.remove(i);
                 }
             }
@@ -72,7 +72,8 @@ public class MatchMakingService {
     }
 
     /**
-     * Match two players in the queue with the closest scores within a threshold of 10
+     * Match two players in the queue with the closest scores within a threshold of
+     * 10
      *
      * @param gameType
      * @return list of matched player IDs, or null if no match found
@@ -108,7 +109,8 @@ public class MatchMakingService {
             }
         }
 
-        // no valid pair found, or the closest pair exceeds the max allowed score difference
+        // no valid pair found, or the closest pair exceeds the max allowed score
+        // difference
         if (bestI == -1 || bestDiff > 10) {
             return null;
         }
@@ -121,16 +123,17 @@ public class MatchMakingService {
         matchedPlayers.add(player1);
         matchedPlayers.add(player2);
 
-
         // remove higher index first to avoid index shifting when removing from list
         removePlayer(player1);
         removePlayer(player2);
 
         return matchedPlayers;
     }
+
     public int getQueueSize(Integer gameType) {
         List<PlayerStats> gameList = queues.get(gameType);
-        if (gameList == null) return 0;
+        if (gameList == null)
+            return 0;
         return gameList.size();
     }
 

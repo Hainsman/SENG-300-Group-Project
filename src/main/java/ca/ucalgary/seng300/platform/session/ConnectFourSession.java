@@ -48,8 +48,7 @@ public class ConnectFourSession {
         }
         String playerId = gs.getPlayerTurn() == Player.PLAYER_1 ? "PLAYER_1" : "PLAYER_2";
         C4PlayerAction action = new C4PlayerAction(playerId, "MOVE", landing, col);
-        game.handleAction(action);
-        return gs.getBoard()[landing][col] != Player.EMPTY;
+        return game.handleAction(action);
     }
 
     public Player[][] getBoard() {

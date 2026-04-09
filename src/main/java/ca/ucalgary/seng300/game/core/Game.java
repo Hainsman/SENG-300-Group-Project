@@ -23,7 +23,7 @@ public interface Game {
     GameState startGame(Object Player1, Object Player2);
 
     //would validate then apply an action to gameState
-    void handleAction(PlayerAction playerAction);
+    boolean handleAction(PlayerAction playerAction);
 
     //will probably return the whole GameState class type
     GameState getGameState();

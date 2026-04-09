@@ -183,6 +183,16 @@ public class CentralController {
         info.showAndWait();
     }
 
+    public void showMoveError(String reason) {
+        Alert error = new Alert(Alert.AlertType.ERROR,
+                reason,
+                ButtonType.OK);
+        error.setTitle("Invalid Move");
+        error.setHeaderText("Your move was rejected");
+        ThemeAlerts.apply(error);
+        error.showAndWait();
+    }
+
     public ClientCore clientCore;
     public int test1;
 

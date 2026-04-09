@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.ui.games;
 
-import ca.ucalgary.seng300.game.client.ClientState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
@@ -27,15 +26,10 @@ import java.io.IOException;
 
 public class TTTPage extends StackPane implements Navigable {
 
-    private ClientState status;
-
     private CentralController rootController;
     private GameGUIPage parentGUI;
 
-    private Player[][] board = new Player[3][3]; // stores PLAYER_1 PLAYER_2 NULL
-    private Player myPlayer = Player.EMPTY;    // which player this user is, PLAYER_1 or PLAYER_2
-    private boolean xTurn = true; // X starts
-    private int moves = 0;
+    private Player[][] board = new Player[3][3];
 
     private static final Color xColor = Color.web("#3B82F6");
     private static final Color oColor = Color.web("#A855F7");
@@ -44,7 +38,7 @@ public class TTTPage extends StackPane implements Navigable {
     private final String player2Token = "O";
     private final String emptyToken = "";
 
-    /** When set, moves and state use the game core session; when null, existing local board logic is used. */
+    /** When set, moves and state use the game core session for local play or AI. */
     private TicTacToeSession session = null;
     /** When set, moves are sent to the server and UI is refreshed from GameStateUpdate (online mode). */
     private ClientCore clientCore = null;
@@ -164,10 +158,6 @@ public class TTTPage extends StackPane implements Navigable {
         return State.IN_PROGRESS;
     }
 
-    public void setPlayer(Player p){
-        myPlayer = p;
-    }
-
     private String getToken (Player p){
         if(p.equals(Player.PLAYER_1)){
             return player1Token;
@@ -186,7 +176,6 @@ public class TTTPage extends StackPane implements Navigable {
 
     @FXML
     public void initialize() {
-        status = ClientState.IN_PROGRESS;
         refreshBackButtonVisibility();
     }
 
@@ -197,8 +186,6 @@ public class TTTPage extends StackPane implements Navigable {
                 board[i][j] = Player.EMPTY;
             }
         }
-        moves = 0;
-        xTurn = true;
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button btn) {
                 btn.setText("");
@@ -213,12 +200,19 @@ public class TTTPage extends StackPane implements Navigable {
         if (turnLabel == null) {
             return;
         }
-        switch (status) {
-            case IN_PROGRESS -> turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
-            case WIN -> turnLabel.setText((xTurn ? "O" : "X") + " Wins!");
-            case DRAW -> turnLabel.setText("Draw!");
-            default -> {
+        if (session != null) {
+            State st = session.getState();
+            if (State.PLAYER_1_WIN.equals(st)) {
+                turnLabel.setText("X Wins!");
+            } else if (State.PLAYER_2_WIN.equals(st)) {
+                turnLabel.setText("O Wins!");
+            } else if (State.TIE.equals(st)) {
+                turnLabel.setText("Draw!");
+            } else {
+                turnLabel.setText(session.getTurn() == Player.PLAYER_1 ? "X's Turn" : "O's Turn");
             }
+        } else {
+            turnLabel.setText("X's Turn");
         }
         if (parentGUI != null) {
             parentGUI.refreshForfeitButtonState();
@@ -230,40 +224,6 @@ public class TTTPage extends StackPane implements Navigable {
         resetButton.setVisible(true);
     }
 
-    private String checkWinner() {
-        // Check rows
-        for (int i = 0; i < 3; i++) {
-            if (!board[i][0].equals(Player.EMPTY) &&
-                    board[i][0].equals(board[i][1]) &&
-                    board[i][1].equals(board[i][2])) {
-                return getToken(board[i][0]);
-            }
-        }
-
-        // Check columns
-        for (int j = 0; j < 3; j++) {
-            if (!board[0][j].equals(Player.EMPTY) &&
-                    board[0][j].equals(board[1][j]) &&
-                    board[1][j].equals(board[2][j])) {
-                return getToken(board[0][j]);
-            }
-        }
-
-        // Check diagonals
-        if (!board[0][0].equals(Player.EMPTY) &&
-                board[0][0].equals(board[1][1]) &&
-                board[1][1].equals(board[2][2])) {
-            return getToken(board[0][0]);
-        }
-        if (!board[0][2].equals(Player.EMPTY) &&
-                board[0][2].equals(board[1][1]) &&
-                board[1][1].equals(board[2][0])) {
-            return getToken(board[0][2]);
-        }
-
-        return null;
-    }
-
     @FXML
     private void handleClick(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
@@ -273,13 +233,6 @@ public class TTTPage extends StackPane implements Navigable {
         if (col == null) col = 0;
 
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
-            Player myRole = clientCore.getMyNetworkRole();
-            if (myRole != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
-                if (State.IN_PROGRESS.equals(gs.getState()) && !myRole.equals(gs.getPlayerTurn())) {
-                    turnLabel.setText(myRole == Player.PLAYER_1 ? "Waiting for O…" : "Waiting for X…");
-                    return;
-                }
-            }
             if (!clientCore.submitMove(row, col)) {
                 String base = turnLabel.getText() != null ? turnLabel.getText() : "";
                 turnLabel.setText(base + " (could not send move)");
@@ -288,51 +241,20 @@ public class TTTPage extends StackPane implements Navigable {
         }
 
         if (session != null) {
+            Player mover = session.getTurn();
             if (!session.submitMove(row, col)) {
                 return;
             }
-            Color moverColor = xColor;
-            parentGUI.addHistory("TicTacToe", "X", "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
+            Color moverColor = mover == Player.PLAYER_1 ? xColor : oColor;
+            String label = mover == Player.PLAYER_1 ? "X" : "O";
+            parentGUI.addHistory("TicTacToe", label, "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
             refreshFromSession();
             maybePlayRandomOpponent();
             return;
         }
 
-        if (board[row][col] != null && !board[row][col].equals(Player.EMPTY)) {
-            return;
-        }
-
-        if (xTurn) {
-            clickedButton.setText(player1Token);
-            clickedButton.setStyle("-fx-text-fill:#3B82F6; -fx-font-size:40px; -fx-font-weight:bold;");
-            board[row][col] = Player.PLAYER_1;
-            parentGUI.addHistory("TicTacToe", "X",
-                    "(" + (row + 1) + ", " + (col + 1) + ")", xColor);
-        } else {
-            clickedButton.setText(player2Token);
-            clickedButton.setStyle("-fx-text-fill:#A855F7; -fx-font-size:40px; -fx-font-weight:bold;");
-            board[row][col] = Player.PLAYER_2;
-            parentGUI.addHistory("TicTacToe", "O",
-                    "(" + (row + 1) + ", " + (col + 1) + ")", oColor);
-        }
-
-        moves++;
-
-        String winner = checkWinner();
-        if (winner != null) {
-            turnLabel.setText(winner + " Wins!");
-            onGameCompletion();
-            return;
-        }
-
-        if (moves == 9) {
-            turnLabel.setText("Draw!");
-            onGameCompletion();
-            return;
-        }
-
-        xTurn = !xTurn;
-        turnLabel.setText(xTurn ? "X's Turn" : "O's Turn");
+        // Offline board state without a session is no longer supported in the UI.
+        return;
     }
 
     /** After the human plays X in session mode, O picks a random empty cell (if enabled and game continues). */
@@ -379,16 +301,6 @@ public class TTTPage extends StackPane implements Navigable {
             resetButton.setVisible(false);
             return;
         }
-        board = new Player[3][3];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                board[i][j] = Player.EMPTY;
-            }
-        }
-        moves = 0;
-        xTurn = true;
-        turnLabel.setText("X's Turn");
-        parentGUI.clearHistory();
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
             String me = (CentralController.displayName != null && !CentralController.displayName.isBlank())
                     ? CentralController.displayName.trim()
@@ -398,14 +310,8 @@ public class TTTPage extends StackPane implements Navigable {
             return;
         }
 
-        for (Node node : ticTacToeGrid.getChildren()) {
-            if (node instanceof Button) {
-                Button btn = (Button) node;
-                btn.setText("");
-                btn.setStyle("");
-                btn.setDisable(false);
-            }
-        }
+        // Local reset without a session is not supported in the current UI flow.
+        render();
         resetButton.setVisible(false);
     }
 
@@ -600,8 +506,6 @@ public class TTTPage extends StackPane implements Navigable {
     @Override
     public void reset() {
         initialize();
-
-        moves = 0;
 
         boolean vsAi = CentralController.ticTacToeLocalAiMode;
         setRandomOpponentEnabled(vsAi);

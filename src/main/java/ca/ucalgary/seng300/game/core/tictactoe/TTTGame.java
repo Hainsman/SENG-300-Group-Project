@@ -50,11 +50,12 @@ public class TTTGame implements Game {
     }
 
     @Override
-    public void handleAction(PlayerAction playerAction) {
+    public boolean handleAction(PlayerAction playerAction) {
         valid = validator.validateMove(gameState, playerAction);
         if (valid) {
             gameState.applyAction(playerAction);
         }
+        return valid;
     }
 
     @Override

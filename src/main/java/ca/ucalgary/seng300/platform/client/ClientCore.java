@@ -53,9 +53,46 @@ public class ClientCore extends Thread{
     public volatile  boolean upFlag = false;
     public volatile GameState lastUpdate;
     private volatile Runnable onGameStateUpdate;
+
+    // Authentication
+    private volatile String sessionToken;
+    private volatile int userId;
+    private volatile String loginResult;
+    private final Object loginLock = new Object();
     
     public boolean isConnected() {
         return servSend != null && servRead != null;
+    }
+
+    public boolean login(String username, String password) {
+        if (!isConnected()) {
+            return false;
+        }
+        loginResult = null;
+        sysMSG loginMsg = new sysMSG("LOGIN", username, password);
+        try {
+            servSend.writeObject(loginMsg);
+            servSend.flush();
+            synchronized (loginLock) {
+                loginLock.wait(5000); // 5 second timeout
+                if (loginResult != null && loginResult.startsWith("SUCCESS")) {
+                    String[] parts = loginResult.split("\\|", 4);
+                    if (parts.length >= 4) {
+                        sessionToken = parts[1];
+                        this.username = parts[2];
+                        userId = Integer.parseInt(parts[3]);
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int getUserId() {
+        return userId;
     }
 
     /** Mapped lobby slot for moves: {@code P1} = host (X), {@code P2} = guest (O). Set from {@code LOBBY_OK}. */
@@ -85,7 +122,7 @@ public class ClientCore extends Thread{
                 servSend.flush();
                 return true;
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                return false;
             }
             //else{
             //    return false;
@@ -208,6 +245,18 @@ public class ClientCore extends Thread{
                 switch(message){
                     case sysMSG sm:
                         switch (sm.getType()){
+                            case "LOGIN_SUCCESS":
+                                synchronized (loginLock) {
+                                    loginResult = "SUCCESS|" + sm.getFieldA() + "|" + sm.getFieldB() + "|" + sm.getPayload();
+                                    loginLock.notify();
+                                }
+                                break;
+                            case "LOGIN_FAIL":
+                                synchronized (loginLock) {
+                                    loginResult = "FAIL|" + sm.getFieldB();
+                                    loginLock.notify();
+                                }
+                                break;
                             case "LOGS":
                                 username = sm.getFieldA();
                                 CID = sm.getFieldB();
@@ -271,6 +320,12 @@ public class ClientCore extends Thread{
                             case "REMATCH_DECLINED":
                                 if (ioMain != null) {
                                     Platform.runLater(() -> ioMain.onRematchDeclined(sm.getFieldA()));
+                                }
+                                break;
+                            case "MOVE_INVALID":
+                                if (ioMain != null) {
+                                    String reason = sm.getFieldB() != null ? sm.getFieldB() : "Invalid move";
+                                    Platform.runLater(() -> ioMain.showMoveError(reason));
                                 }
                                 break;
                             default:

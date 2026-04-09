@@ -32,7 +32,10 @@ public class C4CLI {
                 col
             );
 
-            game.handleAction(action);
+            if (!game.handleAction(action)) {
+                System.out.println("Invalid move, try again.");
+                continue;
+            }
         }
 
         //Print final board

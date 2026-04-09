@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.ui.util;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
@@ -12,7 +13,7 @@ public final class PlayerProfileHelper {
 
     public static int currentUserIdOrDefault() {
         int id = CentralController.currentUserId;
-        return id != 0 ? id : 1;
+        return id > 0 ? id : 0;
     }
 
     /** ELO for the logged-in user from persisted {@link User} data. */
@@ -62,33 +63,11 @@ public final class PlayerProfileHelper {
     }
 
     public static String eloTierLabel(int elo) {
-        if (elo < 1000) {
-            return "Novice";
-        }
-        if (elo < 1200) {
-            return "Bronze";
-        }
-        if (elo < 1400) {
-            return "Silver";
-        }
-        if (elo < 1600) {
-            return "Gold";
-        }
-        if (elo < 1800) {
-            return "Platinum";
-        }
-        return "Master";
+        return Rank.fromElo(elo).getDisplayName();
     }
 
-    /** Short badge text for UI (e.g. "Au"). */
+    /** Short badge text for UI (e.g. "Br" or "GM"). */
     public static String eloTierBadge(int elo) {
-        return switch (eloTierLabel(elo)) {
-            case "Novice" -> "Nv";
-            case "Bronze" -> "Br";
-            case "Silver" -> "Ag";
-            case "Gold" -> "Au";
-            case "Platinum" -> "Pt";
-            default -> "M";
-        };
+        return Rank.fromElo(elo).getBadge();
     }
 }
