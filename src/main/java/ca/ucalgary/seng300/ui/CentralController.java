@@ -253,16 +253,24 @@ public class CentralController {
         if (event.getCode() != KeyCode.ESCAPE) return;
         if (currentScreen == null) return;
 
-        // Don't handle Escape on login, game screens, or game dashboard (top-level)
-        switch (currentScreen) {
-            case LOGIN, NEW_USER, TTT, C4, GAME_GUI, GAME_DASHBOARD -> { return; }
-            default -> {}
-        }
-
-        if (previousScreen != null) {
-            moveTo(previousScreen);
+        Navigation back = getEscapeDestination(currentScreen);
+        if (back != null) {
+            moveTo(back);
             event.consume();
         }
+    }
+
+    private Navigation getEscapeDestination(Navigation screen) {
+        return switch (screen) {
+            case CHOOSE_MODE      -> Navigation.GAME_DASHBOARD;
+            case HOST_LOBBY       -> Navigation.CHOOSE_MODE;
+            case JOIN_LOBBY       -> Navigation.CHOOSE_MODE;
+            case MAIN_LOBBY       -> Navigation.CHOOSE_MODE;
+            case SETTINGS         -> Navigation.GAME_DASHBOARD;
+            case PROFILE_DASHBOARD -> Navigation.GAME_DASHBOARD;
+            case INFO             -> Navigation.GAME_DASHBOARD;
+            default               -> null;  // no Escape on login, game, dashboard
+        };
     }
 
     public boolean isGameOn() {
