@@ -114,6 +114,8 @@ public class WindowManager {
     private double unMaximizedX;
     private double unMaximizedY;
 
+    private boolean resizable = true;
+
     private boolean showingNotification = false;
     private boolean showingNotificationAnimation = false;
     private Label notificationLabel;
@@ -124,19 +126,25 @@ public class WindowManager {
     private AudioClip currentlyPlaying = null;
 
     public WindowManager(WindowControls controls) {
+        this(controls, false);
+    }
+
+    public WindowManager(WindowControls controls, boolean minimal) {
         this.root = controls.root();
         this.titleBarPane = controls.titleBarPane();
 
         initStageListener();
         initEventFilters();
         initNotificationLabel();
-        initSoundButton(); // TODO remove later (this is for debugging)
+        if (!minimal)
+            initSoundButton(); // TODO remove later (this is for debugging)
 
         controls.quitButton().setOnAction(this::handleQuitAction);
         controls.minimizeButton().setOnAction(this::handleMinimizeAction);
         controls.maximizeButton().setOnAction(this::handleMaximizeAction);
 
-        controls.titleLabel().setText(MainApp.TITLE + " v" + MainApp.VERSION);
+        if (!minimal)
+            controls.titleLabel().setText(MainApp.TITLE + " v" + MainApp.VERSION);
     }
 
     private void initStageListener() {
@@ -215,7 +223,7 @@ public class WindowManager {
             double yMin = titleBarCoords.getY();
             double yMax = titleBarPane.getHeight() + yMin;
 
-            if (!maximized && shouldBeResizedOnDrag &&
+            if (resizable && !maximized && shouldBeResizedOnDrag &&
                     (isNearLeftEdge(event) ||
                             isNearRightEdge(event) ||
                             isNearBottomEdge(event) ||
@@ -529,7 +537,7 @@ public class WindowManager {
 
         boolean overControl = isOverControl(event);
 
-        if (maximized || (overControl && dir != Direction.NONE))
+        if (!resizable || maximized || (overControl && dir != Direction.NONE))
             root.setCursor(Cursor.DEFAULT);
         else {
             switch (dir) {
@@ -551,11 +559,19 @@ public class WindowManager {
             }
         }
 
-        shouldBeResizedOnDrag = !maximized && !(overControl && dir != Direction.NONE);
+        shouldBeResizedOnDrag = resizable && !maximized && !(overControl && dir != Direction.NONE);
     }
 
     private double getActualVolume() {
         return isSoundOn ? 1 * settingsVolume : 0;
+    }
+
+    public void setResizable(boolean resizable) {
+        this.resizable = resizable;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     public void playAudioClip(SoundEffect soundEffect) {
