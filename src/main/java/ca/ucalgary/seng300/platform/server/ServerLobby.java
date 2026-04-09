@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.platform.server;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.GameState;
+import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.platform.constants.Game;
@@ -20,6 +22,7 @@ public class ServerLobby {
     private platformChannel guest;
     private String hostextra;
     private String guestextra;
+    private boolean resultRecorded;
 
     public ServerLobby(String code, int gameId, platformChannel h, String ex){
         lobbyCode = code;
@@ -35,6 +38,7 @@ public class ServerLobby {
         host = h;
         hostextra = ex;
         host.setLobby(lobbyCode, gameId);
+        resultRecorded = false;
     }
 
     public void joinGuest(platformChannel h, String ex){
@@ -75,6 +79,7 @@ public class ServerLobby {
     }
 
     public void createGame(){
+        resultRecorded = false;
         if(gameId == Game.CONNECT_FOUR){
             c4game = new C4Game();
             c4game.startGame(host, guest);
@@ -89,6 +94,25 @@ public class ServerLobby {
             turnIds.put("P2", Player.PLAYER_2);
             tttgame.setPlayerIdToPlayer(turnIds);
             sendBoth(new sysMSG("GMJN", getGameFxml(), ""));
+            sendBoth(tttgame.getGameState());
+        }
+    }
+
+    public void resetGame() {
+        resultRecorded = false;
+        if (gameId == Game.CONNECT_FOUR) {
+            c4game = new C4Game();
+            c4game.startGame(host, guest);
+            sendBoth(c4game.getGameState());
+            return;
+        }
+        if (gameId == Game.TICK_TACK_TOE) {
+            tttgame = new TTTGame();
+            tttgame.startGame(host, guest);
+            Map<String, Player> turnIds = new HashMap<>();
+            turnIds.put("P1", Player.PLAYER_1);
+            turnIds.put("P2", Player.PLAYER_2);
+            tttgame.setPlayerIdToPlayer(turnIds);
             sendBoth(tttgame.getGameState());
         }
     }
@@ -113,6 +137,38 @@ public class ServerLobby {
             return tttgame != null ? tttgame.getGameState() : null;
         }
         return null;
+    }
+
+    public GameState currentTypedGameState() {
+        Object state = currentGameState();
+        return state instanceof GameState gameState ? gameState : null;
+    }
+
+    public boolean hasRecordedResult() {
+        return resultRecorded;
+    }
+
+    public void markResultRecorded() {
+        resultRecorded = true;
+    }
+
+    public boolean isParticipant(platformChannel channel) {
+        return channel != null && (channel == host || channel == guest);
+    }
+
+    public Player getRole(platformChannel channel) {
+        if (channel == host) {
+            return Player.PLAYER_1;
+        }
+        if (channel == guest) {
+            return Player.PLAYER_2;
+        }
+        return null;
+    }
+
+    public boolean isGameOver() {
+        GameState state = currentTypedGameState();
+        return state != null && state.getState() != State.IN_PROGRESS;
     }
 
     public void sendBoth(Object o){

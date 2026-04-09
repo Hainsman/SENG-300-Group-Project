@@ -105,7 +105,12 @@ public class platformChannel extends Thread {
                             createGameResponse.getFieldB() != null ? createGameResponse.getFieldB() : "Starting the game failed."));
                 }
                 break;
-            //case "FORFEIT" -> serv.onForfeit(this);
+            case "FORFEIT":
+                serv.onForfeit(this);
+                break;
+            case "reset":
+                serv.onRematch(this);
+                break;
 
             default:
                 break;

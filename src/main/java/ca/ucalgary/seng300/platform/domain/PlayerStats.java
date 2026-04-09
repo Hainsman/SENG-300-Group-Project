@@ -18,8 +18,15 @@ public class PlayerStats extends Record{
     public int getGameCounter(){return this.counter;}
     public double getScore(){return this.score;}
 
-    public void updateStats(double score) {
+    public void updateStatsWin(double score) {
         this.score += score;
+        this.counter ++;
+    }
+
+    public void updateStatsLose(double score) {
+        this.score -= score;
+        if (this.score < 0)
+            this.score = 0;
         this.counter ++;
     }
 }

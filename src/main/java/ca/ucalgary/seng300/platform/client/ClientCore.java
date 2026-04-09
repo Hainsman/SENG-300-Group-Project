@@ -60,6 +60,7 @@ public class ClientCore extends Thread{
     private volatile Consumer<sysMSG> authResponseHandler;
     private volatile Consumer<sysMSG> newUserResponseHandler;
     private volatile Consumer<sysMSG> moveResponseHandler;
+    private volatile Consumer<sysMSG> playerStatsHandler;
     private volatile Consumer<chatMessage> chatMessageHandler;
     
     public boolean isConnected() {
@@ -136,6 +137,10 @@ public class ClientCore extends Thread{
 
     public void setMoveResponseHandler(Consumer<sysMSG> handler) {
         moveResponseHandler = handler;
+    }
+
+    public void setPlayerStatsHandler(Consumer<sysMSG> handler) {
+        playerStatsHandler = handler;
     }
 
     public void setChatMessageHandler(Consumer<chatMessage> handler) {
@@ -257,6 +262,12 @@ public class ClientCore extends Thread{
                                 Consumer<sysMSG> moveHandler = moveResponseHandler;
                                 if (moveHandler != null) {
                                     Platform.runLater(() -> moveHandler.accept(sm));
+                                }
+                                break;
+                            case "PLAYER_STATS":
+                                Consumer<sysMSG> statsHandler = playerStatsHandler;
+                                if (statsHandler != null) {
+                                    Platform.runLater(() -> statsHandler.accept(sm));
                                 }
                                 break;
                             default:

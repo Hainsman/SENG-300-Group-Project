@@ -5,10 +5,12 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TicTacToeRandomMoveGenerator;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -39,6 +41,7 @@ public class TicTacToeController extends GameGUI {
         if (clientCore != null && clientCore.isConnected()) {
             session = null;
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
+            clientCore.setPlayerStatsHandler(this::handlePlayerStatsUpdate);
             clientCore.setChatMessageHandler(this::handleChatMessage);
         }
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
@@ -69,6 +72,18 @@ public class TicTacToeController extends GameGUI {
 
     @FXML
     private Button sendChatButton;
+    @FXML
+    private Label sidebarGameTitleLabel;
+    @FXML
+    private Label profileNameLabel;
+    @FXML
+    private Label profileEmailLabel;
+    @FXML
+    private Label eloValueLabel;
+    @FXML
+    private Label tierValueLabel;
+    @FXML
+    private Label gamesPlayedValueLabel;
 
     private static final Color xColor = Color.web("#3B82F6");
     private static final Color oColor = Color.web("#A855F7");
@@ -83,6 +98,7 @@ public class TicTacToeController extends GameGUI {
     @FXML
     public void initialize() {
         status = GameStatus.IN_PROGRESS;
+        populateProfileSidebar();
         if (chatList != null) {
             chatList.setPlaceholder(new Label("No messages yet."));
         }
@@ -282,5 +298,73 @@ public class TicTacToeController extends GameGUI {
     private void handleBackToMode(ActionEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
         CentralController.moveTo("chooseModeNew.fxml");
+    }
+
+    @FXML
+    private void handleForfeit(ActionEvent event) {
+        if (clientCore != null && clientCore.isConnected()) {
+            clientCore.msgSend(new sysMSG("FORFEIT", CentralController.lobbyCode != null ? CentralController.lobbyCode : ""));
+            turnLabel.setText("Forfeit submitted.");
+            return;
+        }
+        turnLabel.setText("You forfeited.");
+        onGameCompletion();
+    }
+
+    @FXML
+    private void handleInfo(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Tic Tac Toe");
+        alert.setHeaderText("How to play");
+        alert.setContentText(
+                "Two players take turns on a 3x3 grid. You play as X or O depending on the match.\n\n"
+                        + "Place your mark on an empty cell each turn. The first player to get three in a row - horizontally, vertically, or diagonally - wins the game.\n\n"
+                        + "If every cell is filled and no one has three in a row, the game is a draw.\n\n"
+                        + "Online: create or join a lobby from the game hub, then play in real time. "
+                        + "While a ranked online match is in progress, use Forfeit in the sidebar if you must leave; ratings may update when the game ends."
+        );
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleExit(ActionEvent event) {
+        Platform.exit();
+    }
+
+    private void populateProfileSidebar() {
+        GameProfileHelper.ProfileData data = GameProfileHelper.loadProfile(Game.TICK_TACK_TOE);
+        if (sidebarGameTitleLabel != null) {
+            sidebarGameTitleLabel.setText(data.gameTitle());
+        }
+        if (profileNameLabel != null) {
+            profileNameLabel.setText(data.username());
+        }
+        if (profileEmailLabel != null) {
+            profileEmailLabel.setText(data.email());
+        }
+        if (eloValueLabel != null) {
+            eloValueLabel.setText(data.elo());
+        }
+        if (tierValueLabel != null) {
+            tierValueLabel.setText(data.tier());
+        }
+        if (gamesPlayedValueLabel != null) {
+            gamesPlayedValueLabel.setText(data.gamesPlayed());
+        }
+    }
+
+    private void handlePlayerStatsUpdate(sysMSG message) {
+        if (message == null) {
+            return;
+        }
+        if (eloValueLabel != null && message.getFieldA() != null) {
+            eloValueLabel.setText(message.getFieldA());
+        }
+        if (gamesPlayedValueLabel != null && message.getFieldB() != null) {
+            gamesPlayedValueLabel.setText(message.getFieldB());
+        }
+        if (tierValueLabel != null && message.getPayload() != null) {
+            tierValueLabel.setText(message.getPayload());
+        }
     }
 }

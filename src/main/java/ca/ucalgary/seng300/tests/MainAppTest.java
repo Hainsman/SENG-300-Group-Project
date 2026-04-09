@@ -2,7 +2,6 @@ package ca.ucalgary.seng300.tests;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
-import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.*;
 import ca.ucalgary.seng300.platform.domain.Record;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
@@ -13,7 +12,6 @@ import ca.ucalgary.seng300.platform.utils.Helper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 
 
 public class MainAppTest {
@@ -149,14 +147,14 @@ public class MainAppTest {
         PlayerStats mmPlayer7 = new PlayerStats(107, Game.CONNECT_FOUR, 107);
         PlayerStats mmPlayer8 = new PlayerStats(108, Game.CONNECT_FOUR, 108);
 
-        for (int i = 0; i < 10; i++) mmPlayer1.updateStats(5.0);   // score = 50.0
-        for (int i = 0; i < 10; i++) mmPlayer2.updateStats(5.3);   // score = 53.0
-        for (int i = 0; i < 10; i++) mmPlayer3.updateStats(9.0);   // score = 90.0
-        for (int i = 0; i < 10; i++) mmPlayer4.updateStats(3.5);   // score = 35.0
-        for (int i = 0; i < 10; i++) mmPlayer5.updateStats(3.51);  // score = 35.1
-        for (int i = 0; i < 10; i++) mmPlayer6.updateStats(3.4);   // score = 34.0
-        for (int i = 0; i < 10; i++) mmPlayer7.updateStats(5.0);   // score = 50.0
-        for (int i = 0; i < 10; i++) mmPlayer8.updateStats(5.5);   // score = 55.0
+        for (int i = 0; i < 10; i++) mmPlayer1.updateStatsWin(5.0);   // score = 50.0
+        for (int i = 0; i < 10; i++) mmPlayer2.updateStatsWin(5.3);   // score = 53.0
+        for (int i = 0; i < 10; i++) mmPlayer3.updateStatsWin(9.0);   // score = 90.0
+        for (int i = 0; i < 10; i++) mmPlayer4.updateStatsWin(3.5);   // score = 35.0
+        for (int i = 0; i < 10; i++) mmPlayer5.updateStatsWin(3.51);  // score = 35.1
+        for (int i = 0; i < 10; i++) mmPlayer6.updateStatsWin(3.4);   // score = 34.0
+        for (int i = 0; i < 10; i++) mmPlayer7.updateStatsWin(5.0);   // score = 50.0
+        for (int i = 0; i < 10; i++) mmPlayer8.updateStatsWin(5.5);   // score = 55.0
 
 // --- Test 1: addPlayerToQueue adds players correctly ---
         MatchMakingService.queues.clear();

@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
@@ -292,6 +293,7 @@ public class PlatformCore {
             if (state != null) {
                 sl.sendBoth(state);
             }
+            finalizeMatchIfNeeded(sl);
         }
     }
     /**
@@ -321,6 +323,116 @@ public class PlatformCore {
         p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
         p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
     }*/
+
+    public synchronized void onForfeit(platformChannel from) {
+        if (from == null || lobbies == null) {
+            return;
+        }
+        String lobbyId = from.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(from) || sl.hasRecordedResult()) {
+            return;
+        }
+        applyMatchOutcome(sl, null, true);
+    }
+
+    public synchronized void onRematch(platformChannel requester) {
+        if (requester == null || lobbies == null) {
+            return;
+        }
+        String lobbyId = requester.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(requester)) {
+            return;
+        }
+        if (sl.getHost() == null || sl.getGuest() == null) {
+            return;
+        }
+        sl.resetGame();
+    }
+
+    private void finalizeMatchIfNeeded(ServerLobby sl) {
+        if (sl == null || sl.hasRecordedResult() || !sl.isGameOver()) {
+            return;
+        }
+        GameState state = sl.currentTypedGameState();
+        if (state == null) {
+            return;
+        }
+        Player winner = null;
+        if (state.getState() == ca.ucalgary.seng300.game.core.State.PLAYER_1_WIN) {
+            winner = Player.PLAYER_1;
+        } else if (state.getState() == ca.ucalgary.seng300.game.core.State.PLAYER_2_WIN) {
+            winner = Player.PLAYER_2;
+        }
+        applyMatchOutcome(sl, winner, false);
+    }
+
+    private void applyMatchOutcome(ServerLobby sl, Player winner, boolean forfeit) {
+        if (sl == null || sl.hasRecordedResult()) {
+            return;
+        }
+        platformChannel host = sl.getHost();
+        platformChannel guest = sl.getGuest();
+        if (host == null || guest == null) {
+            return;
+        }
+        Integer hostUserId = host.getAuthenticatedUserId();
+        Integer guestUserId = guest.getAuthenticatedUserId();
+        if (hostUserId == null || guestUserId == null) {
+            return;
+        }
+
+        PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameId(), hostUserId);
+        PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameId(), guestUserId);
+        double delta = forfeit ? 0.0 : 1.0;
+
+        if (winner == Player.PLAYER_1) {
+            hostStats.updateStatsWin(delta);
+            guestStats.updateStatsLose(delta);
+        } else if (winner == Player.PLAYER_2) {
+            hostStats.updateStatsLose(delta);
+            guestStats.updateStatsWin(delta);
+        } else {
+            hostStats.updateStatsWin(0.0);
+            guestStats.updateStatsLose(0.0);
+        }
+
+        playerStatsStore.update(hostStats);
+        playerStatsStore.update(guestStats);
+        sl.markResultRecorded();
+
+        sendPlayerStatsUpdate(host, hostStats);
+        sendPlayerStatsUpdate(guest, guestStats);
+    }
+
+    private void sendPlayerStatsUpdate(platformChannel channel, PlayerStats stats) {
+        if (channel == null || stats == null) {
+            return;
+        }
+        String rank = ca.ucalgary.seng300.platform.utils.Helper
+                .getRank(stats.getGameCounter(), stats.getScore())
+                .getDisplayName();
+        channel.cliSend(new sysMSG(
+                "PLAYER_STATS",
+                formatScore(stats.getScore()),
+                String.valueOf(stats.getGameCounter()),
+                rank
+        ));
+    }
+
+    private String formatScore(double score) {
+        if (score == Math.rint(score)) {
+            return String.valueOf((int) score);
+        }
+        return String.format("%.1f", score);
+    }
 
     // Number of active users
     private int cActive = 0;

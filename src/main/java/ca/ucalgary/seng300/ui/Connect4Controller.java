@@ -5,10 +5,12 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.Connect4RandomMoveGenerator;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.Connect4Session;
 import javafx.fxml.FXML;
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -32,6 +34,7 @@ public class Connect4Controller extends GameGUI {
         }
         if (clientCore != null && clientCore.isConnected()) {
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
+            clientCore.setPlayerStatsHandler(this::handlePlayerStatsUpdate);
             clientCore.setChatMessageHandler(this::handleChatMessage);
         }
         if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
@@ -61,6 +64,18 @@ public class Connect4Controller extends GameGUI {
 
     @FXML
     private Button sendChatButton;
+    @FXML
+    private Label sidebarGameTitleLabel;
+    @FXML
+    private Label profileNameLabel;
+    @FXML
+    private Label profileEmailLabel;
+    @FXML
+    private Label eloValueLabel;
+    @FXML
+    private Label tierValueLabel;
+    @FXML
+    private Label gamesPlayedValueLabel;
 
     private final Color P1 = Color.web("#dd3030ff");
     private final Color P2 = Color.web("#fad44aff");
@@ -68,6 +83,7 @@ public class Connect4Controller extends GameGUI {
     @FXML
     public void initialize() {
         render();
+        populateProfileSidebar();
         if (chatList != null) {
             chatList.setPlaceholder(new Label("No messages yet."));
         }
@@ -134,7 +150,7 @@ public class Connect4Controller extends GameGUI {
     private void disableBoard() {
         for (int row = 0; row < rows; row++)
             for (int col = 0; col < cols; col++)
-                circles[row][col].setOnMouseClicked(null);
+                circles[row][col].setDisable(true);
     }
 
     public void setVisibility(Boolean status) {
@@ -144,6 +160,7 @@ public class Connect4Controller extends GameGUI {
     @FXML
     private void resetClick(ActionEvent event) {
         if (clientCore != null && clientCore.isConnected()) {
+            GameGUI.clearHistory();
             clientCore.msgSend(new sysMSG("reset", ""));
             return;
         }
@@ -262,5 +279,74 @@ public class Connect4Controller extends GameGUI {
         }
         GameGUI.addHistory("Connect4", "P2", "Col " + (col + 1), P2);
         refreshFromGameStateUpdate(session.getGameState());
+    }
+
+    @FXML
+    private void handleForfeit(ActionEvent event) {
+        if (clientCore != null && clientCore.isConnected()) {
+            clientCore.msgSend(new sysMSG("FORFEIT", CentralController.lobbyCode != null ? CentralController.lobbyCode : ""));
+            statusLabel.setText("Forfeit submitted.");
+            return;
+        }
+        statusLabel.setText("You forfeited.");
+        onGameCompletion();
+    }
+
+    @FXML
+    private void handleInfo(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Connect 4");
+        alert.setHeaderText("How to play");
+        alert.setContentText(
+                "Two players take turns dropping a piece into one of seven columns. "
+                        + "The board is seven columns wide and six rows tall; pieces fall to the lowest empty slot in that column.\n\n"
+                        + "The first player to connect four pieces in a row - horizontally, vertically, or diagonally - wins.\n\n"
+                        + "If the board is full and neither player has four in a row, the game is a draw.\n\n"
+                        + "Online: host or join a lobby, then take turns when it is your move. "
+                        + "Use Forfeit in the sidebar to resign an online match; ELO may change when the result is recorded."
+        );
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleExit(ActionEvent event) {
+        Platform.exit();
+    }
+
+    private void populateProfileSidebar() {
+        GameProfileHelper.ProfileData data = GameProfileHelper.loadProfile(Game.CONNECT_FOUR);
+        if (sidebarGameTitleLabel != null) {
+            sidebarGameTitleLabel.setText(data.gameTitle());
+        }
+        if (profileNameLabel != null) {
+            profileNameLabel.setText(data.username());
+        }
+        if (profileEmailLabel != null) {
+            profileEmailLabel.setText(data.email());
+        }
+        if (eloValueLabel != null) {
+            eloValueLabel.setText(data.elo());
+        }
+        if (tierValueLabel != null) {
+            tierValueLabel.setText(data.tier());
+        }
+        if (gamesPlayedValueLabel != null) {
+            gamesPlayedValueLabel.setText(data.gamesPlayed());
+        }
+    }
+
+    private void handlePlayerStatsUpdate(sysMSG message) {
+        if (message == null) {
+            return;
+        }
+        if (eloValueLabel != null && message.getFieldA() != null) {
+            eloValueLabel.setText(message.getFieldA());
+        }
+        if (gamesPlayedValueLabel != null && message.getFieldB() != null) {
+            gamesPlayedValueLabel.setText(message.getFieldB());
+        }
+        if (tierValueLabel != null && message.getPayload() != null) {
+            tierValueLabel.setText(message.getPayload());
+        }
     }
 }
