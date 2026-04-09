@@ -10,3 +10,21 @@
     -fx-border-width: 1;
     -fx-border-radius: 10;
 }
+/* ========== Content area ========== */
+.popup-body {
+    -fx-padding: 20 24;
+    -fx-spacing: 14;
+    -fx-alignment: center;
+}
+
+.popup-icon {
+    -fx-font-size: 32px;
+    -fx-text-fill: #a1a1aa;
+}
+
+.popup-message {
+    -fx-text-fill: #d4d4d8;
+    -fx-font-size: 14px;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}
