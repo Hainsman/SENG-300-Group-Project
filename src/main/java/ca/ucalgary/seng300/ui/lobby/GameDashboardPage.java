@@ -46,6 +46,9 @@ public class GameDashboardPage extends AnchorPane implements Navigable {
             if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
                 C4click(null);
         });
+
+        tttCard.setOnMouseEntered(e -> { if (c4Card.isFocused()) c4Card.getParent().requestFocus(); });
+        c4Card.setOnMouseEntered(e -> { if (tttCard.isFocused()) tttCard.getParent().requestFocus(); });
     }
 
     @FXML

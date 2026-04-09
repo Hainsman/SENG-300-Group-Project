@@ -57,6 +57,11 @@ public class ChooseModePage extends AnchorPane implements Navigable {
             if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
                 handlePlayWithAi(null);
         });
+
+        // Clear focus when mouse enters a different card
+        hostCard.setOnMouseEntered(e -> clearFocusExcept(hostCard));
+        joinCard.setOnMouseEntered(e -> clearFocusExcept(joinCard));
+        playWithAiCard.setOnMouseEntered(e -> clearFocusExcept(playWithAiCard));
     }
 
     /** Tic-Tac-Toe from the new dashboard uses {@code "TicTacToe"}. */
@@ -74,6 +79,12 @@ public class ChooseModePage extends AnchorPane implements Navigable {
             playWithAiCard.setVisible(showAi);
             playWithAiCard.setManaged(showAi);
         }
+    }
+
+    private void clearFocusExcept(VBox hovered) {
+        if (hostCard.isFocused() && hostCard != hovered) hostCard.getParent().requestFocus();
+        if (joinCard.isFocused() && joinCard != hovered) joinCard.getParent().requestFocus();
+        if (playWithAiCard.isFocused() && playWithAiCard != hovered) playWithAiCard.getParent().requestFocus();
     }
 
     @FXML
