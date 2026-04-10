@@ -22,6 +22,8 @@ public final class LobbyBridge {
     public static Consumer<String> onLobbyRoster;
     /** Player stats updated after game ends (score/rank changes). */
     public static Consumer<String> onPlayerStatsUpdated;
+    /** Arbitrary system notifications. */
+    public static Consumer<String> onChatNotification;
 
     public static void notifyLobbyOk(String role, String code) {
         Platform.runLater(() -> {
@@ -87,11 +89,20 @@ public final class LobbyBridge {
         });
     }
 
+    public static void notifyChatNotification(String message) {
+        Platform.runLater(() -> {
+            if (onChatNotification != null) {
+                onChatNotification.accept(message);
+            }
+        });
+    }
+
     /** Call when leaving the lobby screen so callbacks do not target disposed controllers. */
     public static void clearLobbyUiCallbacks() {
         onPartnerJoined = null;
         onGameState = null;
         onLobbyRoster = null;
         onPlayerStatsUpdated = null;
+        onChatNotification = null;
     }
 }

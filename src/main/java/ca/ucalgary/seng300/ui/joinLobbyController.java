@@ -99,6 +99,8 @@ public class joinLobbyController {
         CentralController.lobbyPaired = false;
         CentralController.maxPlayers = 2;
         CentralController.privacy = "Public";
+        CentralController.player1Name = "";
+        CentralController.player2Name = "";
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onJoinOk = () -> {

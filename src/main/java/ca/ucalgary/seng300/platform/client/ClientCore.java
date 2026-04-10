@@ -315,10 +315,12 @@ public class ClientCore extends Thread{
                             case "REMATCH_DECLINED":
                             case "FORFEIT_NOTICE":
                             case "FORFEIT_COMPLETE":
+                            case "CHAT_NOTIFICATION":
                                 Consumer<sysMSG> currentRematchHandler = rematchHandler;
                                 if (currentRematchHandler != null) {
                                     Platform.runLater(() -> currentRematchHandler.accept(sm));
                                 }
+                                LobbyBridge.notifyChatNotification(sm.getPayload());
                                 break;
                             default:
                                 break;

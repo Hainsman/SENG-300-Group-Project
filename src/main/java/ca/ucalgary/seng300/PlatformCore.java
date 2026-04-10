@@ -490,6 +490,55 @@ public class PlatformCore {
         sl.sendBoth(new sysMSG("REMATCH_DECLINED", lobbyId, ""));
     }
 
+    public synchronized void onChatNotification(platformChannel from, sysMSG sm) {
+        if (from == null || lobbies == null || sm == null) {
+            return;
+        }
+        String lobbyId = from.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(from)) {
+            return;
+        }
+        platformChannel opponent = sl.getOpponent(from);
+        if (opponent != null) {
+            opponent.cliSend(new sysMSG("CHAT_NOTIFICATION", lobbyId, "", sm.getPayload()));
+        }
+    }
+
+    public synchronized void onLeaveLobby(platformChannel from) {
+        if (from == null || lobbies == null) {
+            return;
+        }
+        String lobbyId = from.getLobby();
+        if (lobbyId == null || lobbyId.isBlank()) {
+            return;
+        }
+        ServerLobby sl = lobbies.get(lobbyId);
+        if (sl == null || !sl.isParticipant(from)) {
+            return;
+        }
+        
+        platformChannel opponent = sl.getOpponent(from);
+        if (sl.isHost(from)) {
+            // Host leaving: notify guest and close lobby
+            if (opponent != null) {
+                opponent.cliSend(new sysMSG("CHAT_NOTIFICATION", lobbyId, "", "Host has left the lobby"));
+                opponent.setLobby(null, 0);
+            }
+            from.setLobby(null, 0);
+            lobbies.remove(lobbyId);
+            System.out.println("Lobby " + lobbyId + " has been closed as the host left.");
+        } else {
+            // Guest leaving: update roster and keep lobby open
+            sl.removeGuest();
+            from.setLobby(null, 0);
+            System.out.println("Guest left lobby " + lobbyId + ". Lobby remains open for host.");
+        }
+    }
+
     private void finalizeMatchIfNeeded(ServerLobby sl) {
         if (sl == null || sl.hasRecordedResult() || !sl.isGameOver()) {
             return;

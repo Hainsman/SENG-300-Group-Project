@@ -121,6 +121,8 @@ public class hostLobbyController {
         CentralController.lobbyPaired = false;
         CentralController.lobbyName = lobbyNam.isEmpty() ? "Lobby" : lobbyNam;
         CentralController.hostingLobby = true;
+        CentralController.player1Name = "";
+        CentralController.player2Name = "";
 
         LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
         LobbyBridge.onHostOk = () -> {

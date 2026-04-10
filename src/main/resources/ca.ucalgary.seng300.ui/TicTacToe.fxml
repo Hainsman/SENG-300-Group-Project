@@ -48,14 +48,9 @@
                         </children>
                     </VBox>
                     <Region VBox.vgrow="ALWAYS" />
-                    <Button onAction="#handleForfeit" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="✕  Forfeit" />
-                    <Button onAction="#handleInfo" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="ⓘ  Info" />
-                            <StackPane onMouseClicked="#handleExit" styleClass="avatar-badge">
-                                <children>
-                                    <Circle radius="18.0" styleClass="avatar-circle" fill="#ef4444" />
-                                    <Label text="EXIT" styleClass="avatar-label" textFill="WHITE" />
-                                </children>
-                            </StackPane>
+                    <Button fx:id="forfeitButton" onAction="#handleForfeit" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="✕  Forfeit" />
+                    <Button fx:id="infoButton" onAction="#handleInfo" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="ⓘ  Info" />
+                    <Button fx:id="exitButton" onAction="#handleExit" prefHeight="42.0" prefWidth="220.0" styleClass="back-button" text="✕  Exit" />
                 </children>
             </VBox>
 
@@ -101,7 +96,7 @@
                                 </children>
                             </HBox>
 
-                            <Button onAction="#handleBackToMode" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
+                            <Button fx:id="backButton" onAction="#handleBackToMode" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
                             <Button fx:id="resetButton" onAction="#resetClick" prefHeight="42.0" prefWidth="148.0" styleClass="primary-button" text="Rematch" visible="false" />
                         </children>
                     </VBox>

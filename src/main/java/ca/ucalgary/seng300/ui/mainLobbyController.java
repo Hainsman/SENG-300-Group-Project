@@ -55,6 +55,7 @@ public class mainLobbyController {
         LobbyBridge.onGameState = this::refreshStartButton;
         LobbyBridge.onLobbyRoster = this::handleLobbyRoster;
         LobbyBridge.onPlayerStatsUpdated = this::handlePlayerStatsUpdate;
+        LobbyBridge.onChatNotification = this::handleChatNotification;
         
         ClientCore cc = getCC();
         if (cc != null) {
@@ -99,7 +100,10 @@ public class mainLobbyController {
                     : "Guest";
                 playerList.getItems().add(guestThere ? "Player 2 (guest): " + guest2Name : "Player 2 (guest): Waiting for guest...");
             } else {
-                playerList.getItems().add("Player 1 (host): Host");
+                String host1Name = CentralController.player1Name != null && !CentralController.player1Name.isEmpty()
+                    ? CentralController.player1Name
+                    : "Host";
+                playerList.getItems().add("Player 1 (host): " + host1Name);
                 playerList.getItems().add("Player 2 (guest): " + selfName);
             }
         }
@@ -186,7 +190,7 @@ public class mainLobbyController {
             System.out.println("handleLobbyRoster: data is null or empty");
             return;
         }
-        String[] parts = rosterData.split("\\|");
+        String[] parts = rosterData.split("\\|", -1);
         System.out.println("handleLobbyRoster: parsed " + parts.length + " parts");
         if (parts.length >= 6) {
             CentralController.player1Name = parts[0];
@@ -195,13 +199,38 @@ public class mainLobbyController {
             CentralController.player2Name = parts[3];
             CentralController.player2Elo = parts[4];
             CentralController.player2GamesPlayed = parts[5];
+            
+            // If player 2 name is empty, it means the guest has left (or is not yet present)
+            if (CentralController.player2Name == null || CentralController.player2Name.isEmpty()) {
+                CentralController.lobbyPaired = false;
+            } else {
+                CentralController.lobbyPaired = true;
+            }
+
             System.out.println("handleLobbyRoster: set p1=" + parts[0] + " elo=" + parts[1] + " games=" + parts[2] 
                 + " p2=" + parts[3] + " elo=" + parts[4] + " games=" + parts[5]);
             refreshPlayerSlots();
             refreshPlayersFromState();
+            refreshStartButton();
         } else {
             System.out.println("handleLobbyRoster: not enough parts, expected 6, got " + parts.length);
         }
+    }
+
+    private void handleChatNotification(String message) {
+        if (message == null || message.isBlank()) return;
+        
+        javafx.application.Platform.runLater(() -> {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Lobby Notification");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+            
+            if (message.contains("Host has left")) {
+                handleBack();
+            }
+        });
     }
 
     private void handlePlayerStatsUpdate(String statsData) {
@@ -259,6 +288,13 @@ public class mainLobbyController {
     @FXML
     private void handleBack() {
         LobbyBridge.clearLobbyUiCallbacks();
+        CentralController controller = CentralController.getInstance();
+        if (controller != null) {
+            ClientCore cc = controller.getCC();
+            if (cc != null && cc.isConnected()) {
+                cc.msgSend(new sysMSG("LEAVE_LOBBY", CentralController.lobbyCode != null ? CentralController.lobbyCode : ""));
+            }
+        }
         if ("hostLobby.fxml".equals(CentralController.previousScreen)
                 || "joinLobby.fxml".equals(CentralController.previousScreen)) {
             CentralController.moveTo("GameDashboardNew.fxml");

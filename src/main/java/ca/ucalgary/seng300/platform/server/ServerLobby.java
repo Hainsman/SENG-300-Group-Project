@@ -81,13 +81,18 @@ public class ServerLobby {
         return "TicTacToe.fxml";
     }
 
+    public void removeGuest() {
+        this.guest = null;
+        this.guestUserId = -1;
+        this.guestUsername = null;
+        if (platformCore != null) {
+            rosterSend();
+        }
+    }
+
     public void rosterSend(){
         if (platformCore == null) {
             System.out.println("rosterSend skipped: platformCore is null");
-            return;
-        }
-        if (guestUserId <= 0) {
-            System.out.println("rosterSend skipped: guestUserId=" + guestUserId + " (not set yet)");
             return;
         }
         if (hostUserId <= 0) {
@@ -98,11 +103,13 @@ public class ServerLobby {
         System.out.println("rosterSend: hostUserId=" + hostUserId + " guestUserId=" + guestUserId + " hostUsername=" + hostUsername + " guestUsername=" + guestUsername);
         
         String hostName = hostUsername != null && !hostUsername.isEmpty() ? hostUsername : "Player";
-        String guestName = guestUsername != null && !guestUsername.isEmpty() ? guestUsername : "Player";
         String hostScore = platformCore.getPlayerScoreForLobby(hostName, hostUserId, gameId);
-        String guestScore = platformCore.getPlayerScoreForLobby(guestName, guestUserId, gameId);
         String hostGamesPlayed = platformCore.getPlayerGamesPlayedForLobby(hostUserId, gameId);
-        String guestGamesPlayed = platformCore.getPlayerGamesPlayedForLobby(guestUserId, gameId);
+
+        String guestName = (guestUserId > 0 && guestUsername != null && !guestUsername.isEmpty()) ? guestUsername : "";
+        String guestScore = (guestUserId > 0) ? platformCore.getPlayerScoreForLobby(guestName, guestUserId, gameId) : "";
+        String guestGamesPlayed = (guestUserId > 0) ? platformCore.getPlayerGamesPlayedForLobby(guestUserId, gameId) : "";
+
         String roster = hostName + "|" + hostScore + "|" + hostGamesPlayed + "|" + guestName + "|" + guestScore + "|" + guestGamesPlayed;
         System.out.println("rosterSend sending: " + roster);
         sysMSG rosterMsg = new sysMSG("LOBBY_ROSTER", lobbyCode, "", roster);

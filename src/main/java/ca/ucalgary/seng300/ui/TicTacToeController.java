@@ -88,6 +88,14 @@ public class TicTacToeController extends GameGUI {
     @FXML
     private Button sendChatButton;
     @FXML
+    private Button forfeitButton;
+    @FXML
+    private Button infoButton;
+    @FXML
+    private Button exitButton;
+    @FXML
+    private Button backButton;
+    @FXML
     private Label sidebarGameTitleLabel;
     @FXML
     private Label profileNameLabel;
@@ -242,6 +250,10 @@ public class TicTacToeController extends GameGUI {
         if (update == null || update.getBoard() == null) return;
         Player[][] currentBoard = update.getBoard();
         boolean gameOver = !State.IN_PROGRESS.equals(update.getState());
+
+        if (backButton != null) backButton.setDisable(!gameOver);
+        if (exitButton != null) exitButton.setDisable(!gameOver);
+
         for (Node node : ticTacToeGrid.getChildren()) {
             if (node instanceof Button btn) {
                 Integer r = GridPane.getRowIndex(btn);
@@ -331,8 +343,23 @@ public class TicTacToeController extends GameGUI {
 
     @FXML
     private void handleBackToMode(ActionEvent event) {
-        CentralController.previousScreen = "GameDashboardNew.fxml";
-        CentralController.moveTo("chooseModeNew.fxml");
+        String lobby = (CentralController.lobbyName != null && !CentralController.lobbyName.isBlank())
+                ? CentralController.lobbyName
+                : (CentralController.lobbyCode != null ? CentralController.lobbyCode : "lobby");
+
+        if (clientCore != null && clientCore.isConnected()) {
+            String myUsername = (clientCore.username != null) ? clientCore.username : "Player";
+            clientCore.msgSend(new sysMSG("CHAT_NOTIFICATION", "", "", myUsername + " left kicking out from " + lobby));
+            clientCore.msgSend(new sysMSG("LEAVE_LOBBY", ""));
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Notification");
+        alert.setHeaderText(null);
+        alert.setContentText("Left TicTacToe kicking out from " + lobby);
+        alert.showAndWait();
+
+        exitToChooseMode();
     }
 
     @FXML
@@ -369,7 +396,23 @@ public class TicTacToeController extends GameGUI {
     }
 
     @FXML
-    private void handleExit(MouseEvent event) {
+    private void handleExit(ActionEvent event) {
+        String lobby = (CentralController.lobbyName != null && !CentralController.lobbyName.isBlank())
+                ? CentralController.lobbyName
+                : (CentralController.lobbyCode != null ? CentralController.lobbyCode : "lobby");
+
+        if (clientCore != null && clientCore.isConnected()) {
+            String myUsername = (clientCore.username != null) ? clientCore.username : "Player";
+            clientCore.msgSend(new sysMSG("CHAT_NOTIFICATION", "", "", myUsername + " left kicking out from " + lobby));
+            clientCore.msgSend(new sysMSG("LEAVE_LOBBY", ""));
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Notification");
+        alert.setHeaderText(null);
+        alert.setContentText("Left TicTacToe kicking out from " + lobby);
+        alert.showAndWait();
+
         if (CentralController.getInstance().clientCore != null) {
             CentralController.getInstance().clientCore.sendLogout();
         }
@@ -437,6 +480,15 @@ public class TicTacToeController extends GameGUI {
             if (clientCore != null && clientCore.isConnected()) {
                 clientCore.msgSend(new sysMSG("REMATCH_RESPONSE", result == yes ? "ACCEPT" : "DECLINE", ""));
             }
+            return;
+        }
+        if ("CHAT_NOTIFICATION".equals(message.getType())) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Notification");
+            alert.setHeaderText(null);
+            alert.setContentText(message.getPayload());
+            alert.showAndWait();
+            exitToChooseMode();
             return;
         }
         if ("REMATCH_DECLINED".equals(message.getType())) {

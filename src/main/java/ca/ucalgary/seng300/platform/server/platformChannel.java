@@ -140,6 +140,12 @@ public class platformChannel extends Thread {
             case "GET_FRIENDS":
                 cliSend(serv.getAllFriendsByUserID(this));
                 break;
+            case "CHAT_NOTIFICATION":
+                serv.onChatNotification(this, sm);
+                break;
+            case "LEAVE_LOBBY":
+                serv.onLeaveLobby(this);
+                break;
 
             default:
                 break;
