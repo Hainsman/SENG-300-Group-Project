@@ -129,6 +129,14 @@ public class platformChannel extends Thread {
                 // fieldA: new login, fieldB: new email
                 cliSend(serv.updateProfile(this, sm.getFieldA(), sm.getFieldB()));
                 break;
+            case "AI_GAME_RESULT":
+                // fieldA: gameId, fieldB: result (WIN, LOSS, DRAW)
+                serv.onAiGameResult(this, sm.getFieldA(), sm.getFieldB());
+                break;
+            case "LEADERBOARD_REQUEST":
+                // fieldA: gameId
+                cliSend(serv.onLeaderboardRequest(sm.getFieldA()));
+                break;
             case "GET_FRIENDS":
                 cliSend(serv.getAllFriendsByUserID(this));
                 break;

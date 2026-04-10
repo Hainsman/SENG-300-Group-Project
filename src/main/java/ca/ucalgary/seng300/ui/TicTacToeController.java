@@ -9,8 +9,6 @@ import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
-import ca.ucalgary.seng300.platform.domain.SessionHistory;
-import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import javafx.fxml.FXML;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -326,7 +324,9 @@ public class TicTacToeController extends GameGUI {
             return;
         }
         if (CentralController.playWithAi && !aiResultRecorded) {
-            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.FORFEIT);
+            if (clientCore != null && clientCore.isConnected()) {
+                clientCore.msgSend(new sysMSG("AI_GAME_RESULT", String.valueOf(Game.TICK_TACK_TOE), "LOSS"));
+            }
             aiResultRecorded = true;
             populateProfileSidebar();
         }
@@ -352,63 +352,23 @@ public class TicTacToeController extends GameGUI {
     @FXML
     private void handleExit(MouseEvent event) {
         if (CentralController.getInstance().clientCore != null) {
-            String cid = CentralController.getInstance().clientCore.CID;
-            if (cid != null && !cid.isEmpty()) {
-                try {
-                    int userId = Integer.parseInt(cid);
-                    SessionHistoryStore store = SessionHistoryStore.getInstance();
-                    List<SessionHistory> sessions = store.findSessionsByUserID(userId);
-                    for (SessionHistory session : sessions) {
-                        store.delete(new SessionHistory(session.getID(), session.getUserId(), session.getGloballyUniqueSessionIdentifier()));
-                    }
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
             CentralController.getInstance().clientCore.sendLogout();
         }
         CentralController.moveTo("Login.fxml");
     }
 
     private void populateProfileSidebar() {
-        // For online games, only display server data (don't load stale local profile)
-        if (!CentralController.playWithAi && clientCore != null && clientCore.isConnected()) {
-            // Online game: wait for PLAYER_STATS message from server to populate fields
-            // Initial state: labels will be empty until server sends update
-            if (sidebarGameTitleLabel != null) {
-                sidebarGameTitleLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Game");
-            }
-            if (profileNameLabel != null) {
-                String myUsername = clientCore.username != null ? clientCore.username : "Player";
-                profileNameLabel.setText(myUsername + " - " + getPlayerRoleLabel());
-            }
-            if (profileEmailLabel != null) {
-                profileEmailLabel.setText(""); // Don't show stale local email
-            }
-            // Don't set eloValueLabel, gamesPlayedValueLabel, tierValueLabel here
-            // They will be populated by handlePlayerStatsUpdate() from server
-            return;
-        }
-        
-        // AI game: load local profile
-        GameProfileHelper.ProfileData data = GameProfileHelper.loadProfile(Game.TICK_TACK_TOE);
         if (sidebarGameTitleLabel != null) {
-            sidebarGameTitleLabel.setText(data.gameTitle());
+            sidebarGameTitleLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Tic-Tac-Toe");
         }
         if (profileNameLabel != null) {
-            profileNameLabel.setText(data.username() + " - " + getPlayerRoleLabel());
+            String myUsername = (clientCore != null && clientCore.username != null) ? clientCore.username : "Player";
+            profileNameLabel.setText(myUsername + " - " + getPlayerRoleLabel());
         }
-        if (profileEmailLabel != null) {
-            profileEmailLabel.setText(data.email());
-        }
-        if (eloValueLabel != null) {
-            eloValueLabel.setText(data.elo());
-        }
-        if (tierValueLabel != null) {
-            tierValueLabel.setText(data.tier());
-        }
-        if (gamesPlayedValueLabel != null) {
-            gamesPlayedValueLabel.setText(data.gamesPlayed());
+
+        // Request fresh stats from server
+        if (clientCore != null && clientCore.isConnected() && clientCore.CID != null) {
+            clientCore.msgSend(new sysMSG("PLAYER_STATS_REQUEST", clientCore.CID, String.valueOf(Game.TICK_TACK_TOE)));
         }
     }
 
@@ -484,12 +444,14 @@ public class TicTacToeController extends GameGUI {
         if (!CentralController.playWithAi || aiResultRecorded || state == null || State.IN_PROGRESS.equals(state)) {
             return;
         }
-        if (State.PLAYER_1_WIN.equals(state)) {
-            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.WIN);
-        } else if (State.PLAYER_2_WIN.equals(state)) {
-            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.LOSS);
-        } else {
-            GameProfileHelper.applyLocalResult(Game.TICK_TACK_TOE, GameProfileHelper.LocalMatchResult.DRAW);
+        if (clientCore != null && clientCore.isConnected()) {
+            String result = "DRAW";
+            if (State.PLAYER_1_WIN.equals(state)) {
+                result = "WIN";
+            } else if (State.PLAYER_2_WIN.equals(state)) {
+                result = "LOSS";
+            }
+            clientCore.msgSend(new sysMSG("AI_GAME_RESULT", String.valueOf(Game.TICK_TACK_TOE), result));
         }
         aiResultRecorded = true;
         populateProfileSidebar();

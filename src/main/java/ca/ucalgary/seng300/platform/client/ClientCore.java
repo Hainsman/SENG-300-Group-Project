@@ -121,6 +121,7 @@ public class ClientCore extends Thread{
 
     private volatile Consumer<sysMSG> profileUpdateResponseHandler;
     private volatile Consumer<sysMSG> friendsListHandler;
+    private volatile Consumer<sysMSG> leaderboardHandler;
 
     public void setProfileUpdateResponseHandler(Consumer<sysMSG> handler) {
         profileUpdateResponseHandler = handler;
@@ -128,6 +129,10 @@ public class ClientCore extends Thread{
 
     public void setFriendsListHandler(Consumer<sysMSG> handler) {
         friendsListHandler = handler;
+    }
+
+    public void setLeaderboardHandler(Consumer<sysMSG> handler) {
+        leaderboardHandler = handler;
     }
 
     public void setRematchHandler(Consumer<sysMSG> handler) {
@@ -291,6 +296,12 @@ public class ClientCore extends Thread{
                                 Consumer<sysMSG> fHandler = friendsListHandler;
                                 if (fHandler != null) {
                                     Platform.runLater(() -> fHandler.accept(sm));
+                                }
+                                break;
+                            case "LEADERBOARD_DATA":
+                                Consumer<sysMSG> lbHandler = leaderboardHandler;
+                                if (lbHandler != null) {
+                                    Platform.runLater(() -> lbHandler.accept(sm));
                                 }
                                 break;
                             case "REMATCH_REQUEST":

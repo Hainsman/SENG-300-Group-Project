@@ -1,12 +1,8 @@
 package ca.ucalgary.seng300.ui;
 
-import ca.ucalgary.seng300.platform.domain.SessionHistory;
-import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-
-import java.util.List;
 
 public class ChooseModeController {
 
@@ -66,19 +62,6 @@ public class ChooseModeController {
     @FXML
     void handleLogout(MouseEvent event) {
         if (CentralController.getInstance().clientCore != null) {
-            String cid = CentralController.getInstance().clientCore.CID;
-            if (cid != null && !cid.isEmpty()) {
-                try {
-                    int userId = Integer.parseInt(cid);
-                    SessionHistoryStore store = SessionHistoryStore.getInstance();
-                    List<SessionHistory> sessions = store.findSessionsByUserID(userId);
-                    for (SessionHistory session : sessions) {
-                        store.delete(new SessionHistory(session.getID(), session.getUserId(), session.getGloballyUniqueSessionIdentifier()));
-                    }
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
             CentralController.getInstance().clientCore.sendLogout();
         }
         CentralController.moveTo("Login.fxml");

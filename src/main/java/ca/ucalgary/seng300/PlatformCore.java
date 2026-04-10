@@ -600,6 +600,55 @@ public class PlatformCore {
         }
     }
 
+    public void onAiGameResult(platformChannel channel, String gameIdStr, String result) {
+        Integer userId = channel.getAuthenticatedUserId();
+        if (userId == null || gameIdStr == null || result == null) {
+            return;
+        }
+        try {
+            int gameId = Integer.parseInt(gameIdStr);
+            PlayerStats stats = getOrCreatePlayerStats(gameId, userId);
+            
+            if ("WIN".equalsIgnoreCase(result)) {
+                stats.updateStatsWin(1.0);
+            } else if ("LOSS".equalsIgnoreCase(result)) {
+                stats.updateStatsLose(1.0);
+            } else {
+                stats.updateStatsWin(0.0); // Draw/Forfeit
+            }
+            playerStatsStore.update(stats);
+            sendPlayerStatsUpdate(channel, stats);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public sysMSG onLeaderboardRequest(String gameIdStr) {
+        if (gameIdStr == null) {
+            return new sysMSG("LEADERBOARD_DATA", "FAIL", "Invalid gameId");
+        }
+        try {
+            int gameId = Integer.parseInt(gameIdStr);
+            List<PlayerStats> leaderboard = ca.ucalgary.seng300.platform.services.LeaderBoardService.getInstance()
+                    .getLeaderBoard(true, gameId, 10); // top 10
+
+            StringBuilder sb = new StringBuilder();
+            for (PlayerStats stats : leaderboard) {
+                User user = userStore.get(stats.getUserID());
+                String username = user != null ? user.getlogin() : "Player";
+                String rank = ca.ucalgary.seng300.platform.utils.Helper.getRank(stats.getGameCounter(), stats.getScore()).getDisplayName();
+                
+                sb.append(username).append(":")
+                  .append(rank).append(":")
+                  .append(formatScore(stats.getScore())).append(":")
+                  .append(stats.getGameCounter()).append(";");
+            }
+            return new sysMSG("LEADERBOARD_DATA", gameIdStr, "SUCCESS", sb.toString());
+        } catch (NumberFormatException e) {
+            return new sysMSG("LEADERBOARD_DATA", "FAIL", "Invalid gameId format");
+        }
+    }
+
     private void sendPlayerStatsUpdate(platformChannel channel, PlayerStats stats) {
         if (channel == null || stats == null) {
             return;
