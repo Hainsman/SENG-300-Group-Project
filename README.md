@@ -1,140 +1,100 @@
-# First-Day Setup Checklist — JavaFX Maven Project
+# Gaming Platform
 
-Use this checklist **before you start working** on the project.  
-If all items pass, your environment is correctly set up.
+This is a multiplayer gaming platform that allows users to play various games online with friends and other players. The platform provides a seamless experience for registering, finding games, and competing in real-time.
 
----
+## Features
 
-## 1. Required Software
+### User Management
+- **Account Creation**: New users can easily create accounts to join the platform.
+- **Secure Login**: Users can log in securely to access their personalized dashboard.
+- **Password Recovery**: Forgot your password? No problem – recover it via email.
 
-Confirm you have **all** of the following:
+### Game Discovery
+- **Browse Games**: View a list of available games, including descriptions and player requirements.
+- **Game Dashboards**: Get detailed information about specific games, including stats and leaderboards.
 
-- ✅ **JDK 25** installed
-- ✅ **IntelliJ IDEA** (Community or Ultimate)
-- ✅ Git installed
+### Lobby System
+- **Join Lobbies**: Enter public or private lobbies to coordinate with other players before starting a game.
+- **Create Lobbies**: Host your own lobbies, set privacy options, and invite friends.
+- **Real-Time Chat**: Communicate with lobby participants through integrated chat functionality.
 
-> ⚠ **IntelliJ is the expected IDE for this course.**  
-> Students using any other IDE may encounter setup and collaboration issues when working in groups that use IntelliJ exclusively.  
-> If you use something other than IntelliJ, you are responsible for resolving any IDE-specific issues.
+### Matchmaking
+- **Queue for Games**: Join queues to be automatically matched with other players for quick gameplay.
+- **Game Readiness Notifications**: Get notified when a game is ready to start.
 
----
+### Gameplay
+- **Multiple Games Supported**: Enjoy classics like Tic-Tac-Toe and Connect 4.
+- **Real-Time Sessions**: Engage in live games with smooth, interactive experiences.
 
-## 2. Clone the Repository
+### Profiles and Competition
+- **Player Profiles**: View and manage your personal profile, including game history and achievements.
+- **Statistics Tracking**: Keep track of wins, losses, and other performance metrics.
+- **Leaderboards**: Compete for top spots on global or game-specific leaderboards.
 
-Clone the starter repository using Git (HTTPS or SSH):
+### Additional Features
+- **Settings**: Customize your experience with user-friendly settings options.
+- **Notifications**: Stay updated with badges, hints, and important alerts.
 
-```
-git clone <repo-url>
-cd <repo-directory>
-```
+## Design Changes and Architecture
 
-Do not copy files manually between machines.
+### Deviations from Original UML Diagrams
 
----
+The initial UML diagrams in the `docs/` folder outlined a high-level architecture with stubs for networking and database components. However, the actual implementation introduced several key deviations to support a fully functional multiplayer platform:
 
-## 3. Open the Project in IntelliJ
+- **Server Implementation**: While the original diagrams included placeholders for `ServerCore` and `ClientCore` with TCP communication, the full server-side logic (e.g., `PlatformCore` as the main server class) was not detailed. The application now features a robust server that handles client connections, request routing, and maintains the authoritative state for all game sessions, lobbies, and user data. This shift from a stubbed network layer to a complete server-client architecture enables real-time multiplayer interactions that were not fully specified in the early diagrams.
 
-1. Open IntelliJ IDEA
-2. Choose Open
-3. Select the root folder of the repository
-4. When prompted:
-    - Trust the project
-    - Allow IntelliJ to import the Maven project
+- **Database System**: The original persistence model relied on simple stubs like `CredentialsDatabase` using in-memory HashMaps or basic file I/O. The implemented system uses a file-based JSON storage with domain-driven design principles, providing thread-safe operations, data integrity, and scalability beyond the initial stubs.
 
-IntelliJ should detect this as a Maven project automatically.
+- **Additional Components**: Components such as detailed matchmaking services, chat systems, and session management were expanded beyond the basic outlines in the diagrams, incorporating features like lobby creation, queuing, and real-time updates.
 
----
+### Database System and Domain-Driven Architecture
 
-## 4. Verify the JDK in IntelliJ
+The application employs a custom file-based database system using JSON serialization for persistence. Key aspects include:
 
-In IntelliJ:
+- **Domain-Driven Design (DDD)**: Data models are organized in the `domain` package (e.g., `User`, `GameHistory`, `PlayerStats`), ensuring that business logic is closely aligned with data structures. This approach promotes maintainability and clear separation of concerns, with stores in the `store` package handling CRUD operations.
 
-1. File -> Project Structure -> Project
-2. Confirm:
-    - Project SDK: JDK 25
-    - Language level: 25
+- **Java Reflections Usage**: The base `Store` class leverages Java reflections to dynamically resolve generic types at runtime (e.g., determining the record class for `UserStore` or `GameHistoryStore`). This enables polymorphic storage without hardcoding types, facilitating easy extension for new domain entities. Combined with Gson's type adapters, it supports complex object hierarchies and backward-compatible data loading.
 
-If this is incorrect, fix it before continuing.
+- **Benefits**: 
+  - **Thread Safety**: Read-write locks ensure concurrent access without data corruption.
+  - **Persistence**: Data survives application restarts via JSON files in the `datafiles/` directory.
+  - **Normalization**: Game history and participant data are normalized to minimize redundancy and optimize space usage, storing shared information efficiently without duplication.
+  - **Flexibility**: Easy to add new stores or modify schemas without external dependencies.
+  - **Performance**: In-memory caching with lazy loading from files balances speed and reliability.
 
----
+### Server Request-Response System
 
-## 5. Do NOT Run MainApp Directly
+The server (`PlatformCore`) acts as the central authority, separating database operations from client-side logic:
 
-Do not click the green Run button on MainApp.
+- **Request Handling**: Clients send structured requests (e.g., login, join lobby, make move) over TCP. The server parses, validates, and processes these, interacting with stores and services.
 
-Doing so will result in the following error:
+- **Response System**: The server responds with updated data or status, ensuring clients receive consistent, authoritative information.
 
-```
-JavaFX runtime components are missing
-```
+- **Benefits**:
+  - **Source of Truth**: All data mutations occur server-side, preventing inconsistencies from direct client access. This enforces security and data integrity.
+  - **Separation of Concerns**: Clients focus on UI and user input, while the server manages business logic, persistence, and state.
+  - **Scalability and Security**: Centralized control allows for easier auditing, rate limiting, and future expansions (e.g., multiple servers or cloud deployment).
+  - **Real-Time Capabilities**: Enables features like live chat, matchmaking notifications, and synchronized game states across clients.
 
-This project must be run using Maven, which correctly configures JavaFX.
+For a detailed list of design changes, see the project documentation in `docs/`. (Note: A PDF summary of changes is not available; refer to the UML diagrams and code comments for specifics.)
 
----
+## UI and Game Logic Structure
 
-## 6. Run the Project (Choose One Method)
+The application follows a modular architecture to separate user interface concerns from core game mechanics, ensuring maintainability and extensibility.
 
-### Option A - Run in IntelliJ (recommended)
+### User Interface (UI) Layer
+- **Framework**: Built using JavaFX with FXML for declarative UI design, allowing for rich, interactive graphical interfaces.
+- **Structure**: Organized in the `ui` package, with controllers (e.g., `joinLobbyController`, `hostLobbyController`) handling user interactions and communicating with the platform core via client-side logic.
+- **Navigation**: Supports multiple views such as login, dashboard, lobby, game boards, and profiles, with dynamic updates for real-time features like chat and matchmaking status.
+- **Benefits**: Clean separation from business logic enables easy UI customization and testing, while JavaFX ensures cross-platform compatibility.
 
-1. Open the Maven tool window
-2. Expand:
-   Project
-   -> Plugins
-   -> javafx
-3. Double-click:
-   javafx:run
+### Game Logic Layer
+- **Abstraction**: Games implement a common `Game` interface, promoting polymorphism and easy addition of new games (e.g., Tic-Tac-Toe in `game.core.tictactoe`, Connect 4 in `game.core.connect4`).
+- **Validation**: Rule validation is handled by `RuleValidator` implementations, ensuring game rules are enforced consistently and independently of UI.
+- **Actions**: Player actions are modeled via `PlayerAction` classes, allowing for extensible move handling and state transitions.
+- **Integration**: The platform core manages game sessions through `GameSessionManager`, coordinating between UI, server, and game logic for seamless multiplayer experiences.
+- **Benefits**: Modular design allows for game-specific logic to be developed and tested in isolation, facilitating rapid prototyping and maintenance.
 
-A JavaFX window should open.
+This structure adheres to the overall domain-driven architecture, with clear boundaries between UI presentation, business rules, and data persistence.
 
----
-
-### Option B - Run from the Terminal (Maven Wrapper)
-
-This project uses the Maven Wrapper.
-You do not need to install Maven.
-
-Windows (PowerShell):
-
-```
-.\mvnw.cmd javafx:run
-```
-
-macOS or Linux:
-
-```
-./mvnw javafx:run
-```
-
-First run note:
-The first run may take one to two minutes while dependencies download. This is normal.
-
----
-
-## 7. Expected Result
-
-If everything is correct:
-- A JavaFX window opens
-- No JavaFX runtime errors appear
-- No additional setup is required
-
-You are ready to start the project.
-
----
-
-## 8. Common Problems (Quick Check)
-
-If something goes wrong, check these first:
-
-- Running MainApp directly instead of javafx:run
-- Wrong JDK selected in IntelliJ
-- Installing JavaFX manually
-- Using mvn instead of mvnw or mvnw.cmd
-
-If the JavaFX window opens, your setup is correct.
-
----
-
-## Summary
-
-If the project runs using javafx:run, your setup is correct and you may begin work.
-
+This platform is designed for fun, social gaming, bringing players together in an engaging and secure environment.
