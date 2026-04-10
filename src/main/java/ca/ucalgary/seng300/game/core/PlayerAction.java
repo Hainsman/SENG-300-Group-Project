@@ -1,6 +1,9 @@
 package ca.ucalgary.seng300.game.core;
 
-public abstract class PlayerAction {
+import java.io.Serializable;
+
+public abstract class PlayerAction implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final String playerID;
     private final String actionType;
     private final int row;

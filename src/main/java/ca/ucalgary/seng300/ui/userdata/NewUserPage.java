@@ -1,8 +1,6 @@
 package ca.ucalgary.seng300.ui.userdata;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
-import ca.ucalgary.seng300.platform.domain.User;
-import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
@@ -55,25 +53,16 @@ public class NewUserPage extends HBox implements Navigable {
             return;
         }
 
-        UserStore store = UserStore.getInstance();
-        if (!store.findByUserName(username).isEmpty()) {
-            setError("That username is already taken.");
-            return;
-        }
-        if (!store.findByUserEmail(email).isEmpty()) {
-            setError("That email is already registered.");
-            return;
-        }
         if (!Helper.isEmailValid(email, Constants.EMAIL_REGEX)) {
             setError("Please enter a valid email address.");
             return;
         }
 
-        int newId = store.assignNewID();
-        String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
-        store.create(new User(newId, username, email, passwordHash));
-
         if (ensureClientConnection()) {
+            if (!CentralController.getInstance().clientCore.createAccount(username, password, email)) {
+                setError("Could not create account. Username/email may already exist.");
+                return;
+            }
             if (CentralController.getInstance().clientCore.login(username, password)) {
                 CentralController.currentUserId = CentralController.getInstance().clientCore.getUserId();
                 CentralController.displayName = CentralController.getInstance().clientCore.username;

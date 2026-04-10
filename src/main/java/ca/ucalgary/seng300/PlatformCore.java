@@ -2,19 +2,19 @@ package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.Player;
-import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
-import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Rank;
+import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
-import ca.ucalgary.seng300.platform.messages.GameStateNetworkCodec;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.server.platformChannel;
+import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 
@@ -57,6 +57,7 @@ public class PlatformCore {
     // Session management for authentication
     private final ConcurrentHashMap<String, Integer> activeSessions = new ConcurrentHashMap<>(); // sessionToken -> userId
     private final ConcurrentHashMap<Integer, String> userToSession = new ConcurrentHashMap<>(); // userId -> sessionToken
+    private final SessionHistoryStore sessionHistoryStore = SessionHistoryStore.getInstance();
 
     public synchronized sysMSG handleLogin(platformChannel channel, String username, String password) {
         UserStore store = UserStore.getInstance();
@@ -73,17 +74,39 @@ public class PlatformCore {
             return new sysMSG("LOGIN_FAIL", "Account disabled");
         }
         // Check if already logged in
-        if (userToSession.containsKey(user.getID())) {
+        if (userToSession.containsKey(user.getID()) || !sessionHistoryStore.findSessionsByUserID(user.getID()).isEmpty()) {
             return new sysMSG("LOGIN_FAIL", "Already logged in from another location");
         }
         // Generate session token
-        String token = UUID.randomUUID().toString();
+        UUID sessionUuid = UUID.randomUUID();
+        String token = sessionUuid.toString();
         activeSessions.put(token, user.getID());
         userToSession.put(user.getID(), token);
+        sessionHistoryStore.create(new SessionHistory(sessionHistoryStore.assignNewID(), user.getID(), sessionUuid));
         // Set on channel
         channel.setSessionToken(token);
         channel.setUserId(user.getID());
         return new sysMSG("LOGIN_SUCCESS", token, user.getlogin(), String.valueOf(user.getID()));
+    }
+
+    public synchronized sysMSG handleCreateAccount(String username, String password, String email) {
+        UserStore store = UserStore.getInstance();
+        if (username == null || username.isBlank() || password == null || password.isBlank() || email == null || email.isBlank()) {
+            return new sysMSG("NEWU", "FAIL", "All fields are required");
+        }
+        if (!store.findByUserName(username.trim()).isEmpty()) {
+            return new sysMSG("NEWU", "FAIL", "That username is already taken");
+        }
+        if (!store.findByUserEmail(email.trim()).isEmpty()) {
+            return new sysMSG("NEWU", "FAIL", "That email is already registered");
+        }
+        if (!Helper.isEmailValid(email.trim(), Constants.EMAIL_REGEX)) {
+            return new sysMSG("NEWU", "FAIL", "Please enter a valid email address");
+        }
+        int newId = store.assignNewID();
+        String passwordHash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
+        store.create(new User(newId, username.trim(), email.trim(), passwordHash));
+        return new sysMSG("NEWU", "PASS");
     }
 
     public synchronized void handleLogout(platformChannel channel) {
@@ -91,6 +114,14 @@ public class PlatformCore {
             Integer userId = activeSessions.remove(channel.getSessionToken());
             if (userId != null) {
                 userToSession.remove(userId);
+            }
+            try {
+                UUID sessionUuid = UUID.fromString(channel.getSessionToken());
+                List<SessionHistory> sessions = sessionHistoryStore.findSessionByUUID(sessionUuid);
+                for (SessionHistory session : sessions) {
+                    sessionHistoryStore.delete(session);
+                }
+            } catch (IllegalArgumentException ignored) {
             }
         }
         channel.setSessionToken(null);
@@ -110,16 +141,6 @@ public class PlatformCore {
 
     private static String gameIdForType(String gameType) {
         return "C4".equals(gameType) ? "c4" : "test";
-    }
-
-    private static String playerIdForC4(String playerId) {
-        if ("P1".equals(playerId)) {
-            return Player.PLAYER_1.toString();
-        }
-        if ("P2".equals(playerId)) {
-            return Player.PLAYER_2.toString();
-        }
-        return playerId;
     }
 
     private static String[] parseNameEloPayload(String raw) {
@@ -381,15 +402,15 @@ public class PlatformCore {
             C4Game c4 = (C4Game) games.get("c4");
             c4.forfeit(forfeiting);
             System.out.println("Forfeit by " + forfeiting + " — broadcasting C4 state");
-            p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
-            p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+            p1.cliSend(c4.getGameState());
+            p2.cliSend(c4.getGameState());
             return;
         }
         TTTGame t = (TTTGame) games.get("test");
         t.forfeit(forfeiting);
         System.out.println("Forfeit by " + forfeiting + " — broadcasting TTT state");
-        p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
-        p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+        p1.cliSend(t.getGameState());
+        p2.cliSend(t.getGameState());
     }
 
     public void tempGameReset(){
@@ -398,52 +419,47 @@ public class PlatformCore {
             C4Game c4 = (C4Game) games.get("c4");
             c4.startGame(null, null);
             if (p1 != null) {
-                p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+                p1.cliSend(c4.getGameState());
             }
             if (p2 != null) {
-                p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+                p2.cliSend(c4.getGameState());
             }
             return;
         }
         TTTGame t = (TTTGame) games.get("test");
         t.tempReset();
         if (p1 != null) {
-            p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+            p1.cliSend(t.getGameState());
         }
         if (p2 != null) {
-            p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+            p2.cliSend(t.getGameState());
         }
     }
 
-    public void gameEvent(platformChannel sender, String id, String type, PlayerMove p){
+    public void gameEvent(platformChannel sender, String id, String type, PlayerAction action){
         if (p1 == null || p2 == null) {
             return;
         }
         String normalizedType = normalizeGameType(type);
         if ("TTT".equals(normalizedType)) {
-            // Player channel stores the game type and ID for each client, no need to send it
             TTTGame t =(TTTGame) games.get(id);
-
-            boolean valid = t.handleAction(new TTTPlayerAction(p.getPlayerID(),p.getActionType(), p.getRow(), p.getCol()) {
-            });
+            boolean valid = t.handleAction(action);
             if (valid) {
                 System.out.println(debugBoard((TTTGameState) t.getGameState()));
-                p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
-                p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
+                p1.cliSend(t.getGameState());
+                p2.cliSend(t.getGameState());
             } else {
-                // Send invalid move message to the sender
                 sender.cliSend(new sysMSG("MOVE_INVALID", "Invalid move"));
             }
             return;
         }
         if ("C4".equals(normalizedType)) {
             C4Game c4 = (C4Game) games.get("c4");
-            boolean valid = c4.handleAction(new C4PlayerAction(playerIdForC4(p.getPlayerID()), p.getActionType(), p.getRow(), p.getCol()));
+            boolean valid = c4.handleAction(action);
             if (valid) {
-                p1.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
-                p2.cliSend(GameStateNetworkCodec.encode(c4.getGameState()));
+                p1.cliSend(c4.getGameState());
+                p2.cliSend(c4.getGameState());
             } else {
-                // Send invalid move message to the sender
                 sender.cliSend(new sysMSG("MOVE_INVALID", "Invalid move"));
             }
         }

@@ -77,8 +77,8 @@ public class WindowManager {
         }
     }
 
-    public static final double WINDOW_MINIMUM_WIDTH = 1080;
-    public static final double WINDOW_MINIMUM_HEIGHT = 840;
+    public static final double WINDOW_MINIMUM_WIDTH = 1160;
+    public static final double WINDOW_MINIMUM_HEIGHT = 900;
 
     private static final int RESIZE_MARGIN = 6;
     private static final int RESIZE_RIPPLE_MARGIN = 1;

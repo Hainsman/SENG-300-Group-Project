@@ -5,6 +5,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -82,6 +83,17 @@
                         <Label text="PLAY WITH AI" styleClass="mode-card-title" />
                         <Label text="Random opponent — Tic Tac Toe" styleClass="mode-card-subtitle" />
                         <Label text="➔ Play Now" styleClass="mode-play" />
+                    </children>
+                </VBox>
+
+                <VBox prefHeight="220.0" prefWidth="300.0" spacing="8.0" styleClass="leaderboard-game-card">
+                    <children>
+                        <Label text="LEADERBOARD" styleClass="leaderboard-game-title" />
+                        <VBox fx:id="leaderboardRows" spacing="6.0" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Label text="No leaderboard entries yet." styleClass="leaderboard-empty" />
+                            </children>
+                        </VBox>
                     </children>
                 </VBox>
             </HBox>

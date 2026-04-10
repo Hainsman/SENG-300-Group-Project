@@ -1,6 +1,6 @@
 package ca.ucalgary.seng300.platform.server;
 import ca.ucalgary.seng300.PlatformCore;
-import ca.ucalgary.seng300.game.core.PlayerMove;
+import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 
@@ -70,6 +70,13 @@ public class platformChannel extends Thread {
                 String username = sm.getFieldA();
                 String password = sm.getFieldB();
                 sysMSG result = serv.handleLogin(this, username, password);
+                cliSend(result);
+            }
+            case "NEWU" -> {
+                String username = sm.getFieldA();
+                String password = sm.getFieldB();
+                String email = sm.getPayload() != null ? sm.getPayload().toString() : "";
+                sysMSG result = serv.handleCreateAccount(username, password, email);
                 cliSend(result);
             }
             case "LOGOUT" -> serv.handleLogout(this);
@@ -142,9 +149,9 @@ public class platformChannel extends Thread {
                 }
 
                 switch (message) {
-                    case PlayerMove p -> {
+                    case PlayerAction action -> {
                         System.out.println("player action arrived");
-                        serv.gameEvent(this, gameID, gameType, p);
+                        serv.gameEvent(this, gameID, gameType, action);
                     }
                     case sysMSG s -> handleSys(s);
                     case chatMessage cm -> {

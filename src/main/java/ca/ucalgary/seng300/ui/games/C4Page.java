@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.ui.games;
 
-import ca.ucalgary.seng300.game.client.ClientState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
@@ -27,8 +26,6 @@ import javafx.event.ActionEvent;
 import java.io.IOException;
 
 public class C4Page extends StackPane implements Navigable {
-
-    private ClientState status;
 
     private CentralController rootController;
     private GameGUIPage parentGUI;
@@ -154,8 +151,9 @@ public class C4Page extends StackPane implements Navigable {
     }
 
     public void update() {
-        if (statusLabel == null)
+        if (statusLabel == null) {
             return;
+        }
         if (session != null) {
             State st = session.getState();
             if (State.PLAYER_1_WIN.equals(st)) {
@@ -166,14 +164,6 @@ public class C4Page extends StackPane implements Navigable {
                 statusLabel.setText("It's a Draw!");
             } else {
                 statusLabel.setText(session.getTurn() == Player.PLAYER_1 ? "Player 1's Turn (you)" : "Player 2 (AI) is moving…");
-            }
-        } else {
-            switch (status) {
-                case IN_PROGRESS -> statusLabel.setText("Player " + currentPlayer + "'s Turn");
-                case WIN -> statusLabel.setText("Player " + currentPlayer + " Wins!");
-                case DRAW -> statusLabel.setText("It's a Draw!");
-                default -> {
-                }
             }
         }
         if (parentGUI != null) {
@@ -186,8 +176,6 @@ public class C4Page extends StackPane implements Navigable {
         disableBoard();
         resetButton.setVisible(true);
     }
-
-    private int currentPlayer = 1;
 
     private void dropPiece(int col) {
         if (!randomOpponentEnabled && clientCore != null && clientCore.isConnected()) {
@@ -332,8 +320,6 @@ public class C4Page extends StackPane implements Navigable {
             return;
         }
         resetButton.setVisible(false);
-        status = ClientState.IN_PROGRESS;
-        currentPlayer = 1;
         render();
         update();
     }

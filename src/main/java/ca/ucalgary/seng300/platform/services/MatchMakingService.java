@@ -1,13 +1,11 @@
 package ca.ucalgary.seng300.platform.services;
 
+import ca.ucalgary.seng300.platform.constants.Rank;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
-import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
 import ca.ucalgary.seng300.game.core.GameType;
 
 import java.util.*;
 import java.util.ArrayList;
-
-import static java.lang.Math.abs;
 
 public class MatchMakingService {
 
@@ -24,8 +22,9 @@ public class MatchMakingService {
         return id;
     }
 
-    // Key is gameType, value is player id and score
+    // Key is gameType, value is player queue
     public static Map<Integer, List<PlayerStats>> queues = new HashMap<>();
+    private static final int MAX_RANK_GAP = 1;
 
     /**
      * Add a player to matchmaking queue for the given gameType
@@ -35,11 +34,8 @@ public class MatchMakingService {
      **/
 
     public void addPlayerToQueue(PlayerStats player) {
-        // retrieving gameType, userId, and userScore
+        // retrieving gameType from player stats
         GameType gameType = player.getGameType();
-        int userId = player.getUserID();
-        double userScore = player.getScore();
-        List<PlayerStats> statsForGame = PlayerStatsStore.getInstance().findPlayersByGameType(gameType);
 
         // if gameType queue exists, add to it. If not, create a new one
         if (queues.containsKey(gameType.toId())) {
@@ -91,27 +87,30 @@ public class MatchMakingService {
         // track the best pair found so far
         int bestI = -1;
         int bestJ = -1;
-        double bestDiff = Double.MAX_VALUE;
+        int bestRankDiff = Integer.MAX_VALUE;
+        double bestScoreDiff = Double.MAX_VALUE;
 
         // compare every unique pair of players in the queue
         for (int i = 0; i < gameList.size(); i++) {
             for (int j = i + 1; j < gameList.size(); j++) {
 
-                // calculate the score difference between the two players
-                double diff = Math.abs(gameList.get(i).getScore() - gameList.get(j).getScore());
+                Rank rankI = rankForMatchmaking(gameList.get(i).getScore());
+                Rank rankJ = rankForMatchmaking(gameList.get(j).getScore());
+                int rankDiff = Math.abs(rankI.getRankValue() - rankJ.getRankValue());
+                double scoreDiff = Math.abs(gameList.get(i).getScore() - gameList.get(j).getScore());
 
-                // update the best pair if this difference is smaller than the current best
-                if (diff < bestDiff) {
-                    bestDiff = diff;
+                // Primary sort key: rank proximity. Secondary key: score proximity.
+                if (rankDiff < bestRankDiff || (rankDiff == bestRankDiff && scoreDiff < bestScoreDiff)) {
+                    bestRankDiff = rankDiff;
+                    bestScoreDiff = scoreDiff;
                     bestI = i;
                     bestJ = j;
                 }
             }
         }
 
-        // no valid pair found, or the closest pair exceeds the max allowed score
-        // difference
-        if (bestI == -1 || bestDiff > 10) {
+        // no valid pair found, or the closest pair exceeds allowed rank distance
+        if (bestI == -1 || bestRankDiff > MAX_RANK_GAP) {
             return null;
         }
         // build the matched players list from the best pair
@@ -135,6 +134,15 @@ public class MatchMakingService {
         if (gameList == null)
             return 0;
         return gameList.size();
+    }
+
+    private static Rank rankForMatchmaking(double score) {
+        for (Rank rank : Rank.values()) {
+            if (rank.isInRank(score)) {
+                return rank;
+            }
+        }
+        return Rank.GRAND_MASTER;
     }
 
 }

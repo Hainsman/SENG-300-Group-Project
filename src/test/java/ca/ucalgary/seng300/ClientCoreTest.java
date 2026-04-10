@@ -2,7 +2,7 @@ package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.Player;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
+import ca.ucalgary.seng300.game.core.PlayerAction;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import org.junit.jupiter.api.Test;
 
@@ -37,11 +37,11 @@ public class ClientCoreTest {
 
         assertTrue(ok);
         ObjectInputStream captured = new ObjectInputStream(new ByteArrayInputStream(writeBuffer.toByteArray()));
-        TTTPlayerMove sent = (TTTPlayerMove) captured.readObject();
+        PlayerAction sent = (PlayerAction) captured.readObject();
         assertEquals("cid-7", sent.getPlayerID());
         assertEquals("MOVE", sent.getActionType());
-        assertEquals(1, sent.getRow());
-        assertEquals(2, sent.getCol());
+        assertEquals(1, sent.getRowValue());
+        assertEquals(2, sent.getColValue());
     }
 
     @Test

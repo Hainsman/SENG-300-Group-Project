@@ -2,13 +2,11 @@ package ca.ucalgary.seng300.platform.client;
 
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
+import ca.ucalgary.seng300.game.core.PlayerAction;
+import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
-import ca.ucalgary.seng300.platform.messages.C4WireState;
-import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
-import ca.ucalgary.seng300.platform.messages.TTTWireState;
+import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -21,8 +19,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 // debug Server first, then as many clients as you want
 // the server will close once the last client has sent "exit"
@@ -43,10 +39,7 @@ public class ClientCore extends Thread{
     public Player thisUser;
     public String Player1 = "X";
     public String Player2 = "O";
-    private TTTRuleValidator cliEngine;
     public GameState gstate;
-
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile String sessionId;
     private volatile String myPlayerId;
     private volatile String mySide; // "PLAYER_1" or "PLAYER_2"
@@ -59,6 +52,8 @@ public class ClientCore extends Thread{
     private volatile int userId;
     private volatile String loginResult;
     private final Object loginLock = new Object();
+    private volatile String createAccountResult;
+    private final Object createAccountLock = new Object();
     
     public boolean isConnected() {
         return servSend != null && servRead != null;
@@ -95,6 +90,24 @@ public class ClientCore extends Thread{
         return userId;
     }
 
+    public boolean createAccount(String username, String password, String email) {
+        if (!isConnected()) {
+            return false;
+        }
+        createAccountResult = null;
+        sysMSG createMsg = new sysMSG("NEWU", username, password, email);
+        try {
+            servSend.writeObject(createMsg);
+            servSend.flush();
+            synchronized (createAccountLock) {
+                createAccountLock.wait(5000);
+                return "PASS".equals(createAccountResult);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /** Mapped lobby slot for moves: {@code P1} = host (X), {@code P2} = guest (O). Set from {@code LOBBY_OK}. */
     public Player getMyNetworkRole() {
         if ("P1".equals(myPlayerId)) {
@@ -110,28 +123,24 @@ public class ClientCore extends Thread{
         if (!isConnected()) {
             return false;
         }
-        //if(gameType == "TTT"){
-        //if(lastUpdate == null || lastUpdate.getPlayerTurn().equals(thisUser)){
-            String pid = (myPlayerId != null && !myPlayerId.isBlank())
-                    ? myPlayerId
-                    : ((CID != null && !CID.isBlank()) ? CID : "player");
-            TTTPlayerMove p = new TTTPlayerMove(pid, "MOVE" , row, col);
-            //if(cliEngine.validateMove(gstate,p)){
-            try{
-                servSend.writeObject(p);
-                servSend.flush();
-                return true;
-            } catch (IOException e) {
-                return false;
-            }
-            //else{
-            //    return false;
-            //}
-        //}
-        //else{
-        //    return false;
-        //}
-        //return false;
+        String pid = (myPlayerId != null && !myPlayerId.isBlank())
+                ? myPlayerId
+                : ((CID != null && !CID.isBlank()) ? CID : "player");
+        PlayerAction action;
+        if (lastUpdate instanceof C4GameState) {
+            String c4Pid = "P1".equals(pid) ? Player.PLAYER_1.toString()
+                    : ("P2".equals(pid) ? Player.PLAYER_2.toString() : pid);
+            action = new C4PlayerAction(c4Pid, "MOVE", row, col);
+        } else {
+            action = new TTTPlayerAction(pid, "MOVE", row, col);
+        }
+        try{
+            servSend.writeObject(action);
+            servSend.flush();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     public void msgSend(Object o) {
@@ -146,13 +155,8 @@ public class ClientCore extends Thread{
         }
     }
 
-    public GameStateUpdate submitMoveSync(int row, int col) {
-        submitMove(row,col);
-        return null;
-    }
     public ClientCore(CentralController c){
         ioMain = c;
-        cliEngine = new TTTRuleValidator();
     }
 
     public GameState getLastUpdate() {
@@ -257,6 +261,12 @@ public class ClientCore extends Thread{
                                     loginLock.notify();
                                 }
                                 break;
+                            case "NEWU":
+                                synchronized (createAccountLock) {
+                                    createAccountResult = sm.getFieldA();
+                                    createAccountLock.notify();
+                                }
+                                break;
                             case "LOGS":
                                 username = sm.getFieldA();
                                 CID = sm.getFieldB();
@@ -334,12 +344,6 @@ public class ClientCore extends Thread{
                         break;
 
 
-                    case TTTWireState tw:
-                        onGameStateReceived(tw.toGameState());
-                        break;
-                    case C4WireState cw:
-                        onGameStateReceived(cw.toGameState());
-                        break;
                     case GameState g:
                         onGameStateReceived(g);
                         break;
