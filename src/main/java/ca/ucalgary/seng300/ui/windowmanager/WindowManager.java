@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.windowmanager;
 
 import ca.ucalgary.seng300.MainApp;
 import javafx.animation.Interpolator;

@@ -15,7 +15,7 @@
             styleClass="app-surface"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ca.ucalgary.seng300.ui.ChooseModeController">
+            fx:controller="ca.ucalgary.seng300.ui.miscellaneous.ChooseModeController">
 
     <children>
         <VBox alignment="TOP_CENTER" spacing="24"

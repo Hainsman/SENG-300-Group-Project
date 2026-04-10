@@ -2,8 +2,6 @@ package ca.ucalgary.seng300.game.core.tictactoe;
 
 import ca.ucalgary.seng300.game.core.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class TTTRuleValidator extends RuleValidator {
@@ -57,28 +55,4 @@ public class TTTRuleValidator extends RuleValidator {
         return true;
     }
 
-    public List<PlayerAction> getValidActions(GameState gameState) {
-        //Check for correct gameState type
-        TTTGameState tttGameState;
-        try {
-            tttGameState = (TTTGameState) gameState;
-        } catch (ClassCastException e) {
-            System.out.println("Incorrect type of GameState: " + e.getMessage());
-            return null;
-        }
-
-        List<PlayerAction> validActions = new ArrayList<>();
-        if (tttGameState.getState() != State.IN_PROGRESS) {
-            return validActions;
-        }
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (gameState.getBoard()[i][j] == Player.EMPTY) {
-                    TTTPlayerAction newAction = new TTTPlayerAction("temp", "MOVE", i ,j);
-                    validActions.add(newAction);
-                }
-            }
-        }
-        return validActions;
-    }
 }

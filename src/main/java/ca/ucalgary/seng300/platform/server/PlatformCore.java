@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300;
+package ca.ucalgary.seng300.platform.server;
 
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
@@ -7,8 +7,6 @@ import ca.ucalgary.seng300.platform.domain.FriendHistory;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
-import ca.ucalgary.seng300.platform.server.ServerLobby;
-import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.services.MatchMakingService;
 import ca.ucalgary.seng300.platform.store.*;
 import ca.ucalgary.seng300.platform.messages.sysMSG;

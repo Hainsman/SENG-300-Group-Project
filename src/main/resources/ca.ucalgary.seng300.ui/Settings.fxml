@@ -16,7 +16,7 @@
             styleClass="app-surface"
             xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ca.ucalgary.seng300.ui.SettingsController">
+            fx:controller="ca.ucalgary.seng300.ui.login.SettingsController">
     <children>
         <VBox alignment="TOP_CENTER" spacing="18" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="34.0">
             <Label text="Player Settings" styleClass="mode-title" style="-fx-font-size: 42px;" />

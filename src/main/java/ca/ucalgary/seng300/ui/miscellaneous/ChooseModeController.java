@@ -1,5 +1,6 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.miscellaneous;
 
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -47,12 +48,6 @@ public class ChooseModeController {
     @FXML
     void handleOpenLeaderboard(MouseEvent event) {
         CentralController.moveTo("Leaderboard.fxml");
-    }
-
-    @FXML
-    void handleOpenSettings(MouseEvent event) {
-        CentralController.previousScreen = "chooseModeNew.fxml";
-        CentralController.moveTo("Settings.fxml");
     }
 
     @FXML

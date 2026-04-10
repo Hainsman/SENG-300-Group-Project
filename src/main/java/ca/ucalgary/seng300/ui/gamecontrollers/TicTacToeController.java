@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.gamecontrollers;
 
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
@@ -9,8 +9,10 @@ import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
+import ca.ucalgary.seng300.ui.gamegui.GameGUI;
+import ca.ucalgary.seng300.ui.gamegui.GameGUIController;
 import javafx.fxml.FXML;
-import javafx.application.Platform;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.scene.Node;
@@ -18,9 +20,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.event.ActionEvent;
-import javafx.scene.input.MouseEvent;
-
-import java.util.List;
 
 public class TicTacToeController extends GameGUI {
     private static final Player AI_PLAYER = Player.PLAYER_2;

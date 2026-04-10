@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.platform.server;
 
-import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import org.junit.jupiter.api.Test;
 

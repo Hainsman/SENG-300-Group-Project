@@ -1,8 +1,9 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.leaderboard;
 
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

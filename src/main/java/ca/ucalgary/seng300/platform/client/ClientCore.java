@@ -1,22 +1,16 @@
 package ca.ucalgary.seng300.platform.client;
 
-import ca.ucalgary.seng300.PlatformCore;
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.PlayerAction;
-import ca.ucalgary.seng300.game.core.PlayerMove;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerMove;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTRuleValidator;
-import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.messages.chatMessage;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.ui.CentralController;
-import ca.ucalgary.seng300.ui.LobbyBridge;
-import javafx.application.Application;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
+import ca.ucalgary.seng300.ui.lobby.LobbyBridge;
 import javafx.application.Platform;
 
 import java.io.IOException;
@@ -25,8 +19,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.function.Consumer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ClientCore extends Thread{
     public String CID;

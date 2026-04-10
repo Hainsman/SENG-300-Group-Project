@@ -5,7 +5,6 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGame;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTGameState;
 import ca.ucalgary.seng300.game.core.tictactoe.TTTPlayerAction;
-import ca.ucalgary.seng300.game.core.tictactoe.TTTActionType;
 
 import java.util.HashMap;
 import java.util.Map;

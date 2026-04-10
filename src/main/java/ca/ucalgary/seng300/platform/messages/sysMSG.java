@@ -36,7 +36,5 @@ public class sysMSG implements Serializable {
     public String getPayload() { return payload; }
 
     public void setType(String type) { this.type = type; }
-    public void setFieldA(String fieldA) { this.fieldA = fieldA; }
-    public void setFieldB(String fieldB) { this.fieldB = fieldB; }
     public void setPayload(String payload) { this.payload = payload; }
 }

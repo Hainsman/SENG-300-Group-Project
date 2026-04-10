@@ -1,7 +1,14 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.centralcontroller;
 
 import ca.ucalgary.seng300.MainApp;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.ui.login.SettingsController;
+import ca.ucalgary.seng300.ui.windowmanager.WindowManager;
+import ca.ucalgary.seng300.ui.dashboards.ProfileDashboardController;
+import ca.ucalgary.seng300.ui.gamecontrollers.Connect4Controller;
+import ca.ucalgary.seng300.ui.gamecontrollers.TicTacToeController;
+import ca.ucalgary.seng300.ui.login.LoginController;
+import ca.ucalgary.seng300.ui.login.NewUserController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -46,7 +53,6 @@ public class CentralController {
     public static String player2Name;
     public static String player2Elo;
     public static String player2GamesPlayed;
-    private GameGUIController gameUI;
 
     public TicTacToeController ttt;
     public Connect4Controller connect4;
@@ -64,7 +70,6 @@ public class CentralController {
     }
 
     public ClientCore clientCore;
-    public int test1;
     private static final Preferences UI_PREFS = Preferences.userNodeForPackage(CentralController.class);
     private static final String PREF_TEXT_SIZE = "ui.text.size";
     private static final String PREF_COLORBLIND = "ui.color.blind";
@@ -73,10 +78,6 @@ public class CentralController {
     private static final String TEXT_SIZE_XLARGE = "xlarge";
     private static String currentTextSize = UI_PREFS.get(PREF_TEXT_SIZE, TEXT_SIZE_NORMAL);
     private static boolean currentColorBlind = UI_PREFS.getBoolean(PREF_COLORBLIND, false);
-
-    public void uptest(int i){
-        test1 = i;
-    }
 
     @FXML
     public void initialize() {
@@ -119,10 +120,7 @@ public class CentralController {
             );
             Node view = loader.load();
             Object ctrl = loader.getController();
-            if (ctrl instanceof GameGUIController gfc) {
-                gameUI = gfc;
-                gameUI.setRoot(this);
-            } else if (ctrl instanceof LoginController lc) {
+            if (ctrl instanceof LoginController lc) {
                 lc.setCentralController(this);
             } else if (ctrl instanceof NewUserController nuc) {
                 nuc.setCentralController(this);

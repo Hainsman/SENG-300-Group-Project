@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 
-<VBox prefHeight="680.0" prefWidth="1020.0" styleClass="root" stylesheets="@styleMaster.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.GameGUIController">
+<VBox prefHeight="680.0" prefWidth="1020.0" styleClass="root" stylesheets="@styleMaster.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.gamegui.GameGUIController">
   <children>
     <SplitPane dividerPositions="0.3, 0.75" prefHeight="680.0" prefWidth="1020.0" styleClass="main-split-pane">
       <items>

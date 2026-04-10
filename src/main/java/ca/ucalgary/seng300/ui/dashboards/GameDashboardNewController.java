@@ -1,6 +1,7 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.dashboards;
 
 import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
@@ -13,18 +14,6 @@ public class GameDashboardNewController {
             CentralController.getInstance().clientCore.sendLogout();
         }
         CentralController.moveTo("Login.fxml");
-    }
-
-    @FXML
-    void handleOpenSettings(MouseEvent event) {
-        CentralController.previousScreen = "GameDashboardNew.fxml";
-        CentralController.moveTo("Settings.fxml");
-    }
-
-    @FXML
-    void handleOpenProfile(MouseEvent event) {
-        CentralController.previousScreen = "GameDashboardNew.fxml";
-        CentralController.moveTo("ProfileDashboard.fxml");
     }
 
     @FXML

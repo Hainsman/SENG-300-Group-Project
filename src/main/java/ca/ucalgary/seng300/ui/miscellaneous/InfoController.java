@@ -1,34 +1,17 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.miscellaneous;
 
-import javafx.event.ActionEvent;
+import ca.ucalgary.seng300.ui.gamegui.GameGUI;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 
 public class InfoController {
-
-
-    @FXML
-    private Button backButton;
 
     @FXML
     private Label gameTitleLabel;
 
     @FXML
     private TextArea rulesTextArea;
-
-    private String gameType;
-
-    @FXML
-    private void handleBack (ActionEvent event) {
-        if (CentralController.previousScreen != null) {
-            CentralController.moveTo(CentralController.previousScreen);
-        } else {
-            CentralController.moveTo("GameDashboardNew.fxml");
-        }
-
-    }
 
     public void setGameType(GameGUI.GameViewData data){
         String gameType = data.gameType.toUpperCase();
@@ -52,8 +35,5 @@ public class InfoController {
             rulesTextArea.setText("Rules unavailable for this game");
 
         }
-
     }
-
-
 }

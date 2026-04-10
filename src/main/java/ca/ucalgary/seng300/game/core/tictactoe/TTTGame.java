@@ -4,8 +4,6 @@ import ca.ucalgary.seng300.game.core.Game;
 import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.PlayerAction;
-import ca.ucalgary.seng300.game.core.RuleValidator;
-import ca.ucalgary.seng300.platform.messages.GameStateUpdate;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 
 import java.util.Map;
@@ -17,23 +15,6 @@ public class TTTGame implements Game {
     public platformChannel player1 = null;
     public platformChannel player2 = null;
 
-    public boolean userJoin(platformChannel p){
-        if(player1 == null){
-            player1 = p;
-            return true;
-        }
-        else if(player2 == null){
-            player2 = p;
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    public void tempReset(){
-        gameState = new TTTGameState();
-    }
     public boolean valid;
 
     @Override
@@ -57,11 +38,6 @@ public class TTTGame implements Game {
     @Override
     public GameState getGameState() {
         return gameState;
-    }
-
-    @Override
-    public Object getGameUpdate() {
-        return null;
     }
 
     @Override

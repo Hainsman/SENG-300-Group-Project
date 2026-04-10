@@ -1,16 +1,13 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.dashboards;
 
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.constants.Rank;
-import ca.ucalgary.seng300.platform.domain.GameHistory;
-import ca.ucalgary.seng300.platform.domain.Participant;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
-import ca.ucalgary.seng300.platform.store.GameHistoryStore;
-import ca.ucalgary.seng300.platform.store.ParticipantStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -18,7 +15,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ProfileDashboardController {

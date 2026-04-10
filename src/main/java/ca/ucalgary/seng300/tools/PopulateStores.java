@@ -1,6 +1,6 @@
 package ca.ucalgary.seng300.tools;
 
-import ca.ucalgary.seng300.PlatformCore;
+import ca.ucalgary.seng300.platform.server.PlatformCore;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.domain.FriendHistory;
@@ -11,6 +11,7 @@ import ca.ucalgary.seng300.platform.store.FriendHistoryStore;
 import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.utils.Helper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -50,10 +51,10 @@ public class PopulateStores {
 
         // 1) Create Users
         List<NewUser> usersToCreate = List.of(
-                new NewUser("Daniel M", "danielM@ucalgary.ca", "hash1"),
-                new NewUser("Alex", "alex.smith@ucalgary.ca", "hash2"),
-                new NewUser("John W", "JohnW@ucalgary.ca", "hash3"),
-                new NewUser("Paul", "Paul.C@ucalgary.ca", "hash4")
+                new NewUser("Daniel M", "danielM@ucalgary.ca", Helper.hashPassword("hash1", Constants.HASH_ALGORITHM)),
+                new NewUser("Alex", "alex.smith@ucalgary.ca", Helper.hashPassword("hash2", Constants.HASH_ALGORITHM)),
+                new NewUser("John W", "JohnW@ucalgary.ca", Helper.hashPassword("hash3", Constants.HASH_ALGORITHM)),
+                new NewUser("Paul", "Paul.C@ucalgary.ca", Helper.hashPassword("hash4", Constants.HASH_ALGORITHM))
         );
 
         for (NewUser u : usersToCreate) {

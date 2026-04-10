@@ -1,8 +1,8 @@
 package ca.ucalgary.seng300;
 
-import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.domain.GameHistory;
 import ca.ucalgary.seng300.platform.domain.Participant;
+import ca.ucalgary.seng300.platform.server.PlatformCore;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.store.GameHistoryStore;
 import ca.ucalgary.seng300.platform.store.ParticipantStore;

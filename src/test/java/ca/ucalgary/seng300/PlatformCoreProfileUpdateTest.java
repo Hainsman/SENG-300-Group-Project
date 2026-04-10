@@ -2,6 +2,7 @@ package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.server.PlatformCore;
 import ca.ucalgary.seng300.platform.server.platformChannel;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import org.junit.jupiter.api.Test;

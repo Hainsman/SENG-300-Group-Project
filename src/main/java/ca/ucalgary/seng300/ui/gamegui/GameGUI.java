@@ -1,12 +1,10 @@
-package ca.ucalgary.seng300.ui;
+package ca.ucalgary.seng300.ui.gamegui;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -15,15 +13,6 @@ import javafx.scene.control.Label;
 // parent class for both Connect 4 and Tic Tac Toe GUI
 
 public abstract class GameGUI {
-
-    // Enums
-    public enum GameActionType {
-        PLAYER_MOVE,
-        FORFEIT,
-        SETTINGS,
-        INFO,
-        EXIT
-    }
 
     public enum GameStatus {
         WAITING,
@@ -54,24 +43,6 @@ public abstract class GameGUI {
             this.availableActions = availableActions;
         }
 
-    }
-
-    /** Carries a player's move and actionType. */
-    public static class GameAction {
-        public final String playerID;
-        public final GameGUI.GameActionType actionType;
-        public final int row;
-        public final int col;
-        public final String optionalPayload;
-
-        public GameAction(String playerID, GameGUI.GameActionType actionType,
-                int row, int col, String optionalPayload) {
-            this.playerID = playerID;
-            this.actionType = actionType;
-            this.row = row;
-            this.col = col;
-            this.optionalPayload = optionalPayload;
-        }
     }
 
     /** Look at the game state; returned by getGameState(). */
@@ -117,23 +88,6 @@ public abstract class GameGUI {
         update();
     }
 
-    /**
-     * Do specified GameAction.
-     * Child classes override this for game-specific move logic, then call
-     * super.handleGameAction(action) to let the parent handle FORFEIT or EXIT.
-     */
-    public void handleGameAction(GameGUI.GameAction action) {
-        ensureInitialized();
-        switch (action.actionType) {
-            case FORFEIT -> restart();
-            case EXIT -> status = GameGUI.GameStatus.QUIT;
-            // child will handle other cases.
-            default -> {
-            }
-        }
-        update();
-    }
-
     /** Return an current game state info. */
     public GameGUI.GameState getGameState() {
         ensureInitialized();
@@ -143,13 +97,6 @@ public abstract class GameGUI {
                 status,
                 createStatusMessage(),
                 moveCount);
-    }
-
-    /** Complete shutdown sequence. */
-    public void shutdown() {
-        isInitialized = false;
-        board = null;
-        viewData = null;
     }
 
     /** Methods to be fleshed out by child classes */
@@ -201,10 +148,6 @@ public abstract class GameGUI {
 
     public static VBox historyBox;
 
-    public static void setHistoryBox(VBox box) {
-        historyBox = box;
-    }
-
     /*
      * addHistory() is the single method any game controller calls to log a move.
      * It creates a colored dot + label entry and adds it to the historyBox.
@@ -254,42 +197,8 @@ public abstract class GameGUI {
     // "[TP1(0,0), TP2(1,0), TP1(1,1)".
     private static List<String> matchHistory = new ArrayList<>();
 
-    /*
-     * onMoveChosen appends match history to an array list.
-     * Returns a string containing the match history and game type.
-     * 
-     * @param player send TP1/TP2 for tictactoe and CP1/CP2 for connect4.
-     * 
-     * @param move "(1,2)".
-     */
-    public static void onMoveChosen(String player, String move) {
-        String playerMove = player + move;
-        matchHistory.add(playerMove);
-    }
-
-    // Match history getter method
-    public String getMatchHistory() {
-        return matchHistory.toString(); // e.g. "[TP1(0,0), TP2(1,0), TP1(1,1)" OR "[CP1(0,0), CP2(1,0), CP1(1,1)".
-    }
-
     // Player move getter method
     public String getMove() {
         return matchHistory.get(matchHistory.size() - 1); // The latest move e.g. "[TP1(0,0)]".
-    }
-
-    // Game Elo Labels + methods
-
-    public static Label eloLabel; // Value of elo to be displayed
-    public static Label winLabel; // Elo change based on win
-    public static Label lossLabel; // Elo change based on loss
-    public static Label drawLabel; // Elo change based on draw
-    public static Label rankLabel;
-
-    public static void setEloLabels(Label elo, Label win, Label loss, Label draw, Label rank) {
-        eloLabel = elo;
-        winLabel = win;
-        lossLabel = loss;
-        drawLabel = draw;
-        rankLabel = rank;
     }
 }

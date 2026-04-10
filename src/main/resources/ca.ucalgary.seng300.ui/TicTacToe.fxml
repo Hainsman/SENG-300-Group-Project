@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="boardPane" prefHeight="680.0" prefWidth="1240.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.TicTacToeController">
+<StackPane fx:id="boardPane" prefHeight="680.0" prefWidth="1240.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.gamecontrollers.TicTacToeController">
     <children>
         <HBox alignment="TOP_CENTER" spacing="24" style="-fx-padding: 18 18 18 18;">
             <VBox minWidth="250.0" prefWidth="250.0" spacing="16" styleClass="chat-shell">

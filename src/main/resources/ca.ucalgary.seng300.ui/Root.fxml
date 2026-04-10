@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="root" prefHeight="860.0" prefWidth="1360.0" stylesheets="@stylesheets/romas_stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.CentralController">
+<StackPane fx:id="root" prefHeight="860.0" prefWidth="1360.0" stylesheets="@stylesheets/romas_stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.centralcontroller.CentralController">
    <children>
       <BorderPane fx:id="viewContainer" prefHeight="200.0" prefWidth="200.0">
          <top>

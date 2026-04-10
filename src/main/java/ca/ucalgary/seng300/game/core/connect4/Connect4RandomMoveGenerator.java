@@ -9,8 +9,6 @@ import java.util.Random;
 public final class Connect4RandomMoveGenerator {
     private static final Random RNG = new Random();
 
-    private Connect4RandomMoveGenerator() {}
-
     public static Integer chooseColumn(C4GameState state) {
         if (state == null || state.getState() != ca.ucalgary.seng300.game.core.State.IN_PROGRESS) {
             return null;
