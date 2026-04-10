@@ -11,6 +11,8 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.Connect4Session;
 import javafx.fxml.FXML;
 import javafx.application.Platform;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -30,13 +32,8 @@ public class Connect4Controller extends GameGUI {
     public void connectToRootForLobby(CentralController root) {
         boss = root;
         boss.setConnect4(this);
-        clientCore = CentralController.playWithAi ? null : boss.getCC();
-        if (CentralController.playWithAi) {
-            session = new Connect4Session();
-            aiResultRecorded = false;
-            refreshFromGameStateUpdate(session.getGameState());
-            return;
-        }
+        clientCore = boss.getCC();
+
         if (clientCore != null && clientCore.isConnected()) {
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
             clientCore.setPlayerStatsHandler(this::handlePlayerStatsUpdate);
@@ -49,6 +46,13 @@ public class Connect4Controller extends GameGUI {
             }
         }
         populateProfileSidebar();
+
+        if (CentralController.playWithAi) {
+            session = new Connect4Session();
+            aiResultRecorded = false;
+            refreshFromGameStateUpdate(session.getGameState());
+            return;
+        }
         if (clientCore != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
             refreshFromGameStateUpdate(gs);
         }
@@ -133,6 +137,17 @@ public class Connect4Controller extends GameGUI {
     }
 
     private void dropPiece(int col) {
+        if (CentralController.playWithAi && session != null) {
+            if (!session.submitMove(col)) {
+                statusLabel.setText("Invalid move");
+                return;
+            }
+            GameGUI.addHistory("Connect4", "P1", "Col " + (col + 1), P1);
+            refreshFromGameStateUpdate(session.getGameState());
+            maybeRunAiTurn();
+            return;
+        }
+
         if (clientCore != null && clientCore.isConnected()) {
             Player myRole = clientCore.getMyNetworkRole();
             if (myRole != null && clientCore.getLastUpdate() instanceof C4GameState gs) {
@@ -144,16 +159,6 @@ public class Connect4Controller extends GameGUI {
             if (!clientCore.submitMove(0, col)) {
                 statusLabel.setText("Could not send move.");
             }
-            return;
-        }
-        if (session != null) {
-            if (!session.submitMove(col)) {
-                statusLabel.setText("Invalid move");
-                return;
-            }
-            GameGUI.addHistory("Connect4", "P1", "Col " + (col + 1), P1);
-            refreshFromGameStateUpdate(session.getGameState());
-            maybeRunAiTurn();
             return;
         }
         statusLabel.setText("No active game session.");
@@ -171,6 +176,13 @@ public class Connect4Controller extends GameGUI {
 
     @FXML
     private void resetClick(ActionEvent event) {
+        if (CentralController.playWithAi && session != null) {
+            session.startNewGame();
+            aiResultRecorded = false;
+            GameGUI.clearHistory();
+            refreshFromGameStateUpdate(session.getGameState());
+            return;
+        }
         if (clientCore != null && clientCore.isConnected()) {
             GameGUI.clearHistory();
             clientCore.msgSend(new sysMSG("reset", ""));
@@ -215,8 +227,11 @@ public class Connect4Controller extends GameGUI {
 
         boolean gameOver = !State.IN_PROGRESS.equals(update.getState());
         Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
-        boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null;
+        boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null && !CentralController.playWithAi;
         boolean myTurn = !onlineTurns || gameOver || myRole.equals(update.getPlayerTurn());
+        if (CentralController.playWithAi && !gameOver) {
+            myTurn = Player.PLAYER_1.equals(update.getPlayerTurn());
+        }
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 circles[row][col].setDisable(gameOver || !myTurn);
@@ -290,12 +305,19 @@ public class Connect4Controller extends GameGUI {
         if (!CentralController.playWithAi || session == null || session.isGameOver() || session.getTurn() != AI_PLAYER) {
             return;
         }
-        Integer col = Connect4RandomMoveGenerator.chooseColumn(session.getGameState());
-        if (col == null || !session.submitMove(col)) {
-            return;
-        }
-        GameGUI.addHistory("Connect4", "P2", "Col " + (col + 1), P2);
-        refreshFromGameStateUpdate(session.getGameState());
+        
+        // Schedule with a small delay so UI updates are visible
+        PauseTransition pause = new PauseTransition(Duration.millis(500));
+        pause.setOnFinished(event -> {
+            Integer col = Connect4RandomMoveGenerator.chooseColumn(session.getGameState());
+            if (col == null || !session.submitMove(col)) {
+                return;
+            }
+            GameGUI.addHistory("Connect4", "P2", "Col " + (col + 1), P2);
+            refreshFromGameStateUpdate(session.getGameState());
+            maybeRunAiTurn();
+        });
+        pause.play();
     }
 
     @FXML
@@ -347,6 +369,10 @@ public class Connect4Controller extends GameGUI {
         if (profileNameLabel != null) {
             String myUsername = (clientCore != null && clientCore.username != null) ? clientCore.username : "Player";
             profileNameLabel.setText(myUsername + " - " + getPlayerRoleLabel());
+        }
+        if (profileEmailLabel != null) {
+            String myEmail = (clientCore != null && clientCore.email != null) ? clientCore.email : "Player@example.com";
+            profileEmailLabel.setText(myEmail);
         }
 
         // Request fresh stats from server

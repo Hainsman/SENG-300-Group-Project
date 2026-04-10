@@ -11,6 +11,8 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
 import javafx.fxml.FXML;
 import javafx.application.Platform;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -29,7 +31,7 @@ public class TicTacToeController extends GameGUI {
     public void setBoss(CentralController c){
         boss = c;
         boss.setTic(this);
-        clientCore = CentralController.playWithAi ? null : boss.getCC();
+        clientCore = boss.getCC();
     }
 
     /**
@@ -38,14 +40,7 @@ public class TicTacToeController extends GameGUI {
      */
     public void connectToRootForLobby(CentralController root) {
         setBoss(root);
-        if (CentralController.playWithAi) {
-            session = new TicTacToeSession();
-            aiResultRecorded = false;
-            refreshFromGameStateUpdate(session.getGameState());
-            return;
-        }
         if (clientCore != null && clientCore.isConnected()) {
-            session = null;
             clientCore.setMoveResponseHandler(this::handleMoveResponse);
             clientCore.setPlayerStatsHandler(this::handlePlayerStatsUpdate);
             clientCore.setRematchHandler(this::handleRematchMessage);
@@ -57,6 +52,13 @@ public class TicTacToeController extends GameGUI {
             }
         }
         populateProfileSidebar();
+
+        if (CentralController.playWithAi) {
+            session = new TicTacToeSession();
+            aiResultRecorded = false;
+            refreshFromGameStateUpdate(session.getGameState());
+            return;
+        }
         if (clientCore != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
             refreshFromGameStateUpdate(gs);
         }
@@ -149,6 +151,16 @@ public class TicTacToeController extends GameGUI {
         if (row == null) row = 0;
         if (col == null) col = 0;
 
+        if (CentralController.playWithAi && session != null) {
+            if (!session.submitMove(row, col)) {
+                return;
+            }
+            GameGUI.addHistory("TicTacToe", "X", "(" + (row + 1) + ", " + (col + 1) + ")", xColor);
+            refreshFromGameStateUpdate(session.getGameState());
+            maybeRunAiTurn();
+            return;
+        }
+
         if (clientCore != null && clientCore.isConnected()) {
             Player myRole = clientCore.getMyNetworkRole();
             if (myRole != null && clientCore.getLastUpdate() instanceof TTTGameState gs) {
@@ -161,16 +173,6 @@ public class TicTacToeController extends GameGUI {
                 String base = turnLabel.getText() != null ? turnLabel.getText() : "";
                 turnLabel.setText(base + " (could not send move)");
             }
-            return;
-        }
-
-        if (session != null) {
-            if (!session.submitMove(row, col)) return;
-            String mover = session.getTurn() == Player.PLAYER_1 ? "O" : "X";
-            Color moverColor = session.getTurn() == Player.PLAYER_1 ? oColor : xColor;
-            GameGUI.addHistory("TicTacToe", mover, "(" + (row + 1) + ", " + (col + 1) + ")", moverColor);
-            refreshFromGameStateUpdate(session.getGameState());
-            maybeRunAiTurn();
             return;
         }
 
@@ -187,6 +189,13 @@ public class TicTacToeController extends GameGUI {
 
     @FXML
     void resetClick(ActionEvent event) {
+        if (CentralController.playWithAi && session != null) {
+            session.startNewGame();
+            aiResultRecorded = false;
+            GameGUI.clearHistory();
+            refreshFromGameStateUpdate(session.getGameState());
+            return;
+        }
         if (session != null) {
             session.startNewGame();
             aiResultRecorded = false;
@@ -213,12 +222,19 @@ public class TicTacToeController extends GameGUI {
         if (!CentralController.playWithAi || session == null || session.isGameOver() || session.getTurn() != AI_PLAYER) {
             return;
         }
-        int[] move = TicTacToeRandomMoveGenerator.chooseMove(session.getGameState());
-        if (move == null || !session.submitMove(move[0], move[1])) {
-            return;
-        }
-        GameGUI.addHistory("TicTacToe", "O", "(" + (move[0] + 1) + ", " + (move[1] + 1) + ")", oColor);
-        refreshFromGameStateUpdate(session.getGameState());
+        
+        // Schedule with a small delay so UI updates are visible
+        PauseTransition pause = new PauseTransition(Duration.millis(500));
+        pause.setOnFinished(event -> {
+            int[] move = TicTacToeRandomMoveGenerator.chooseMove(session.getGameState());
+            if (move == null || !session.submitMove(move[0], move[1])) {
+                return;
+            }
+            GameGUI.addHistory("TicTacToe", "O", "(" + (move[0] + 1) + ", " + (move[1] + 1) + ")", oColor);
+            refreshFromGameStateUpdate(session.getGameState());
+            maybeRunAiTurn();
+        });
+        pause.play();
     }
 
     /** Use when in online mode: refresh grid and label from server update. */
@@ -243,8 +259,11 @@ public class TicTacToeController extends GameGUI {
                     btn.setStyle("");
                 }
                 Player myRole = clientCore != null ? clientCore.getMyNetworkRole() : null;
-                boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null;
+                boolean onlineTurns = clientCore != null && clientCore.isConnected() && myRole != null && !CentralController.playWithAi;
                 boolean myTurn = !onlineTurns || gameOver || myRole.equals(update.getPlayerTurn());
+                if (CentralController.playWithAi && !gameOver) {
+                    myTurn = Player.PLAYER_1.equals(update.getPlayerTurn());
+                }
                 btn.setDisable(gameOver || !myTurn);
             }
         }
@@ -364,6 +383,10 @@ public class TicTacToeController extends GameGUI {
         if (profileNameLabel != null) {
             String myUsername = (clientCore != null && clientCore.username != null) ? clientCore.username : "Player";
             profileNameLabel.setText(myUsername + " - " + getPlayerRoleLabel());
+        }
+        if (profileEmailLabel != null) {
+            String myEmail = (clientCore != null && clientCore.email != null) ? clientCore.email : "Player@example.com";
+            profileEmailLabel.setText(myEmail);
         }
 
         // Request fresh stats from server

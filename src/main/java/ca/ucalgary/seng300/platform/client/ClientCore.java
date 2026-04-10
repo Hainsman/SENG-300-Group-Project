@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 public class ClientCore extends Thread{
     public String CID;
     public String username;
+    public String email;
     private ObjectInputStream servRead;
     private ObjectOutputStream servSend;
     private CentralController ioMain;
@@ -223,6 +224,12 @@ public class ClientCore extends Thread{
                                 if ("PASS".equals(sm.getFieldA())) {
                                     CID = sm.getFieldB();
                                     username = sm.getPayload();
+                                    // payload can now contain "username|email"
+                                    if (username != null && username.contains("|")) {
+                                        String[] parts = username.split("\\|", 2);
+                                        username = parts[0];
+                                        email = parts[1];
+                                    }
                                     flg = 's';
                                 } else {
                                     flg = 'f';
@@ -320,17 +327,26 @@ public class ClientCore extends Thread{
 
 
                     case GameState g:
-                        System.out.println("a gamestate arrived");
+                        System.out.println("[DEBUG_LOG] a gamestate arrived: " + g.getClass().getSimpleName());
                         lastUpdate = g;
                         if (g instanceof TTTGameState tttState) {
-                            System.out.println(debugBoard(tttState));
+                            System.out.println("[DEBUG_LOG] Board: " + debugBoard(tttState));
                         }
                         Platform.runLater(() -> {
-                            if (g instanceof TTTGameState tttState && ioMain != null && ioMain.ttt != null) {
-                                ioMain.ttt.refreshFromGameStateUpdate(tttState);
-                                System.out.println("Ui update triggered");
-                            } else if (g instanceof C4GameState c4State && ioMain != null && ioMain.connect4 != null) {
-                                ioMain.connect4.refreshFromGameStateUpdate(c4State);
+                            if (g instanceof TTTGameState tttState && ioMain != null) {
+                                if (ioMain.ttt != null) {
+                                    System.out.println("[DEBUG_LOG] Updating TTT UI");
+                                    ioMain.ttt.refreshFromGameStateUpdate(tttState);
+                                } else {
+                                    System.out.println("[DEBUG_LOG] TTT UI reference is NULL in ioMain");
+                                }
+                            } else if (g instanceof C4GameState c4State && ioMain != null) {
+                                if (ioMain.connect4 != null) {
+                                    System.out.println("[DEBUG_LOG] Updating C4 UI");
+                                    ioMain.connect4.refreshFromGameStateUpdate(c4State);
+                                } else {
+                                    System.out.println("[DEBUG_LOG] C4 UI reference is NULL in ioMain");
+                                }
                             }
                             LobbyBridge.notifyGameState();
                         });

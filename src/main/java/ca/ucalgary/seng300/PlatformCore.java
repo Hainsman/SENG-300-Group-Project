@@ -256,7 +256,8 @@ public class PlatformCore {
             if (pl != null) {
                 pl.setAuthenticatedSession(matchedUser.getID(), UID);
             }
-            return new sysMSG("AUTH", "PASS", matchedUser.getID()+"", matchedUser.getlogin());
+            String payload = matchedUser.getlogin() + "|" + matchedUser.getEmail();
+            return new sysMSG("AUTH", "PASS", matchedUser.getID()+"", payload);
         }
         return new sysMSG("AUTH", "FAIL", "Login failed, invalid email/username or password");
     }
