@@ -15,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
@@ -36,6 +37,9 @@ public class CentralController {
     @FXML private Button quitButton;
     @FXML private Button minimizeButton;
     @FXML private Button maximizeButton;
+    @FXML private Slider volumeSlider;
+    @FXML private Label volumeIcon;
+    @FXML private Label volumePercent;
 
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
@@ -137,7 +141,10 @@ public class CentralController {
                 titleLabel,
                 quitButton,
                 minimizeButton,
-                maximizeButton
+                maximizeButton,
+                volumeSlider,
+                volumeIcon,
+                volumePercent
         );
 
         windowManager = new WindowManager(controls);

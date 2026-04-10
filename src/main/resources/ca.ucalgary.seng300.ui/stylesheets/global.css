@@ -577,6 +577,53 @@
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
 }
 
+/* Title-bar volume control */
+.volume-icon {
+    -fx-font-size: 18px;
+    -fx-text-fill: #fafafa;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+    -fx-content-display: center;
+    -fx-text-alignment: center;
+}
+
+.volume-icon:hover {
+    -fx-text-fill: #22c55e;
+}
+
+.volume-percent {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #fafafa;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.volume-slider {
+    -fx-pref-height: 22px;
+}
+
+.volume-slider .track {
+    -fx-background-color: #2a2a30;
+    -fx-background-radius: 3;
+    -fx-pref-height: 4px;
+}
+
+.volume-slider .thumb {
+    -fx-background-color: #22c55e;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 12px;
+    -fx-pref-height: 12px;
+    -fx-padding: 6px;
+}
+
+.volume-slider .thumb:hover {
+    -fx-background-color: #4ade80;
+}
+
+.volume-slider:focused .thumb {
+    -fx-background-color: #4ade80;
+}
+
 /* Legacy dashboard labels (GameDashboard.fxml) */
 #TTTLabel:hover,
 #C4Label:hover {

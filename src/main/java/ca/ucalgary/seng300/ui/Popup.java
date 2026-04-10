@@ -45,7 +45,8 @@ public class Popup {
 
         WindowManager.WindowControls controls = new WindowManager.WindowControls(
                 root, titleBarPane, titleLabel,
-                dummy, dummy, dummy
+                dummy, dummy, dummy,
+                null, null, null
         );
 
         WindowManager wm = new WindowManager(controls, true);
