@@ -179,16 +179,9 @@ public class PlatformCore {
 
         PlayerStats hostStats = getOrCreatePlayerStats(sl.getGameId(), hostUserId);
         PlayerStats guestStats = getOrCreatePlayerStats(sl.getGameId(), guestUserId);
-        MatchMakingService.removePlayer(hostStats); //remove duplicate
-        MatchMakingService.removePlayer(guestStats); //remove duplicate
-        matchMakingService.addPlayerToQueue(hostStats);
-        matchMakingService.addPlayerToQueue(guestStats);
-        List<PlayerStats> matchedPlayers = matchMakingService.matchPlayers(sl.getGameId());
-        if (!containsMatchedPair(matchedPlayers, hostUserId, guestUserId)) {
-            MatchMakingService.removePlayer(hostStats);
-            MatchMakingService.removePlayer(guestStats);
+        if (!matchMakingService.canMatchPair(hostStats, guestStats)) {
             return new sysMSG("CREATE_GAME", "FAIL",
-                    "Starting the game failed: player scores must be within 10 points.");
+                    "Starting the game failed: players are outside the matchmaking range.");
         }
         sl.createGame();
         System.out.println("CREATE_GAME started for lobby " + lobbyid + " gameId=" + sl.getGameId());
@@ -205,22 +198,6 @@ public class PlatformCore {
         PlayerStats created = new PlayerStats(playerStatsStore.assignNewId(), gameId, userId);
         playerStatsStore.create(created);
         return created;
-    }
-
-    private boolean containsMatchedPair(List<PlayerStats> matchedPlayers, int hostUserId, int guestUserId) {
-        if (matchedPlayers == null || matchedPlayers.size() != 2) {
-            return false;
-        }
-        boolean foundHost = false;
-        boolean foundGuest = false;
-        for (PlayerStats player : matchedPlayers) {
-            if (player.getUserID() == hostUserId) {
-                foundHost = true;
-            } else if (player.getUserID() == guestUserId) {
-                foundGuest = true;
-            }
-        }
-        return foundHost && foundGuest;
     }
 
     public void sendMult (chatMessage m){
@@ -246,8 +223,12 @@ public class PlatformCore {
         User matchedUser = listOfUsers.getFirst();
         boolean matchingIdentity = incomingUsername.equals(matchedUser.getlogin())
                 || incomingUsername.equals(matchedUser.getEmail());
-        if (!sessionHistoryStore.findSessionsByUserID(matchedUser.getID()).isEmpty()) {
-            return new sysMSG("AUTH", "FAIL", "Login failed, user is already signed in");
+        List<SessionHistory> existingSessions = sessionHistoryStore.findSessionsByUserID(matchedUser.getID());
+        if (!existingSessions.isEmpty()) {
+            // Recover from stale sessions left behind by abrupt client termination.
+            for (SessionHistory session : existingSessions) {
+                sessionHistoryStore.delete(session);
+            }
         }
         if (matchingIdentity && incomingPassword.equals(matchedUser.getPasswordHash())){
             int newSessionId = sessionHistoryStore.assignNewId();
@@ -274,10 +255,16 @@ public class PlatformCore {
         return new sysMSG("NEWU", "PASS");
     }
 
-    public sysMSG updateProfile(platformChannel channel, String newLogin, String newEmail) {
+    public sysMSG updateProfile(platformChannel channel, String newLogin, String newEmail, String newPasswordHash) {
         Integer userId = channel.getAuthenticatedUserId();
         if (userId == null) {
             return new sysMSG("UPDATE_PROFILE", "FAIL", "Not authenticated");
+        }
+        String sanitizedLogin = newLogin == null ? "" : newLogin.trim();
+        String sanitizedEmail = newEmail == null ? "" : newEmail.trim();
+        String sanitizedPasswordHash = newPasswordHash == null ? "" : newPasswordHash.trim();
+        if (sanitizedLogin.isEmpty() || sanitizedEmail.isEmpty()) {
+            return new sysMSG("UPDATE_PROFILE", "FAIL", "Display name and email are required");
         }
 
         User user = userStore.get(userId);
@@ -286,20 +273,27 @@ public class PlatformCore {
         }
 
         // Validate login (if changed)
-        if (!user.getlogin().equals(newLogin)) {
-            if (!userStore.findByUserName(newLogin).isEmpty()) {
+        if (!user.getlogin().equals(sanitizedLogin)) {
+            if (!userStore.findByUserName(sanitizedLogin).isEmpty()) {
                 return new sysMSG("UPDATE_PROFILE", "FAIL", "Display name is already taken");
             }
         }
 
         // Validate email format
-        if (!isEmailValid(newEmail, EMAIL_REGEX)) {
+        if (!isEmailValid(sanitizedEmail, EMAIL_REGEX)) {
             return new sysMSG("UPDATE_PROFILE", "FAIL", "Invalid email address");
+        }
+        List<User> usersWithEmail = userStore.findByUserEmail(sanitizedEmail);
+        if (!usersWithEmail.isEmpty() && usersWithEmail.getFirst().getID() != user.getID()) {
+            return new sysMSG("UPDATE_PROFILE", "FAIL", "Email is already used by another account");
         }
 
         // Update user
-        user.setlogin(newLogin);
-        user.setEmail(newEmail);
+        user.setlogin(sanitizedLogin);
+        user.setEmail(sanitizedEmail);
+        if (!sanitizedPasswordHash.isEmpty()) {
+            user.setPasswordHash(sanitizedPasswordHash);
+        }
         userStore.update(user);
 
         return new sysMSG("UPDATE_PROFILE", "PASS", "Profile updated successfully");
@@ -725,6 +719,10 @@ public class PlatformCore {
     private int cActive = 0;
 
     public PlatformCore() throws IOException, InterruptedException {
+        this(true);
+    }
+
+    public PlatformCore(boolean startServer) throws IOException, InterruptedException {
         /** database initialisation, replace null with the file path **/
         userStore = UserStore.getInstance();
         friendStore = FriendHistoryStore.getInstance();
@@ -738,7 +736,12 @@ public class PlatformCore {
         connected = new ArrayList<Integer>();
         chatservers = new ArrayList<String>();
         lobbies = new HashMap<>();
+        if (startServer) {
+            startServerLoop();
+        }
+    }
 
+    private void startServerLoop() throws IOException, InterruptedException {
         int ClientMax = 100;
         int CCount = 0;
 

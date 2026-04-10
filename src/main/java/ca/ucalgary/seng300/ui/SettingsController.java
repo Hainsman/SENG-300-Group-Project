@@ -1,16 +1,28 @@
 package ca.ucalgary.seng300.ui;
+
+import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.utils.Helper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 public class SettingsController {
     @FXML private TextField displayNameField;
     @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField confirmPasswordField;
+    @FXML private ComboBox<String> textSizeComboBox;
+    @FXML private CheckBox colorBlindCheckBox;
     @FXML private Label statusLabel;
     private CentralController cent;
+    private String pendingTextSizePreference;
+    private boolean pendingColorBlindMode;
 
     public void setCentralController(CentralController controller) {
         cent = controller;
@@ -20,8 +32,9 @@ public class SettingsController {
             if (cent.clientCore.username != null) {
                 displayNameField.setText(cent.clientCore.username);
             }
-            // For email, we don't have it in ClientCore cache directly, but we could request it.
-            // For now, let's just leave it or use a dummy if not found.
+            if (cent.clientCore.email != null) {
+                emailField.setText(cent.clientCore.email);
+            }
         }
     }
 
@@ -30,6 +43,15 @@ public class SettingsController {
         // Initial defaults
         displayNameField.setText("");
         emailField.setText("");
+        textSizeComboBox.getItems().setAll("Normal", "Large", "Extra Large");
+        textSizeComboBox.setValue(labelForTextSize(CentralController.getTextSizePreference()));
+        colorBlindCheckBox.setSelected(CentralController.isColorBlindModeEnabled());
+        if (passwordField != null) {
+            passwordField.clear();
+        }
+        if (confirmPasswordField != null) {
+            confirmPasswordField.clear();
+        }
     }
 
     @FXML
@@ -37,8 +59,23 @@ public class SettingsController {
         String newLogin = displayNameField.getText().trim();
         String newEmail = emailField.getText().trim();
 
+        String newPassword = passwordField != null ? passwordField.getText() : "";
+        String confirmPassword = confirmPasswordField != null ? confirmPasswordField.getText() : "";
+        String textSizePreference = preferenceForLabel(textSizeComboBox.getValue());
+        boolean colorBlindMode = colorBlindCheckBox.isSelected();
+
         if (newLogin.isEmpty() || newEmail.isEmpty()) {
-            statusLabel.setText("Login and email cannot be empty.");
+            statusLabel.setText("Username and email cannot be empty.");
+            statusLabel.setStyle("-fx-text-fill: #ff4d4d;");
+            return;
+        }
+        if (!Helper.isEmailValid(newEmail, Constants.EMAIL_REGEX)) {
+            statusLabel.setText("Please enter a valid email address.");
+            statusLabel.setStyle("-fx-text-fill: #ff4d4d;");
+            return;
+        }
+        if (!newPassword.isEmpty() && !newPassword.equals(confirmPassword)) {
+            statusLabel.setText("Passwords do not match.");
             statusLabel.setStyle("-fx-text-fill: #ff4d4d;");
             return;
         }
@@ -51,7 +88,12 @@ public class SettingsController {
 
         statusLabel.setText("Updating profile...");
         statusLabel.setStyle("-fx-text-fill: #d8dee9;");
-        cent.clientCore.msgSend(new sysMSG("UPDATE_PROFILE", newLogin, newEmail));
+        pendingTextSizePreference = textSizePreference;
+        pendingColorBlindMode = colorBlindMode;
+        String passwordHash = newPassword.isEmpty()
+                ? ""
+                : Helper.hashPassword(newPassword, Constants.HASH_ALGORITHM);
+        cent.clientCore.msgSend(new sysMSG("UPDATE_PROFILE", newLogin, newEmail, passwordHash));
     }
 
     private void handleProfileUpdateResponse(sysMSG response) {
@@ -60,9 +102,11 @@ public class SettingsController {
         }
 
         if ("PASS".equals(response.getFieldA())) {
+            CentralController.updateAccessibilityPreferences(pendingTextSizePreference, pendingColorBlindMode);
             // Update local cache if necessary
             if (cent != null && cent.clientCore != null) {
                 cent.clientCore.username = displayNameField.getText().trim();
+                cent.clientCore.email = emailField.getText().trim();
             }
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -73,6 +117,12 @@ public class SettingsController {
 
             statusLabel.setText("Profile updated successfully");
             statusLabel.setStyle("-fx-text-fill: #7CFC98;");
+            if (passwordField != null) {
+                passwordField.clear();
+            }
+            if (confirmPasswordField != null) {
+                confirmPasswordField.clear();
+            }
         } else {
             String reason = response.getFieldB() != null ? response.getFieldB() : "Unknown error";
             statusLabel.setText("Failed: " + reason);
@@ -93,5 +143,27 @@ public class SettingsController {
             return;
         }
         CentralController.moveTo("GameDashboardNew.fxml");
+    }
+
+    private String preferenceForLabel(String label) {
+        if (label == null) {
+            return "normal";
+        }
+        return switch (label.toLowerCase()) {
+            case "large" -> "large";
+            case "extra large" -> "xlarge";
+            default -> "normal";
+        };
+    }
+
+    private String labelForTextSize(String preference) {
+        if (preference == null) {
+            return "Normal";
+        }
+        return switch (preference.toLowerCase()) {
+            case "large" -> "Large";
+            case "xlarge" -> "Extra Large";
+            default -> "Normal";
+        };
     }
 }

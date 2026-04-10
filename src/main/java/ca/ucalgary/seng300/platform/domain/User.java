@@ -23,6 +23,6 @@ public class User extends Record {
     //setters
     public void setlogin(String login){this.login = login;}
     public void setEmail(String email){this.email = email;}
-    public void setPasswordHash(String passwordHash){this.login = passwordHash;}
+    public void setPasswordHash(String passwordHash){this.passwordHash = passwordHash;}
     public void setIsActive(boolean isActive){this.isActive = isActive;}
 }

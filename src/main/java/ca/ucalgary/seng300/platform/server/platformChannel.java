@@ -127,7 +127,8 @@ public class platformChannel extends Thread {
                 break;
             case "UPDATE_PROFILE":
                 // fieldA: new login, fieldB: new email
-                cliSend(serv.updateProfile(this, sm.getFieldA(), sm.getFieldB()));
+                // payload: optional password hash
+                cliSend(serv.updateProfile(this, sm.getFieldA(), sm.getFieldB(), sm.getPayload()));
                 break;
             case "AI_GAME_RESULT":
                 // fieldA: gameId, fieldB: result (WIN, LOSS, DRAW)

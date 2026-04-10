@@ -29,13 +29,18 @@ public class LeaderBoardService {
     private void buildLeaderBoard(int gameId){
         PlayerStatsStore playerStatsStore = PlayerStatsStore.getInstance();
         List<PlayerStats> players = new ArrayList<>(playerStatsStore.findPlayersByGameID(gameId));
-        players.sort(Comparator
-                .comparing((PlayerStats p) -> -Helper.getRank(p.getGameCounter(), p.getScore()).getRankValue()) //sort players by rank
-                .thenComparing(Comparator.comparingDouble(PlayerStats::getScore).reversed()) //then sort them by score in descending order
-                .thenComparing(PlayerStats::getGameCounter) //sort them in descending order  by number of games played
-        );
+        sortEntries(players);
         cachedLeaderBoard.put(gameId, players);
         cachedLeaderBoardTS.put(gameId, System.currentTimeMillis());
+    }
+
+    static void sortEntries(List<PlayerStats> players) {
+        players.sort(Comparator
+                .comparing((PlayerStats p) -> -Helper.getRank(p.getGameCounter(), p.getScore()).getRankValue())
+                .thenComparing(Comparator.comparingDouble(PlayerStats::getScore).reversed())
+                .thenComparing(Comparator.comparingInt(PlayerStats::getGameCounter).reversed())
+                .thenComparingInt(PlayerStats::getUserID)
+        );
     }
 
     private Long getTimeStampSafe(int gameId){

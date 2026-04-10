@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
@@ -64,6 +65,14 @@ public class CentralController {
 
     public ClientCore clientCore;
     public int test1;
+    private static final Preferences UI_PREFS = Preferences.userNodeForPackage(CentralController.class);
+    private static final String PREF_TEXT_SIZE = "ui.text.size";
+    private static final String PREF_COLORBLIND = "ui.color.blind";
+    private static final String TEXT_SIZE_NORMAL = "normal";
+    private static final String TEXT_SIZE_LARGE = "large";
+    private static final String TEXT_SIZE_XLARGE = "xlarge";
+    private static String currentTextSize = UI_PREFS.get(PREF_TEXT_SIZE, TEXT_SIZE_NORMAL);
+    private static boolean currentColorBlind = UI_PREFS.getBoolean(PREF_COLORBLIND, false);
 
     public void uptest(int i){
         test1 = i;
@@ -87,6 +96,8 @@ public class CentralController {
 
         windowManager = new WindowManager(controls);
         titleLabel.setText(MainApp.TITLE);
+        root.sceneProperty().addListener((obs, oldScene, newScene) -> applyUiPreferences());
+        applyUiPreferences();
 
         loadView("Login.fxml");
     }
@@ -117,14 +128,56 @@ public class CentralController {
                 nuc.setCentralController(this);
             } else if (ctrl instanceof SettingsController sc) {
                 sc.setCentralController(this);
+            } else if (ctrl instanceof ProfileDashboardController pdc) {
+                pdc.setCentralController(this);
             } else if (ctrl instanceof TicTacToeController ttc) {
                 ttc.connectToRootForLobby(this);
             } else if (ctrl instanceof Connect4Controller c4) {
                 c4.connectToRootForLobby(this);
             }
             viewContainer.setCenter(view);
+            applyUiPreferences();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void updateAccessibilityPreferences(String textSize, boolean colorBlindMode) {
+        currentTextSize = textSize == null ? TEXT_SIZE_NORMAL : textSize;
+        currentColorBlind = colorBlindMode;
+        UI_PREFS.put(PREF_TEXT_SIZE, currentTextSize);
+        UI_PREFS.putBoolean(PREF_COLORBLIND, currentColorBlind);
+        if (instance != null) {
+            instance.applyUiPreferences();
+        }
+    }
+
+    public static String getTextSizePreference() {
+        return currentTextSize;
+    }
+
+    public static boolean isColorBlindModeEnabled() {
+        return currentColorBlind;
+    }
+
+    private void applyUiPreferences() {
+        if (root == null || root.getScene() == null) {
+            return;
+        }
+        var stylesheets = root.getScene().getStylesheets();
+        stylesheets.removeIf(s ->
+                s.endsWith("accessibility_large.css")
+                        || s.endsWith("accessibility_xlarge.css")
+                        || s.endsWith("accessibility_colorblind.css"));
+
+        if (TEXT_SIZE_LARGE.equals(currentTextSize)) {
+            stylesheets.add(getClass().getResource("/ca.ucalgary.seng300.ui/stylesheets/accessibility_large.css").toExternalForm());
+        } else if (TEXT_SIZE_XLARGE.equals(currentTextSize)) {
+            stylesheets.add(getClass().getResource("/ca.ucalgary.seng300.ui/stylesheets/accessibility_xlarge.css").toExternalForm());
+        }
+
+        if (currentColorBlind) {
+            stylesheets.add(getClass().getResource("/ca.ucalgary.seng300.ui/stylesheets/accessibility_colorblind.css").toExternalForm());
         }
     }
 }

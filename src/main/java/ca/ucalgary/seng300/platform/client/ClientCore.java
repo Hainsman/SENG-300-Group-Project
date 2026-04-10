@@ -169,7 +169,7 @@ public class ClientCore extends Thread{
     @Override
     public void run() {
         try {
-            Platform.setImplicitExit(false);
+            Platform.setImplicitExit(true);
             // Connect to the server at localhost on port 2020
             Socket socket = new Socket();
             try {

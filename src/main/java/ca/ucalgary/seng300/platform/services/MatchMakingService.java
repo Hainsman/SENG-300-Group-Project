@@ -1,35 +1,18 @@
 package ca.ucalgary.seng300.platform.services;
 
 import ca.ucalgary.seng300.platform.constants.Rank;
-import ca.ucalgary.seng300.platform.domain.Participant;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
-import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
-import ca.ucalgary.seng300.platform.constants.Game;
 
 import java.util.*;
 import java.util.ArrayList;
 
-import static java.lang.Math.abs;
-
-
 public class MatchMakingService {
 
-    // game names
-    private static final Map<String, Integer> GAME_TYPE_IDS = Map.of(
-            "TicTacToe", Game.TICK_TACK_TOE,
-            "ConnectFour", Game.CONNECT_FOUR
-    );
+    private static final double MAX_SCORE_GAP = 10.0;
+    private static final int MAX_RANK_GAP = 1;
 
-    //validating game type
-    private int validateGameId(String gameType) {
-        Integer id = GAME_TYPE_IDS.get(gameType);
-        if (id == null) throw new IllegalArgumentException("Unknown gameType: " + gameType);
-        return id;
-    }
-
-
-    //Key is gameType, value is player id and score
+    // Key is gameType, value is queued players for that game.
     public static Map<Integer, List<PlayerStats>> queues = new HashMap<>();
 
     /**
@@ -39,21 +22,14 @@ public class MatchMakingService {
      **/
 
     public void addPlayerToQueue(PlayerStats player) {
-        // retrieving gameType, userId, and userScore
         int gameType = player.getGameID();
-        int userId = player.getUserID();
-        double userScore = player.getScore();
-        List<PlayerStats> statsForGame = PlayerStatsStore.getInstance().findPlayersByGameID(gameType);
-
-        // if gameType queue exists, add to it. If not, create a new one
-        if (queues.containsKey(gameType)) {
-            queues.get(gameType).add(player);
-        } else {
-            List<PlayerStats> newEntryList = new ArrayList<>();
-            newEntryList.add(player);
-            queues.put(gameType, newEntryList);
+        List<PlayerStats> queue = queues.computeIfAbsent(gameType, ignored -> new ArrayList<>());
+        for (PlayerStats queued : queue) {
+            if (queued.getUserID() == player.getUserID()) {
+                return;
+            }
         }
-
+        queue.add(player);
     }
 
     /**
@@ -62,15 +38,10 @@ public class MatchMakingService {
      * @param player the player's stats object to remove
      */
     public static void removePlayer(PlayerStats player) {
-        // searching for user in hash map
         for (Integer gameType : queues.keySet()) {
             List<PlayerStats> gameList = queues.get(gameType);
-            for (int i = 0; i < gameList.size(); i++) {
-                //match by userId and gameId
-                if (gameList.get(i).getUserID() == player.getUserID() && gameList.get(i).getGameID() == player.getGameID()) {
-                    gameList.remove(i);
-                }
-            }
+            gameList.removeIf(queued ->
+                    queued.getUserID() == player.getUserID() && queued.getGameID() == player.getGameID());
         }
     }
 
@@ -98,6 +69,9 @@ public class MatchMakingService {
         // compare every unique pair of players in the queue
         for (int i = 0; i < gameList.size(); i++) {
             for (int j = i + 1; j < gameList.size(); j++) {
+                if (!canMatchPair(gameList.get(i), gameList.get(j))) {
+                    continue;
+                }
 
                 // calculate the score difference between the two players
                 double diff = Math.abs(gameList.get(i).getScore() - gameList.get(j).getScore());
@@ -111,8 +85,8 @@ public class MatchMakingService {
             }
         }
 
-        // no valid pair found, or the closest pair exceeds the max allowed score difference
-        if (bestI == -1 || bestDiff > 10) {
+        // no valid pair found
+        if (bestI == -1) {
             return null;
         }
         // build the matched players list from the best pair
@@ -131,6 +105,21 @@ public class MatchMakingService {
 
         return matchedPlayers;
     }
+
+    public boolean canMatchPair(PlayerStats playerOne, PlayerStats playerTwo) {
+        if (playerOne == null || playerTwo == null) {
+            return false;
+        }
+        Rank rankOne = Helper.getRank(playerOne.getGameCounter(), playerOne.getScore());
+        Rank rankTwo = Helper.getRank(playerTwo.getGameCounter(), playerTwo.getScore());
+        int rankGap = Math.abs(rankOne.getRankValue() - rankTwo.getRankValue());
+        if (rankGap > MAX_RANK_GAP) {
+            return false;
+        }
+        double scoreGap = Math.abs(playerOne.getScore() - playerTwo.getScore());
+        return scoreGap <= MAX_SCORE_GAP;
+    }
+
     public int getQueueSize(Integer gameType) {
         List<PlayerStats> gameList = queues.get(gameType);
         if (gameList == null) return 0;

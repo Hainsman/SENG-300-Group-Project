@@ -2,7 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -27,6 +30,15 @@
                 <TextField fx:id="displayNameField" promptText="Enter display name" styleClass="input-field" />
                 <Label text="Email" styleClass="card-title" />
                 <TextField fx:id="emailField" promptText="Enter email address" styleClass="input-field" />
+                <Label text="New Password (optional)" styleClass="card-title" />
+                <PasswordField fx:id="passwordField" promptText="Enter new password" styleClass="input-field" />
+                <Label text="Confirm Password" styleClass="card-title" />
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirm new password" styleClass="input-field" />
+
+                <Label text="Text Size" styleClass="card-title" />
+                <ComboBox fx:id="textSizeComboBox" promptText="Select text size" styleClass="input-field" />
+
+                <CheckBox fx:id="colorBlindCheckBox" styleClass="login-checkbox" text="Enable color-blind mode" />
                 <Label fx:id="statusLabel" styleClass="card-subtitle" text="" />
                 <HBox alignment="CENTER_RIGHT" spacing="10">
                     <children>

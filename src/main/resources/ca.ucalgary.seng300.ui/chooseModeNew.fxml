@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -26,12 +29,22 @@
                     <Label text="&#9889; ONLINE MULTIPLAYER" styleClass="mode-badge" />
                     <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                         <children>
-                            <StackPane onMouseClicked="#handleOpenSettings" styleClass="avatar-badge">
-                                <children>
-                                    <Circle radius="18.0" styleClass="avatar-circle" />
-                                    <Label text="IMG" styleClass="avatar-label" />
-                                </children>
-                            </StackPane>
+                            <MenuButton mnemonicParsing="false" popupSide="BOTTOM" styleClass="profile-menu-button">
+                                <graphic>
+                                    <StackPane styleClass="avatar-badge">
+                                        <children>
+                                            <Circle radius="18.0" styleClass="avatar-circle" />
+                                            <Label text="IMG" styleClass="avatar-label" />
+                                        </children>
+                                    </StackPane>
+                                </graphic>
+                                <items>
+                                    <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuProfile" text="Profile" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuSettings" text="Settings" />
+                                    <SeparatorMenuItem />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuLogout" text="Log out" />
+                                </items>
+                            </MenuButton>
                         </children>
                     </HBox>
                 </children>
@@ -80,7 +93,6 @@
 
             <HBox spacing="20" alignment="CENTER_LEFT">
                 <Label onMouseClicked="#handleBack" style="-fx-text-fill:#a1a1aa; -fx-font-size:14px; -fx-cursor:hand;" text="&#8592; Back to Menu" />
-                <Label onMouseClicked="#handleLogout" style="-fx-text-fill:#ff6b6b; -fx-font-size:14px; -fx-cursor:hand;" text="Log Out" />
             </HBox>
 
         </VBox>

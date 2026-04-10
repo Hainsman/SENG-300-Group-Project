@@ -92,6 +92,16 @@ class Store<T extends Record> {
         return Collections.max(records.keySet()) + 1;
     }
 
+    protected void clearAll() {
+        writeLock.lock();
+        try {
+            records.clear();
+            saveAll();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
     private static Gson createGson(boolean pretty){
         RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class,"type")
                 .registerSubtype(User.class, User.class.getSimpleName())

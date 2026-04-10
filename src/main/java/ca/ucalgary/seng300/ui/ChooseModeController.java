@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -65,5 +66,22 @@ public class ChooseModeController {
             CentralController.getInstance().clientCore.sendLogout();
         }
         CentralController.moveTo("Login.fxml");
+    }
+
+    @FXML
+    void handleProfileMenuProfile(ActionEvent event) {
+        CentralController.previousScreen = "chooseModeNew.fxml";
+        CentralController.moveTo("ProfileDashboard.fxml");
+    }
+
+    @FXML
+    void handleProfileMenuSettings(ActionEvent event) {
+        CentralController.previousScreen = "chooseModeNew.fxml";
+        CentralController.moveTo("Settings.fxml");
+    }
+
+    @FXML
+    void handleProfileMenuLogout(ActionEvent event) {
+        handleLogout(null);
     }
 }

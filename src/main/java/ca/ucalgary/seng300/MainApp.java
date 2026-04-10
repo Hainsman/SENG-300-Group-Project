@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.ui.WindowManager;
 import ca.ucalgary.seng300.platform.domain.GameHistory;
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
 import javafx.application.Application;
@@ -33,6 +34,7 @@ public class MainApp extends Application {
                 WindowManager.WINDOW_MINIMUM_WIDTH,
                 WindowManager.WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
+        stage.setOnCloseRequest(event -> SessionHistoryStore.getInstance().clearSessions());
         stage.show();
     }
 

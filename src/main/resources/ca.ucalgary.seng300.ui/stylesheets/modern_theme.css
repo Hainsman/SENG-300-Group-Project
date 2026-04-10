@@ -303,6 +303,41 @@
     -fx-scale-y: 0.98;
 }
 
+.profile-menu-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.profile-menu-button > .label {
+    -fx-padding: 0;
+}
+
+.profile-menu-button > .arrow-button {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.profile-menu-button > .arrow-button > .arrow {
+    -fx-background-color: transparent;
+}
+
+.profile-menu-button .context-menu {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #2f2f35;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 4;
+}
+
+.profile-menu-button .menu-item .label {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 13px;
+}
+
+.profile-menu-button .menu-item:focused {
+    -fx-background-color: #141416;
+}
+
 /* Tic-Tac-Toe surface styles */
 .ttt-grid {
     -fx-background-color: transparent;

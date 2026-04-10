@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="680.0" prefWidth="1020.0"
+            stylesheets="@stylesheets/modern_theme.css"
+            styleClass="app-surface"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ca.ucalgary.seng300.ui.ProfileDashboardController">
+
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="20"
+              AnchorPane.bottomAnchor="28.0"
+              AnchorPane.leftAnchor="34.0"
+              AnchorPane.rightAnchor="34.0"
+              AnchorPane.topAnchor="34.0">
+
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+                <children>
+                    <Label text="PROFILE" styleClass="mode-badge"/>
+                    <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                        <children>
+                            <Label text="← Back" onMouseClicked="#handleBack"
+                                   style="-fx-text-fill:#a1a1aa; -fx-font-size:14px; -fx-cursor:hand;"/>
+                        </children>
+                    </HBox>
+                </children>
+            </HBox>
+
+            <Label text="Profile Dashboard" styleClass="mode-title"/>
+            <Label fx:id="loggedInAsLabel" text="Signed in as: -" styleClass="mode-subtitle"/>
+
+            <HBox spacing="12" maxWidth="1.7976931348623157E308">
+                <children>
+                    <VBox spacing="8" styleClass="card" HBox.hgrow="ALWAYS">
+                        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+                        <Label text="Tic-Tac-Toe" styleClass="card-title"/>
+                        <Label text="Score" styleClass="card-subtitle"/>
+                        <Label fx:id="tttScoreLabel" text="0.0" styleClass="game-name"/>
+                        <Label fx:id="tttGamesLabel" text="0 games" styleClass="card-subtitle"/>
+                        <Label fx:id="tttRankLabel" text="Bronze" styleClass="mode-badge"/>
+                    </VBox>
+                    <VBox spacing="8" styleClass="card" HBox.hgrow="ALWAYS">
+                        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+                        <Label text="Connect 4" styleClass="card-title"/>
+                        <Label text="Score" styleClass="card-subtitle"/>
+                        <Label fx:id="c4ScoreLabel" text="0.0" styleClass="game-name"/>
+                        <Label fx:id="c4GamesLabel" text="0 games" styleClass="card-subtitle"/>
+                        <Label fx:id="c4RankLabel" text="Bronze" styleClass="mode-badge"/>
+                    </VBox>
+                </children>
+            </HBox>
+
+            <HBox spacing="12" VBox.vgrow="ALWAYS">
+                <children>
+                    <VBox spacing="8" styleClass="chat-shell" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                        <Label text="TTT Leaderboard" styleClass="card-title"/>
+                        <ListView fx:id="tttLeaderboardList" styleClass="chat-list" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+                    <VBox spacing="8" styleClass="chat-shell" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                        <Label text="Connect 4 Leaderboard" styleClass="card-title"/>
+                        <ListView fx:id="c4LeaderboardList" styleClass="chat-list" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+                </children>
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

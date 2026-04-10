@@ -92,9 +92,6 @@ public class LeaderboardController {
     }
 
     private int resolveGameId() {
-        if (CentralController.selectedGameId > 0) {
-            return CentralController.selectedGameId;
-        }
         String selectedGame = CentralController.selectedGame != null ? CentralController.selectedGame : "";
         return selectedGame.toLowerCase().contains("connect") ? Game.CONNECT_FOUR : Game.TICK_TACK_TOE;
     }
