@@ -61,7 +61,8 @@
                     onAction="#handleLogin"
                     prefHeight="45"
                     styleClass="auth-outline-button"
-                    text="Sign In" />
+                    text="Sign In"
+                    defaultButton="true" />
             <Button maxWidth="Infinity"
                     onAction="#handleNewUser"
                     prefHeight="45"

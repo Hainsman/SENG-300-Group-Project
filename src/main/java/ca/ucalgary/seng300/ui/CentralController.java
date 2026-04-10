@@ -16,6 +16,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
@@ -156,6 +158,8 @@ public class CentralController {
             }
         });
 
+        root.addEventFilter(KeyEvent.KEY_PRESSED, this::handleGlobalKeyPress);
+
         initializeNodes();
 
         // Start at auth, then GameDashboardNew → chooseModeNew → lobby or GameGUI (incl. Play with AI).
@@ -250,6 +254,30 @@ public class CentralController {
                             sheet.contains(path + "extraLargeText.css")
             );
         }
+    }
+
+    private void handleGlobalKeyPress(KeyEvent event) {
+        if (event.getCode() != KeyCode.ESCAPE) return;
+        if (currentScreen == null) return;
+
+        Navigation back = getEscapeDestination(currentScreen);
+        if (back != null) {
+            moveTo(back);
+            event.consume();
+        }
+    }
+
+    private Navigation getEscapeDestination(Navigation screen) {
+        return switch (screen) {
+            case CHOOSE_MODE      -> Navigation.GAME_DASHBOARD;
+            case HOST_LOBBY       -> Navigation.CHOOSE_MODE;
+            case JOIN_LOBBY       -> Navigation.CHOOSE_MODE;
+            case MAIN_LOBBY       -> Navigation.CHOOSE_MODE;
+            case SETTINGS         -> Navigation.GAME_DASHBOARD;
+            case PROFILE_DASHBOARD -> Navigation.GAME_DASHBOARD;
+            case INFO             -> Navigation.GAME_DASHBOARD;
+            default               -> null;  // no Escape on login, game, dashboard
+        };
     }
 
     public boolean isGameOn() {

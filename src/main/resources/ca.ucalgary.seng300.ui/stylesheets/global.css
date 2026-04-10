@@ -249,7 +249,8 @@
     -fx-cursor: hand;
 }
 
-.mode-card:hover {
+.mode-card:hover,
+.mode-card:focused {
     -fx-background-color: #27272a;
     -fx-border-color: #34d399;
     -fx-translate-y: -1;
