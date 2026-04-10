@@ -33,8 +33,15 @@ public class PlayerStats extends Record {
         this.elo = Math.max(0, next);
     }
 
-    public void updateStats(double score) {
+    public void updateStatsWin(double score) {
         this.score += score;
+        this.counter ++;
+    }
+
+    public void updateStatsLose(double score) {
+        this.score -= score;
+        if (this.score < 0)
+            this.score = 0;
         this.counter ++;
     }
 }

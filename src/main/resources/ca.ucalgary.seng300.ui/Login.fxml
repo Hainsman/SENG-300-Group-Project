@@ -41,7 +41,7 @@
             <TextField fx:id="usernameField"
                        maxWidth="Infinity"
                        prefHeight="40"
-                       promptText="Username"
+                       promptText="Email or Username"
                        styleClass="input-field"
                        HBox.hgrow="ALWAYS" />
         </HBox>
@@ -58,17 +58,20 @@
         <Label fx:id="errorLabel" styleClass="error-text" text="" />
         <VBox spacing="12">
             <Button maxWidth="Infinity"
+                    fx:id="loginButton"
                     onAction="#handleLogin"
                     prefHeight="45"
                     styleClass="auth-outline-button"
                     text="Sign In"
                     defaultButton="true" />
             <Button maxWidth="Infinity"
+                    fx:id="newUserButton"
                     onAction="#handleNewUser"
                     prefHeight="45"
                     styleClass="auth-outline-button"
                     text="Create New Account" />
             <Button alignment="CENTER"
+                    fx:id="forgotPasswordButton"
                     maxWidth="Infinity"
                     onAction="#handleForgotPassword"
                     styleClass="link-button"

@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.Popup;
 import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
@@ -48,6 +51,7 @@ public class GameGUIPage extends VBox implements Navigable {
 //    @FXML private Label connect4Label;
     @FXML private Label gameTypeLabel;
     @FXML private Button infoButton;
+    @FXML private Button forfeitButton;
 
     public GameGUIPage(CentralController rootController) {
         try {
@@ -66,12 +70,37 @@ public class GameGUIPage extends VBox implements Navigable {
     public void setGameNode(Node node, GameType gameType) {
         gameBox.getChildren().clear();
         gameBox.getChildren().add(node);
+        clearChat();
 
         c4Page = node instanceof C4Page connect4 ? connect4 : null;
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
-
-        gameTypeLabel.setText(gameType.toString());
         rootController.getWindowManager().playAudioClip(SoundEffect.GAME_STARTED);
+        refreshSidebar();
+        //refreshForfeitButtonState();
+    }
+    /*
+    public void refreshForfeitButtonState() {
+        if (forfeitButton == null) {
+            return;
+        }
+        boolean canForfeit = true;
+        if (tttPage != null) {
+            canForfeit = tttPage.canForfeitFromShell();
+        } else if (c4Page != null) {
+            canForfeit = c4Page.canForfeitFromShell();
+        }
+        forfeitButton.setDisable(!canForfeit);
+    }*/
+
+    /**
+     * Left sidebar: game name (Tic-Tac-Toe vs Connect 4), signed-in user, ELO/tier/games for this game mode.
+     */
+    public void refreshSidebar() {
+        GameType g = rootController.selectedGame != null
+                ? rootController.selectedGame
+                : GameType.TIC_TAC_TOE;
+
+        gameTypeLabel.setText(rootController.clientCore.gameType.toString());
     }
 
 //    @FXML
@@ -85,11 +114,11 @@ public class GameGUIPage extends VBox implements Navigable {
      * It creates a colored dot + label entry and adds it to the historyBox.
      *
      * @param gameType "TicTacToe" or "Connect4"
-     * 
+     *
      * @param player "X", "O", "Player 1", etc.
-     * 
+     *
      * @param details "(1, 2)" or "Col 3" etc.
-     * 
+     *
      * @param color dot color matching the player's piece
      */
     public void addHistory(String gameType, String player, String details, Color color) {
@@ -132,9 +161,9 @@ public class GameGUIPage extends VBox implements Navigable {
     /**
      * onMoveChosen appends match history to an array list.
      * Returns a string containing the match history and game type.
-     * 
+     *
      * @param player send TP1/TP2 for tictactoe and CP1/CP2 for connect4.
-     * 
+     *
      * @param move "(1,2)".
      */
     public void onMoveChosen(String player, String move) {
@@ -192,8 +221,19 @@ public class GameGUIPage extends VBox implements Navigable {
 //        // }
 //    }
 
+    public void addIncomingSystemNotice(String message) {
+        if (message == null || message.isBlank()) {
+            return;
+        }
+        addChat("System", message, Color.web("#fbbf24"));
+    }
+
     @FXML
     private void handleForfeit(ActionEvent event) {
+        //refreshForfeitButtonState();
+        if (forfeitButton != null && forfeitButton.isDisabled()) {
+            return;
+        }
         if (tttPage != null) {
             tttPage.handleForfeitFromShell();
         }
@@ -222,8 +262,28 @@ public class GameGUIPage extends VBox implements Navigable {
                 : "You";
 
         addChat(sender, msg, Color.web("#fafafa"));
+        ClientCore cc = rootController != null ? rootController.getCC() : null;
+        if (cc != null && cc.isConnected()) {
+            cc.msgSend(new sysMSG("MATCH_CHAT", sender, msg));
+        }
         chatInput.clear();
     }
+
+    public void onRematchRequested(String requester) {
+        String name = requester != null && !requester.isBlank() ? requester : "Opponent";
+        boolean accepted = Popup.showConfirm(
+                getScene().getWindow(),
+                "Rematch Request",
+                "Accept rematch?",
+                name + " requested a rematch. Do you want to play again?");
+        String me = "Player";
+        if (accepted) {
+            rootController.clientCore.msgSend(new sysMSG("REMATCH", "ACCEPT", me));
+        } else {
+            rootController.clientCore.msgSend(new sysMSG("REMATCH", "DECLINE", me));
+        }
+    }
+
 
     @FXML
     private void handleExitButton(ActionEvent event) {
@@ -243,7 +303,9 @@ public class GameGUIPage extends VBox implements Navigable {
 
     @Override
     public void reset() {
-
+        clearChat();
+        refreshSidebar();
+        //refreshForfeitButtonState();
     }
 }
 

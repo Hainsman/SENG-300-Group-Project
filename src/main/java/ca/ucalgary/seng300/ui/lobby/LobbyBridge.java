@@ -15,7 +15,7 @@ public final class LobbyBridge {
     public static Runnable onHostOk;
     public static Runnable onJoinOk;
     public static Consumer<String> onLobbyFail;
-    /** Host updates player list when guest joins. */
+    /** Host updates player list when guest joins.
     public static Runnable onPartnerJoined;
     /** First board sync after pairing (enables Start Game for host). */
     public static Runnable onGameState;
@@ -26,10 +26,12 @@ public final class LobbyBridge {
                 rootController.lobbyCode = code;
             }
             if ("HOST".equals(role) && onHostOk != null) {
+                //CentralController.lobbyPaired = false;
                 Runnable r = onHostOk;
                 onHostOk = null;
                 r.run();
             } else if ("JOIN".equals(role) && onJoinOk != null) {
+                //CentralController.lobbyPaired = true;
                 Runnable r = onJoinOk;
                 onJoinOk = null;
                 r.run();
@@ -51,9 +53,10 @@ public final class LobbyBridge {
 
     public static void notifyPartnerJoined() {
         Platform.runLater(() -> {
-            if (onPartnerJoined != null) {
-                onPartnerJoined.run();
-            }
+            //CentralController.lobbyPaired = true;
+            //if (onPartnerJoined != null) {
+            //    onPartnerJoined.run();
+            //}
         });
     }
 
@@ -65,9 +68,9 @@ public final class LobbyBridge {
         });
     }
 
-    /** Call when leaving the lobby screen so callbacks do not target disposed controllers. */
+    /** Call when leaving the lobby screen so callbacks do not target disposed controllers.*/
     public static void clearLobbyUiCallbacks() {
-        onPartnerJoined = null;
+        //onPartnerJoined = null;
         onGameState = null;
     }
 }

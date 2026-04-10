@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -82,8 +81,17 @@
                             <Insets bottom="18.0" left="20.0" right="20.0" top="18.0"/>
                         </padding>
                         <Label text="Leaderboard" styleClass="card-title"/>
-                        <Label text="All registered users, ordered by ELO (from saved accounts)." styleClass="card-subtitle"/>
-                        <ListView fx:id="leaderboardList" prefHeight="200.0" styleClass="profile-list-view"/>
+                        <Label text="All registered users from saved accounts, ordered by ELO." styleClass="card-subtitle"/>
+                        <HBox spacing="12">
+                            <VBox styleClass="leaderboard-game-card" HBox.hgrow="ALWAYS">
+                                <Label text="TIC TAC TOE" styleClass="leaderboard-game-title"/>
+                                <VBox fx:id="tttLeaderboardBox" spacing="6"/>
+                            </VBox>
+                            <VBox styleClass="leaderboard-game-card" HBox.hgrow="ALWAYS">
+                                <Label text="CONNECT 4" styleClass="leaderboard-game-title"/>
+                                <VBox fx:id="c4LeaderboardBox" spacing="6"/>
+                            </VBox>
+                        </HBox>
                     </VBox>
                 </VBox>
             </content>

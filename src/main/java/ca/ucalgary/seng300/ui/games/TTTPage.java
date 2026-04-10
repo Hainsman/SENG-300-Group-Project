@@ -9,6 +9,7 @@ import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
+
 import java.io.IOException;
 
 public class TTTPage extends CommonGameLogic implements Navigable {

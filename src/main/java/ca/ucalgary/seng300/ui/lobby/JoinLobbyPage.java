@@ -1,12 +1,11 @@
 package ca.ucalgary.seng300.ui.lobby;
 
-import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import ca.ucalgary.seng300.ui.Popup;
@@ -76,6 +75,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         }
     }
 
+    @FXML
     private void handleJoinByCode() {
         if (codeField == null) {
             return;
@@ -101,13 +101,22 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         rootController.maxPlayers = 2;
         rootController.privacy = "Public";
         rootController.clearLobbyRoster();
+        cc.resetMatchState();
 
-        LobbyBridge.onLobbyFail = msg -> Popup.showError(getScene().getWindow(), msg);
-        LobbyBridge.onJoinOk = () -> {
+        //LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        //LobbyBridge.onJoinOk = () -> {
+        //    rootController.moveTo(Navigation.MAIN_LOBBY);
+        //};
+
+        cc.msgSend(new sysMSG("JOIN_LOBBY", code, rootController.selectedGame.toString()));
+    }
+    public void lobbyJoin(String a, String b){
+        if(a.equals("OK")){
             rootController.moveTo(Navigation.MAIN_LOBBY);
-        };
-
-        cc.msgSend(new sysMSG("JOIN_LOBBY", code, "", PlayerProfileHelper.lobbyPayload(rootController)));
+        }
+        else {
+            Popup.showError(getScene().getWindow(), b);
+        }
     }
 
     private void joinLobbyFromList(String lobby) {

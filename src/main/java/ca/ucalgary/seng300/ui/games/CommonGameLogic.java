@@ -3,7 +3,6 @@ package ca.ucalgary.seng300.ui.games;
 import ca.ucalgary.seng300.game.core.*;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.platform.services.RankingService;
 import ca.ucalgary.seng300.platform.session.Session;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.SoundEffect;
@@ -154,10 +153,11 @@ public abstract class CommonGameLogic extends StackPane {
             updateStatusLabel(gameState, state);
             updateHistoryBoard(gameState);
 
-            OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, state, onlineEloApplied, gameType, rootController)
+            // TODO fix this
+            OnlineRankingHelper.applyIfOnlineGameFinished(clientCore, state, onlineEloApplied, gameType)
                     .ifPresent(r -> {
                         onlineEloApplied = true;
-                        showEloOverlay(r);
+                        //showEloOverlay(r);
                     }
             );
 
@@ -397,27 +397,28 @@ public abstract class CommonGameLogic extends StackPane {
                 button.setDisable(val);
     }
 
-    protected void showEloOverlay(RankingService.OnlineEloResult r) {
-        eloOutcomeTitle.setText(switch (r.outcome()) {
-            case WIN -> "Victory!";
-            case LOSS -> "Defeat";
-            case DRAW -> "Draw";
-        });
-        int d = r.deltaElo();
-        String sign = d >= 0 ? "+" : "";
-        eloDeltaLabel.setText("Rating change: " + sign + d + " ELO");
-        if (d > 0) {
-            eloDeltaLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #4ade80;");
-        } else if (d < 0) {
-            eloDeltaLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #f87171;");
-        } else {
-            eloDeltaLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #e5e5e5;");
-        }
-        eloNewRatingLabel.setText("New rating: " + r.newElo());
-
-        eloResultOverlay.setVisible(true);
-        eloResultOverlay.setMouseTransparent(false);
-    }
+    // TODO
+//    protected void showEloOverlay(RankingService.OnlineEloResult r) {
+//        eloOutcomeTitle.setText(switch (r.outcome()) {
+//            case WIN -> "Victory!";
+//            case LOSS -> "Defeat";
+//            case DRAW -> "Draw";
+//        });
+//        int d = r.deltaElo();
+//        String sign = d >= 0 ? "+" : "";
+//        eloDeltaLabel.setText("Rating change: " + sign + d + " ELO");
+//        if (d > 0) {
+//            eloDeltaLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #4ade80;");
+//        } else if (d < 0) {
+//            eloDeltaLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #f87171;");
+//        } else {
+//            eloDeltaLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: #e5e5e5;");
+//        }
+//        eloNewRatingLabel.setText("New rating: " + r.newElo());
+//
+//        eloResultOverlay.setVisible(true);
+//        eloResultOverlay.setMouseTransparent(false);
+//    }
 
     protected void hideEloOverlay() {
         eloResultOverlay.setVisible(false);

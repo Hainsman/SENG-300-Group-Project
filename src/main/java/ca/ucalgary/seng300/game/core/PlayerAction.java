@@ -1,19 +1,21 @@
 package ca.ucalgary.seng300.game.core;
 
-public abstract class PlayerAction {
-    private final String playerID;
+import java.io.Serializable;
+
+public abstract class PlayerAction implements Serializable {
+    private final Player playerID;
     private final String actionType;
     private final int row;
     private final int col;
 
-    protected PlayerAction(String playerID, String actionType, int row, int col) {
+    protected PlayerAction(Player playerID, String actionType, int row, int col) {
         this.playerID = playerID;
         this.actionType = actionType;
         this.row = row;
         this.col = col;
     }
 
-    public String getPlayerID() {
+    public Player getPlayerID() {
         return playerID;
     }
 

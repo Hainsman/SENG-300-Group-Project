@@ -14,22 +14,6 @@ public class TTTGame implements Game {
 
     private GameState gameState = new TTTGameState();
     private final TTTRuleValidator validator = new TTTRuleValidator();
-    public platformChannel player1 = null;
-    public platformChannel player2 = null;
-
-    public boolean userJoin(platformChannel p){
-        if(player1 == null){
-            player1 = p;
-            return true;
-        }
-        else if(player2 == null){
-            player2 = p;
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 
     public void tempReset(){
         gameState = new TTTGameState();
@@ -57,6 +41,10 @@ public class TTTGame implements Game {
         }
     }
 
+    public boolean wasLastMoveValid() {
+        return valid;
+    }
+
     @Override
     public GameState getGameState() {
         return gameState;
@@ -73,7 +61,7 @@ public class TTTGame implements Game {
     }
 
     /** Optional: set mapping for turn enforcement (playerId -> PLAYER_1/PLAYER_2). When null, validator does not check turn. */
-    public void setPlayerIdToPlayer(Map<String, Player> map) {
-        validator.setPlayerIdToPlayer(map);
-    }
+    //public void setPlayerIdToPlayer(Map<String, Player> map) {
+    //    validator.setPlayerIdToPlayer(map);
+    //}
 }

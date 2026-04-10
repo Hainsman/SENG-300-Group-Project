@@ -71,6 +71,18 @@ public class C4GameState implements GameState {
         return this.state;
     }
 
+    /** Ends the current game in favour of the opponent (online forfeit). */
+    public void applyForfeit(Player forfeitingPlayer) {
+        if (state != State.IN_PROGRESS) {
+            return;
+        }
+        if (forfeitingPlayer == Player.PLAYER_1) {
+            state = State.PLAYER_2_WIN;
+        } else if (forfeitingPlayer == Player.PLAYER_2) {
+            state = State.PLAYER_1_WIN;
+        }
+    }
+
     /**
      * Rebuilds state from {@link ca.ucalgary.seng300.platform.messages.C4WireState} (ordinal grid only).
      */

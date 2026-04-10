@@ -45,8 +45,16 @@ public class CentralController {
 
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
+    public ClientCore clientCore;
+    public GameGUIPage gameui;
     public TTTPage tttPage;
     public C4Page connect4;
+    public LoginPage loginPage;
+    public NewUserPage newUserPage;
+    public HostLobbyPage hostLobbyPage;
+    public JoinLobbyPage joinLobbyPage;
+    public MainLobbyPage mainLobbyPage;
+
 
     public GameType selectedGame;
     public int maxPlayers;
@@ -124,12 +132,20 @@ public class CentralController {
         return clientCore;
     }
 
-    public ClientCore clientCore;
-    public int test1;
-
-    public void uptest(int i){
-        test1 = i;
+    public void addIncomingMatchChat(String sender, String message) {
+        if (gameui== null || message == null || message.isBlank()) {
+            return;
+        }
+        gameui.addChat(sender != null && !sender.isBlank() ? sender : "Player", message, javafx.scene.paint.Color.web("#86efac"));
     }
+
+    /*public void onRematchAccepted(String responder) {
+        String name = responder != null && !responder.isBlank() ? responder : "Opponent";
+        if (gameGuiPage != null) {
+            gameGuiPage.addIncomingSystemNotice("Rematch accepted by " + name + ". Starting new game...");
+        }
+    }
+    }*/
 
     @FXML
     public void initialize() {
@@ -167,20 +183,26 @@ public class CentralController {
     }
 
     private void initializeNodes() {
-        GameGUIPage gameGUIPage = new GameGUIPage(this);
-        connect4 = new C4Page(this, gameGUIPage);
-        tttPage = new TTTPage(this, gameGUIPage);
-        nodes.add(gameGUIPage);
+        gameui = new GameGUIPage(this);
+        connect4 = new C4Page(this, gameui);
+        tttPage = new TTTPage(this, gameui);
+        loginPage = new LoginPage(this);
+        newUserPage = new NewUserPage(this);
+        hostLobbyPage = new HostLobbyPage(this);
+        joinLobbyPage = new JoinLobbyPage(this);
+        mainLobbyPage = new MainLobbyPage(this);
+        //lobbyBridge = ;
+        nodes.add(gameui);
         nodes.add(connect4);
         nodes.add(tttPage);
         nodes.add(new ChooseModePage(this));
         nodes.add(new GameDashboardPage(this));
-        nodes.add(new HostLobbyPage(this));
+        nodes.add(hostLobbyPage);
         nodes.add(new InfoPage(this));
-        nodes.add(new JoinLobbyPage(this));
-        nodes.add(new LoginPage(this));
-        nodes.add(new MainLobbyPage(this));
-        nodes.add(new NewUserPage(this));
+        nodes.add(joinLobbyPage);
+        nodes.add(loginPage);
+        nodes.add(mainLobbyPage);
+        nodes.add(newUserPage);
         nodes.add(new ProfileDashboardPage(this));
         nodes.add(new SettingsPage(this));
     }

@@ -1,5 +1,5 @@
 package ca.ucalgary.seng300.platform.serverreponse;
-
+/*
 import ca.ucalgary.seng300.platform.messages.Message;
 
 public class ServerResponse {
@@ -23,4 +23,4 @@ public class ServerResponse {
         res.details = new String[]{text};
         return res;
     }
-}
+}*/

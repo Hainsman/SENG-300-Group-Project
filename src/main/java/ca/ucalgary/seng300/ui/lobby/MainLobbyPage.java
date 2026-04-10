@@ -1,12 +1,15 @@
 package ca.ucalgary.seng300.ui.lobby;
 
-import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
+import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
+import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -67,15 +70,124 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         refreshPlayersFromState();
         refreshStartButton();
 
-        LobbyBridge.onPartnerJoined = this::refreshPlayersFromState;
-        LobbyBridge.onGameState = this::refreshStartButton;
+        //LobbyBridge.onPartnerJoined = this::refreshPlayersFromState;
+        //LobbyBridge.onGameState = this::refreshStartButton;
+    }
+    private void applyGameAccent() {
+        getStyleClass().removeAll("lobby-ttt", "lobby-c4");
+        if (rootController.selectedGame == GameType.CONNECT4) {
+            getStyleClass().add("lobby-c4");
+        } else {
+            getStyleClass().add("lobby-ttt");
+        }
     }
 
-    private void refreshPlayersFromState() {
+    private boolean isPaired() {
+        return rosterPopulated();
+    }
+
+    private boolean rosterPopulated() {
+        String h = rootController.rosterHostName;
+        String guest = rootController.rosterGuestName;
+        return h != null && !h.isBlank() && guest != null && !guest.isBlank();
+    }
+
+    private String currentUserDisplayName() {
+        int uid = rootController.currentUserId;
+        if (uid > 0) {
+            User u = UserStore.getInstance().get(uid);
+            if (u != null && u.getlogin() != null && !u.getlogin().isBlank()) {
+                return u.getlogin().trim();
+            }
+        }
+        if (rootController.displayName != null && !rootController.displayName.isBlank()) {
+            return rootController.displayName.trim();
+        }
+        return "Player";
+    }
+
+    private int myEloForSelectedGame() {
+        GameType g = rootController.selectedGame != null ? rootController.selectedGame : GameType.TIC_TAC_TOE;
+        int uid = rootController.currentUserId;
+        if (uid > 0) {
+            User u = UserStore.getInstance().get(uid);
+            if (u != null) {
+                return u.getEloForGame(g);
+            }
+        }
+        return PlayerProfileHelper.eloForGameType(g,rootController);
+    }
+    /*
+    private void setYouPills(boolean hosting) {
+        boolean showHost = hosting;
+        boolean showGuest = !hosting;
+        if (hostYouPill != null) {
+            hostYouPill.setVisible(showHost);
+            hostYouPill.setManaged(showHost);
+        }
+        if (guestYouPill != null) {
+            guestYouPill.setVisible(showGuest);
+            guestYouPill.setManaged(showGuest);
+        }
+    }
+    boolean paired = isPaired();
+        boolean roster = paired;
+
+        setYouPills(hosting);
+
+        String hostName;
+        String guestName;
+        int hostElo;
+        int guestElo;
+
+        if (roster) {
+            hostName = rootController.rosterHostName.trim();
+            guestName = rootController.rosterGuestName.trim();
+            hostElo = rootController.rosterHostElo;
+            guestElo = rootController.rosterGuestElo;
+        } else if (hosting) {
+            hostName = currentUserDisplayName();
+            hostElo = myEloForSelectedGame();
+            guestName = paired ? "Opponent" : "Waiting for opponent…";
+            guestElo = paired ? Math.max(0, rootController.rosterGuestElo) : -1;
+        } else {
+            guestName = currentUserDisplayName();
+            guestElo = myEloForSelectedGame();
+            hostName = paired ? "Host" : "Waiting…";
+            hostElo = paired ? Math.max(0, rootController.rosterHostElo) : -1;
+        }
+
+        if (hostNameLabel != null) {
+            hostNameLabel.setText(hostName);
+        }
+        if (guestNameLabel != null) {
+            guestNameLabel.setText(guestName);
+        }
+        if (hostEloLabel != null) {
+            hostEloLabel.setText(hostElo >= 0 ? ("Elo " + hostElo) : "Elo —");
+        }
+        if (guestEloLabel != null) {
+            guestEloLabel.setText(guestElo >= 0 ? ("Elo " + guestElo) : "Elo —");
+        }
+
+        if (connectionHintLabel != null) {
+            if (paired) {
+                connectionHintLabel.setText("Both players connected. Host can start when ready.");
+                connectionHintLabel.setVisible(true);
+                connectionHintLabel.setManaged(true);
+            } else if (!paired) {
+                connectionHintLabel.setText("Waiting for your opponent to join…");
+                connectionHintLabel.setVisible(true);
+                connectionHintLabel.setManaged(true);
+            } else {
+    */
+
+    public void refreshPlayersFromState() {
+        System.out.println(" player update triggered");
         if (playerList != null) {
             playerList.getItems().clear();
             ClientCore cc = rootController != null ? rootController.getCC() : null;
-            boolean guestThere = cc != null && cc.getLastUpdate() != null;
+            boolean guestThere = cc.otherjoined;
             if (rootController.hostingLobby) {
                 playerList.getItems().add("You (host)");
                 playerList.getItems().add(guestThere ? "Guest (connected)" : "Waiting for guest…");
@@ -86,22 +198,23 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         }
         if (playerCountLabel != null) {
             ClientCore cc = rootController != null ? rootController.getCC() : null;
-            boolean paired = cc != null && cc.getLastUpdate() != null;
+            boolean paired = cc.otherjoined;
             int cur = paired ? 2 : 1;
             int max = rootController.maxPlayers > 0 ? rootController.maxPlayers : 2;
             playerCountLabel.setText("Players (" + cur + "/" + max + ")");
         }
+        refreshStartButton();
     }
 
-    private void refreshStartButton() {
+    public void refreshStartButton() {
         if (startGameBtn == null) {
             return;
         }
         ClientCore cc = rootController != null ? rootController.getCC() : null;
-        boolean paired = cc != null && cc.getLastUpdate() != null;
+        boolean paired = cc.otherjoined;
         boolean host = rootController.hostingLobby;
         startGameBtn.setDisable(!host || !paired);
-        refreshPlayersFromState();
+        System.out.println(" start button updated pair"+ paired + " host"+ host);
     }
 
     @FXML
@@ -118,9 +231,15 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
         if (rootController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {
-                cc.msgSend(new sysMSG("GMJN", nav.getFxml(), ""));
+                System.out.println("start lobby");
+                cc.msgSend(new sysMSG("START_LOBBY",""));
             }
         }
+    }
+
+    public void gameStart(){
+        GameType game = rootController.selectedGame;
+        Navigation nav = GameType.getNavigation(game);
         LobbyBridge.clearLobbyUiCallbacks();
         rootController.moveTo(nav);
     }

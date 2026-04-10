@@ -12,8 +12,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +36,8 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
     @FXML private Label c4GamesLabel;
     @FXML private Label c4RankBadge;
     @FXML private Label tierSummaryLabel;
-    @FXML private ListView<String> leaderboardList;
+    @FXML private VBox tttLeaderboardBox;
+    @FXML private VBox c4LeaderboardBox;
 
     public ProfileDashboardPage(CentralController rootController) {
         try {
@@ -52,7 +56,8 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
     @FXML
     private void initialize() {
         refreshLoggedInLine();
-        refreshStats();
+        // TODO fix this
+        //refreshStats();
     }
 
     private void refreshLoggedInLine() {
@@ -105,31 +110,47 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
                     PlayerProfileHelper.eloTierLabel(tttElo),
                     PlayerProfileHelper.eloTierLabel(c4Elo)));
         }
-        if (leaderboardList != null) {
-            leaderboardList.getItems().clear();
-            leaderboardList.getItems().add("— Tic Tac Toe (by ELO) —");
-            appendLeaderboardRows(GameType.TIC_TAC_TOE);
-            leaderboardList.getItems().add("— Connect 4 (by ELO) —");
-            appendLeaderboardRows(GameType.CONNECT4);
+        if (tttLeaderboardBox != null && c4LeaderboardBox != null) {
+            populateLeaderboard(GameType.TIC_TAC_TOE, tttLeaderboardBox);
+            populateLeaderboard(GameType.CONNECT4, c4LeaderboardBox);
         }
     }
 
-    private void appendLeaderboardRows(GameType gameType) {
+    private void populateLeaderboard(GameType gameType, VBox targetBox) {
+        targetBox.getChildren().clear();
         List<User> top = LeaderBoardService.getInstance().getLeaderBoard(true, gameType, 20);
         if (top.isEmpty()) {
-            leaderboardList.getItems().add("  (no players yet)");
+            Label empty = new Label("No players yet");
+            empty.getStyleClass().add("leaderboard-empty");
+            targetBox.getChildren().add(empty);
             return;
         }
         for (int i = 0; i < top.size(); i++) {
             User u = top.get(i);
             int elo = u.getEloForGame(gameType);
-            leaderboardList.getItems().add(String.format(
-                    "  #%d  %s  —  %d ELO  (%s)",
-                    i + 1,
-                    u.getlogin(),
-                    elo,
-                    PlayerProfileHelper.eloTierLabel(elo)));
+            targetBox.getChildren().add(buildLeaderboardRow(i + 1, u.getlogin(), elo));
         }
+    }
+
+    private HBox buildLeaderboardRow(int position, String login, int elo) {
+        Label rankLabel = new Label("#" + position);
+        rankLabel.getStyleClass().add("leaderboard-rank");
+
+        Label nameLabel = new Label(login);
+        nameLabel.getStyleClass().add("leaderboard-name");
+
+        Label eloLabel = new Label(elo + " ELO");
+        eloLabel.getStyleClass().add("leaderboard-elo");
+
+        Label tierLabel = new Label(PlayerProfileHelper.eloTierLabel(elo));
+        tierLabel.getStyleClass().add("leaderboard-tier");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        HBox row = new HBox(10, rankLabel, nameLabel, spacer, eloLabel, tierLabel);
+        row.getStyleClass().add("leaderboard-row");
+        return row;
     }
 
     @FXML

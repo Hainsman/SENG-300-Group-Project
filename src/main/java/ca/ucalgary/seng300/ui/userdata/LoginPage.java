@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.ui.userdata;
 
 import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
@@ -30,6 +31,8 @@ public class LoginPage extends HBox implements Navigable {
     @FXML private Button newUserButton;
     @FXML private Button forgotPasswordButton;
 
+    private boolean loginPending = false;
+
     public LoginPage(CentralController rootController) {
         try {
             this.rootController = rootController;
@@ -48,35 +51,42 @@ public class LoginPage extends HBox implements Navigable {
     private void handleLogin(ActionEvent event) {
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
+        Button clickedButton = loginButton;
+        if (clickedButton == null && event.getSource() instanceof Button sourceButton) {
+            clickedButton = sourceButton;
+        }
 
         if (username.isEmpty() || password.isEmpty()) {
-            errorLabel.setText("Please enter your username and password.");
+            errorLabel.setText("Please enter your email/username and password.");
             return;
         }
+        System.out.println("loginsent");
+        rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
 
-        UserStore store = UserStore.getInstance();
-        List<User> matches = store.findByUserName(username);
-        if (matches.isEmpty()) {
-            errorLabel.setText("Username not found.");
-            return;
+        loginPending = true;
+        if (clickedButton != null) {
+            clickedButton.setDisable(true);
         }
-        User user = matches.getFirst();
-        String hash = Helper.hashPassword(password, Constants.HASH_ALGORITHM);
-        if (!hash.equals(user.getPasswordHash())) {
-            errorLabel.setText("Incorrect password.");
-            return;
-        }
-        if (!user.getIsActive()) {
-            errorLabel.setText("This account is disabled.");
-            return;
-        }
+        errorLabel.setText("Signing in...");
+        rootController.clientCore.msgSend(new sysMSG("AUTH", username, password));
+    }
 
-        rootController.currentUserId = user.getID();
-        rootController.displayName = user.getlogin();
-        rootController.previousScreen = null;
-        rootController.localAiMode = false;
-        rootController.getWindowManager().playAudioClip(SoundEffect.USER_LOGGED_IN);
-        rootController.moveTo(Navigation.GAME_DASHBOARD);
+    public void loginReply(sysMSG s){
+        if(s.getFieldA().equals("PASS")){
+            loginPending = false;
+            loginButton.setDisable(false);
+            errorLabel.setText("");
+            rootController.getWindowManager().playAudioClip(SoundEffect.USER_LOGGED_IN);
+            rootController.moveTo(Navigation.GAME_DASHBOARD);
+            rootController.previousScreen = null;
+            errorLabel.setText(s.getFieldB());
+        }
+        else{
+            String message = s.getFieldB();
+            errorLabel.setText(message != null && !message.isBlank()
+                    ? message
+                    : "Login failed.");
+        }
     }
 
     // Move to NewUser screen when button is triggered.
@@ -98,6 +108,6 @@ public class LoginPage extends HBox implements Navigable {
 
     @Override
     public void reset() {
-
+        errorLabel.setText("");
     }
 }
