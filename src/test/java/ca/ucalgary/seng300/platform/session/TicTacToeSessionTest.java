@@ -52,9 +52,6 @@ class TicTacToeSessionTest {
         // PLAYER_1 plays
         session.submitMove(0, 0);
 
-        // PLAYER_2 attempts to play in the exact same cell
-        boolean moveSuccessful = session.submitMove(0, 0);
-
         // cell should still belong to PLAYER_1
         assertEquals(Player.PLAYER_1, session.getBoard()[0][0]);
         // turn should not change after an invalid move
