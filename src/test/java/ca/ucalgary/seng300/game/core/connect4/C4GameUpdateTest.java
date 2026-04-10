@@ -25,4 +25,19 @@ public class C4GameUpdateTest {
         state.applyAction(action);
         assertEquals(Player.PLAYER_2, state.getPlayerTurn());
     }
+
+    @Test
+    void applyActionDetectsVerticalWin() {
+        C4GameState state = new C4GameState();
+
+        state.applyAction(new C4PlayerAction(Player.PLAYER_1.toString(), "MOVE", 0, 3));
+        state.applyAction(new C4PlayerAction(Player.PLAYER_2.toString(), "MOVE", 0, 4));
+        state.applyAction(new C4PlayerAction(Player.PLAYER_1.toString(), "MOVE", 0, 3));
+        state.applyAction(new C4PlayerAction(Player.PLAYER_2.toString(), "MOVE", 0, 4));
+        state.applyAction(new C4PlayerAction(Player.PLAYER_1.toString(), "MOVE", 0, 3));
+        state.applyAction(new C4PlayerAction(Player.PLAYER_2.toString(), "MOVE", 0, 4));
+
+        boolean action = state.applyAction(new C4PlayerAction(Player.PLAYER_1.toString(), "MOVE", 0, 3));
+        assertTrue(action);
+    }
 }
