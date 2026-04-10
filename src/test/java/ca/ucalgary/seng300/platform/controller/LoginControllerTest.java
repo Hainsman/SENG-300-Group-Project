@@ -1,24 +1,26 @@
 package ca.ucalgary.seng300.platform.controller;
 
+import ca.ucalgary.seng300.ui.LoginController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LoginControllerTest {
+    private LoginController loginController;
 
     @BeforeEach
     void setUp() {
-        //LoginController loginController = new LoginController();
+        loginController = new LoginController();
     }
 
     @Test
-    void login() {
-        assert true;
+    void controllerCanBeInstantiated() {
+        assertNotNull(loginController);
     }
 
     @Test
-    void validate() {
-        assert false;
+    void setCentralControllerAcceptsNull() {
+        assertDoesNotThrow(() -> loginController.setCentralController(null));
     }
 }

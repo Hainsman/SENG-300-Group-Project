@@ -1,144 +1,48 @@
 package ca.ucalgary.seng300;
-/*
+
 import ca.ucalgary.seng300.platform.client.ClientCore;
-import org.junit.jupiter.api.AfterEach;
+import ca.ucalgary.seng300.game.core.Player;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
+import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ClientCoreTest {
 
-    private final InputStream originalSystemIn = System.in;
-
-    @AfterEach
-    public void restoreSystemIn() {
-        System.setIn(originalSystemIn);
+    @Test
+    void isConnectedIsFalseBeforeSocketSetup() {
+        ClientCore client = new ClientCore(null);
+        assertFalse(client.isConnected());
     }
 
     @Test
-    public void testClientConnectsAndSendsExit() throws Exception {
-        try (FakeServer server = new FakeServer("1")) {
-            server.start();
+    void getMyNetworkRoleMapsP1AndP2() throws Exception {
+        ClientCore client = new ClientCore(null);
+        setPrivateField(client, "myPlayerId", "P1");
+        assertEquals(Player.PLAYER_1, client.getMyNetworkRole());
 
-            System.setIn(new ByteArrayInputStream("exit\n".getBytes(StandardCharsets.UTF_8)));
-
-            runClient(server.getPort());
-
-            List<String> received = server.getReceivedMessages();
-            assertTrue(received.size() >= 2);
-            assertEquals("This is Client 1", received.get(0));
-            assertEquals("exit", received.get(1));
-        }
+        setPrivateField(client, "myPlayerId", "P2");
+        assertEquals(Player.PLAYER_2, client.getMyNetworkRole());
     }
 
     @Test
-    public void testRlCommandSendsExpectedMessages() throws Exception {
-        try (FakeServer server = new FakeServer("2")) {
-            server.start();
-
-            System.setIn(new ByteArrayInputStream("rl\nexit\n".getBytes(StandardCharsets.UTF_8)));
-
-            runClient(server.getPort());
-
-            List<String> received = server.getReceivedMessages();
-            assertTrue(received.contains("This is Client 2"));
-            assertTrue(received.contains("rl"));
-            assertTrue(received.contains("AUTH#Mjolnir Recon"));
-            assertTrue(received.contains("CHAT#JOIN#2#Mjolnir Recon"));
-            assertTrue(received.contains("exit"));
-        }
+    void getMyNetworkRoleReturnsNullWhenUnknown() throws Exception {
+        ClientCore client = new ClientCore(null);
+        setPrivateField(client, "myPlayerId", "UNKNOWN");
+        assertNull(client.getMyNetworkRole());
     }
 
     @Test
-    public void testDrCommandSendsExpectedMessages() throws Exception {
-        try (FakeServer server = new FakeServer("3")) {
-            server.start();
-
-            System.setIn(new ByteArrayInputStream("dr\nexit\n".getBytes(StandardCharsets.UTF_8)));
-
-            runClient(server.getPort());
-
-            List<String> received = server.getReceivedMessages();
-            assertTrue(received.contains("This is Client 3"));
-            assertTrue(received.contains("dr"));
-            assertTrue(received.contains("AUTH#Durandal"));
-            assertTrue(received.contains("CHAT#JOIN#3#Durandal"));
-            assertTrue(received.contains("exit"));
-        }
+    void disconnectedSendOperationsAreNoOps() {
+        ClientCore client = new ClientCore(null);
+        assertDoesNotThrow(() -> client.msgSend("hello"));
+        assertDoesNotThrow(client::sendLogout);
     }
 
-    private void runClient(int port) throws Exception {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        try {
-            Future<?> future = executor.submit(() -> {
-                new ClientCore("localhost", port);
-            });
-
-            future.get(8, TimeUnit.SECONDS);
-        } finally {
-            executor.shutdownNow();
-        }
+    private void setPrivateField(Object target, String fieldName, Object value) throws Exception {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
     }
-
-    private static class FakeServer implements AutoCloseable {
-        private final String clientIdToSend;
-        private final List<String> receivedMessages = new CopyOnWriteArrayList<>();
-
-        private ServerSocket serverSocket;
-        private ExecutorService executor;
-
-        FakeServer(String clientIdToSend) {
-            this.clientIdToSend = clientIdToSend;
-        }
-
-        void start() throws IOException {
-            serverSocket = new ServerSocket(0); // random free port
-            executor = Executors.newSingleThreadExecutor();
-
-            executor.submit(() -> {
-                try (Socket socket = serverSocket.accept();
-                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                     PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true)) {
-
-                    out.println(clientIdToSend);
-
-                    String line;
-                    while ((line = in.readLine()) != null) {
-                        receivedMessages.add(line);
-
-                        if ("exit".equals(line)) {
-                            break;
-                        }
-                    }
-                } catch (IOException ignored) {
-                }
-            });
-        }
-
-        int getPort() {
-            return serverSocket.getLocalPort();
-        }
-
-        List<String> getReceivedMessages() {
-            return new ArrayList<>(receivedMessages);
-        }
-
-        @Override
-        public void close() throws Exception {
-            if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close();
-            }
-            if (executor != null) {
-                executor.shutdownNow();
-            }
-        }
-    }
-}*/
+}

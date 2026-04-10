@@ -4,7 +4,7 @@ import ca.ucalgary.seng300.game.core.Player;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class TTTGameUpdateTest {
+class TTTGameStateTest {
 
     @Test
     // Tests is applying an action actually updates the board
@@ -12,8 +12,7 @@ class TTTGameUpdateTest {
 
         TTTGameState gameState = new TTTGameState();
 
-        TTTActionPayload payload = new TTTActionPayload(1, 1);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player1", "MOVE", 1, 1);
 
         assertTrue(gameState.applyAction(action));
     }
@@ -24,8 +23,7 @@ class TTTGameUpdateTest {
 
         TTTGameState gameState = new TTTGameState();
 
-        TTTActionPayload payload = new TTTActionPayload(0, 0);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player1", "MOVE", 0, 0);
 
         gameState.applyAction(action);
 

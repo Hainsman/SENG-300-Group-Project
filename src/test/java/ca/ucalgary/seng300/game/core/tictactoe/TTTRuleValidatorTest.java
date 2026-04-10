@@ -3,6 +3,9 @@ package ca.ucalgary.seng300.game.core.tictactoe;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.State;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TTTRuleValidatorTest {
@@ -17,8 +20,7 @@ class TTTRuleValidatorTest {
         validator = new TTTRuleValidator();
         gameState = new TTTGameState();
 
-        TTTActionPayload payload = new TTTActionPayload(1, 1);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player1", "MOVE", 1, 1);
 
         boolean isValid = validator.validateMove(gameState, action);
 
@@ -31,8 +33,7 @@ class TTTRuleValidatorTest {
         validator = new TTTRuleValidator();
         gameState = new TTTGameState();
 
-        TTTActionPayload payload = new TTTActionPayload(3, 3);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player1", "MOVE", 3, 3);
 
         boolean isValid = validator.validateMove(gameState, action);
 
@@ -49,8 +50,7 @@ class TTTRuleValidatorTest {
         // simulate a board with a piece already on it
         gameState.getBoard()[0][0] = Player.PLAYER_1;
 
-        TTTActionPayload payload = new TTTActionPayload(0, 0);
-        TTTPlayerAction action = new TTTPlayerAction("player2", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player2", "MOVE", 0, 0);
 
         boolean isValid = validator.validateMove(gameState, action);
 
@@ -63,12 +63,15 @@ class TTTRuleValidatorTest {
     void playerMakesMoveDuringOpponentsTurn() {
         validator = new TTTRuleValidator();
         gameState = new TTTGameState();
+        validator.setPlayerIdToPlayer(Map.of(
+                "player1", Player.PLAYER_1,
+                "player2", Player.PLAYER_2
+        ));
 
         // Make it player2's turn
         gameState.playerTurn = Player.PLAYER_2;
 
-        TTTActionPayload payload = new TTTActionPayload(0, 0);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player1", "MOVE", 0, 0);
 
         boolean isValid = validator.validateMove(gameState, action);
 
@@ -85,8 +88,7 @@ class TTTRuleValidatorTest {
 
         gameState.state = State.TIE;
 
-        TTTActionPayload payload = new TTTActionPayload(0, 0);
-        TTTPlayerAction action = new TTTPlayerAction("player1", TTTActionType.MOVE, payload);
+        TTTPlayerAction action = new TTTPlayerAction("player1", "MOVE", 0, 0);
 
         boolean isValid = validator.validateMove(gameState, action);
 

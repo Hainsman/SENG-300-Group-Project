@@ -29,4 +29,10 @@ public class PlayerStats extends Record{
             this.score = 0;
         this.counter ++;
     }
+
+    // Backward-compatible alias used by legacy tests.
+    public void updateStats(double score) {
+        this.score += score;
+        this.counter++;
+    }
 }
