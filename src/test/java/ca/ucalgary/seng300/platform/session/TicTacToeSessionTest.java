@@ -47,4 +47,34 @@ class TicTacToeSessionTest {
         assertEquals(Player.PLAYER_2, session.getTurn());
     }
 
+    @Test
+    void testInvalidSubmitMoveOccupiedCell() {
+        // PLAYER_1 plays
+        session.submitMove(0, 0);
+
+        // PLAYER_2 attempts to play in the exact same cell
+        boolean moveSuccessful = session.submitMove(0, 0);
+
+        // cell should still belong to PLAYER_1
+        assertEquals(Player.PLAYER_1, session.getBoard()[0][0]);
+        // turn should not change after an invalid move
+        assertEquals(Player.PLAYER_2, session.getTurn());
+    }
+
+    @Test
+    void testStartNewGame() {
+        // Play a couple of moves to change the state
+        session.submitMove(1, 1);
+        session.submitMove(0, 0);
+
+        // Call startNewGame
+        session.startNewGame();
+
+        // Verify everything is reset
+        assertEquals(State.IN_PROGRESS, session.getState());
+        assertEquals(Player.PLAYER_1, session.getTurn());
+        assertEquals(Player.EMPTY, session.getBoard()[1][1]);
+        assertEquals(Player.EMPTY, session.getBoard()[0][0]);
+    }
+
 }
