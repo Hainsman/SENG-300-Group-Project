@@ -122,6 +122,7 @@ public class ClientCore extends Thread{
 
     private volatile Consumer<sysMSG> profileUpdateResponseHandler;
     private volatile Consumer<sysMSG> friendsListHandler;
+    private volatile Consumer<sysMSG> gameHistoryHandler;
     private volatile Consumer<sysMSG> leaderboardHandler;
 
     public void setProfileUpdateResponseHandler(Consumer<sysMSG> handler) {
@@ -130,6 +131,10 @@ public class ClientCore extends Thread{
 
     public void setFriendsListHandler(Consumer<sysMSG> handler) {
         friendsListHandler = handler;
+    }
+
+    public void setGameHistoryHandler(Consumer<sysMSG> handler) {
+        gameHistoryHandler = handler;
     }
 
     public void setLeaderboardHandler(Consumer<sysMSG> handler) {
@@ -303,6 +308,12 @@ public class ClientCore extends Thread{
                                 Consumer<sysMSG> fHandler = friendsListHandler;
                                 if (fHandler != null) {
                                     Platform.runLater(() -> fHandler.accept(sm));
+                                }
+                                break;
+                            case "GAME_HISTORY_RESPONSE":
+                                Consumer<sysMSG> ghHandler = gameHistoryHandler;
+                                if (ghHandler != null) {
+                                    Platform.runLater(() -> ghHandler.accept(sm));
                                 }
                                 break;
                             case "LEADERBOARD_DATA":

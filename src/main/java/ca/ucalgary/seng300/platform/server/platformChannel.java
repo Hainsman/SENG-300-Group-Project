@@ -94,8 +94,6 @@ public class platformChannel extends Thread {
                 System.out.println("JOIN_LOBBY received for code " + sm.getFieldA() + " gameId=" + requestedGameId);
                 if (serv.onJoinLobby(sm.getFieldA(), requestedGameId, this, sm.getPayload())) {
                     cliSend(new sysMSG("LOBBY_OK", sm.getFieldA(), "JOIN"));
-                } else {
-                    cliSend(new sysMSG("LOBBY_ERR", "JOIN", "Joining a lobby failed. Ensure the code exists and both players selected the same game."));
                 }
                 break;
             case "CREATE_GAME":
@@ -140,6 +138,9 @@ public class platformChannel extends Thread {
                 break;
             case "GET_FRIENDS":
                 cliSend(serv.getAllFriendsByUserID(this));
+                break;
+            case "GAME_HISTORY_REQUEST":
+                cliSend(serv.onGameHistoryRequest(this));
                 break;
             case "CHAT_NOTIFICATION":
                 serv.onChatNotification(this, sm);

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PlatformCoreProfileUpdateTest {
 
     @Test
-    void updateProfileUpdatesEmailLoginAndPasswordHash() throws Exception {
+    void updateProfilePersistsToFile() throws Exception {
         PlatformCore core = new PlatformCore(false);
         Path userFile = createTempStoreFile();
         core.userStore = new UserStore(userFile.toString());
@@ -28,7 +28,9 @@ class PlatformCoreProfileUpdateTest {
         sysMSG response = core.updateProfile(channel, "alice2", "alice2@example.com", "newHash");
         assertEquals("PASS", response.getFieldA());
 
-        User updated = core.userStore.get(1);
+        // Reload from file to ensure persistence
+        UserStore reloadedStore = new UserStore(userFile.toString());
+        User updated = reloadedStore.get(1);
         assertEquals("alice2", updated.getlogin());
         assertEquals("alice2@example.com", updated.getEmail());
         assertEquals("newHash", updated.getPasswordHash());

@@ -107,6 +107,12 @@ public class SettingsController {
             if (cent != null && cent.clientCore != null) {
                 cent.clientCore.username = displayNameField.getText().trim();
                 cent.clientCore.email = emailField.getText().trim();
+                // If a new password was provided and accepted, the server returns the hash in the payload
+                if (response.getPayload() != null && !response.getPayload().isEmpty()) {
+                    // Assuming clientCore has a way to store the hash if needed, 
+                    // or at least we know the update was successful.
+                    // If there was a 'password' field in ClientCore we would update it here.
+                }
             }
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

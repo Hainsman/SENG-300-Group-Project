@@ -11,9 +11,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-
 import java.util.UUID;
 
 public class hostLobbyController {
@@ -22,13 +19,8 @@ public class hostLobbyController {
     @FXML private TextField lobbyNameField;
     @FXML private Slider playerSlider;
 
-    @FXML private ToggleButton privateLobby;
-    @FXML private ToggleButton publicLobby;
-    @FXML private ToggleGroup privacyOptions;
-
     @FXML private Label previewGameLabel;
     @FXML private Label previewPlayersLabel;
-    @FXML private Label previewPrivacyLabel;
 
     @FXML private Button createLobbyBtn;
 
@@ -45,31 +37,11 @@ public class hostLobbyController {
         if (previewPlayersLabel != null && playerSlider != null) {
             previewPlayersLabel.setText(String.valueOf((int) playerSlider.getValue()));
         }
-        if (previewPrivacyLabel != null) {
-            previewPrivacyLabel.setText("Private");
-        }
 
         if (playerSlider != null) {
             playerSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
                 if (previewPlayersLabel != null) {
                     previewPlayersLabel.setText(String.valueOf(newVal.intValue()));
-                }
-            });
-        }
-
-        if (privateLobby != null) {
-            privateLobby.setSelected(true);
-        }
-
-        if (privacyOptions != null) {
-            privacyOptions.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-                if (previewPrivacyLabel == null) {
-                    return;
-                }
-                if (newVal == privateLobby) {
-                    previewPrivacyLabel.setText("Private");
-                } else if (newVal == publicLobby) {
-                    previewPrivacyLabel.setText("Public");
                 }
             });
         }
@@ -109,9 +81,6 @@ public class hostLobbyController {
         int maxPlayers = playerSlider != null ? (int) playerSlider.getValue() : 2;
 
         String privacy = "Private";
-        if (privacyOptions != null && privacyOptions.getSelectedToggle() == publicLobby) {
-            privacy = "Public";
-        }
 
         String code = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
 

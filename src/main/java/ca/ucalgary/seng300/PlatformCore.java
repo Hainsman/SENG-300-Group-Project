@@ -143,11 +143,18 @@ public class PlatformCore {
         ServerLobby sl = lobbies.get(lobbyid);
         if (sl == null) {
             System.out.println("JOIN_LOBBY rejected: no lobby found for " + lobbyid);
+            guestChannel.cliSend(new sysMSG("LOBBY_ERR", "JOIN", "No lobby with that code."));
             return false;
         }
         if (requestedGameId > 0 && requestedGameId != sl.getGameId()) {
             System.out.println("JOIN_LOBBY rejected: game mismatch requested=" + requestedGameId
                     + " hostGameId=" + sl.getGameId());
+            guestChannel.cliSend(new sysMSG("LOBBY_ERR", "JOIN", "Game mismatch."));
+            return false;
+        }
+        if (sl.getGuest() != null) {
+            System.out.println("JOIN_LOBBY rejected: lobby " + lobbyid + " is full");
+            guestChannel.cliSend(new sysMSG("LOBBY_ERR", "JOIN", "Lobby is full."));
             return false;
         }
         sl.joinGuest(guestChannel, guestUserId, guestUsername);
@@ -296,7 +303,7 @@ public class PlatformCore {
         }
         userStore.update(user);
 
-        return new sysMSG("UPDATE_PROFILE", "PASS", "Profile updated successfully");
+        return new sysMSG("UPDATE_PROFILE", "PASS", "Profile updated successfully", sanitizedPasswordHash);
     }
 
     public sysMSG getAllFriendsByUserID(platformChannel channel) {
@@ -380,33 +387,6 @@ public class PlatformCore {
             finalizeMatchIfNeeded(sl);
         }
     }
-    /**
-     * Tic-Tac-Toe only: the forfeiting client loses and both receive the updated game state.
-     */
-    /*
-    public synchronized void onForfeit(platformChannel from) {
-        if (p1 == null || p2 == null || from == null) {
-            return;
-        }
-        String normalizedType = normalizeGameType(p1.getGameType());
-        if (!"TTT".equals(normalizedType)) {
-            return;
-        }
-        Player forfeiting = null;
-        if (from == p1) {
-            forfeiting = Player.PLAYER_1;
-        } else if (from == p2) {
-            forfeiting = Player.PLAYER_2;
-        }
-        if (forfeiting == null) {
-            return;
-        }
-        TTTGame t = (TTTGame) games.get("test");
-        t.forfeit(forfeiting);
-        System.out.println("Forfeit by " + forfeiting + " — broadcasting state");
-        p1.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
-        p2.cliSend(GameStateNetworkCodec.encode(t.getGameState()));
-    }*/
 
     public synchronized void onForfeit(platformChannel from) {
         if (from == null || lobbies == null) {
@@ -584,6 +564,29 @@ public class PlatformCore {
         playerStatsStore.update(guestStats);
         sl.markResultRecorded();
 
+        // Record game history and participants for Multiplayer game
+        int gameHistoryId = gameHistoryStore.assignNewId();
+        gameHistoryStore.create(new ca.ucalgary.seng300.platform.domain.GameHistory(gameHistoryId, sl.getGameId()));
+        
+        double hostScore = 0.0;
+        double guestScore = 0.0;
+        if (winner == Player.PLAYER_1) {
+            hostScore = 1.0;
+            guestScore = -1.0;
+        } else if (winner == Player.PLAYER_2) {
+            hostScore = -1.0;
+            guestScore = 1.0;
+        } else {
+            hostScore = 0.0;
+            guestScore = 0.0;
+        }
+
+        int p1Id = participantStore.assignNewId();
+        participantStore.create(new ca.ucalgary.seng300.platform.domain.Participant(p1Id, gameHistoryId, hostUserId, (int) hostScore));
+        
+        int p2Id = participantStore.assignNewId();
+        participantStore.create(new ca.ucalgary.seng300.platform.domain.Participant(p2Id, gameHistoryId, guestUserId, (int) guestScore));
+
         sendPlayerStatsUpdate(host, hostStats);
         sendPlayerStatsUpdate(guest, guestStats);
         
@@ -653,18 +656,51 @@ public class PlatformCore {
             int gameId = Integer.parseInt(gameIdStr);
             PlayerStats stats = getOrCreatePlayerStats(gameId, userId);
             
+            double score;
             if ("WIN".equalsIgnoreCase(result)) {
                 stats.updateStatsWin(1.0);
+                score = 1.0;
             } else if ("LOSS".equalsIgnoreCase(result)) {
                 stats.updateStatsLose(1.0);
+                score = -1.0;
             } else {
                 stats.updateStatsWin(0.0); // Draw/Forfeit
+                score = 0.0;
             }
             playerStatsStore.update(stats);
+
+            // Record game history and participant for AI game
+            int gameHistoryId = gameHistoryStore.assignNewId();
+            gameHistoryStore.create(new ca.ucalgary.seng300.platform.domain.GameHistory(gameHistoryId, gameId));
+            
+            int participantId = participantStore.assignNewId();
+            participantStore.create(new ca.ucalgary.seng300.platform.domain.Participant(participantId, gameHistoryId, userId, (int) score));
+
             sendPlayerStatsUpdate(channel, stats);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
+    }
+
+    public sysMSG onGameHistoryRequest(platformChannel channel) {
+        Integer userId = channel.getAuthenticatedUserId();
+        if (userId == null) {
+            return new sysMSG("GAME_HISTORY_RESPONSE", "FAIL", "User not authenticated");
+        }
+
+        List<ca.ucalgary.seng300.platform.domain.Participant> participations = participantStore.findUserParticipationInGameEvents(userId);
+        StringBuilder sb = new StringBuilder();
+        for (ca.ucalgary.seng300.platform.domain.Participant p : participations) {
+            ca.ucalgary.seng300.platform.domain.GameHistory gh = gameHistoryStore.get(p.getGameHistoryID());
+            if (gh == null) continue;
+
+            if (sb.length() > 0) sb.append(";");
+            sb.append(gh.getGameID()).append("|")
+              .append(p.getScore()).append("|")
+              .append(p.getTimeCreated());
+        }
+
+        return new sysMSG("GAME_HISTORY_RESPONSE", "PASS", "Success", sb.toString());
     }
 
     public sysMSG onLeaderboardRequest(String gameIdStr) {
@@ -700,11 +736,13 @@ public class PlatformCore {
         String rank = ca.ucalgary.seng300.platform.utils.Helper
                 .getRank(stats.getGameCounter(), stats.getScore())
                 .getDisplayName();
+        // fieldA: score, fieldB: counter, payload: rank + "|" + gameId
+        String payload = rank + "|" + stats.getGameID();
         channel.cliSend(new sysMSG(
                 "PLAYER_STATS",
                 formatScore(stats.getScore()),
                 String.valueOf(stats.getGameCounter()),
-                rank
+                payload
         ));
     }
 

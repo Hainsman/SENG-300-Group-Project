@@ -436,7 +436,12 @@ public class Connect4Controller extends GameGUI {
             gamesPlayedValueLabel.setText(message.getFieldB());
         }
         if (tierValueLabel != null && message.getPayload() != null) {
-            tierValueLabel.setText(message.getPayload());
+            String payload = message.getPayload();
+            if (payload.contains("|")) {
+                tierValueLabel.setText(payload.split("\\|")[0]);
+            } else {
+                tierValueLabel.setText(payload);
+            }
         }
     }
 

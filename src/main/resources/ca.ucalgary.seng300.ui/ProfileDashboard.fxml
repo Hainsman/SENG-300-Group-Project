@@ -60,12 +60,12 @@
             <HBox spacing="12" VBox.vgrow="ALWAYS">
                 <children>
                     <VBox spacing="8" styleClass="chat-shell" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                        <Label text="TTT Leaderboard" styleClass="card-title"/>
-                        <ListView fx:id="tttLeaderboardList" styleClass="chat-list" VBox.vgrow="ALWAYS"/>
+                        <Label text="Tic-Tac-Toe History" styleClass="card-title"/>
+                        <ListView fx:id="tttHistoryList" styleClass="chat-list" VBox.vgrow="ALWAYS"/>
                     </VBox>
                     <VBox spacing="8" styleClass="chat-shell" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                        <Label text="Connect 4 Leaderboard" styleClass="card-title"/>
-                        <ListView fx:id="c4LeaderboardList" styleClass="chat-list" VBox.vgrow="ALWAYS"/>
+                        <Label text="Connect 4 History" styleClass="card-title"/>
+                        <ListView fx:id="c4HistoryList" styleClass="chat-list" VBox.vgrow="ALWAYS"/>
                     </VBox>
                 </children>
             </HBox>
