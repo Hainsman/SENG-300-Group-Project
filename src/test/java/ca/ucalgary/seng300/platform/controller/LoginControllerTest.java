@@ -1,22 +1,19 @@
 package ca.ucalgary.seng300.platform.controller;
 
-import ca.ucalgary.seng300.ui.LoginController;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for LoginController.
+ * Smoke test for the login UI class location.
  *
- * LoginController's logic is entirely in @FXML private handlers that require
- * a live JavaFX environment to invoke. Until a JavaFX test harness (e.g. TestFX)
- * is added to the project, only class-level smoke tests are feasible here.
+ * The old LoginController class was removed in favour of LoginPage.
  */
 class LoginControllerTest {
 
     @Test
-    void loginController_classExists() {
-        LoginController controller = new LoginController();
-        assertNotNull(controller);
+    void loginPage_classExists() throws Exception {
+        Class<?> loginPageClass = Class.forName("ca.ucalgary.seng300.ui.userdata.LoginPage");
+        assertNotNull(loginPageClass);
     }
 }

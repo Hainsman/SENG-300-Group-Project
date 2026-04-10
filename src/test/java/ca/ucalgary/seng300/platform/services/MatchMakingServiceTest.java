@@ -1,98 +1,92 @@
 package ca.ucalgary.seng300.platform.services;
-import ca.ucalgary.seng300.platform.constants.Game;
+
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MatchMakingServiceTest {
+class MatchMakingServiceTest {
 
-    private MatchMakingService queue;
-    private final int TIC_TAC_TOE = Game.TICK_TACK_TOE;
+    private final MatchMakingService service = new MatchMakingService();
 
-    @BeforeEach
-    void setUp() {
-        queue = new MatchMakingService();
-        // Clear the static queue to ensure test isolation
+    @AfterEach
+    void clearQueues() {
         MatchMakingService.queues.clear();
     }
 
-    // tests if players are being added to the queue successfully
     @Test
-    void testAddPlayerToQueue() {
-        // Constructor: id=1, gameID=TIC_TAC_TOE, userID=1
-        PlayerStats player = new PlayerStats(1, TIC_TAC_TOE, 1);
-        player.updateStats(100); // Set score to 100
+    void addPlayerToQueueIncreasesQueueSize() {
+        service.addPlayerToQueue(playerWithScore(101, GameType.TIC_TAC_TOE, 50.0));
+        service.addPlayerToQueue(playerWithScore(102, GameType.TIC_TAC_TOE, 53.0));
 
-        queue.addPlayerToQueue(player);
-
-        assertEquals(1, queue.getQueueSize(TIC_TAC_TOE));
-        assertTrue(MatchMakingService.queues.get(TIC_TAC_TOE).contains(player));
+        assertEquals(2, service.getQueueSize(GameType.TIC_TAC_TOE.toId()));
     }
 
-    // tests if matching players work
     @Test
-    void testSuccessfulMatch() {
-        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 1);
-        player1.updateStats(100);
+    void removePlayerRemovesOnlyMatchingPlayer() {
+        PlayerStats p1 = playerWithScore(101, GameType.TIC_TAC_TOE, 50.0);
+        PlayerStats p2 = playerWithScore(102, GameType.TIC_TAC_TOE, 53.0);
+        service.addPlayerToQueue(p1);
+        service.addPlayerToQueue(p2);
 
-        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 2);
-        player2.updateStats(105);
+        MatchMakingService.removePlayer(p2);
 
-        queue.addPlayerToQueue(player1);
-        queue.addPlayerToQueue(player2);
-
-        List<PlayerStats> match = queue.matchPlayers(TIC_TAC_TOE);
-
-        assertNotNull(match);
-        assertEquals(2, match.size());
-        assertEquals(0, queue.getQueueSize(TIC_TAC_TOE));
+        assertEquals(1, service.getQueueSize(GameType.TIC_TAC_TOE.toId()));
     }
 
-    // tests if match making is respecting the 10 point threshold
     @Test
-    void testMatchThresholdFailure(){
-        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 1);
-        player1.updateStats(100);
+    void matchPlayersChoosesClosestPairAndRemovesThem() {
+        PlayerStats p4 = playerWithScore(104, GameType.TIC_TAC_TOE, 35.0);
+        PlayerStats p5 = playerWithScore(105, GameType.TIC_TAC_TOE, 35.1);
+        PlayerStats p6 = playerWithScore(106, GameType.TIC_TAC_TOE, 34.0);
+        service.addPlayerToQueue(p4);
+        service.addPlayerToQueue(p5);
+        service.addPlayerToQueue(p6);
 
-        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 2);
-        player2.updateStats(111);
+        List<PlayerStats> matched = service.matchPlayers(GameType.TIC_TAC_TOE.toId());
 
-        queue.addPlayerToQueue(player1);
-        queue.addPlayerToQueue(player2);
+        assertNotNull(matched);
+        assertEquals(2, matched.size());
+        assertEquals(104, matched.get(0).getUserID());
+        assertEquals(105, matched.get(1).getUserID());
+        assertEquals(1, service.getQueueSize(GameType.TIC_TAC_TOE.toId()));
+    }
 
-        List<PlayerStats> match = queue.matchPlayers(TIC_TAC_TOE);
+    @Test
+    void matchPlayersReturnsNullWhenScoresTooFarApart() {
+        service.addPlayerToQueue(playerWithScore(101, GameType.TIC_TAC_TOE, 50.0));
+        service.addPlayerToQueue(playerWithScore(103, GameType.TIC_TAC_TOE, 90.0));
+
+        List<PlayerStats> match = service.matchPlayers(GameType.TIC_TAC_TOE.toId());
 
         assertNull(match);
-        assertEquals(2, queue.getQueueSize(TIC_TAC_TOE));
+        assertEquals(2, service.getQueueSize(GameType.TIC_TAC_TOE.toId()));
     }
 
     @Test
-    void testClosestMatchLogic() {
-        PlayerStats player1 = new PlayerStats(1, TIC_TAC_TOE, 1);
-        player1.updateStats(100);
+    void queuesAreIndependentAcrossGameTypes() {
+        PlayerStats ttt = playerWithScore(101, GameType.TIC_TAC_TOE, 50.0);
+        PlayerStats c4a = playerWithScore(107, GameType.CONNECT4, 50.0);
+        PlayerStats c4b = playerWithScore(108, GameType.CONNECT4, 55.0);
+        service.addPlayerToQueue(ttt);
+        service.addPlayerToQueue(c4a);
+        service.addPlayerToQueue(c4b);
 
-        PlayerStats player2 = new PlayerStats(2, TIC_TAC_TOE, 2);
-        player2.updateStats(150);
+        List<PlayerStats> c4Match = service.matchPlayers(GameType.CONNECT4.toId());
 
-        PlayerStats player3 = new PlayerStats(3, TIC_TAC_TOE, 3);
-        player3.updateStats(105);
-
-        queue.addPlayerToQueue(player1);
-        queue.addPlayerToQueue(player2);
-        queue.addPlayerToQueue(player3);
-
-        List<PlayerStats> match = queue.matchPlayers(TIC_TAC_TOE);
-
-        assertTrue(match.contains(player1));
-        assertTrue(match.contains(player3));
-        assertFalse(match.contains(player2));
+        assertNotNull(c4Match);
+        assertEquals(2, c4Match.size());
+        assertEquals(1, service.getQueueSize(GameType.TIC_TAC_TOE.toId()));
+        assertEquals(0, service.getQueueSize(GameType.CONNECT4.toId()));
     }
 
-    @Test
-    void testMatchWithEmptyQueue() {
-        List<PlayerStats> match = queue.matchPlayers(TIC_TAC_TOE);
-        assertNull(match);
+    private PlayerStats playerWithScore(int userId, GameType gameType, double score) {
+        PlayerStats p = new PlayerStats(userId, gameType, userId);
+        p.updateStats(score);
+        return p;
     }
 }

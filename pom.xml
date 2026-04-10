@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.9.0</version>
+      <version>5.11.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -45,6 +45,27 @@
     <!-- Running `mvn` with no explicit goal compiles first, then starts PlatformCore. -->
     <defaultGoal>compile exec:java</defaultGoal>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>enforce-java</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[25,26)</version>
+                  <message>This project requires JDK 25. Set JAVA_HOME to a JDK 25 installation.</message>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <!-- Compile with Java 25 -->
       <plugin>
@@ -78,6 +99,11 @@
           <mainClass>ca.ucalgary.seng300.PlatformCore</mainClass>
           <classpathScope>runtime</classpathScope>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
       </plugin>
 
     </plugins>

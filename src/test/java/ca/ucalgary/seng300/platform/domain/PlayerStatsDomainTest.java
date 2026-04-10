@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.platform.domain;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ class PlayerStatsDomainTest {
      */
     @BeforeEach
     void setUp() {
-        stats = new PlayerStats(1, 10, 42);
+        stats = new PlayerStats(1, GameType.TIC_TAC_TOE, 42);
     }
 
     /**
@@ -31,8 +32,8 @@ class PlayerStatsDomainTest {
      * correctly by their respective getters.
      */
     @Test
-    void constructor_setsGameIdAndUserIdCorrectly() {
-        assertEquals(10, stats.getGameID());
+    void constructor_setsGameTypeAndUserIdCorrectly() {
+        assertEquals(GameType.TIC_TAC_TOE, stats.getGameType());
         assertEquals(42, stats.getUserID());
     }
 
