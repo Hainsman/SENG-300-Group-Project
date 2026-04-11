@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
+import ca.ucalgary.seng300.ui.windowmanager.WindowManager;
+
 import java.io.IOException;
 
 /**
@@ -45,11 +47,10 @@ public class Popup {
 
         WindowManager.WindowControls controls = new WindowManager.WindowControls(
                 root, titleBarPane, titleLabel,
-                dummy, dummy, dummy,
-                null, null, null
+                dummy, dummy, dummy
         );
 
-        WindowManager wm = new WindowManager(controls, true);
+        WindowManager wm = new WindowManager(controls);
         wm.setResizable(false);
 
         okButton.setOnAction(e -> { confirmed = true; close(); });

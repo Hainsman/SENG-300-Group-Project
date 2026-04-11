@@ -29,9 +29,9 @@ public class Helper {
     }
 
     public static Rank getRank(int totalRoundsPlayed, double score){
-        if (totalRoundsPlayed < Constants.TOTAL_ROUNDS_NEEDED_FOR_BRONZE)
+        if (totalRoundsPlayed < 10) {
             return Rank.BRONZE;
-
+        }
         for (Rank rank: Rank.values()){
             if (score >= rank.getMinScoreThreshold() && score < rank.getMaxScoreThreshold()){
                 return rank;

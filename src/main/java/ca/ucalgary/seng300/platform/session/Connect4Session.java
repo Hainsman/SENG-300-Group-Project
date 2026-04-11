@@ -5,7 +5,7 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.game.core.connect4.C4Game;
 import ca.ucalgary.seng300.game.core.connect4.C4GameState;
 import ca.ucalgary.seng300.game.core.connect4.C4PlayerAction;
-/*
+
 public class Connect4Session {
     private final C4Game game = new C4Game();
 
@@ -43,4 +43,4 @@ public class Connect4Session {
     public boolean isGameOver() {
         return game.isGameOver();
     }
-}*/
+}

@@ -1,0 +1,21 @@
+.mode-icon {
+    -fx-text-fill: #66c2ff;
+}
+
+.mode-play {
+    -fx-text-fill: #ffd166;
+}
+
+.mode-badge {
+    -fx-background-color: #1f2a44;
+    -fx-text-fill: #8fd3ff;
+}
+
+.game-chip {
+    -fx-background-color: #1f2a44;
+    -fx-text-fill: #8fd3ff;
+}
+
+.ttt-cell {
+    -fx-text-fill: #ffd166;
+}

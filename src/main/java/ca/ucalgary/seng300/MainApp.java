@@ -1,7 +1,7 @@
 package ca.ucalgary.seng300;
 
-import ca.ucalgary.seng300.ui.WindowManager;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.windowmanager.WindowManager;
+import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,8 +11,8 @@ import javafx.stage.StageStyle;
 
 public class MainApp extends Application {
 
-    public static final String TITLE = "BOGO Solutions Game Application";
-    public static final String VERSION = "1.0";
+    public static final String TITLE = "BOGO solutions Game Application V2.0";
+    public static final String VERSION = "2.0";
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -29,8 +29,8 @@ public class MainApp extends Application {
                 WindowManager.WINDOW_MINIMUM_WIDTH,
                 WindowManager.WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
+        stage.setOnCloseRequest(event -> SessionHistoryStore.getInstance().clearSessions());
         stage.show();
-        //CentralController.applyUiPreferences();
     }
 
     public static void main(String[] args) {

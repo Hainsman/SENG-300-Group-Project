@@ -1,6 +1,6 @@
 package ca.ucalgary.seng300.ui.userdata;
 
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;

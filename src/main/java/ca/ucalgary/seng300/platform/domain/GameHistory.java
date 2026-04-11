@@ -1,15 +1,12 @@
 package ca.ucalgary.seng300.platform.domain;
+public class GameHistory extends Record{
+    private int gameID;
 
-import ca.ucalgary.seng300.game.core.GameType;
-
-public class GameHistory extends Record {
-    private GameType gameType;
-
-    public GameHistory(int id, GameType gameType){
+    public GameHistory(int id, int gameID){
         super(id, GameHistory.class.getSimpleName());
-        this.gameType = gameType;
+        this.gameID = gameID;
     }
 
-    public GameType getGameType(){return this.gameType;}
-    public void setGameType(GameType gameType){this.gameType = gameType;}
+    public int getGameID(){return this.gameID;}
+    public void setGameID(int gameID){this.gameID = gameID;}
 }

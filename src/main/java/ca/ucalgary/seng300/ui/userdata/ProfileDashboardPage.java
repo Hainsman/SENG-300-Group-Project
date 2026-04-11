@@ -1,10 +1,11 @@
 package ca.ucalgary.seng300.ui.userdata;
 
 import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.services.LeaderBoardService;
 import ca.ucalgary.seng300.platform.store.UserStore;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
@@ -73,7 +74,7 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
     }
 
     private User currentUser() {
-        int id = rootController.currentUserId;
+        int id = CentralController.currentUserId;
         if (id == 0) {
             return null;
         }
@@ -118,7 +119,7 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
 
     private void populateLeaderboard(GameType gameType, VBox targetBox) {
         targetBox.getChildren().clear();
-        List<User> top = LeaderBoardService.getInstance().getLeaderBoard(true, gameType, 20);
+        List<PlayerStats> top = LeaderBoardService.getInstance().getLeaderBoard(true, gameType.toId(), 20);
         if (top.isEmpty()) {
             Label empty = new Label("No players yet");
             empty.getStyleClass().add("leaderboard-empty");
@@ -126,9 +127,11 @@ public class ProfileDashboardPage extends AnchorPane implements Navigable {
             return;
         }
         for (int i = 0; i < top.size(); i++) {
-            User u = top.get(i);
-            int elo = u.getEloForGame(gameType);
-            targetBox.getChildren().add(buildLeaderboardRow(i + 1, u.getlogin(), elo));
+            PlayerStats ps = top.get(i);
+            User u = UserStore.getInstance().get(ps.getUserID());
+            String login = u != null ? u.getlogin() : ("user" + ps.getUserID());
+            int elo = (int) Math.round(ps.getScore());
+            targetBox.getChildren().add(buildLeaderboardRow(i + 1, login, elo));
         }
     }
 

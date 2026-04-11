@@ -4,8 +4,6 @@ import ca.ucalgary.seng300.game.core.*;
 
 public class TTTGameState implements GameState {
 
-    private static final long serialVersionUID = 1L;
-
     private Player[][] board = {
         {Player.EMPTY, Player.EMPTY, Player.EMPTY},
         {Player.EMPTY, Player.EMPTY, Player.EMPTY},
@@ -24,7 +22,6 @@ public class TTTGameState implements GameState {
         if (board != null && state == State.IN_PROGRESS) {
             Player whoMoved = playerTurn;
             board[row][col] = whoMoved;
-            System.out.println("Square "+row+" "+col+" set to"+whoMoved.toString());
 
             // Check if the move wins the game (3 in a row)
             if (checkThreeInARow(row, col, whoMoved)) {
@@ -62,56 +59,6 @@ public class TTTGameState implements GameState {
 
     public State getState() {
         return this.state;
-    }
-
-    /**
-     * Rebuilds state from {@link ca.ucalgary.seng300.platform.messages.TTTWireState} (ordinal grid only).
-     */
-    public static TTTGameState fromWireSnapshot(int[][] cellOrdinals, int playerTurnOrd, int stateOrd) {
-        TTTGameState g = new TTTGameState();
-        Player[][] b = g.getBoard();
-        if (cellOrdinals != null) {
-            for (int i = 0; i < 3 && i < cellOrdinals.length; i++) {
-                if (cellOrdinals[i] == null) {
-                    continue;
-                }
-                for (int j = 0; j < 3 && j < cellOrdinals[i].length; j++) {
-                    b[i][j] = playerFromOrdinal(cellOrdinals[i][j]);
-                }
-            }
-        }
-        Player t = playerFromOrdinal(playerTurnOrd);
-        g.playerTurn = (t == Player.PLAYER_1 || t == Player.PLAYER_2) ? t : Player.PLAYER_1;
-        g.state = stateFromOrdinal(stateOrd);
-        return g;
-    }
-
-    private static Player playerFromOrdinal(int o) {
-        Player[] v = Player.values();
-        if (o < 0 || o >= v.length) {
-            return Player.EMPTY;
-        }
-        return v[o];
-    }
-
-    private static State stateFromOrdinal(int o) {
-        State[] v = State.values();
-        if (o < 0 || o >= v.length) {
-            return State.IN_PROGRESS;
-        }
-        return v[o];
-    }
-
-    /** Ends the current game in favour of the opponent (online forfeit). */
-    public void applyForfeit(Player forfeitingPlayer) {
-        if (state != State.IN_PROGRESS) {
-            return;
-        }
-        if (forfeitingPlayer == Player.PLAYER_1) {
-            state = State.PLAYER_2_WIN;
-        } else if (forfeitingPlayer == Player.PLAYER_2) {
-            state = State.PLAYER_1_WIN;
-        }
     }
 
     /** Returns true if the given player has three in a row including (row, col). */

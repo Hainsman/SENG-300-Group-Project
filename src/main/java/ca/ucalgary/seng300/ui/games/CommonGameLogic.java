@@ -4,7 +4,7 @@ import ca.ucalgary.seng300.game.core.*;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.Session;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
@@ -107,7 +107,7 @@ public abstract class CommonGameLogic extends StackPane {
         createNewPlayerBoard();
         updateBoard(currentPlayerBoard);
         hideEloOverlay();
-        if (rootController.localAiMode) {
+        if (CentralController.playWithAi) {
             if (session == null)
                 setNewSession();
             else
@@ -166,7 +166,7 @@ public abstract class CommonGameLogic extends StackPane {
     }
 
     public boolean isOnlineMode() {
-        return !rootController.localAiMode
+        return !CentralController.playWithAi
                 && clientCore != null
                 && GameType.getFromGameState(clientCore.getLastUpdate()) == gameType;
     }
@@ -335,13 +335,14 @@ public abstract class CommonGameLogic extends StackPane {
     }
 
     private void navigateBackFromGame() {
-        rootController.localAiMode = false;
+        CentralController.playWithAi = false;
         hideEloOverlay();
 
-        if (rootController.previousScreen != null)
-            rootController.moveTo(rootController.previousScreen);
-        else
-            rootController.moveTo(Navigation.GAME_DASHBOARD);
+        if (rootController.previousScreen != null) {
+            CentralController.moveTo(rootController.previousScreen);
+        } else {
+            CentralController.moveTo("GameDashboardNew.fxml");
+        }
     }
 
     private boolean isBoardBlank(Player[][] board) {

@@ -1,0 +1,19 @@
+[0:00] Opening
+
+[0:50] How to launch
+
+[2:09] Login
+
+[4:14] Profile & settings (handoff) — view account; change username / email / password; accessibility (text size, colorblind mode); save; logout and verify new login; client–server / TCP recap
+
+[5:31] Lobbies & networking
+
+[6:34] Tic-tac-toe (multiplayer)
+
+[8:02] Connect Four (AI player)
+
+[9:09] Automated tests
+
+[10:15] Integration & challenges
+
+[12:25] Closing

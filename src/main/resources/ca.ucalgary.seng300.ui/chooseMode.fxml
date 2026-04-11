@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane stylesheets="@stylesheets/modern_theme.css"
+            styleClass="app-surface"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ca.ucalgary.seng300.ui.miscellaneous.ChooseModeController"
+            prefWidth="900.0" prefHeight="600.0">
+
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="30"
+              AnchorPane.topAnchor="30.0"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0">
+
+            <!-- Dynamic Game Title -->
+            <Label fx:id="gameTitleLabel"
+                   text="Game Name"
+                   styleClass="title-label"/>
+
+            <Label text="Choose how you want to play"
+                   styleClass="subtitle-label"/>
+
+            <!-- Host / Join Cards -->
+            <HBox spacing="40" alignment="CENTER">
+
+                <!-- Host Game Card -->
+                <VBox alignment="CENTER" spacing="10"
+                      prefWidth="250" prefHeight="180"
+                      styleClass="card host-card"
+                      fx:id="hostCard"
+                      onMouseClicked="#handleHostGame">
+
+                    <Label text="🎮" styleClass="icon"/>
+                    <Label text="Host Game" styleClass="card-title"/>
+                    <Label text="Create a new lobby and invite friends"
+                           wrapText="true"
+                           styleClass="card-subtitle"/>
+                </VBox>
+
+                <!-- Join Game Card -->
+                <VBox alignment="CENTER" spacing="10"
+                      prefWidth="250" prefHeight="180"
+                      styleClass="card join-card"
+                      fx:id="joinCard"
+                      onMouseClicked="#handleJoinGame">
+
+                    <Label text="👥" styleClass="icon"/>
+                    <Label text="Join Game" styleClass="card-title"/>
+                    <Label text="Connect to an existing lobby"
+                           wrapText="true"
+                           styleClass="card-subtitle"/>
+                </VBox>
+
+            </HBox>
+
+            <Button onAction="#handleBack"
+                    styleClass="back-button"
+                    text="← Back" />
+
+        </VBox>
+    </children>
+</AnchorPane>

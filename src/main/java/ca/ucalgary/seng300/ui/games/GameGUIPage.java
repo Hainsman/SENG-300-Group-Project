@@ -7,7 +7,7 @@ import java.util.List;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.Popup;
 import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
@@ -96,11 +96,9 @@ public class GameGUIPage extends VBox implements Navigable {
      * Left sidebar: game name (Tic-Tac-Toe vs Connect 4), signed-in user, ELO/tier/games for this game mode.
      */
     public void refreshSidebar() {
-        GameType g = rootController.selectedGame != null
-                ? rootController.selectedGame
-                : GameType.TIC_TAC_TOE;
-
-        gameTypeLabel.setText(rootController.clientCore.gameType.toString());
+        ClientCore cc = rootController.clientCore;
+        String text = (cc != null && cc.gameType != null) ? cc.gameType : "Game";
+        gameTypeLabel.setText(text);
     }
 
 //    @FXML
@@ -250,14 +248,14 @@ public class GameGUIPage extends VBox implements Navigable {
                     ButtonType.OK).showAndWait();
             return;
         }
-        rootController.moveTo(Navigation.INFO);
+        CentralController.moveTo(Navigation.INFO.getFxml());
     }
 
     @FXML
     private void handleChatSend(ActionEvent event) {
         String msg = chatInput.getText().trim();
         if (msg.isBlank()) return;
-        String sender = rootController.tttPage != null || rootController.connect4 != null
+        String sender = rootController.ttt != null || rootController.connect4 != null
                 ? currentPlayerID
                 : "You";
 

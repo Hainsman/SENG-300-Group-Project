@@ -3,7 +3,7 @@ package ca.ucalgary.seng300.ui.games;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.platform.session.TicTacToeSession;
-import ca.ucalgary.seng300.ui.*;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.fxml.FXMLLoader;

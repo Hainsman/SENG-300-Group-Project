@@ -4,7 +4,7 @@ import ca.ucalgary.seng300.platform.constants.Constants;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.collections.FXCollections;
@@ -68,7 +68,7 @@ public class SettingsPage extends BorderPane implements Navigable {
     }
 
     private User currentUserOrNull() {
-        int id = rootController.currentUserId;
+        int id = CentralController.currentUserId;
         if (id == 0) {
             return null;
         }
@@ -180,7 +180,7 @@ public class SettingsPage extends BorderPane implements Navigable {
         }
 
         store.update(u);
-        rootController.displayName = u.getlogin();
+        CentralController.displayName = u.getlogin();
         if (activeUsernameLabel != null) {
             activeUsernameLabel.setText(u.getlogin());
         }

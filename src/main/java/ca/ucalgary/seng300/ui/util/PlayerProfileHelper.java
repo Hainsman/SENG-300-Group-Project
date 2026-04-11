@@ -4,14 +4,14 @@ import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.store.UserStore;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 
 public final class PlayerProfileHelper {
 
     private PlayerProfileHelper() {}
 
     public static int currentUserIdOrDefault(CentralController rootController) {
-        int id = rootController.currentUserId;
+        int id = CentralController.currentUserId;
         return id != 0 ? id : 1;
     }
 
@@ -50,7 +50,7 @@ public final class PlayerProfileHelper {
     }
 
     public static PlayerStats statsForCurrentGame(CentralController rootController) {
-        return statsForGameType(rootController.selectedGame);
+        return statsForGameType(CentralController.selectedGame);
     }
 
     public static String sanitizeForPayload(String name) {
@@ -62,8 +62,8 @@ public final class PlayerProfileHelper {
     }
 
     public static String lobbyPayload(CentralController rootController) {
-        String name = sanitizeForPayload(rootController.displayName);
-        int elo = eloForGameType(rootController.selectedGame, rootController);
+        String name = sanitizeForPayload(CentralController.displayName);
+        int elo = eloForGameType(CentralController.selectedGame, rootController);
         return name + "|" + elo;
     }
 

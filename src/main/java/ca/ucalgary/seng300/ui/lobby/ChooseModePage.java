@@ -1,7 +1,7 @@
 package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.game.core.GameType;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
@@ -41,8 +41,9 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     public void initialize() {
-        if (rootController.selectedGame != null)
-            gameTitleLabel.setText(rootController.selectedGame.toString());
+        if (CentralController.selectedGame != null) {
+            gameTitleLabel.setText(CentralController.selectedGame.toString());
+        }
         refreshAiCardVisibility();
 
         hostCard.setOnKeyPressed(e -> {
@@ -66,11 +67,11 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     /** Tic-Tac-Toe from the new dashboard uses {@code "TicTacToe"}. */
     private boolean isTicTacToeSelection() {
-        return rootController.selectedGame == GameType.TIC_TAC_TOE;
+        return CentralController.selectedGame == GameType.TIC_TAC_TOE;
     }
 
     private boolean isConnectFourSelection() {
-        return rootController.selectedGame == GameType.CONNECT4;
+        return CentralController.selectedGame == GameType.CONNECT4;
     }
 
     private void refreshAiCardVisibility() {
@@ -89,23 +90,25 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML
     void handleHostGame(MouseEvent event) {
-        rootController.localAiMode = false;
+        CentralController.playWithAi = false;
         rootController.moveTo(Navigation.HOST_LOBBY);
     }
 
     @FXML
     void handleJoinGame(MouseEvent event) {
-        rootController.localAiMode = false;
+        CentralController.playWithAi = false;
         rootController.moveTo(Navigation.JOIN_LOBBY);
     }
 
     @FXML
     void handlePlayWithAi(MouseEvent event) {
-        rootController.localAiMode = true;
-        if (isTicTacToeSelection())
+        CentralController.playWithAi = true;
+        if (isTicTacToeSelection()) {
             rootController.moveTo(Navigation.TTT);
-        else if (isConnectFourSelection())
+        }
+        else if (isConnectFourSelection()) {
             rootController.moveTo(Navigation.C4);
+        }
     }
 
     @FXML

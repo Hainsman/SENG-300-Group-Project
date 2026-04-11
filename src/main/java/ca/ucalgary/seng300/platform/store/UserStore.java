@@ -7,20 +7,12 @@ import java.util.List;
 
 public class UserStore extends Store<User> {
     public UserStore(String filePath) {super(filePath);}
-
-
     public List<User> findByUserName(String username) {return find(rec -> rec.getlogin().equals(username));}
     public List<User> findByUserEmail(String email) {return find(rec -> rec.getEmail().equals(email));}
-
-    /** All users (for leaderboards). */
-    public List<User> findAll() {
-        return find(u -> true);
-    }
+    public List<User> findByUserID(int userId) {return find(rec -> rec.getID() == userId);}
     // Bill Pugh Singleton
     private static class UserStoreHolder {
         private static final UserStore INSTANCE = new UserStore(Constants.USER_FILE_PATH);
     }
-    public static UserStore getInstance(){
-        return UserStoreHolder.INSTANCE;
-    }
+    public static UserStore getInstance(){return UserStoreHolder.INSTANCE;}
 }

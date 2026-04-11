@@ -1,7 +1,5 @@
 package ca.ucalgary.seng300.game.core;
 
-import ca.ucalgary.seng300.platform.server.platformChannel;
-
 public interface Game {
 
     //not sure how these variables could actually be set up given that
@@ -22,9 +20,6 @@ public interface Game {
 
     //will probably return the whole GameState class type
     GameState getGameState();
-
-    //not sure what this should return
-    Object getGameUpdate();
 
     //could probably be made to not have the abstract keyword
     //if the State enum existed, it might be able to check that

@@ -1,7 +1,5 @@
 package ca.ucalgary.seng300.game.core;
 
-import java.util.List;
-
 public abstract class RuleValidator {
 
     /**
@@ -14,11 +12,4 @@ public abstract class RuleValidator {
      */
     public abstract boolean validateMove(GameState gameState, PlayerAction action);
 
-    /**
-     * Returns a generated list of PlayerActions that would be considered valid based on the current GameState
-     *
-     * @param gameState The current GameState.
-     * @return List of valid actions
-     */
-    public abstract List<PlayerAction> getValidActions(GameState gameState);
 }

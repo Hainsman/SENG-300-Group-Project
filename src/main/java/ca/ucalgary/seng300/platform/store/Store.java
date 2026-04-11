@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
-import java.util.Collections;
 
 class Store<T extends Record> {
     private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
@@ -93,12 +92,23 @@ class Store<T extends Record> {
         return Collections.max(records.keySet()) + 1;
     }
 
+    protected void clearAll() {
+        writeLock.lock();
+        try {
+            records.clear();
+            saveAll();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
     private static Gson createGson(boolean pretty){
         RuntimeTypeAdapterFactory<Record> entityAdapterFactory = RuntimeTypeAdapterFactory.of(Record.class,"type")
                 .registerSubtype(User.class, User.class.getSimpleName())
                 .registerSubtype(GameHistory.class, GameHistory.class.getSimpleName())
                 .registerSubtype(Participant.class, Participant.class.getSimpleName())
                 .registerSubtype(SessionHistory.class, SessionHistory.class.getSimpleName())
+                .registerSubtype(FriendHistory.class, FriendHistory.class.getSimpleName())
                 .registerSubtype(PlayerStats.class, PlayerStats.class.getSimpleName());
 
         GsonBuilder builder = new GsonBuilder()

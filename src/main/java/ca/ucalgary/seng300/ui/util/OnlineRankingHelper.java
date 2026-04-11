@@ -5,7 +5,7 @@ import ca.ucalgary.seng300.game.core.State;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.services.RankingService;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 
 import java.util.Optional;
 

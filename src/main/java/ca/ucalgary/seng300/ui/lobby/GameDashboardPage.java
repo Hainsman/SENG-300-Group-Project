@@ -1,7 +1,8 @@
 package ca.ucalgary.seng300.ui.lobby;
 
 import ca.ucalgary.seng300.game.core.GameType;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.platform.constants.Game;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
@@ -68,15 +69,17 @@ public class GameDashboardPage extends AnchorPane implements Navigable {
 
     @FXML
     void C4click(MouseEvent event) {
-        rootController.clientCore.gameType = GameType.CONNECT4;
-        rootController.selectedGame = GameType.CONNECT4;
+        rootController.clientCore.gameType = GameType.CONNECT4.name();
+        CentralController.selectedGame = GameType.CONNECT4;
+        CentralController.selectedGameId = Game.CONNECT_FOUR;
         rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 
     @FXML
     void TTTclicked(MouseEvent event) {
-        rootController.clientCore.gameType = GameType.TIC_TAC_TOE;
-        rootController.selectedGame = GameType.TIC_TAC_TOE;
+        rootController.clientCore.gameType = GameType.TIC_TAC_TOE.name();
+        CentralController.selectedGame = GameType.TIC_TAC_TOE;
+        CentralController.selectedGameId = Game.TICK_TACK_TOE;
         rootController.moveTo(Navigation.CHOOSE_MODE);
     }
 

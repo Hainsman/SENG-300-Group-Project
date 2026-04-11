@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="AnchorPane" prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/global.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.lobby.hostLobbyController">
 
     <children>
 
@@ -29,17 +29,6 @@
 
                 <TextField fx:id="lobbyNameField" maxWidth="420.0" promptText="Lobby name (optional)" />
 
-                <HBox alignment="CENTER" spacing="10">
-                    <children>
-                        <ToggleButton fx:id="publicLobby" mnemonicParsing="false" styleClass="primary-button" text="Public">
-                            <toggleGroup>
-                                <ToggleGroup fx:id="privacyOptions" />
-                            </toggleGroup>
-                        </ToggleButton>
-                        <ToggleButton fx:id="privateLobby" mnemonicParsing="false" selected="true" styleClass="primary-button" text="Private" toggleGroup="$privacyOptions" />
-                    </children>
-                </HBox>
-
                 <HBox alignment="CENTER" spacing="16">
                     <children>
                         <Button onAction="#handleBack" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
@@ -53,7 +42,6 @@
                 <children>
                     <Label fx:id="previewGameLabel" text="-" />
                     <Label fx:id="previewPlayersLabel" text="-" />
-                    <Label fx:id="previewPrivacyLabel" text="-" />
                 </children>
             </VBox>
 

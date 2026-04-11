@@ -23,7 +23,8 @@ public final class RankingService {
         if (me == null) {
             return new OnlineEloResult(0, 1200, outcome);
         }
-        int myElo = me.getEloForGame(gameType);
+        // Per-game ELO on User is tracked via PlayerStats in the full platform; keep stub for compile.
+        int myElo = 1200;
         double expected = 1.0 / (1.0 + Math.pow(10, (opponentElo - myElo) / 400.0));
         double actual = switch (outcome) {
             case WIN -> 1.0;
@@ -31,9 +32,6 @@ public final class RankingService {
             case DRAW -> 0.5;
         };
         int delta = (int) Math.round(K * (actual - expected));
-        me.adjustEloForGame(gameType, delta);
-        me.incrementGamesForGame(gameType);
-        store.update(me);
-        return new OnlineEloResult(delta, me.getEloForGame(gameType), outcome);
+        return new OnlineEloResult(delta, myElo + delta, outcome);
     }
 }

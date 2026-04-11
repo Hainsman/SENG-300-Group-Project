@@ -3,7 +3,7 @@ package ca.ucalgary.seng300.ui.lobby;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.event.ActionEvent;
@@ -55,7 +55,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     private void initialize() {
-        GameType game = rootController.selectedGame;
+        GameType game = CentralController.selectedGame;
         gameLabel.setText(game != null ? game.toString() : "Game");
         previewGameLabel.setText(game != null ? game.toString() : "-");
 
@@ -104,16 +104,19 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
         LobbyBridge.onLobbyFail = msg -> Popup.showError(getScene().getWindow(), msg);
         LobbyBridge.onHostOk = () -> {
             rootController.moveTo(Navigation.MAIN_LOBBY);
-            rootController.previousScreen = Navigation.GAME_DASHBOARD;
+            CentralController.previousScreen = Navigation.GAME_DASHBOARD.getFxml();
         };
 
-        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, rootController.selectedGame.toString()));
+        String gameLabel = CentralController.selectedGame != null
+                ? CentralController.selectedGame.toString()
+                : "Game";
+        clientCore.msgSend(new sysMSG("HOST_LOBBY", code, gameLabel));
     }
 
     public void hostLobby(String tp, String ms) {
         if (tp.equals("OK")) {
             rootController.moveTo(Navigation.MAIN_LOBBY);
-            rootController.previousScreen = Navigation.GAME_DASHBOARD;
+            CentralController.previousScreen = Navigation.GAME_DASHBOARD.getFxml();
             rootController.hostingLobby = true;
         } else {
             Popup.showError(getScene().getWindow(), ms);

@@ -5,7 +5,7 @@ import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.store.UserStore;
-import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
@@ -51,7 +51,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     public void initialize() {
-        String g = rootController.selectedGame != null ? rootController.selectedGame.toString() : "Game";
+        String g = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Game";
         lobbyTitle.setText(g + " Lobby");
 
         lobbyCodeLabel.setText(
@@ -62,7 +62,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
                 rootController.privacy != null ? rootController.privacy : "Public"
         );
 
-        gameNameLabel.setText(rootController.selectedGame != null ? rootController.selectedGame.toString() : "Standard");
+        gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Standard");
 
         int max = rootController.maxPlayers > 0 ? rootController.maxPlayers : 2;
         maxPlayersLabel.setText(String.valueOf(max));
@@ -75,7 +75,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     }
     private void applyGameAccent() {
         getStyleClass().removeAll("lobby-ttt", "lobby-c4");
-        if (rootController.selectedGame == GameType.CONNECT4) {
+        if (CentralController.selectedGame == GameType.CONNECT4) {
             getStyleClass().add("lobby-c4");
         } else {
             getStyleClass().add("lobby-ttt");
@@ -93,29 +93,22 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     }
 
     private String currentUserDisplayName() {
-        int uid = rootController.currentUserId;
+        int uid = CentralController.currentUserId;
         if (uid > 0) {
             User u = UserStore.getInstance().get(uid);
             if (u != null && u.getlogin() != null && !u.getlogin().isBlank()) {
                 return u.getlogin().trim();
             }
         }
-        if (rootController.displayName != null && !rootController.displayName.isBlank()) {
-            return rootController.displayName.trim();
+        if (CentralController.displayName != null && !CentralController.displayName.isBlank()) {
+            return CentralController.displayName.trim();
         }
         return "Player";
     }
 
     private int myEloForSelectedGame() {
-        GameType g = rootController.selectedGame != null ? rootController.selectedGame : GameType.TIC_TAC_TOE;
-        int uid = rootController.currentUserId;
-        if (uid > 0) {
-            User u = UserStore.getInstance().get(uid);
-            if (u != null) {
-                return u.getEloForGame(g);
-            }
-        }
-        return PlayerProfileHelper.eloForGameType(g,rootController);
+        GameType g = CentralController.selectedGame != null ? CentralController.selectedGame : GameType.TIC_TAC_TOE;
+        return PlayerProfileHelper.eloForGameType(g, rootController);
     }
     /*
     private void setYouPills(boolean hosting) {
@@ -219,7 +212,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
 
     @FXML
     private void handleStartGame() {
-        GameType game = rootController.selectedGame;
+        GameType game = CentralController.selectedGame;
         Navigation nav = GameType.getNavigation(game);
 
         if (nav == null) {
@@ -227,7 +220,7 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
             return;
         }
 
-        rootController.localAiMode = false;
+        CentralController.playWithAi = false;
         if (rootController.hostingLobby) {
             ClientCore cc = rootController.getCC();
             if (cc != null && cc.isConnected()) {
@@ -238,10 +231,12 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     }
 
     public void gameStart(){
-        GameType game = rootController.selectedGame;
+        GameType game = CentralController.selectedGame;
         Navigation nav = GameType.getNavigation(game);
         LobbyBridge.clearLobbyUiCallbacks();
-        rootController.moveTo(nav);
+        if (nav != null) {
+            rootController.moveTo(nav);
+        }
     }
 
     @FXML
@@ -257,13 +252,14 @@ public class MainLobbyPage extends AnchorPane implements Navigable {
     @FXML
     private void handleBack() {
         LobbyBridge.clearLobbyUiCallbacks();
-        if (Navigation.HOST_LOBBY == rootController.previousScreen
-                || Navigation.JOIN_LOBBY == rootController.previousScreen) {
+        String prev = CentralController.previousScreen;
+        if (Navigation.HOST_LOBBY.getFxml().equals(prev)
+                || Navigation.JOIN_LOBBY.getFxml().equals(prev)) {
             rootController.moveTo(Navigation.GAME_DASHBOARD);
             return;
         }
-        if (rootController.previousScreen != null) {
-            rootController.moveTo(rootController.previousScreen);
+        if (prev != null) {
+            CentralController.moveTo(prev);
         } else {
             rootController.moveTo(Navigation.GAME_DASHBOARD);
         }

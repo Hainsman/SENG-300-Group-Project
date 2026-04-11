@@ -21,10 +21,6 @@ public enum Rank {
         this.maxScoreThreshold = maxScoreThreshold;
     }
 
-    public boolean isInRank(double score){
-        return score >= minScoreThreshold && score < maxScoreThreshold;
-    }
-
     public int getRankValue(){return rankValue;}
     public String getDisplayName(){return displayName;}
     public double getMinScoreThreshold(){return minScoreThreshold;}

@@ -4,34 +4,29 @@ import ca.ucalgary.seng300.game.core.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
-/**
- * Picks a legal random empty cell for Tic-Tac-Toe. Simple stand-in for a second player (no AI).
- */
 public final class TicTacToeRandomMoveGenerator {
+    private static final Random RNG = new Random();
 
     private TicTacToeRandomMoveGenerator() {}
 
-    /**
-     * @return {@code new int[]{row, col}} for a random empty cell, or {@code null} if the board is full
-     */
-    public static int[] pickRandomEmptySlot(Player[][] board) {
-        if (board == null || board.length != 3) {
+    public static int[] chooseMove(TTTGameState state) {
+        if (state == null || state.getState() != ca.ucalgary.seng300.game.core.State.IN_PROGRESS) {
             return null;
         }
-        List<int[]> empties = new ArrayList<>();
-        for (int r = 0; r < 3; r++) {
-            for (int c = 0; c < 3; c++) {
-                if (board[r][c] == Player.EMPTY) {
-                    empties.add(new int[] { r, c });
+        Player[][] board = state.getBoard();
+        List<int[]> legalMoves = new ArrayList<>();
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++) {
+                if (board[row][col] == Player.EMPTY) {
+                    legalMoves.add(new int[] { row, col });
                 }
             }
         }
-        if (empties.isEmpty()) {
+        if (legalMoves.isEmpty()) {
             return null;
         }
-        int i = ThreadLocalRandom.current().nextInt(empties.size());
-        return empties.get(i);
+        return legalMoves.get(RNG.nextInt(legalMoves.size()));
     }
 }
