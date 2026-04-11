@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.ui.games;
 
-import ca.ucalgary.seng300.game.core.GameState;
 import ca.ucalgary.seng300.game.core.Player;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.session.ConnectFourSession;
@@ -65,10 +64,5 @@ public class C4Page extends CommonGameLogic implements Navigable {
     @Override
     protected void setNewSession() {
         session = new ConnectFourSession();
-    }
-
-    @Override
-    public void refreshFromGameState(GameState gameState) {
-        super.refreshFromGameState(gameState);
     }
 }

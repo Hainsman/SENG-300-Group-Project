@@ -5,14 +5,14 @@ import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.session.Session;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigation;
 import ca.ucalgary.seng300.ui.util.OnlineRankingHelper;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import ca.ucalgary.seng300.ui.Popup;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -71,9 +71,8 @@ public abstract class CommonGameLogic extends StackPane {
     @FXML
     protected void handleBackToMode(ActionEvent event) {
         if (isOnlineMode() && clientCore.getLastUpdate().getState() == State.IN_PROGRESS) {
-            new Alert(Alert.AlertType.INFORMATION,
-                    "You cannot leave an online match in progress without using Forfeit in the sidebar.",
-                    ButtonType.OK).showAndWait();
+            Popup.showInfo(getScene().getWindow(),
+                    "You cannot leave an online match in progress without using Forfeit in the sidebar.");
             return;
         }
         navigateBackFromGame();
@@ -127,18 +126,18 @@ public abstract class CommonGameLogic extends StackPane {
     }
 
     public void handleForfeitFromShell() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Forfeit");
-        confirm.setHeaderText("Forfeit this match?");
-        confirm.setContentText("Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
-        confirm.showAndWait().filter(r -> r == ButtonType.OK).ifPresent(r -> {
+        boolean ok = Popup.showConfirm(getScene().getWindow(),
+                "Forfeit",
+                "Forfeit this match?",
+                "Online: your opponent wins and ratings may update. Local / vs AI: you leave this game.");
+        if (ok) {
             hideEloOverlay();
             if (!isOnlineMode()) {
                 navigateBackFromGame();
                 return;
             }
-            clientCore.msgSend(new sysMSG("FORFEIT", "REQUEST"));
-        });
+            clientCore.msgSend(new sysMSG("FORFEIT", "", ""));
+        }
     }
 
     public void refreshFromGameState(GameState gameState) {
@@ -248,6 +247,8 @@ public abstract class CommonGameLogic extends StackPane {
     private void submitOnlineMove(int row, int col) {
         if (!clientCore.submitMove(row, col))
             statusLabel.setText("Could not send move");
+        else if (clientCore.getLastUpdate().getState() == State.IN_PROGRESS)
+            rootController.getWindowManager().playAudioClip(SoundEffect.MOVE_SUBMITTED);
     }
 
     private boolean isSessionMode() {
@@ -259,12 +260,22 @@ public abstract class CommonGameLogic extends StackPane {
             addHistory(session.getBoard(), Player.PLAYER_1);
             refreshFromSession();
             maybePlayRandomOpponent();
+            if (session.getState() == State.IN_PROGRESS)
+                rootController.getWindowManager().playAudioClip(SoundEffect.MOVE_SUBMITTED);
         }
     }
 
-    private void onGameOver() {
+    private void onGameOver(State state, Player client) {
         setDisableBoard(true);
         resetButton.setVisible(true);
+
+        if ((state == State.PLAYER_1_WIN && client == Player.PLAYER_1)
+            || (state == State.PLAYER_2_WIN && client == Player.PLAYER_2))
+            rootController.getWindowManager().playAudioClip(SoundEffect.GAME_WON);
+        else if (state == State.TIE)
+            rootController.getWindowManager().playAudioClip(SoundEffect.TIE);
+        else
+            rootController.getWindowManager().playAudioClip(SoundEffect.GAME_LOST);
     }
 
     private void updateStatusLabel(GameState gameState, State state) {
@@ -287,14 +298,17 @@ public abstract class CommonGameLogic extends StackPane {
                             : player2Name + " Turn");
                 }
             }
-            case TIE -> statusLabel.setText("Draw!");
+            case TIE -> {
+                statusLabel.setText("Draw!");
+                onGameOver(state, gameState != null ? clientCore.getMyNetworkRole() : Player.PLAYER_1);
+            }
             case PLAYER_1_WIN -> {
                 statusLabel.setText(player1Name + " Wins!");
-                onGameOver();
+                onGameOver(state, gameState != null ? clientCore.getMyNetworkRole() : Player.PLAYER_1);
             }
             case PLAYER_2_WIN -> {
                 statusLabel.setText(player2Name + " Wins!");
-                onGameOver();
+                onGameOver(state, gameState != null ? clientCore.getMyNetworkRole() : Player.PLAYER_1);
             }
         }
     }
@@ -304,13 +318,10 @@ public abstract class CommonGameLogic extends StackPane {
     }
 
     private State resolveDisplayedState() {
-        if (isOnlineMode()) {
+        if (isOnlineMode())
             return clientCore.getLastUpdate().getState();
-        }
-        if(session != null){
-            return session.getState();
-        }
-        return State.IN_PROGRESS;
+
+        return session.getState();
     }
 
     private void refreshBackButtonVisibility() {
@@ -351,7 +362,7 @@ public abstract class CommonGameLogic extends StackPane {
         boolean myTurn = !onlineTurns || gameOver || myRole == gameState.getPlayerTurn();
         setDisableBoard(gameOver || !myTurn);
         if (myTurn && !gameOver)
-            rootController.getWindowManager().showNotification("Your Turn!", true);
+            rootController.getWindowManager().showNotification("Your Turn!", !isBoardBlank(gameState.getBoard()));
     }
 
     private void updateHistoryBoard(GameState gameState) {

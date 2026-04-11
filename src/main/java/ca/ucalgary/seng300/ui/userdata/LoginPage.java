@@ -6,12 +6,13 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import ca.ucalgary.seng300.ui.Popup;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
@@ -75,6 +76,7 @@ public class LoginPage extends HBox implements Navigable {
             loginPending = false;
             loginButton.setDisable(false);
             errorLabel.setText("");
+            rootController.getWindowManager().playAudioClip(SoundEffect.USER_LOGGED_IN);
             rootController.moveTo(Navigation.GAME_DASHBOARD);
             rootController.previousScreen = null;
             errorLabel.setText(s.getFieldB());
@@ -95,12 +97,8 @@ public class LoginPage extends HBox implements Navigable {
 
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        Alert forgotPasswordAlert = new Alert(Alert.AlertType.INFORMATION);
-        forgotPasswordAlert.setTitle("Forgot Password");
-        forgotPasswordAlert.setHeaderText("Need to reset your password?");
-        forgotPasswordAlert.setContentText("Please contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
-        ThemeAlerts.apply(forgotPasswordAlert);
-        forgotPasswordAlert.showAndWait();
+        Popup.showInfo(getScene().getWindow(),
+                "Need to reset your password?\n\nPlease contact one of our team admins to reset your password.\n\nadmin@bogosolutions.ca");
     }
 
     @Override

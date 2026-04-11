@@ -6,14 +6,11 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.ui.util.PlayerProfileHelper;
-import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
+import ca.ucalgary.seng300.ui.Popup;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -81,9 +78,8 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
     @FXML
     void handleCreateLobby(ActionEvent event) {
         if (clientCore == null || !clientCore.isConnected()) {
-            new Alert(Alert.AlertType.WARNING,
-                    "Connect to the game server first.\n\nRun PlatformCore (listens on port 2020), restart this app, then try again.",
-                    ButtonType.OK).showAndWait();
+            Popup.showWarning(getScene().getWindow(),
+                    "Connect to the game server first.\n\nRun PlatformCore (listens on port 2020), restart this app, then try again.");
             return;
         }
 
@@ -105,7 +101,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
         rootController.hostingLobby = true;
         rootController.clearLobbyRoster();
         clientCore.resetMatchState();
-        LobbyBridge.onLobbyFail = msg -> new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+        LobbyBridge.onLobbyFail = msg -> Popup.showError(getScene().getWindow(), msg);
         LobbyBridge.onHostOk = () -> {
             rootController.moveTo(Navigation.MAIN_LOBBY);
             rootController.previousScreen = Navigation.GAME_DASHBOARD;
@@ -120,9 +116,7 @@ public class HostLobbyPage extends AnchorPane implements Navigable {
             rootController.previousScreen = Navigation.GAME_DASHBOARD;
             rootController.hostingLobby = true;
         } else {
-            Alert err = new Alert(Alert.AlertType.ERROR, ms, ButtonType.OK);
-            ThemeAlerts.apply(err);
-            err.showAndWait();
+            Popup.showError(getScene().getWindow(), ms);
         }
     }
 

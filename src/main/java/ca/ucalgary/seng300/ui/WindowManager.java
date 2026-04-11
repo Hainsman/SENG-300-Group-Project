@@ -16,6 +16,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -44,7 +45,10 @@ public class WindowManager {
             Label titleLabel,
             Button quitButton,
             Button minimizeButton,
-            Button maximizeButton
+            Button maximizeButton,
+            Slider volumeSlider,
+            Label volumeIcon,
+            Label volumePercent
     ) { }
 
     private enum Direction {
@@ -114,28 +118,39 @@ public class WindowManager {
     private double unMaximizedX;
     private double unMaximizedY;
 
+    private boolean resizable = true;
+
     private boolean showingNotification = false;
     private boolean showingNotificationAnimation = false;
     private Label notificationLabel;
 
-    private Button soundOffOnButton;
-    private boolean isSoundOn = true;
+    private Slider volumeSlider;
+    private Label volumeIcon;
+    private Label volumePercent;
     private double settingsVolume = 1.0;
+    private double volumeBeforeMute = 1.0;
+    private AudioClip currentlyPlaying = null;
 
     public WindowManager(WindowControls controls) {
+        this(controls, false);
+    }
+
+    public WindowManager(WindowControls controls, boolean minimal) {
         this.root = controls.root();
         this.titleBarPane = controls.titleBarPane();
 
         initStageListener();
         initEventFilters();
         initNotificationLabel();
-        initSoundButton(); // TODO remove later (this is for debugging)
+        if (!minimal)
+            initVolumeSlider(controls.volumeSlider(), controls.volumeIcon(), controls.volumePercent());
 
         controls.quitButton().setOnAction(this::handleQuitAction);
         controls.minimizeButton().setOnAction(this::handleMinimizeAction);
         controls.maximizeButton().setOnAction(this::handleMaximizeAction);
 
-        controls.titleLabel().setText(MainApp.TITLE + " v" + MainApp.VERSION);
+        if (!minimal)
+            controls.titleLabel().setText(MainApp.TITLE + " v" + MainApp.VERSION);
     }
 
     private void initStageListener() {
@@ -164,17 +179,94 @@ public class WindowManager {
         notificationLabel.getStyleClass().add("notification-bar");
     }
 
-    // TODO remove later (this is for debugging)
-    private void initSoundButton() {
-        soundOffOnButton = new Button(String.format("Sound: %s", isSoundOn ? "ON" : "OFF"));
-        soundOffOnButton.setOnAction(e -> {
-            isSoundOn = !isSoundOn;
-            soundOffOnButton.setText(String.format("Sound: %s", isSoundOn ? "ON" : "OFF"));
+    private void initVolumeSlider(Slider slider, Label icon, Label percent) {
+        this.volumeSlider = slider;
+        this.volumeIcon = icon;
+        this.volumePercent = percent;
+        if (slider == null) return;
+
+        slider.setValue(settingsVolume);
+        updateVolumeIcon(settingsVolume);
+        updateVolumePercent(settingsVolume);
+
+        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            double v = newVal.doubleValue();
+            settingsVolume = v;
+            if (v > 0) volumeBeforeMute = v;
+            if (v == 0 && currentlyPlaying != null) currentlyPlaying.stop();
+            if (currentlyPlaying != null) currentlyPlaying.setVolume(getActualVolume());
+            updateVolumeIcon(v);
+            updateVolumePercent(v);
+            updateTrackFill(slider, v);
         });
 
-        root.getChildren().add(soundOffOnButton);
-        StackPane.setAlignment(soundOffOnButton, Pos.TOP_LEFT);
+        // Apply initial track fill after CSS has been applied to the scene.
+        slider.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                Platform.runLater(() -> updateTrackFill(slider, slider.getValue()));
+            }
+        });
 
+        if (icon != null) {
+            icon.setOnMouseClicked(e -> {
+                if (settingsVolume > 0) {
+                    volumeBeforeMute = settingsVolume;
+                    slider.setValue(0);
+                } else {
+                    slider.setValue(volumeBeforeMute > 0 ? volumeBeforeMute : 1.0);
+                }
+            });
+        }
+
+        // Hover-reveal behaviour: show only when hovering the icon itself,
+        // stay open while the cursor is anywhere inside the reserved container
+        // (so moving icon → slider → percent keeps it open), hide when leaving
+        // that container. Stays open while actively dragging the thumb.
+        Node container = (icon != null) ? icon.getParent() : null;
+        if (icon != null) {
+            icon.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> setVolumeControlsVisible(true));
+        }
+        if (container != null) {
+            container.setOnMouseExited(e -> {
+                if (!slider.isValueChanging()) setVolumeControlsVisible(false);
+            });
+            slider.valueChangingProperty().addListener((obs, was, isChanging) -> {
+                if (!isChanging && !container.isHover()) setVolumeControlsVisible(false);
+            });
+        }
+    }
+
+    private void setVolumeControlsVisible(boolean visible) {
+        if (volumeSlider != null) {
+            volumeSlider.setVisible(visible);
+            volumeSlider.setManaged(visible);
+        }
+        if (volumePercent != null) {
+            volumePercent.setVisible(visible);
+            volumePercent.setManaged(visible);
+        }
+    }
+
+    private void updateVolumeIcon(double volume) {
+        if (volumeIcon == null) return;
+        if (volume <= 0.0)        volumeIcon.setText("\uD83D\uDD07"); // 🔇
+        else if (volume <= 0.33)  volumeIcon.setText("\uD83D\uDD08"); // 🔈
+        else if (volume <= 0.66)  volumeIcon.setText("\uD83D\uDD09"); // 🔉
+        else                      volumeIcon.setText("\uD83D\uDD0A"); // 🔊
+    }
+
+    private void updateVolumePercent(double volume) {
+        if (volumePercent == null) return;
+        volumePercent.setText(Math.round(volume * 100) + "%");
+    }
+
+    private void updateTrackFill(Slider slider, double volume) {
+        Node track = slider.lookup(".track");
+        if (track == null) return;
+        double pct = Math.max(0, Math.min(1, volume)) * 100.0;
+        track.setStyle(String.format(java.util.Locale.US,
+                "-fx-background-color: linear-gradient(to right, #22c55e 0%%, #22c55e %.2f%%, #2a2a30 %.2f%%, #2a2a30 100%%);",
+                pct, pct));
     }
 
     private void handleQuitAction(ActionEvent event) {
@@ -212,7 +304,7 @@ public class WindowManager {
             double yMin = titleBarCoords.getY();
             double yMax = titleBarPane.getHeight() + yMin;
 
-            if (!maximized && shouldBeResizedOnDrag &&
+            if (resizable && !maximized && shouldBeResizedOnDrag &&
                     (isNearLeftEdge(event) ||
                             isNearRightEdge(event) ||
                             isNearBottomEdge(event) ||
@@ -227,6 +319,8 @@ public class WindowManager {
                 draggingWindow = true;
             }
         }
+//        else
+//            playAudioClip(SoundEffect.MOUSE_CLICKED);
 
         if (showingNotification)
             hideNotification();
@@ -437,11 +531,8 @@ public class WindowManager {
         animation.play();
         showingNotification = true;
 
-        if (soundOn) {
-            AudioClip audioClip = new AudioClip(SoundEffect.YOUR_TURN_NOTIFICATION.getPath());
-            audioClip.setVolume(getActualVolume());
-            audioClip.play();
-        }
+        if (soundOn)
+            playAudioClip(SoundEffect.YOUR_TURN_NOTIFICATION);
     }
 
     private void hideNotification() {
@@ -514,7 +605,9 @@ public class WindowManager {
         Node node = (Node) event.getTarget();
 
         while (node != null) {
-            if (node instanceof Button)
+            if (node instanceof Button || node instanceof Slider)
+                return true;
+            if (node instanceof Label && node.getStyleClass().contains("volume-icon"))
                 return true;
             node = node.getParent();
         }
@@ -527,7 +620,7 @@ public class WindowManager {
 
         boolean overControl = isOverControl(event);
 
-        if (maximized || (overControl && dir != Direction.NONE))
+        if (!resizable || maximized || (overControl && dir != Direction.NONE))
             root.setCursor(Cursor.DEFAULT);
         else {
             switch (dir) {
@@ -549,10 +642,32 @@ public class WindowManager {
             }
         }
 
-        shouldBeResizedOnDrag = !maximized && !(overControl && dir != Direction.NONE);
+        shouldBeResizedOnDrag = resizable && !maximized && !(overControl && dir != Direction.NONE);
     }
 
     private double getActualVolume() {
-        return isSoundOn ? 1 * settingsVolume : 0;
+        return settingsVolume;
+    }
+
+    public void setResizable(boolean resizable) {
+        this.resizable = resizable;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void playAudioClip(SoundEffect soundEffect) {
+        playAudioClip(soundEffect, false);
+    }
+
+    public void playAudioClip(SoundEffect soundEffect, boolean cycle) {
+        if (currentlyPlaying != null)
+            currentlyPlaying.stop();
+        currentlyPlaying = new AudioClip(soundEffect.getPath());
+        currentlyPlaying.setVolume(getActualVolume() * soundEffect.getVolume());
+        if (cycle)
+            currentlyPlaying.setCycleCount(AudioClip.INDEFINITE);
+        currentlyPlaying.play();
     }
 }

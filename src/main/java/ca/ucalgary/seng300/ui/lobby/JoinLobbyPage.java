@@ -6,12 +6,10 @@ import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.CentralController;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
+import ca.ucalgary.seng300.ui.Popup;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -84,9 +82,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
         }
         String raw = codeField.getText() != null ? codeField.getText().trim() : "";
         if (raw.isEmpty()) {
-            Alert empty = new Alert(Alert.AlertType.INFORMATION, "Enter the lobby code your host shared.", ButtonType.OK);
-            ThemeAlerts.apply(empty);
-            empty.showAndWait();
+            Popup.showInfo(getScene().getWindow(), "Enter the lobby code your host shared.");
             return;
         }
         attemptJoin(raw.toUpperCase());
@@ -95,11 +91,8 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
     private void attemptJoin(String code) {
         ClientCore cc = rootController.getCC();
         if (cc == null || !cc.isConnected()) {
-            Alert warn = new Alert(Alert.AlertType.WARNING,
-                    "Connect to the game server first.\n\nRun PlatformCore (port 2020), restart this app, then try again.",
-                    ButtonType.OK);
-            ThemeAlerts.apply(warn);
-            warn.showAndWait();
+            Popup.showWarning(getScene().getWindow(),
+                    "Connect to the game server first.\n\nRun PlatformCore (port 2020), restart this app, then try again.");
             return;
         }
 
@@ -122,9 +115,7 @@ public class JoinLobbyPage extends AnchorPane implements Navigable {
             rootController.moveTo(Navigation.MAIN_LOBBY);
         }
         else {
-            Alert err = new Alert(Alert.AlertType.ERROR, b, ButtonType.OK);
-            ThemeAlerts.apply(err);
-            err.showAndWait();
+            Popup.showError(getScene().getWindow(), b);
         }
     }
 

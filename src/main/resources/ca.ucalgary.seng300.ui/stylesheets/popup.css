@@ -1,0 +1,132 @@
+.root {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-background-color: transparent;
+}
+
+.popup-surface {
+    -fx-background-color: #111112;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 0;
+}
+
+/* ========== Title bar (smaller version of main window) ========== */
+#popup-title-bar {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-radius: 0;
+}
+
+#popup-close-button {
+    -fx-pref-width: 36;
+    -fx-pref-height: 36;
+    -fx-min-width: 36;
+    -fx-background-color: #141416;
+    -fx-font-size: 13px;
+    -fx-text-fill: #fafafa;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+}
+
+#popup-close-button:hover {
+    -fx-background-color: #7f1d1d;
+    -fx-text-fill: #fecaca;
+}
+
+#popup-title-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #fafafa;
+    -fx-font-weight: 700;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* ========== Content area ========== */
+.popup-body {
+    -fx-padding: 20 24;
+    -fx-spacing: 14;
+    -fx-alignment: center;
+}
+
+.popup-icon {
+    -fx-font-size: 32px;
+    -fx-text-fill: #a1a1aa;
+}
+
+.popup-message {
+    -fx-text-fill: #d4d4d8;
+    -fx-font-size: 14px;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+/* ========== Button row ========== */
+.popup-button-row {
+    -fx-spacing: 10;
+    -fx-alignment: center;
+    -fx-padding: 0 0 4 0;
+}
+
+.popup-ok-button {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #34d399;
+    -fx-border-width: 1;
+    -fx-padding: 8 28;
+    -fx-cursor: hand;
+}
+
+.popup-ok-button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #4ade80;
+    -fx-effect: null;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+.popup-ok-button:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+.popup-cancel-button {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-padding: 8 28;
+    -fx-cursor: hand;
+}
+
+.popup-cancel-button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #3f3f46;
+    -fx-effect: null;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+.popup-cancel-button:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ========== Colorblind overrides ========== */
+.root.colorblind-mode .popup-ok-button {
+    -fx-border-color: #60a5fa;
+}
+
+.root.colorblind-mode .popup-ok-button:hover {
+    -fx-border-color: #93c5fd;
+}

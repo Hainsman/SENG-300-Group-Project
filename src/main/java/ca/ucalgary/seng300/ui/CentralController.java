@@ -15,19 +15,18 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
-import javafx.stage.Window;
 
 import java.util.ArrayList;
 
 // CentralController purpose is to hold the central container that each page's fxml will display in.
 public class CentralController {
-
-    private static CentralController instance;
-
     private WindowManager windowManager;
 
     private Scale uiScaleTransform;
@@ -40,6 +39,9 @@ public class CentralController {
     @FXML private Button quitButton;
     @FXML private Button minimizeButton;
     @FXML private Button maximizeButton;
+    @FXML private Slider volumeSlider;
+    @FXML private Label volumeIcon;
+    @FXML private Label volumePercent;
 
     private final ArrayList<Navigable> nodes = new ArrayList<>();
 
@@ -54,10 +56,10 @@ public class CentralController {
     public MainLobbyPage mainLobbyPage;
 
 
-    public static GameType selectedGame;
-    public static int maxPlayers;
-    public static String privacy;
-    public static String lobbyCode;
+    public GameType selectedGame;
+    public int maxPlayers;
+    public String privacy;
+    public String lobbyCode;
     /** Display name from host lobby screen (optional). */
     public String lobbyName;
     /** True if this client created the current lobby (may start the game). */
@@ -101,6 +103,7 @@ public class CentralController {
         maxPlayers = 0;
         privacy = null;
         clearLobbyRoster();
+        moveTo(Navigation.LOGIN);
     }
 
     public void applyLobbyRosterPayload(String payload) {
@@ -117,7 +120,7 @@ public class CentralController {
         rosterGuestElo = parseEloSegment(p[3]);
     }
 
-    private static int parseEloSegment(String s) {
+    private int parseEloSegment(String s) {
         try {
             return Integer.parseInt(s.trim());
         } catch (NumberFormatException e) {
@@ -129,12 +132,6 @@ public class CentralController {
         return clientCore;
     }
 
-    public static Window getAppWindow() {
-        if (instance == null || instance.root == null || instance.root.getScene() == null) {
-            return null;
-        }
-        return instance.root.getScene().getWindow();
-    }
     public void addIncomingMatchChat(String sender, String message) {
         if (gameui== null || message == null || message.isBlank()) {
             return;
@@ -162,16 +159,22 @@ public class CentralController {
                 titleLabel,
                 quitButton,
                 minimizeButton,
-                maximizeButton
+                maximizeButton,
+                volumeSlider,
+                volumeIcon,
+                volumePercent
         );
 
         windowManager = new WindowManager(controls);
+        windowManager.playAudioClip(SoundEffect.APP_STARTUP);
 
         root.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 syncUiPreferencesToScene();
             }
         });
+
+        root.addEventFilter(KeyEvent.KEY_PRESSED, this::handleGlobalKeyPress);
 
         initializeNodes();
 
@@ -273,6 +276,30 @@ public class CentralController {
                             sheet.contains(path + "extraLargeText.css")
             );
         }
+    }
+
+    private void handleGlobalKeyPress(KeyEvent event) {
+        if (event.getCode() != KeyCode.ESCAPE) return;
+        if (currentScreen == null) return;
+
+        Navigation back = getEscapeDestination(currentScreen);
+        if (back != null) {
+            moveTo(back);
+            event.consume();
+        }
+    }
+
+    private Navigation getEscapeDestination(Navigation screen) {
+        return switch (screen) {
+            case CHOOSE_MODE      -> Navigation.GAME_DASHBOARD;
+            case HOST_LOBBY       -> Navigation.CHOOSE_MODE;
+            case JOIN_LOBBY       -> Navigation.CHOOSE_MODE;
+            case MAIN_LOBBY       -> Navigation.CHOOSE_MODE;
+            case SETTINGS         -> Navigation.GAME_DASHBOARD;
+            case PROFILE_DASHBOARD -> Navigation.GAME_DASHBOARD;
+            case INFO             -> Navigation.GAME_DASHBOARD;
+            default               -> null;  // no Escape on login, game, dashboard
+        };
     }
 
     public boolean isGameOn() {

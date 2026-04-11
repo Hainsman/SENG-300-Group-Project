@@ -24,7 +24,7 @@
                 <HBox alignment="CENTER" spacing="10">
                     <children>
                         <TextField fx:id="codeField" maxWidth="360.0" promptText="Enter 8-character code..." />
-                        <Button fx:id="joinByCodeBtn" onAction="#handleJoinByCode" styleClass="primary-button" text="Join" />
+                        <Button fx:id="joinByCodeBtn" onAction="#handleJoinByCode" styleClass="primary-button" text="Join" defaultButton="true" />
                     </children>
                 </HBox>
                 <Label styleClass="card-subtitle" text="You will enter once the host is ready." />

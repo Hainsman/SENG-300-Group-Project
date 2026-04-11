@@ -6,13 +6,12 @@ import java.util.List;
 
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
-import ca.ucalgary.seng300.platform.domain.User;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
-import ca.ucalgary.seng300.platform.store.UserStore;
 import ca.ucalgary.seng300.ui.CentralController;
+import ca.ucalgary.seng300.ui.Popup;
+import ca.ucalgary.seng300.ui.SoundEffect;
 import ca.ucalgary.seng300.ui.util.Navigable;
 import ca.ucalgary.seng300.ui.util.Navigation;
-import ca.ucalgary.seng300.ui.util.ThemeAlerts;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -75,6 +74,7 @@ public class GameGUIPage extends VBox implements Navigable {
 
         c4Page = node instanceof C4Page connect4 ? connect4 : null;
         tttPage = node instanceof TTTPage ticTacToe ? ticTacToe : null;
+        rootController.getWindowManager().playAudioClip(SoundEffect.GAME_STARTED);
         refreshSidebar();
         //refreshForfeitButtonState();
     }
@@ -96,8 +96,8 @@ public class GameGUIPage extends VBox implements Navigable {
      * Left sidebar: game name (Tic-Tac-Toe vs Connect 4), signed-in user, ELO/tier/games for this game mode.
      */
     public void refreshSidebar() {
-        GameType g = CentralController.selectedGame != null
-                ? CentralController.selectedGame
+        GameType g = rootController.selectedGame != null
+                ? rootController.selectedGame
                 : GameType.TIC_TAC_TOE;
 
         gameTypeLabel.setText(rootController.clientCore.gameType.toString());
@@ -271,17 +271,13 @@ public class GameGUIPage extends VBox implements Navigable {
 
     public void onRematchRequested(String requester) {
         String name = requester != null && !requester.isBlank() ? requester : "Opponent";
-        ButtonType accept = new ButtonType("Accept", ButtonBar.ButtonData.OK_DONE);
-        ButtonType reject = new ButtonType("Reject", ButtonBar.ButtonData.CANCEL_CLOSE);
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                name + " requested a rematch. Do you want to play again?",
-                accept, reject);
-        confirm.setTitle("Rematch Request");
-        confirm.setHeaderText("Accept rematch?");
-        ThemeAlerts.apply(confirm);
-        ButtonType choice = confirm.showAndWait().orElse(reject);
+        boolean accepted = Popup.showConfirm(
+                getScene().getWindow(),
+                "Rematch Request",
+                "Accept rematch?",
+                name + " requested a rematch. Do you want to play again?");
         String me = "Player";
-        if (choice == accept) {
+        if (accepted) {
             rootController.clientCore.msgSend(new sysMSG("REMATCH", "ACCEPT", me));
         } else {
             rootController.clientCore.msgSend(new sysMSG("REMATCH", "DECLINE", me));

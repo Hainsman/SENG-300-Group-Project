@@ -1,10 +1,6 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.ui.WindowManager;
-import ca.ucalgary.seng300.platform.domain.GameHistory;
-import ca.ucalgary.seng300.platform.constants.Constants;
-import ca.ucalgary.seng300.platform.domain.User;
-import ca.ucalgary.seng300.platform.utils.Helper;
 import ca.ucalgary.seng300.ui.CentralController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

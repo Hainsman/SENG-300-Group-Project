@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -20,6 +21,8 @@ public class ChooseModePage extends AnchorPane implements Navigable {
 
     @FXML private Label gameTitleLabel;
 
+    @FXML private VBox hostCard;
+    @FXML private VBox joinCard;
     @FXML private VBox playWithAiCard;
 
     public ChooseModePage(CentralController rootController) {
@@ -41,6 +44,24 @@ public class ChooseModePage extends AnchorPane implements Navigable {
         if (rootController.selectedGame != null)
             gameTitleLabel.setText(rootController.selectedGame.toString());
         refreshAiCardVisibility();
+
+        hostCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handleHostGame(null);
+        });
+        joinCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handleJoinGame(null);
+        });
+        playWithAiCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handlePlayWithAi(null);
+        });
+
+        // Clear focus when mouse enters a different card
+        hostCard.setOnMouseEntered(e -> clearFocusExcept(hostCard));
+        joinCard.setOnMouseEntered(e -> clearFocusExcept(joinCard));
+        playWithAiCard.setOnMouseEntered(e -> clearFocusExcept(playWithAiCard));
     }
 
     /** Tic-Tac-Toe from the new dashboard uses {@code "TicTacToe"}. */
@@ -58,6 +79,12 @@ public class ChooseModePage extends AnchorPane implements Navigable {
             playWithAiCard.setVisible(showAi);
             playWithAiCard.setManaged(showAi);
         }
+    }
+
+    private void clearFocusExcept(VBox hovered) {
+        if (hostCard.isFocused() && hostCard != hovered) hostCard.getParent().requestFocus();
+        if (joinCard.isFocused() && joinCard != hovered) joinCard.getParent().requestFocus();
+        if (playWithAiCard.isFocused() && playWithAiCard != hovered) playWithAiCard.getParent().requestFocus();
     }
 
     @FXML
