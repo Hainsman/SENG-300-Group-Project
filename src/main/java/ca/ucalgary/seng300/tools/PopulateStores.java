@@ -7,10 +7,14 @@ import ca.ucalgary.seng300.platform.domain.FriendHistory;
 import ca.ucalgary.seng300.platform.domain.PlayerStats;
 import ca.ucalgary.seng300.platform.domain.SessionHistory;
 import ca.ucalgary.seng300.platform.domain.User;
+import ca.ucalgary.seng300.platform.domain.GameHistory;
+import ca.ucalgary.seng300.platform.domain.Participant;
 import ca.ucalgary.seng300.platform.store.FriendHistoryStore;
 import ca.ucalgary.seng300.platform.store.PlayerStatsStore;
 import ca.ucalgary.seng300.platform.store.SessionHistoryStore;
 import ca.ucalgary.seng300.platform.store.UserStore;
+import ca.ucalgary.seng300.platform.store.GameHistoryStore;
+import ca.ucalgary.seng300.platform.store.ParticipantStore;
 import ca.ucalgary.seng300.platform.utils.Helper;
 
 import java.io.IOException;
@@ -45,6 +49,8 @@ public class PopulateStores {
         SessionHistoryStore sessionStore = SessionHistoryStore.getInstance();
         PlayerStatsStore statsStore = PlayerStatsStore.getInstance();
         FriendHistoryStore friendStore = FriendHistoryStore.getInstance();
+        GameHistoryStore gameHistoryStore = GameHistoryStore.getInstance();
+        ParticipantStore participantStore = ParticipantStore.getInstance();
 
         List<Integer> createdUserIds = new ArrayList<>();
         List<UUID> createdSessionUuids = new ArrayList<>();
@@ -109,16 +115,68 @@ public class PopulateStores {
             addFriend(friendStore, johnId, alexId);
         }
 
+        // 5) Create Game Histories and Participants
+        List<Integer> createdGameHistoryIds = new ArrayList<>();
+
+        // Game 1: TicTacToe between first two users
+        int ghId1 = gameHistoryStore.assignNewId();
+        GameHistory gh1 = new GameHistory(ghId1, Game.TICK_TACK_TOE);
+        gameHistoryStore.create(gh1);
+        createdGameHistoryIds.add(ghId1);
+
+        // Participants for game 1
+        int pId1 = participantStore.assignNewId();
+        Participant p1 = new Participant(pId1, ghId1, createdUserIds.get(0), 1); // user 1 wins
+        participantStore.create(p1);
+
+        int pId2 = participantStore.assignNewId();
+        Participant p2 = new Participant(pId2, ghId1, createdUserIds.get(1), -1); // user 2 loses
+        participantStore.create(p2);
+
+        // Game 2: Connect4 between second and third users
+        int ghId2 = gameHistoryStore.assignNewId();
+        GameHistory gh2 = new GameHistory(ghId2, Game.CONNECT_FOUR);
+        gameHistoryStore.create(gh2);
+        createdGameHistoryIds.add(ghId2);
+
+        // Participants for game 2
+        int pId3 = participantStore.assignNewId();
+        Participant p3 = new Participant(pId3, ghId2, createdUserIds.get(1), 1); // user 2 wins
+        participantStore.create(p3);
+
+        int pId4 = participantStore.assignNewId();
+        Participant p4 = new Participant(pId4, ghId2, createdUserIds.get(2), -1); // user 3 loses
+        participantStore.create(p4);
+
+        // Game 3: Another TicTacToe between third and fourth users
+        int ghId3 = gameHistoryStore.assignNewId();
+        GameHistory gh3 = new GameHistory(ghId3, Game.TICK_TACK_TOE);
+        gameHistoryStore.create(gh3);
+        createdGameHistoryIds.add(ghId3);
+
+        // Participants for game 3
+        int pId5 = participantStore.assignNewId();
+        Participant p5 = new Participant(pId5, ghId3, createdUserIds.get(2), 0); // user 3 ties
+        participantStore.create(p5);
+
+        int pId6 = participantStore.assignNewId();
+        Participant p6 = new Participant(pId6, ghId3, createdUserIds.get(3), 0); // user 4 ties
+        participantStore.create(p6);
+
         // Summary
         System.out.println("PopulateStores finished.");
         System.out.println("  Users created:  " + createdUserIds.size() + " -> " + createdUserIds);
         System.out.println("  Sessions made:  " + createdSessionUuids.size());
         System.out.println("  PlayerStats:    " + createdUserIds.size() * 2 + " (2 games each)");
+        System.out.println("  Game Histories: " + createdGameHistoryIds.size());
+        System.out.println("  Participants:   " + createdGameHistoryIds.size() * 2 + " (2 per game)");
         System.out.println("Data files:");
         System.out.println("  - " + Constants.USER_FILE_PATH);
         System.out.println("  - " + Constants.SESSION_FILE_PATH);
         System.out.println("  - " + Constants.PLAYER_STATS_FILE_PATH);
         System.out.println("  - " + Constants.FRIENDS_FILE_PATH);
+        System.out.println("  - " + Constants.GAME_FILE_PATH);
+        System.out.println("  - " + Constants.PARTICIPANTS_FILE_PATH);
     }
 
     private static void addFriend(FriendHistoryStore store, int userId, int friendId) {
@@ -129,9 +187,6 @@ public class PopulateStores {
         fh.setFriendShipActive(true);
         store.create(fh);
 
-        // Usually friendship is mutual in these apps, but instructions say "Daniel M be friends with Alex and Paul"
-        // and "JohnW be friends with just Alex".
-        // I will add the reverse too just in case the UI expects it for both sides.
         int id2 = store.assignNewId();
         FriendHistory fh2 = new FriendHistory(id2);
         fh2.setUserId(friendId);
@@ -146,6 +201,8 @@ public class PopulateStores {
         writeEmptyJson(Constants.SESSION_FILE_PATH);
         writeEmptyJson(Constants.PLAYER_STATS_FILE_PATH);
         writeEmptyJson(Constants.FRIENDS_FILE_PATH);
+        writeEmptyJson(Constants.GAME_FILE_PATH);
+        writeEmptyJson(Constants.PARTICIPANTS_FILE_PATH);
         System.out.println("Data files reset to empty objects.");
     }
 

@@ -2,11 +2,49 @@
 
 This is a multiplayer gaming platform that allows users to play various games online with friends and other players. The platform provides a seamless experience for registering, finding games, and competing in real-time.
 
+## How to Run the Project
+
+To run the project, you need to start the server first, then launch the client.
+
+### Running the Server
+- **Using IntelliJ IDEA**: Go to Run > Edit Configurations. Add a new Application configuration. Set the Main class to `ca.ucalgary.seng300.platform.server.PlatformCore`. Run this configuration to start the server.
+- **Using Maven Wrapper (Command Line)**: Execute `sh mvnw exec:java` (on Windows, use `mvnw.cmd exec:java`). This uses the configured main class from `pom.xml`.
+
+### Running the Client
+- **Using IntelliJ IDEA**: Ensure the server is running. Then, go to Run > Edit Configurations. Add or use the JavaFX configuration. Run it to launch the client UI.
+- **Using Maven Wrapper (Command Line)**: Execute `sh mvnw javafx:run` (on Windows, use `mvnw.cmd javafx:run`). This starts the JavaFX application.
+
+### Populating Sample Data
+To populate the stores with sample data (users, game history, participants, sessions, player stats, and friends), run the `PopulateStores` class:
+- **Using IntelliJ IDEA**: Add a new Application configuration with Main class `ca.ucalgary.seng300.tools.PopulateStores` and run it.
+- **Using Maven Wrapper (Command Line)**: Execute `sh mvnw exec:java -Dexec.mainClass=ca.ucalgary.seng300.tools.PopulateStores` (on Windows, use `mvnw.cmd exec:java -Dexec.mainClass=ca.ucalgary.seng300.tools.PopulateStores`).
+
+This will initialize the data files in the `datafiles/` directory with sample users, completed games with participants, and other related data without starting the server. Note: If the user store is empty, it will be populated upon first access via `UserStore.getInstance()`, which loads data from the file or initializes an empty store if the file doesn't exist.
+
+## Testing
+
+The project includes comprehensive JUnit 5 tests to ensure functionality and reliability. Tests cover key components such as persistence, server operations, client interactions, and game logic.
+
+### Running Tests
+- **Using IntelliJ IDEA**: Right-click on the `src/test/java` directory or individual test classes and select "Run Tests".
+- **Using Maven Wrapper (Command Line)**: Execute `sh mvnw test` (on Windows, use `mvnw.cmd test`). This runs all tests and generates reports in `target/surefire-reports`.
+
+### What is Currently Tested
+- **Persistence Layer**: Tests for stores (e.g., `UserStore`, `GameHistoryStore`, `ParticipantStore`, `PlayerStatsStore`) to verify data loading, saving, and CRUD operations.
+- **Server Functionality**: Tests for `PlatformCore` and `ServerCore`, including profile updates, session management, and request handling.
+- **Client Operations**: Tests for `ClientCore` to ensure proper communication with the server.
+- **Game History and Sessions**: Tests for game history persistence and session records.
+- **Main Application**: Basic tests for `MainApp` to verify application startup.
+- **Domain and Utilities**: Tests for domain objects and helper utilities, such as hashing and validation.
+
+Tests use temporary files and in-memory setups where possible to avoid interfering with production data. Run `mvn test` regularly to catch regressions during development.
+
 ## Features
 
 ### User Management
-- **Account Creation**: New users can easily create accounts to join the platform.
+- **Account Creation**: New users can easily create accounts to join the platform, with built-in email validation to ensure proper formatting.
 - **Secure Login**: Users can log in securely to access their personalized dashboard.
+- **Password Hashing**: Passwords are securely hashed to protect user credentials and prevent unauthorized access.
 - **Password Recovery**: Forgot your password? No problem – recover it via email.
 
 ### Game Discovery
@@ -35,6 +73,24 @@ This is a multiplayer gaming platform that allows users to play various games on
 - **Settings**: Customize your experience with user-friendly settings options.
 - **Notifications**: Stay updated with badges, hints, and important alerts.
 
+### User Interface and Game Logic
+The application follows a modular architecture to separate user interface concerns from core game mechanics, ensuring maintainability and extensibility.
+
+#### User Interface (UI) Layer
+- **Framework**: Built using JavaFX with FXML for declarative UI design, allowing for rich, interactive graphical interfaces.
+- **Structure**: Organized in the `ui` package, with controllers (e.g., `joinLobbyController`, `hostLobbyController`) handling user interactions and communicating with the platform core via client-side logic.
+- **Navigation**: Supports multiple views such as login, dashboard, lobby, game boards, and profiles, with dynamic updates for real-time features like chat and matchmaking status.
+- **Benefits**: Clean separation from business logic enables easy UI customization and testing, while JavaFX ensures cross-platform compatibility.
+
+#### Game Logic Layer
+- **Abstraction**: Games implement a common `Game` interface, promoting polymorphism and easy addition of new games (e.g., Tic-Tac-Toe in `game.core.tictactoe`, Connect 4 in `game.core.connect4`).
+- **Validation**: Rule validation is handled by `RuleValidator` implementations, ensuring game rules are enforced consistently and independently of UI.
+- **Actions**: Player actions are modeled via `PlayerAction` classes, allowing for extensible move handling and state transitions.
+- **Integration**: The platform core manages game sessions through `GameSessionManager`, coordinating between UI, server, and game logic for seamless multiplayer experiences.
+- **Benefits**: Modular design allows for game-specific logic to be developed and tested in isolation, facilitating rapid prototyping and maintenance.
+
+This structure adheres to the overall domain-driven architecture, with clear boundaries between UI presentation, business rules, and data persistence.
+
 ## Design Changes and Architecture
 
 ### Deviations from Original UML Diagrams
@@ -45,7 +101,9 @@ The initial UML diagrams in the `docs/` folder outlined a high-level architectur
 
 - **Database System**: The original persistence model relied on simple stubs like `CredentialsDatabase` using in-memory HashMaps or basic file I/O. The implemented system uses a file-based JSON storage with domain-driven design principles, providing thread-safe operations, data integrity, and scalability beyond the initial stubs.
 
-- **Additional Components**: Components such as detailed matchmaking services, chat systems, and session management were expanded beyond the basic outlines in the diagrams, incorporating features like lobby creation, queuing, and real-time updates.
+- **Additional Components**: Components such as detailed matchmaking services, chat systems, and session management were expanded beyond the basic outlines in the diagrams, incorporating features like lobby creation, queuing, and real-time updates. Additionally, user ranks are determined by a game-agnostic score system, allowing consistent ranking across different games. Session management ensures only one active session per user to prevent hijacking and maintain security.
+
+- **Game Implementation**: While the original diagrams outlined an abstract `Game` interface, the implementation includes fully functional games (Tic-Tac-Toe and Connect 4) with concrete rule validators and action models. Each game implements `RuleValidator` to enforce game-specific rules independently of the UI, and uses `PlayerAction` classes to model moves and state transitions. This design allows for easy extension with new games and ensures consistent game logic validation across all titles.
 
 ### Database System and Domain-Driven Architecture
 
@@ -77,24 +135,5 @@ The server (`PlatformCore`) acts as the central authority, separating database o
   - **Real-Time Capabilities**: Enables features like live chat, matchmaking notifications, and synchronized game states across clients.
 
 For a detailed list of design changes, see the project documentation in `docs/`. (Note: A PDF summary of changes is not available; refer to the UML diagrams and code comments for specifics.)
-
-## UI and Game Logic Structure
-
-The application follows a modular architecture to separate user interface concerns from core game mechanics, ensuring maintainability and extensibility.
-
-### User Interface (UI) Layer
-- **Framework**: Built using JavaFX with FXML for declarative UI design, allowing for rich, interactive graphical interfaces.
-- **Structure**: Organized in the `ui` package, with controllers (e.g., `joinLobbyController`, `hostLobbyController`) handling user interactions and communicating with the platform core via client-side logic.
-- **Navigation**: Supports multiple views such as login, dashboard, lobby, game boards, and profiles, with dynamic updates for real-time features like chat and matchmaking status.
-- **Benefits**: Clean separation from business logic enables easy UI customization and testing, while JavaFX ensures cross-platform compatibility.
-
-### Game Logic Layer
-- **Abstraction**: Games implement a common `Game` interface, promoting polymorphism and easy addition of new games (e.g., Tic-Tac-Toe in `game.core.tictactoe`, Connect 4 in `game.core.connect4`).
-- **Validation**: Rule validation is handled by `RuleValidator` implementations, ensuring game rules are enforced consistently and independently of UI.
-- **Actions**: Player actions are modeled via `PlayerAction` classes, allowing for extensible move handling and state transitions.
-- **Integration**: The platform core manages game sessions through `GameSessionManager`, coordinating between UI, server, and game logic for seamless multiplayer experiences.
-- **Benefits**: Modular design allows for game-specific logic to be developed and tested in isolation, facilitating rapid prototyping and maintenance.
-
-This structure adheres to the overall domain-driven architecture, with clear boundaries between UI presentation, business rules, and data persistence.
 
 This platform is designed for fun, social gaming, bringing players together in an engaging and secure environment.
