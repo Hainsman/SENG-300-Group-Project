@@ -1,0 +1,31 @@
+@startuml matchmaking_lobby_use_cases
+left to right direction
+skinparam packageStyle rectangle
+skinparam ActorBorderColor #1a3a5c
+skinparam UsecaseBorderColor #2a5f8f
+skinparam UsecaseBackgroundColor #e8f4fd
+skinparam ArrowColor #555555
+
+actor Player
+
+rectangle "Matchmaking & Lobby" {
+    usecase "UC-ML-01\nJoin Ranked Queue"        as JoinQueue
+    usecase "UC-ML-02\nLeave Ranked Queue"       as LeaveQueue
+    usecase "UC-ML-03\nCreate Lobby"             as CreateLobby
+    usecase "UC-ML-04\nJoin Lobby"               as JoinLobby
+    usecase "UC-ML-05\nBrowse Available Lobbies" as BrowseLobbies
+    usecase "UC-ML-06\nLeave Lobby"              as LeaveLobby
+    usecase "UC-ML-07\nReceive Match Notification" as MatchNotify
+}
+
+Player --> JoinQueue
+Player --> LeaveQueue
+Player --> CreateLobby
+Player --> JoinLobby
+Player --> BrowseLobbies
+Player --> LeaveLobby
+Player --> MatchNotify
+
+JoinQueue ..> MatchNotify : <<include>>
+JoinLobby ..> BrowseLobbies : <<extend>>
+@enduml

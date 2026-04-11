@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="680.0" prefWidth="1020.0"
+            stylesheets="@stylesheets/modern_theme.css"
+            styleClass="app-surface"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ca.ucalgary.seng300.ui.login.SettingsController">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="18" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="34.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="34.0">
+            <Label text="Player Settings" styleClass="mode-title" style="-fx-font-size: 42px;" />
+            <Label text="Update your profile information" styleClass="mode-subtitle" />
+
+            <VBox alignment="CENTER_LEFT" maxWidth="560.0" prefWidth="560.0" spacing="12" styleClass="card">
+                <padding>
+                    <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                </padding>
+                <Label text="Display Name" styleClass="card-title" />
+                <TextField fx:id="displayNameField" promptText="Enter display name" styleClass="input-field" />
+                <Label text="Email" styleClass="card-title" />
+                <TextField fx:id="emailField" promptText="Enter email address" styleClass="input-field" />
+                <Label text="New Password (optional)" styleClass="card-title" />
+                <PasswordField fx:id="passwordField" promptText="Enter new password" styleClass="input-field" />
+                <Label text="Confirm Password" styleClass="card-title" />
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirm new password" styleClass="input-field" />
+
+                <Label text="Text Size" styleClass="card-title" />
+                <ComboBox fx:id="textSizeComboBox" promptText="Select text size" styleClass="input-field" />
+
+                <CheckBox fx:id="colorBlindCheckBox" styleClass="login-checkbox" text="Enable color-blind mode" />
+                <Label fx:id="statusLabel" styleClass="card-subtitle" text="" />
+                <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <children>
+                        <Button onAction="#handleSave" prefHeight="42.0" prefWidth="130.0" styleClass="primary-button" text="Save" />
+                    </children>
+                </HBox>
+            </VBox>
+
+            <Button onAction="#handleBack" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
+        </VBox>
+    </children>
+</AnchorPane>

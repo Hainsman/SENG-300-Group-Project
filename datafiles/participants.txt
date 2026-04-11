@@ -1,0 +1,50 @@
+{
+  "1": {
+    "gameHistoryID": 1,
+    "userID": 1,
+    "score": 1,
+    "id": 1,
+    "timeCreated": 1775876160644,
+    "type": "Participant"
+  },
+  "2": {
+    "gameHistoryID": 1,
+    "userID": 2,
+    "score": 0,
+    "id": 2,
+    "timeCreated": 1775876160661,
+    "type": "Participant"
+  },
+  "3": {
+    "gameHistoryID": 2,
+    "userID": 2,
+    "score": 1,
+    "id": 3,
+    "timeCreated": 1775876160670,
+    "type": "Participant"
+  },
+  "4": {
+    "gameHistoryID": 2,
+    "userID": 3,
+    "score": -1,
+    "id": 4,
+    "timeCreated": 1775876160673,
+    "type": "Participant"
+  },
+  "5": {
+    "gameHistoryID": 3,
+    "userID": 3,
+    "score": 0,
+    "id": 5,
+    "timeCreated": 1775876160708,
+    "type": "Participant"
+  },
+  "6": {
+    "gameHistoryID": 3,
+    "userID": 4,
+    "score": 0,
+    "id": 6,
+    "timeCreated": 1775876160722,
+    "type": "Participant"
+  }
+}

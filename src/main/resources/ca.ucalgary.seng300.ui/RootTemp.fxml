@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane fx:id="root" prefHeight="730.0" prefWidth="1020.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.centralcontroller.CentralController">
+   <children>
+      <BorderPane prefHeight="730.0" prefWidth="1020.0">
+         <top>
+            <BorderPane fx:id="titleBarPane" prefHeight="56.0" style="-fx-background-color: #1a1833; -fx-border-color: #2f2955; -fx-border-width: 0 0 1 0;">
+               <left>
+                  <HBox alignment="CENTER_LEFT" spacing="10" BorderPane.alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="BOGO Arena" style="-fx-text-fill: #ede9fe; -fx-font-size: 22; -fx-font-weight: 700;" />
+                        <Label fx:id="titleLabel" text="Game Modes" style="-fx-text-fill: #a78bfa; -fx-font-size: 14; -fx-font-weight: 600;" />
+                     </children>
+                     <padding>
+                        <Insets left="18.0" />
+                     </padding>
+                  </HBox>
+               </left>
+               <right>
+                  <HBox alignment="CENTER_RIGHT" spacing="8" BorderPane.alignment="CENTER_RIGHT">
+                     <children>
+                        <Button mnemonicParsing="false" styleClass="nav-button" text="🔔" />
+                        <Button mnemonicParsing="false" styleClass="nav-button" text="⚙" />
+                        <Button mnemonicParsing="false" styleClass="nav-button" text="👤" />
+                        <Button id="minimize-maximize-button" fx:id="minimizeButton" mnemonicParsing="false" text="–" />
+                        <Button id="minimize-maximize-button" fx:id="maximizeButton" mnemonicParsing="false" text="⬜" />
+                        <Button id="exit-button" fx:id="quitButton" mnemonicParsing="false" text="✕" />
+                     </children>
+                     <padding>
+                        <Insets right="12.0" />
+                     </padding>
+                  </HBox>
+               </right>
+            </BorderPane>
+         </top>
+         <center>
+            <StackPane>
+               <children>
+                  <AnchorPane style="-fx-background-color: linear-gradient(to bottom right, #2b2360, #1a1833);">
+                     <children>
+                        <VBox alignment="TOP_CENTER" spacing="22" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="20.0">
+                           <children>
+                              <Label text="Game Modes" style="-fx-text-fill: #f5f3ff; -fx-font-size: 34; -fx-font-weight: 800;" />
+                              <Label text="Pick how you want to play today" style="-fx-text-fill: #c4b5fd; -fx-font-size: 16;" />
+                              <HBox alignment="CENTER" spacing="16">
+                                 <children>
+                                    <VBox alignment="BOTTOM_CENTER" prefHeight="420.0" prefWidth="180.0" spacing="14.0" styleClass="game-card">
+                                       <children>
+                                          <Label text="SOLO" style="-fx-text-fill: #f8fafc; -fx-font-size: 26; -fx-font-weight: 800;" />
+                                          <Label text="Practice Mode" style="-fx-text-fill: #d8d1f5; -fx-font-size: 13;" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="18.0" left="12.0" right="12.0" top="18.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="BOTTOM_CENTER" prefHeight="420.0" prefWidth="180.0" spacing="14.0" styleClass="game-card">
+                                       <children>
+                                          <Label text="DUO" style="-fx-text-fill: #f8fafc; -fx-font-size: 26; -fx-font-weight: 800;" />
+                                          <Label text="2-Player Match" style="-fx-text-fill: #d8d1f5; -fx-font-size: 13;" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="18.0" left="12.0" right="12.0" top="18.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="BOTTOM_CENTER" prefHeight="420.0" prefWidth="180.0" spacing="14.0" styleClass="game-card">
+                                       <children>
+                                          <Label text="TRIO" style="-fx-text-fill: #f8fafc; -fx-font-size: 26; -fx-font-weight: 800;" />
+                                          <Label text="Party Queue" style="-fx-text-fill: #d8d1f5; -fx-font-size: 13;" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="18.0" left="12.0" right="12.0" top="18.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="BOTTOM_CENTER" prefHeight="420.0" prefWidth="180.0" spacing="14.0" styleClass="game-card">
+                                       <children>
+                                          <Label text="QUAD" style="-fx-text-fill: #f8fafc; -fx-font-size: 26; -fx-font-weight: 800;" />
+                                          <Label text="Team Battle" style="-fx-text-fill: #d8d1f5; -fx-font-size: 13;" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="18.0" left="12.0" right="12.0" top="18.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="BOTTOM_CENTER" prefHeight="420.0" prefWidth="180.0" spacing="14.0" styleClass="game-card">
+                                       <children>
+                                          <Label text="PLAYGROUND" style="-fx-text-fill: #f8fafc; -fx-font-size: 22; -fx-font-weight: 800;" />
+                                          <Label text="Freeplay + Tips" style="-fx-text-fill: #d8d1f5; -fx-font-size: 13;" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="18.0" left="12.0" right="12.0" top="18.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+                  <!-- Keep this exact fx:id so CentralController can inject normal app screens -->
+                  <BorderPane fx:id="viewContainer" pickOnBounds="false" />
+               </children>
+            </StackPane>
+         </center>
+      </BorderPane>
+   </children>
+</StackPane>

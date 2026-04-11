@@ -1,0 +1,158 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.5.2">
+  <diagram name="Chess UI Class Diagram" id="chess-ui-class-diagram">
+    <mxGraphModel dx="1165" dy="517" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="enum-PieceType" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&#39;margin:0;text-align:center;&#39;&gt;&lt;b&gt;PieceType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;PAWN&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;KNIGHT&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;BISHOP&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;ROOK&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;QUEEN&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;KING&lt;/p&gt;" vertex="1">
+          <mxGeometry height="160" width="150" x="40" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-PieceColor" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&#39;margin:0;text-align:center;&#39;&gt;&lt;b&gt;PieceColor&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;WHITE&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;BLACK&lt;/p&gt;" vertex="1">
+          <mxGeometry height="80" width="150" x="40" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-SquareState" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&#39;margin:0;text-align:center;&#39;&gt;&lt;b&gt;SquareState&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;NORMAL&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;SELECTED&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;VALID_MOVE&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;CHECK&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="150" x="90" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-GameStatus" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin:0;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;&amp;lt;&amp;lt;Enumeration&amp;gt;&amp;gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0;text-align:center;&quot;&gt;&lt;b&gt;GameStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;ACTIVE&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;CHECK&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;CHECKMATE&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;DRAW&lt;/p&gt;&lt;p style=&quot;margin:0;margin-left:4px;&quot;&gt;RESIGNED&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="150" x="1240" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="class-BoardCoordinate" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;BoardCoordinate&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ file: int&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ rank: int&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ toAlgebraic(): String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isValid(): boolean&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ equals(other: BoardCoordinate): boolean&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="230" x="290" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="class-ChessPiece" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;ChessPiece&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ type: PieceType&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ color: PieceColor&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ position: BoardCoordinate&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isCaptured: boolean&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isClickable(activeColor: PieceColor): boolean&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ render(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ animateCapture(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="160" width="260" x="290" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="class-BoardSquare" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;BoardSquare&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ coordinate: BoardCoordinate&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isDark: boolean&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ state: SquareState&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- occupant: ChessPiece&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ highlight(state: SquareState): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ clearHighlight(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ onClick(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ render(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="160" width="260" x="270" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="class-GameBoardArea" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;GameBoardArea&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- squares: List&amp;lt;BoardSquare&amp;gt;&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- pieces: List&amp;lt;ChessPiece&amp;gt;&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- selectedPiece: ChessPiece&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isFlipped: boolean&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ renderBoard(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ selectPiece(piece: ChessPiece): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ highlightValidMoves(moves: List&amp;lt;BoardCoordinate&amp;gt;): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ clearHighlights(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ animateMove(from: BoardCoordinate, to: BoardCoordinate): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ highlightKingCheck(coord: BoardCoordinate): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="240" width="280" x="650" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="class-PlayerInfoPanel" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;PlayerInfoPanel&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerName: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playerColor: PieceColor&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isActiveTurn: boolean&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- timer: PlayerTimer&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- turnIndicator: TurnIndicator&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ refresh(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ setActiveTurn(active: boolean): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="170" width="260" x="650" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="class-PlayerTimer" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;PlayerTimer&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ timeRemainingMs: int&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isRunning: boolean&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ start(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ stop(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ reset(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ formatDisplay(): String&lt;/p&gt;" vertex="1">
+          <mxGeometry height="130" width="210" x="560" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="class-TurnIndicator" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;TurnIndicator&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isActive: boolean&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ activate(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ deactivate(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="90" width="190" x="830" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="class-MoveHistoryPanel" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;MoveHistoryPanel&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- moveEntries: List&amp;lt;MoveEntry&amp;gt;&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isScrollable: boolean&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ addMove(entry: MoveEntry): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ clear(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ scrollToLatest(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="230" x="980" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="class-MoveEntry" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;MoveEntry&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ moveNumber: int&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ whiteMove: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ blackMove: String&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ toAlgebraicString(): String&lt;/p&gt;" vertex="1">
+          <mxGeometry height="100" width="200" x="1050" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="class-GameStatusDisplay" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;GameStatusDisplay&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;- status: GameStatus&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ message: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isVisible: boolean&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ showStatus(status: GameStatus): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ hide(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ playStatusEffect(status: GameStatus): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="150" width="240" x="1060" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="class-ActionInfoBar" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&#39;margin:0;margin-top:4px;text-align:center;&#39;&gt;&lt;b&gt;ActionInfoBar&lt;/b&gt;&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ currentMessage: String&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ isHintVisible: boolean&lt;/p&gt;&lt;hr size=&#39;1&#39;/&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ showMessage(msg: String): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ showInvalidMoveWarning(): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ showHint(move: String): void&lt;/p&gt;&lt;p style=&#39;margin:0;margin-left:4px;&#39;&gt;+ clear(): void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="140" width="260" x="600" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-piece-type" edge="1" parent="1" source="class-ChessPiece" style="dashed=1;endArrow=open;endFill=0;" target="enum-PieceType">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-piece-color" edge="1" parent="1" source="class-ChessPiece" style="dashed=1;endArrow=open;endFill=0;" target="enum-PieceColor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-piece-coord" edge="1" parent="1" source="class-ChessPiece" style="dashed=0;endArrow=open;endFill=0;exitX=0.66;exitY=0.012;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.871;entryY=1.023;entryDx=0;entryDy=0;entryPerimeter=0;" target="class-BoardCoordinate">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450" y="220" as="sourcePoint" />
+            <mxPoint x="470" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-piece-coord-mult" connectable="0" parent="rel-piece-coord" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-square-state" edge="1" parent="1" source="class-BoardSquare" style="dashed=1;endArrow=open;endFill=0;" target="enum-SquareState">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-square-coord" edge="1" parent="1" source="class-BoardSquare" style="dashed=0;endArrow=open;endFill=0;" target="class-BoardCoordinate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-square-coord-mult" connectable="0" parent="rel-square-coord" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-square-piece" edge="1" parent="1" source="class-BoardSquare" style="dashed=0;endArrow=open;endFill=0;entryX=0.583;entryY=1.007;entryDx=0;entryDy=0;entryPerimeter=0;" target="class-ChessPiece">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-square-piece-mult" connectable="0" parent="rel-square-piece" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="0..1" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint x="29" y="16" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-board-squares" edge="1" parent="1" source="class-GameBoardArea" style="dashed=0;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;exitX=0;exitY=1;exitDx=0;exitDy=0;" target="class-BoardSquare">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-board-squares-mult-whole" connectable="0" parent="rel-board-squares" style="resizable=0;html=1;align=left;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="-0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-board-squares-mult-part" connectable="0" parent="rel-board-squares" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="64" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-board-pieces" edge="1" parent="1" source="class-GameBoardArea" style="dashed=0;endArrow=open;endFill=0;" target="class-ChessPiece">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-board-pieces-mult" connectable="0" parent="rel-board-pieces" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="0..*" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint x="35" y="-11" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-pip-timer" edge="1" parent="1" source="class-PlayerInfoPanel" style="dashed=0;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;" target="class-PlayerTimer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pip-timer-mult" connectable="0" parent="rel-pip-timer" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-pip-turn" edge="1" parent="1" source="class-PlayerInfoPanel" style="dashed=0;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;" target="class-TurnIndicator">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-pip-turn-mult" connectable="0" parent="rel-pip-turn" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-pip-color" edge="1" parent="1" source="class-PlayerInfoPanel" style="dashed=1;endArrow=open;endFill=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="enum-PieceColor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-history-entry" edge="1" parent="1" source="class-MoveHistoryPanel" style="dashed=0;startArrow=diamondThin;startFill=1;endArrow=open;endFill=0;entryX=0.666;entryY=-0.022;entryDx=0;entryDy=0;entryPerimeter=0;" target="class-MoveEntry">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1095" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-history-entry-mult-whole" connectable="0" parent="rel-history-entry" style="resizable=0;html=1;align=left;verticalAlign=bottom;" value="1" vertex="1">
+          <mxGeometry relative="1" x="-0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-history-entry-mult-part" connectable="0" parent="rel-history-entry" style="resizable=0;html=1;align=right;verticalAlign=bottom;" value="0..*" vertex="1">
+          <mxGeometry relative="1" x="0.9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-statusdisplay-enum" edge="1" parent="1" source="class-GameStatusDisplay" style="dashed=1;endArrow=open;endFill=0;" target="enum-GameStatus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-board-infobar" edge="1" parent="1" source="class-GameBoardArea" style="dashed=1;endArrow=open;endFill=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" target="class-ActionInfoBar" value="&lt;&gt;triggers&lt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-board-status" edge="1" parent="1" source="class-GameBoardArea" style="dashed=1;endArrow=open;endFill=0;" target="class-GameStatusDisplay" value="&lt;&gt;triggers&lt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-board-history" edge="1" parent="1" source="class-GameBoardArea" style="dashed=1;endArrow=open;endFill=0;" target="class-MoveHistoryPanel" value="&lt;&gt;appends to&lt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

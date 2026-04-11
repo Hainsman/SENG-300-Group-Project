@@ -1,0 +1,79 @@
+@startuml Connect4_SM
+title Connect Four — State Machine
+
+skinparam state {
+  BackgroundColor #E8F4FD
+  BorderColor #2A5F8F
+  FontSize 12
+  ArrowColor #333333
+  StartColor #1a3a5c
+  EndColor #1a3a5c
+  CompositeBackgroundColor #F5FAFF
+  CompositeBorderColor #2A5F8F
+}
+
+' ─── Session Lifecycle ───────────────────────────────────
+[*] --> Created
+
+Created --> WaitingForPlayers : roomOpen
+
+WaitingForPlayers --> ReadyToStart : minPlayersReached\n[players.size() == 2]
+
+ReadyToStart --> Starting : startGame
+
+Starting --> TurnSelect : initialStateBuilt\n/ Game.createInitialState(players)\n/ GameState.state = IN_PROGRESS\n/ GameState.playerTurn = PLAYER_1
+
+' ─── Turn Loop (composite) ───────────────────────────────
+state TurnSelect {
+  [*] --> DetermineActivePlayer
+
+  DetermineActivePlayer --> AwaitingMove : activePlayerChosen\n/ emit GameStateUpdate(\n    activePlayerId,\n    allowedActions = RuleValidator.getValidMoves(gameState),\n    board,\n    status = YOUR_TURN\n  )
+
+  AwaitingMove --> ValidatingMove : moveSubmitted\n/ PlayerAction(player=GameState.playerTurn, move=col)
+
+  ValidatingMove --> AwaitingMove : invalidMove\n[RuleValidator.validateMove(gameState, action) == false]\n/ emit error reason\n/ emit GameStateUpdate(status=YOUR_TURN)
+
+  ValidatingMove --> ApplyMove : validMove\n[RuleValidator.validateMove(gameState, action) == true]
+
+  ApplyMove --> CheckEndConditions : stateMutated\n/ GameState.applyAction(action)\n/ piece dropped to lowest empty row in column
+
+  CheckEndConditions --> DetermineActivePlayer : notEnded\n[Game.isGameOver(gameState) == false]\n/ GameState.playerTurn switches\n  PLAYER_1 ↔ PLAYER_2\n/ emit GameStateUpdate(\n    activePlayerId,\n    allowedActions,\n    board,\n    status = WAITING\n  )
+
+  CheckEndConditions --> Ended : winOrDraw\n[Game.isGameOver(gameState) == true]
+}
+
+' ─── Terminal Conditions (evaluated inside isGameOver) ───
+state CheckEndConditions {
+  state "4 in a row?\n[horizontal / vertical / diagonal]" as FourInRow
+  state "Board full?\n[all 42 cells filled]" as BoardFull
+}
+
+state Ended {
+  state "GameState.state = P1_WIN" as P1Win : PLAYER_1 connected 4
+  state "GameState.state = P2_WIN" as P2Win : PLAYER_2 connected 4
+  state "GameState.state = TIE"   as Tie   : Board full, no winner
+}
+
+TurnSelect --> Ended
+
+' ─── Reporting ───────────────────────────────────────────
+Ended --> ReportingResults : persistStub / StatsManager.recordResult()\n/ emit GameStateUpdate(\n    status = ENDED,\n    board,\n    result = GameState.state\n  )
+
+ReportingResults --> [*] : closeSession\n/ PlatformCore.returnToDashboard()
+
+note right of TurnSelect
+  Every transition emits a GameStateUpdate to PlatformCore:
+  - activePlayerId: String
+  - allowedActions: RuleValidator.getValidMoves(gameState)
+  - board: GameState.board (Array2D snapshot)
+  - status: YOUR_TURN | WAITING | ENDED
+end note
+
+note right of Starting
+  Game.createInitialState(players) sets:
+  - GameState.board = empty 6×7 Array2D
+  - GameState.playerTurn = PLAYER_1
+  - GameState.state = IN_PROGRESS
+end note
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+
+[*] --> LoggedOut
+
+LoggedOut --> Authenticating : submitCredentials
+Authenticating --> LoggedOut : authFail
+Authenticating --> LoggedIn : authSuccess
+
+LoggedIn --> Browsing : enterHome
+
+Browsing --> ViewingProfile : viewProfile
+ViewingProfile --> Browsing : back
+
+Browsing --> InLobby : joinLobby (unranked)
+Browsing --> MatchFound : joinQueue (ranked)
+
+MatchFound --> EnteringRoom : matchAssigned
+
+InLobby --> EnteringGame : everyoneReady
+EnteringGame --> EnteringRoom
+
+EnteringRoom --> InGame : roomReady
+
+state InGame {
+
+    [*] --> WaitingForState
+
+    WaitingForState --> WaitingForTurn : GameStateUpdate (opponentTurn)
+    WaitingForTurn --> YourTurn : GameStateUpdate (yourTurn)
+
+    YourTurn --> YourTurn : submitMove + rejected
+    YourTurn --> WaitingForTurn : submitMove + accepted\n+ GameStateUpdate (opponentTurn)
+
+    WaitingForTurn --> GameEnded : GameStateUpdate (gameOver)
+}
+
+InGame --> Browsing : exitToHome
+
+Browsing --> LoggedOut : logout
+
+@enduml

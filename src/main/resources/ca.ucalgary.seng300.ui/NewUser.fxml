@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+
+<HBox alignment="CENTER" prefHeight="680.0" prefWidth="1020.0" spacing="34"
+      stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface"
+      xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ca.ucalgary.seng300.ui.login.NewUserController">
+    <padding><Insets top="34" bottom="34" left="34" right="34"/></padding>
+
+    <StackPane minWidth="500.0" prefHeight="610.0" prefWidth="500.0" maxWidth="500.0">
+        <children>
+            <ImageView fitHeight="610.0" pickOnBounds="true" preserveRatio="true" smooth="true">
+                <image>
+                    <Image url="@stylesheets/images/logo.jpg" />
+                </image>
+            </ImageView>
+        </children>
+        <clip>
+            <Rectangle arcHeight="40.0" arcWidth="40.0" height="610.0" width="500.0" />
+        </clip>
+    </StackPane>
+
+    <VBox alignment="CENTER" minWidth="430.0" maxWidth="430.0" prefWidth="430.0" spacing="16" styleClass="auth-form-card">
+        <Label alignment="CENTER" maxWidth="Infinity" style="-fx-font-size:36px;" styleClass="mode-title" text="Create Account" />
+        <Label alignment="CENTER" maxWidth="Infinity" styleClass="mode-subtitle" text="Sign up to get started" />
+        <VBox spacing="12">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label styleClass="icon-label" text="👤" />
+                <TextField fx:id="usernameField"
+                           maxWidth="Infinity"
+                           prefHeight="40"
+                           promptText="Username"
+                           styleClass="input-field"
+                           HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label styleClass="icon-label" text="📧" />
+                <TextField fx:id="emailField"
+                           maxWidth="Infinity"
+                           prefHeight="40"
+                           promptText="Email"
+                           styleClass="input-field"
+                           HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label styleClass="icon-label" text="🔒" />
+                <PasswordField fx:id="passwordField"
+                               maxWidth="Infinity"
+                               prefHeight="40"
+                               promptText="Password"
+                               styleClass="input-field"
+                               HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label styleClass="icon-label" text="🔒" />
+                <PasswordField fx:id="confirmPasswordField"
+                               maxWidth="Infinity"
+                               prefHeight="40"
+                               promptText="Confirm Password"
+                               styleClass="input-field"
+                               HBox.hgrow="ALWAYS" />
+            </HBox>
+        </VBox>
+        <Label fx:id="errorLabel" styleClass="error-text" text="" />
+        <VBox spacing="12">
+            <Button maxWidth="Infinity"
+                    fx:id="createAccountButton"
+                    onAction="#handleCreateAccount"
+                    prefHeight="45"
+                    styleClass="auth-outline-button"
+                    text="Create Account" />
+            <Button maxWidth="Infinity"
+                    fx:id="backButton"
+                    onAction="#handleBack"
+                    prefHeight="45"
+                    styleClass="auth-outline-button"
+                    text="Back to Login" />
+        </VBox>
+    </VBox>
+
+</HBox>

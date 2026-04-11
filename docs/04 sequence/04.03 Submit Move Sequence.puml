@@ -1,0 +1,49 @@
+@startuml
+title Sequence - Submit Move -> Validate -> Update Board
+
+actor Player
+participant "GUI (Game Page)" as GUI
+participant "PlatformCore" as Core
+participant "GameSessionManager" as GSM
+participant "GameEngine (example)" as Engine
+participant "EventBus" as Bus
+
+Player -> GUI : select move\nclick Submit
+GUI -> Core : submitMove(sessionId, playerId, move, clientStateVersion?)
+activate Core
+Core -> GSM : submitMove(sessionId, playerId, move)
+activate GSM
+
+' Optionally: immediate UI feedback that request was accepted for processing
+Core --> GUI : ack(moveReceived)
+
+GSM -> Engine : validateMove(state, move)
+activate Engine
+Engine --> GSM : valid/invalid + reason?
+deactivate Engine
+
+alt invalid
+  GSM --> Core : moveRejected(reason)
+  Core --> GUI : showMoveRejected(reason)
+else valid
+  GSM -> Engine : applyMove(state, move)
+  activate Engine
+  Engine --> GSM : newState (includes nextTurn)
+  GSM -> Engine : evaluateEnd(newState)
+  Engine --> GSM : ended?/notEnded (+ outcome?)
+  deactivate Engine
+
+  alt ended
+    GSM ->> Bus : publish(GameEnded(newState, outcome))
+  else not ended
+    GSM ->> Bus : publish(GameStateUpdate(newState))
+  end
+
+  Bus ->> Core : deliver(event)
+  Core -> GUI : onEvent(event)
+  GUI -> GUI : render updated board\nset input enabled/disabled
+end
+
+deactivate GSM
+deactivate Core
+@enduml

@@ -1,0 +1,38 @@
+{
+  "1": {
+    "login": "Daniel M",
+    "email": "danielM@ucalgary.ca",
+    "passwordHash": "AF316ECB91A8EE7AE99210702B2D4758F3CDDE3BF61E3D8E787D74681F9A6E",
+    "isActive": true,
+    "id": 1,
+    "timeCreated": 1775876160469,
+    "type": "User"
+  },
+  "2": {
+    "login": "Alex",
+    "email": "alex.smith@ucalgary.ca",
+    "passwordHash": "E7BF382F6E5915B3F88619B866223EBF1D51C4C5321CCCDE2E9FF70A3259086",
+    "isActive": true,
+    "id": 2,
+    "timeCreated": 1775876160566,
+    "type": "User"
+  },
+  "3": {
+    "login": "John W",
+    "email": "JohnW@ucalgary.ca",
+    "passwordHash": "42CAA4ABB7B6F8F914E5BFB8E6511D7D9BD9817DE719B74251755D97FE97BF1",
+    "isActive": true,
+    "id": 3,
+    "timeCreated": 1775876160576,
+    "type": "User"
+  },
+  "4": {
+    "login": "Paul",
+    "email": "Paul.C@ucalgary.ca",
+    "passwordHash": "1C2799B3B84B13DE3FBD299BA93AE7853EC1D0D3A4E5DAA89E68B7AD59D7CB",
+    "isActive": true,
+    "id": 4,
+    "timeCreated": 1775876160581,
+    "type": "User"
+  }
+}

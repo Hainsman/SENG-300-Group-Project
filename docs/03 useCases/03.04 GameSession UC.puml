@@ -1,0 +1,30 @@
+@startuml game_session_use_cases
+left to right direction
+skinparam packageStyle rectangle
+skinparam ActorBorderColor #1a3a5c
+skinparam UsecaseBorderColor #2a5f8f
+skinparam UsecaseBackgroundColor #e8f4fd
+skinparam ArrowColor #555555
+
+actor Player
+
+rectangle "Game Session" {
+    usecase "UC-GS-01\nJoin Game Session"        as JoinSession
+    usecase "UC-GS-02\nView Game Board"          as ViewBoard
+    usecase "UC-GS-03\nSubmit Move"              as SubmitMove
+    usecase "UC-GS-04\nReceive Turn Notification" as TurnNotify
+    usecase "UC-GS-05\nView Game Over Result"    as ViewResult
+    usecase "UC-GS-06\nReturn to Dashboard"      as ReturnDash
+}
+
+Player --> JoinSession
+Player --> ViewBoard
+Player --> SubmitMove
+Player --> TurnNotify
+Player --> ViewResult
+Player --> ReturnDash
+
+SubmitMove ..> ViewBoard  : <<include>>
+ViewResult ..> ReturnDash : <<include>>
+TurnNotify ..> ViewBoard  : <<extend>>
+@enduml

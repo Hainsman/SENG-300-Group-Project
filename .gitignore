@@ -15,6 +15,3 @@ out/
 
 ### Mac OS ###
 .DS_Store
-
-# --- Logs ---
-*.log

@@ -1,0 +1,123 @@
+@startuml
+title 03 - Game - Tic Tac Toe
+
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+abstract Game <<abstract>> {
+  + gameState: GameState
+  - validator: RuleValidator
+  + createInitialState(players): GameState
+  + handleAction(PlayerAction: action)
+  + isGameOver(GameState: state)
+}
+
+abstract RuleValidator <<abstract>> {
+  + validateMove(GameState: state, PlayerAction: move): boolean
+  + getValidMoves(GameState: state)
+}
+
+class PlayerAction {
+  - player: Player
+  - move
+}
+
+abstract GameState <<abstract>> {
+  - board: Array2D
+  - playerTurn: Player
+  - state: State
+  + applyAction(PlayerAction: action): boolean
+}
+
+enum Player {
+  PLAYER_1
+  PLAYER_2
+  EMPTY
+}
+
+enum State {
+  IN_PROGRESS
+  TIE
+  P1_WIN
+  P2_WIN
+}
+
+class ValidationResult {
+  + valid: boolean
+  + failureReason: String
+  + validActions: List<PlayerAction>
+}
+
+class TicTacToeGameUpdate {
+  + changedPosition: Position
+  + placedSymbol: Symbol
+  + gameState: State
+}
+
+class TicTacToeGame extends Game {
+  - state: TicTacToeGameState
+  - validator: TicTacToeRuleValidator
+  + createInitialState(players): TicTacToeGameState
+  + handleAction(TicTacToePlayerAction: action)
+  + isGameOver(TicTacToeGameState: state)
+}
+
+class TicTacToeRuleValidator extends RuleValidator {
+  + validateMove(TicTacToeGameState: state, TicTacToePlayerAction: move): boolean
+  + getValidMoves(TicTacToeGameState: state)
+}
+
+class TicTacToeGameState extends GameState {
+  - board: Symbol[3][3]
+  - currentPlayer: Symbol
+  - moveCount: int
+  - state: State
+  + applyAction(TicTacToePlayerAction: action): boolean
+}
+
+class TicTacToePlayerAction extends PlayerAction {
+  - player: Player
+  - position: Position
+}
+
+class Position {
+  + row: int
+  + col: int
+}
+
+enum Symbol {
+  X
+  O
+  BLANK
+}
+
+' Inheritance
+Game <|-- TicTacToeGame
+RuleValidator <|-- TicTacToeRuleValidator
+GameState <|-- TicTacToeGameState
+PlayerAction <|-- TicTacToePlayerAction
+
+' Abstract-level relationships
+Game --> RuleValidator
+Game --> GameState
+Game o-- PlayerAction
+GameState *-- State
+GameState *-- Player
+
+' TicTacToe-level relationships
+TicTacToeGame *-- TicTacToeGameState
+TicTacToeGame --> TicTacToeRuleValidator
+TicTacToeGame ..> TicTacToeGameUpdate
+TicTacToeGame ..> ValidationResult
+
+TicTacToeRuleValidator ..> TicTacToeGameState
+TicTacToeRuleValidator ..> ValidationResult
+
+TicTacToePlayerAction --> Position
+TicTacToeGameState --> Symbol
+TicTacToeGameUpdate --> Position
+TicTacToeGameUpdate --> Symbol
+TicTacToeGameUpdate --> State
+
+@enduml

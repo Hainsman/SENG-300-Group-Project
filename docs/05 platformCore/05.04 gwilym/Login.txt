@@ -1,0 +1,56 @@
+title Full Login Process
+
+participant User Interface
+participant Main Client
+
+participant Client I/O
+
+
+
+
+participant Server I/O
+
+participant Server
+
+participant Database
+
+User Interface->Main Client:Enter name/password\nrequest login
+activate Main Client
+Main Client->Client I/O:Hash password\nformat login request
+activate Client I/O
+Client I/O->Server I/O:Send request
+deactivate Client I/O
+activate Server I/O
+Server I/O->Server:parse format\ngive server login request
+deactivate Server I/O
+activate Server
+Server->Database:Verify username/password
+
+Server<--Database:valid/invalid
+
+alt valid
+  Server -> Server I/O : Assign user ID\nsend user main lobby info
+
+deactivate Server
+  Client I/O<-Server I/O:send message
+
+activate Client I/O
+Main Client<-Client I/O:Save User ID\nput lobby info into the\ndisplay format of the UI
+deactivate Client I/O
+User Interface<-Main Client:tell user the login worked\ndisplay the main lobby
+activate Server
+deactivate Main Client
+else invalid
+activate Main Client
+  Database --> Server : invalid login (error type)
+  Server -> Server I/O : send user the error
+
+deactivate Server
+  Client I/O<-Server I/O:send message
+
+activate Client I/O
+Main Client<-Client I/O:display error to user
+deactivate Client I/O
+User Interface<-Main Client: tell user the login failed and why
+deactivate Main Client
+end

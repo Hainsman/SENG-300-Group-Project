@@ -1,0 +1,20 @@
+{
+  "1": {
+    "gameID": 1,
+    "id": 1,
+    "timeCreated": 1775876160639,
+    "type": "GameHistory"
+  },
+  "2": {
+    "gameID": 2,
+    "id": 2,
+    "timeCreated": 1775876160662,
+    "type": "GameHistory"
+  },
+  "3": {
+    "gameID": 1,
+    "id": 3,
+    "timeCreated": 1775876160692,
+    "type": "GameHistory"
+  }
+}
