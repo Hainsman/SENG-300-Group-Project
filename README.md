@@ -31,7 +31,7 @@ The project includes comprehensive JUnit 5 tests to ensure functionality and rel
 
 ### What is Currently Tested
 - **Persistence Layer**: Tests for stores (e.g., `UserStore`, `GameHistoryStore`, `ParticipantStore`, `PlayerStatsStore`) to verify data loading, saving, and CRUD operations.
-- **Server Functionality**: Tests for `PlatformCore` and `ServerCore`, including profile updates, session management, and request handling.
+- **Server Functionality**: Tests for `PlatformCore` (including behaviours covered by `ServerCoreTest`), such as lobby/game requests, profile updates, and related server-side handling.
 - **Client Operations**: Tests for `ClientCore` to ensure proper communication with the server.
 - **Game History and Sessions**: Tests for game history persistence and session records.
 - **Main Application**: Basic tests for `MainApp` to verify application startup.
@@ -45,7 +45,7 @@ Tests use temporary files and in-memory setups where possible to avoid interferi
 - **Account Creation**: New users can easily create accounts to join the platform, with built-in email validation to ensure proper formatting.
 - **Secure Login**: Users can log in securely to access their personalized dashboard.
 - **Password Hashing**: Passwords are securely hashed to protect user credentials and prevent unauthorized access.
-- **Password Recovery**: Forgot your password? No problem – recover it via email.
+- **Password Recovery**: The UI offers a “Forgot password?” action; it directs users to contact an administrator (there is no automated email reset in this prototype).
 
 ### Game Discovery
 - **Browse Games**: View a list of available games, including descriptions and player requirements.
@@ -86,7 +86,7 @@ The application follows a modular architecture to separate user interface concer
 - **Abstraction**: Games implement a common `Game` interface, promoting polymorphism and easy addition of new games (e.g., Tic-Tac-Toe in `game.core.tictactoe`, Connect 4 in `game.core.connect4`).
 - **Validation**: Rule validation is handled by `RuleValidator` implementations, ensuring game rules are enforced consistently and independently of UI.
 - **Actions**: Player actions are modeled via `PlayerAction` classes, allowing for extensible move handling and state transitions.
-- **Integration**: The platform core manages game sessions through `GameSessionManager`, coordinating between UI, server, and game logic for seamless multiplayer experiences.
+- **Integration**: The platform core (`PlatformCore` on the server, session types such as `TicTacToeSession` / `Connect4Session`, and `ClientCore` on the client) coordinates lobbies, moves, and state updates between the UI and game logic. (Early design docs used the name `GameSessionManager`; that role is implemented across these types rather than as a single class.)
 - **Benefits**: Modular design allows for game-specific logic to be developed and tested in isolation, facilitating rapid prototyping and maintenance.
 
 This structure adheres to the overall domain-driven architecture, with clear boundaries between UI presentation, business rules, and data persistence.
@@ -134,6 +134,6 @@ The server (`PlatformCore`) acts as the central authority, separating database o
   - **Scalability and Security**: Centralized control allows for easier auditing, rate limiting, and future expansions (e.g., multiple servers or cloud deployment).
   - **Real-Time Capabilities**: Enables features like live chat, matchmaking notifications, and synchronized game states across clients.
 
-For a detailed list of design changes, see the project documentation in `docs/`. (Note: A PDF summary of changes is not available; refer to the UML diagrams and code comments for specifics.)
+For a detailed **as-built vs Iteration 1** comparison, see [`summary.md`](summary.md) in the repository root (source for the Iteration 3 **`summary.pdf`** submission). Historical UML and sequence diagrams under `docs/` remain useful but do not always match class names in the final code.
 
 This platform is designed for fun, social gaming, bringing players together in an engaging and secure environment.
