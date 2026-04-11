@@ -233,8 +233,17 @@ public class Connect4Controller extends GameGUI {
         }
 
         boolean gameOver = !State.IN_PROGRESS.equals(update.getState());
-        if (backButton != null) backButton.setDisable(!gameOver);
-        if (exitButton != null) exitButton.setDisable(!gameOver);
+        // Only block leaving mid-game for live online PvP; AI and local play can exit anytime.
+        boolean onlineHumanMatch = clientCore != null && clientCore.isConnected()
+                && !CentralController.playWithAi
+                && clientCore.getMyNetworkRole() != null;
+        boolean lockNavUntilGameOver = onlineHumanMatch && !gameOver;
+        if (backButton != null) {
+            backButton.setDisable(lockNavUntilGameOver);
+        }
+        if (exitButton != null) {
+            exitButton.setDisable(lockNavUntilGameOver);
+        }
 
         Player[][] board = update.getBoard();
         for (int row = 0; row < rows; row++) {
