@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.ui.centralcontroller;
 
-import ca.ucalgary.seng300.MainApp;
 import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -17,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
@@ -37,6 +37,9 @@ public class CentralController {
     @FXML private Button quitButton;
     @FXML private Button minimizeButton;
     @FXML private Button maximizeButton;
+    @FXML private Slider volumeSlider;
+    @FXML private Label volumeIcon;
+    @FXML private Label volumePercent;
 
     public static GameType selectedGame;
     public static int selectedGameId;
@@ -104,11 +107,13 @@ public class CentralController {
                 titleLabel,
                 quitButton,
                 minimizeButton,
-                maximizeButton
+                maximizeButton,
+                volumeSlider,
+                volumeIcon,
+                volumePercent
         );
 
         windowManager = new WindowManager(controls);
-        titleLabel.setText(MainApp.TITLE);
         root.sceneProperty().addListener((obs, oldScene, newScene) -> applyUiPreferences());
         applyUiPreferences();
 

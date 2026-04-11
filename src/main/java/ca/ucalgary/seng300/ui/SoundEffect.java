@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.ui;
 
+import java.net.URL;
+
 public enum SoundEffect {
     YOUR_TURN_NOTIFICATION("your_turn_notification", 1),
     MOVE_SUBMITTED("move_submitted", 1),
@@ -20,8 +22,13 @@ public enum SoundEffect {
         this.volume = volume;
     }
 
+    /** Absolute URL string for JavaFX {@link javafx.scene.media.AudioClip}. */
     public String getPath() {
-        return getClass().getResource(String.format("/ca.ucalgary.seng300.ui/sound/%s.mp3", path)).toExternalForm();
+        URL url = SoundEffect.class.getResource(String.format("/ca.ucalgary.seng300.ui/sound/%s.mp3", path));
+        if (url == null) {
+            throw new IllegalStateException("Missing sound resource: /ca.ucalgary.seng300.ui/sound/" + path + ".mp3");
+        }
+        return url.toExternalForm();
     }
 
     public double getVolume() {
