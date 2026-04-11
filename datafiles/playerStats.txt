@@ -1,0 +1,74 @@
+{
+  "1": {
+    "gameID": 1,
+    "userID": 1,
+    "counter": 1,
+    "score": 10.0,
+    "id": 1,
+    "timeCreated": 1775876160587,
+    "type": "PlayerStats"
+  },
+  "2": {
+    "gameID": 2,
+    "userID": 1,
+    "counter": 1,
+    "score": 0.0,
+    "id": 2,
+    "timeCreated": 1775876160594,
+    "type": "PlayerStats"
+  },
+  "3": {
+    "gameID": 1,
+    "userID": 2,
+    "counter": 1,
+    "score": 10.0,
+    "id": 3,
+    "timeCreated": 1775876160595,
+    "type": "PlayerStats"
+  },
+  "4": {
+    "gameID": 2,
+    "userID": 2,
+    "counter": 1,
+    "score": 15.0,
+    "id": 4,
+    "timeCreated": 1775876160596,
+    "type": "PlayerStats"
+  },
+  "5": {
+    "gameID": 1,
+    "userID": 3,
+    "counter": 1,
+    "score": 10.0,
+    "id": 5,
+    "timeCreated": 1775876160599,
+    "type": "PlayerStats"
+  },
+  "6": {
+    "gameID": 2,
+    "userID": 3,
+    "counter": 1,
+    "score": 0.0,
+    "id": 6,
+    "timeCreated": 1775876160600,
+    "type": "PlayerStats"
+  },
+  "7": {
+    "gameID": 1,
+    "userID": 4,
+    "counter": 1,
+    "score": 10.0,
+    "id": 7,
+    "timeCreated": 1775876160601,
+    "type": "PlayerStats"
+  },
+  "8": {
+    "gameID": 2,
+    "userID": 4,
+    "counter": 1,
+    "score": 15.0,
+    "id": 8,
+    "timeCreated": 1775876160602,
+    "type": "PlayerStats"
+  }
+}
