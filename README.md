@@ -39,6 +39,22 @@ The project includes comprehensive JUnit 5 tests to ensure functionality and rel
 
 Tests use temporary files and in-memory setups where possible to avoid interfering with production data. Run `mvn test` regularly to catch regressions during development.
 
+### signing in (example accounts)
+#### user1
+- user1: Daniel M
+- password: hash1
+#### user2:
+- username2: Alex
+- password: hash2
+#### user3:
+- username3: John W
+- password: hash3
+#### user4:
+- username3: Paul
+- password: hash4
+
+if no account exists you can create one by clicking on the sign up button
+
 ## Features
 
 ### User Management
@@ -59,6 +75,14 @@ Tests use temporary files and in-memory setups where possible to avoid interferi
 ### Matchmaking
 - **Queue for Games**: Join queues to be automatically matched with other players for quick gameplay.
 - **Game Readiness Notifications**: Get notified when a game is ready to start.
+
+### Play Against AI
+- **Play vs AI**: Challenge your friends to a game of Tic-Tac-Toe or Connect 4 against the AI.
+- **AI Random Moves**: AI randomly selects moves to ensure fairness and challenge.
+
+### Leaderboards
+- **View Global Leaderboards**: Compare your performance against other players in the platform.
+- **View Game-Specific Leaderboards**: Track your progress in specific games.
 
 ### Gameplay
 - **Multiple Games Supported**: Enjoy classics like Tic-Tac-Toe and Connect 4.
