@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.lobby.mainLobbyController">
+
+    <children>
+
+        <VBox alignment="TOP_CENTER" spacing="20" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+
+            <!-- BACK BUTTON -->
+
+            <!-- HEADER -->
+            <VBox alignment="CENTER" spacing="5" styleClass="header-box">
+                <Label fx:id="lobbyTitle" styleClass="title-label" />
+
+                <Label styleClass="subtitle-label" text="Invite friends and start the game" />
+            </VBox>
+
+            <HBox spacing="25" VBox.vgrow="ALWAYS">
+
+                <!-- LEFT SIDE -->
+                <VBox spacing="20" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+
+                    <!-- LOBBY CODE -->
+                    <VBox styleClass="card">
+                        <Label styleClass="card-title" text="Lobby Code" />
+
+                        <HBox spacing="10">
+                            <Label fx:id="lobbyCodeLabel" styleClass="code-label" text="ABC123" HBox.hgrow="ALWAYS" />
+
+                            <Button fx:id="copyCodeBtn" onAction="#handleCopyCode" text="Copy" />
+                        </HBox>
+                    </VBox>
+
+                    <!-- PLAYERS -->
+                    <VBox spacing="10" styleClass="card" VBox.vgrow="ALWAYS">
+                        <Label fx:id="playerCountLabel" styleClass="card-title" text="Players" />
+
+                        <ListView fx:id="playerList" VBox.vgrow="ALWAYS" />
+                    </VBox>
+
+                    <!-- START BUTTON -->
+                    <Button fx:id="startGameBtn" maxWidth="Infinity" onAction="#handleStartGame" prefHeight="50" styleClass="start-button" text="Start Game" />
+
+                </VBox>
+
+                <!-- RIGHT SIDE -->
+                <VBox prefWidth="260" spacing="20">
+
+                    <!-- PLAYER CARD -->
+                    <VBox spacing="8" styleClass="card">
+                        <Label styleClass="card-title" text="Player 1" />
+                        <Label fx:id="playerOneLabel" styleClass="mode-subtitle" text="Player" wrapText="true" />
+                    </VBox>
+
+                    <VBox spacing="8" styleClass="card">
+                        <Label styleClass="card-title" text="Player 2" />
+                        <Label fx:id="playerTwoLabel" styleClass="mode-subtitle" text="Player" wrapText="true" />
+                    </VBox>
+
+                    <!-- FRIENDS -->
+                    <VBox styleClass="card" VBox.vgrow="ALWAYS">
+                        <Label styleClass="card-title" text="Friends" />
+                        <ListView fx:id="friendsList" VBox.vgrow="ALWAYS" />
+                    </VBox>
+
+                    <!-- GAME SETTINGS -->
+                    <VBox spacing="12" styleClass="card">
+                        <Label styleClass="card-title" text="Game Settings" />
+                        <GridPane hgap="14" vgap="8">
+                            <children>
+                                <Label text="Max Players:" />
+                                <Label fx:id="maxPlayersLabel" text="8" GridPane.columnIndex="1" />
+
+                                <Label text="Game Mode:" GridPane.rowIndex="1" />
+                                <Label fx:id="gameNameLabel" text="Standard" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                <Label text="Privacy:" GridPane.rowIndex="2" />
+                                <Label fx:id="privacyLabel" text="Private" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                            </children>
+                        </GridPane>
+                    </VBox>
+
+                </VBox>
+
+            </HBox>
+            <Button onAction="#handleBack" styleClass="back-button" text="← Back to Menu" />
+
+        </VBox>
+
+    </children>
+</fx:root>

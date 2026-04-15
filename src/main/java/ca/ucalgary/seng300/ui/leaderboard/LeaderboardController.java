@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui.leaderboard;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -93,7 +94,10 @@ public class LeaderboardController {
     }
 
     private int resolveGameId() {
-        String selectedGame = CentralController.selectedGame != null ? CentralController.selectedGame : "";
-        return selectedGame.toLowerCase().contains("connect") ? Game.CONNECT_FOUR : Game.TICK_TACK_TOE;
+        GameType g = CentralController.selectedGame;
+        if (g == GameType.CONNECT4) {
+            return Game.CONNECT_FOUR;
+        }
+        return Game.TICK_TACK_TOE;
     }
 }

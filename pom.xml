@@ -27,6 +27,11 @@
       <artifactId>javafx-fxml</artifactId>
       <version>${javafx.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-media</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -43,6 +48,8 @@
   </dependencies>
 
   <build>
+    <!-- Running `mvn` with no explicit goal compiles first, then starts PlatformCore. -->
+    <defaultGoal>compile exec:java</defaultGoal>
     <plugins>
 
       <!-- Compile with Java 25 -->
@@ -68,6 +75,11 @@
         <version>0.0.8</version>
         <configuration>
           <mainClass>ca.ucalgary.seng300.MainApp</mainClass>
+          <!-- JDK 24+: JavaFX needs JNI for rendering (graphics) and for MP3/Audioclip (media). -->
+          <options>
+            <option>--enable-native-access=javafx.graphics</option>
+            <option>--enable-native-access=javafx.media</option>
+          </options>
         </configuration>
       </plugin>
 
@@ -85,3 +97,4 @@
   </build>
 
 </project>
+

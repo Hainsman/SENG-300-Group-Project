@@ -1,0 +1,143 @@
+package ca.ucalgary.seng300.ui.lobby;
+
+import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
+import ca.ucalgary.seng300.ui.util.Navigable;
+import ca.ucalgary.seng300.ui.util.Navigation;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+
+import java.io.IOException;
+
+public class ChooseModePage extends AnchorPane implements Navigable {
+
+    private CentralController rootController;
+
+    @FXML private Label gameTitleLabel;
+
+    @FXML private VBox hostCard;
+    @FXML private VBox joinCard;
+    @FXML private VBox playWithAiCard;
+
+    public ChooseModePage(CentralController rootController) {
+        try {
+            this.rootController = rootController;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ca.ucalgary.seng300.ui/" + getNavigation().getFxml()));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void initialize() {
+        if (CentralController.selectedGame != null) {
+            gameTitleLabel.setText(CentralController.selectedGame.toString());
+        }
+        refreshAiCardVisibility();
+
+        hostCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handleHostGame(null);
+        });
+        joinCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handleJoinGame(null);
+        });
+        playWithAiCard.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER || e.getCode() == KeyCode.SPACE)
+                handlePlayWithAi(null);
+        });
+
+        // Clear focus when mouse enters a different card
+        hostCard.setOnMouseEntered(e -> clearFocusExcept(hostCard));
+        joinCard.setOnMouseEntered(e -> clearFocusExcept(joinCard));
+        playWithAiCard.setOnMouseEntered(e -> clearFocusExcept(playWithAiCard));
+    }
+
+    /** Tic-Tac-Toe from the new dashboard uses {@code "TicTacToe"}. */
+    private boolean isTicTacToeSelection() {
+        return CentralController.selectedGame == GameType.TIC_TAC_TOE;
+    }
+
+    private boolean isConnectFourSelection() {
+        return CentralController.selectedGame == GameType.CONNECT4;
+    }
+
+    private void refreshAiCardVisibility() {
+        boolean showAi = isTicTacToeSelection() || isConnectFourSelection();
+        if (playWithAiCard != null) {
+            playWithAiCard.setVisible(showAi);
+            playWithAiCard.setManaged(showAi);
+        }
+    }
+
+    private void clearFocusExcept(VBox hovered) {
+        if (hostCard.isFocused() && hostCard != hovered) hostCard.getParent().requestFocus();
+        if (joinCard.isFocused() && joinCard != hovered) joinCard.getParent().requestFocus();
+        if (playWithAiCard.isFocused() && playWithAiCard != hovered) playWithAiCard.getParent().requestFocus();
+    }
+
+    @FXML
+    void handleHostGame(MouseEvent event) {
+        CentralController.playWithAi = false;
+        rootController.moveTo(Navigation.HOST_LOBBY);
+    }
+
+    @FXML
+    void handleJoinGame(MouseEvent event) {
+        CentralController.playWithAi = false;
+        rootController.moveTo(Navigation.JOIN_LOBBY);
+    }
+
+    @FXML
+    void handlePlayWithAi(MouseEvent event) {
+        CentralController.playWithAi = true;
+        if (isTicTacToeSelection()) {
+            rootController.moveTo(Navigation.TTT);
+        }
+        else if (isConnectFourSelection()) {
+            rootController.moveTo(Navigation.C4);
+        }
+    }
+
+    @FXML
+    void handleProfileDashboard(ActionEvent event) {
+        rootController.moveTo(Navigation.PROFILE_DASHBOARD);
+    }
+
+    @FXML
+    void handleTeamSettings(ActionEvent event) {
+        rootController.moveTo(Navigation.SETTINGS);
+    }
+
+    @FXML
+    void handleLogout(ActionEvent event) {
+        rootController.logout();
+    }
+
+    @FXML
+    void handleBack(MouseEvent event) {
+        rootController.moveTo(Navigation.GAME_DASHBOARD);
+    }
+
+    @Override
+    public Navigation getNavigation() {
+        return Navigation.CHOOSE_MODE;
+    }
+
+    @Override
+    public void reset() {
+        initialize();
+    }
+}

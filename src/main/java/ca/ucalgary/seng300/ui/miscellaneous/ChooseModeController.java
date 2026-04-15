@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui.miscellaneous;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,8 +18,9 @@ public class ChooseModeController {
     @FXML
     public void initialize() {
 
-        gameTitleLabel.setText(CentralController.selectedGame);
-        aiOpponentLabel.setText("Random opponent — " + CentralController.selectedGame);
+        String title = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "";
+        gameTitleLabel.setText(title);
+        aiOpponentLabel.setText("Random opponent — " + title);
 
     }
 
@@ -37,8 +39,8 @@ public class ChooseModeController {
     @FXML
     void handlePlayWithAi(MouseEvent event) {
         CentralController.playWithAi = true;
-        String game = CentralController.selectedGame != null ? CentralController.selectedGame : "";
-        if (game.toLowerCase().contains("connect")) {
+        GameType g = CentralController.selectedGame;
+        if (g == GameType.CONNECT4) {
             CentralController.moveTo("Connect4.fxml");
             return;
         }

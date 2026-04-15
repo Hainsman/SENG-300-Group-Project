@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@stylesheets/modern_theme.css" styleClass="app-surface" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.lobby.hostLobbyController">
+
+    <children>
+
+        <VBox alignment="TOP_CENTER" spacing="22" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="28.0" AnchorPane.topAnchor="24.0">
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308">
+                <children>
+                    <Label text="⚡ ONLINE MULTIPLAYER" styleClass="mode-badge" />
+                </children>
+            </HBox>
+
+            <Label styleClass="mode-title" style="-fx-font-size: 40px;" text="Host Lobby" />
+            <Label styleClass="mode-subtitle" text="Create a room and share your code" />
+
+            <VBox spacing="14" styleClass="card" style="-fx-max-width: 620px; -fx-alignment: center;">
+                <Label fx:id="gameTitle" styleClass="card-title" text="Game" />
+                <Label fx:id="gameLabel" styleClass="mode-card-title" style="-fx-font-size:28px;" text="gameLabel" />
+
+                <TextField fx:id="lobbyNameField" maxWidth="420.0" promptText="Lobby name (optional)" />
+
+                <HBox alignment="CENTER" spacing="16">
+                    <children>
+                        <Button onAction="#handleBack" prefHeight="42.0" prefWidth="148.0" styleClass="back-button" text="Back" />
+                        <Button fx:id="createLobbyBtn" onAction="#handleCreateLobby" prefHeight="42.0" prefWidth="148.0" styleClass="primary-button" text="Create Lobby" defaultButton="true" />
+                    </children>
+                </HBox>
+            </VBox>
+
+            <!-- Hidden but kept for controller preview updates -->
+            <VBox managed="false" visible="false">
+                <children>
+                    <Label fx:id="previewGameLabel" text="-" />
+                    <Label fx:id="previewPlayersLabel" text="-" />
+                </children>
+            </VBox>
+
+        </VBox>
+
+    </children>
+</fx:root>

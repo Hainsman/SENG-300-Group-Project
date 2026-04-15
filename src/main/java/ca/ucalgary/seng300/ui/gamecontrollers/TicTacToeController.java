@@ -429,7 +429,7 @@ public class TicTacToeController extends GameGUI {
 
     private void populateProfileSidebar() {
         if (sidebarGameTitleLabel != null) {
-            sidebarGameTitleLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Tic-Tac-Toe");
+            sidebarGameTitleLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Tic-Tac-Toe");
         }
         if (profileNameLabel != null) {
             String myUsername = (clientCore != null && clientCore.username != null) ? clientCore.username : "Player";

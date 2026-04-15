@@ -414,7 +414,7 @@ public class Connect4Controller extends GameGUI {
 
     private void populateProfileSidebar() {
         if (sidebarGameTitleLabel != null) {
-            sidebarGameTitleLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Connect 4");
+            sidebarGameTitleLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Connect 4");
         }
         if (profileNameLabel != null) {
             String myUsername = (clientCore != null && clientCore.username != null) ? clientCore.username : "Player";

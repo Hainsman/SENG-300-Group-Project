@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.ui.dashboards;
 
+import ca.ucalgary.seng300.game.core.GameType;
+import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.ui.centralcontroller.CentralController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -54,16 +56,16 @@ public class GameDashboardController {
     @FXML
     void C4click(MouseEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
-        CentralController.selectedGame = "Connect 4";
-        CentralController.selectedGameId = 2;
+        CentralController.selectedGame = GameType.CONNECT4;
+        CentralController.selectedGameId = Game.CONNECT_FOUR;
         CentralController.moveTo("chooseModeNew.fxml");
     }
 
     @FXML
     void TTTclicked(MouseEvent event) {
         CentralController.previousScreen = "GameDashboardNew.fxml";
-        CentralController.selectedGame = "TicTacToe";
-        CentralController.selectedGameId = 1;
+        CentralController.selectedGame = GameType.TIC_TAC_TOE;
+        CentralController.selectedGameId = Game.TICK_TACK_TOE;
         CentralController.moveTo("chooseModeNew.fxml");
     }
 

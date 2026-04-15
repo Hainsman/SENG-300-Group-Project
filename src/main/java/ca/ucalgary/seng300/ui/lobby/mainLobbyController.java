@@ -27,7 +27,7 @@ public class mainLobbyController {
     @FXML
     public void initialize() {
         if (lobbyTitle != null) {
-            String game = CentralController.selectedGame != null ? CentralController.selectedGame : "Game";
+            String game = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Game";
             lobbyTitle.setText(game + " Lobby");
         }
 
@@ -40,7 +40,7 @@ public class mainLobbyController {
         }
 
         if (gameNameLabel != null) {
-            gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame : "Standard");
+            gameNameLabel.setText(CentralController.selectedGame != null ? CentralController.selectedGame.toString() : "Standard");
         }
 
         if (maxPlayersLabel != null) {

@@ -1,7 +1,8 @@
 package ca.ucalgary.seng300.ui.centralcontroller;
 
-import ca.ucalgary.seng300.MainApp;
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
+import ca.ucalgary.seng300.platform.messages.sysMSG;
 import ca.ucalgary.seng300.ui.login.SettingsController;
 import ca.ucalgary.seng300.ui.windowmanager.WindowManager;
 import ca.ucalgary.seng300.ui.dashboards.ProfileDashboardController;
@@ -9,11 +10,13 @@ import ca.ucalgary.seng300.ui.gamecontrollers.Connect4Controller;
 import ca.ucalgary.seng300.ui.gamecontrollers.TicTacToeController;
 import ca.ucalgary.seng300.ui.login.LoginController;
 import ca.ucalgary.seng300.ui.login.NewUserController;
+import ca.ucalgary.seng300.ui.util.Navigation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
@@ -34,9 +37,21 @@ public class CentralController {
     @FXML private Button quitButton;
     @FXML private Button minimizeButton;
     @FXML private Button maximizeButton;
+    @FXML private Slider volumeSlider;
+    @FXML private Label volumeIcon;
+    @FXML private Label volumePercent;
 
-    public static String selectedGame;
+    public static GameType selectedGame;
     public static int selectedGameId;
+    /** Logged-in user id from AUTH response; 0 if not signed in. */
+    public static int currentUserId;
+    /** Display name for lobby payloads and profile UI. */
+    public static String displayName;
+    /** Main-lobby roster (set when server pushes lobby state). */
+    public static String rosterHostName;
+    public static String rosterGuestName;
+    public static int rosterHostElo;
+    public static int rosterGuestElo;
     public static int maxPlayers;
     public static String privacy;
     public static String lobbyCode;
@@ -92,11 +107,13 @@ public class CentralController {
                 titleLabel,
                 quitButton,
                 minimizeButton,
-                maximizeButton
+                maximizeButton,
+                volumeSlider,
+                volumeIcon,
+                volumePercent
         );
 
         windowManager = new WindowManager(controls);
-        titleLabel.setText(MainApp.TITLE);
         root.sceneProperty().addListener((obs, oldScene, newScene) -> applyUiPreferences());
         applyUiPreferences();
 
@@ -110,6 +127,29 @@ public class CentralController {
     // call anytime to switch pages
     public static void moveTo(String fxml) {
         instance.loadView(fxml);
+    }
+
+    /** Navigate using the Navigation enum (pages built as programmatic roots). */
+    public void moveTo(Navigation nav) {
+        if (nav != null) {
+            loadView(nav.getFxml());
+        }
+    }
+
+    public void logout() {
+        currentUserId = 0;
+        displayName = null;
+        if (clientCore != null && clientCore.isConnected()) {
+            clientCore.msgSend(new sysMSG("LOGOUT", "", ""));
+        }
+        CentralController.moveTo("Login.fxml");
+    }
+
+    public void clearLobbyRoster() {
+        rosterHostName = null;
+        rosterGuestName = null;
+        rosterHostElo = 0;
+        rosterGuestElo = 0;
     }
 
     // private method used by navigateTo
@@ -158,7 +198,7 @@ public class CentralController {
         return currentColorBlind;
     }
 
-    private void applyUiPreferences() {
+    public void applyUiPreferences() {
         if (root == null || root.getScene() == null) {
             return;
         }
@@ -177,5 +217,9 @@ public class CentralController {
         if (currentColorBlind) {
             stylesheets.add(getClass().getResource("/ca.ucalgary.seng300.ui/stylesheets/accessibility_colorblind.css").toExternalForm());
         }
+    }
+
+    public WindowManager getWindowManager() {
+        return windowManager;
     }
 }

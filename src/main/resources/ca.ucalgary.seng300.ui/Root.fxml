@@ -2,11 +2,13 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="root" prefHeight="860.0" prefWidth="1360.0" stylesheets="@stylesheets/romas_stylesheet.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.centralcontroller.CentralController">
+<StackPane fx:id="root" prefHeight="880.0" prefWidth="1400.0" stylesheets="@stylesheets/romas_stylesheet.css,@stylesheets/global.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.ui.centralcontroller.CentralController">
    <children>
       <BorderPane fx:id="viewContainer" prefHeight="200.0" prefWidth="200.0">
          <top>
@@ -24,7 +26,16 @@
                   <Label id="sub-header" fx:id="titleLabel" text="Title" BorderPane.alignment="CENTER" />
                </center>
                <left>
-                  <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="150.0" BorderPane.alignment="CENTER" />
+                  <HBox fx:id="volumeContainer" alignment="CENTER_LEFT" spacing="10" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="260.0" minWidth="260.0" BorderPane.alignment="CENTER">
+                     <padding>
+                        <Insets left="16" right="10" />
+                     </padding>
+                     <children>
+                        <Label fx:id="volumeIcon" styleClass="volume-icon" text="🔊" alignment="CENTER" minWidth="28.0" prefWidth="28.0" />
+                        <Slider fx:id="volumeSlider" min="0.0" max="1.0" value="1.0" prefWidth="140.0" styleClass="volume-slider" visible="false" managed="false" />
+                        <Label fx:id="volumePercent" styleClass="volume-percent" text="100%" visible="false" managed="false" minWidth="44.0" prefWidth="44.0" alignment="CENTER_LEFT" />
+                     </children>
+                  </HBox>
                </left>
             </BorderPane>
          </top>

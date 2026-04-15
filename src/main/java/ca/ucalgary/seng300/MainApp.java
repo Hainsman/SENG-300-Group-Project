@@ -9,6 +9,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 
+/**
+ * Launches the JavaFX client. On JDK 24+, if UI sounds do not play, run with:
+ * {@code --enable-native-access=javafx.graphics --enable-native-access=javafx.media}
+ * (already set for {@code mvn javafx:run}; add the same to IntelliJ VM options if you run from the IDE.)
+ */
 public class MainApp extends Application {
 
     public static final String TITLE = "BOGO solutions Game Application V2.0";

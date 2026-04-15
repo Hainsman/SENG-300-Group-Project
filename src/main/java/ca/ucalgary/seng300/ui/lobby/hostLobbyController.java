@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.ui.lobby;
 
+import ca.ucalgary.seng300.game.core.GameType;
 import ca.ucalgary.seng300.platform.client.ClientCore;
 import ca.ucalgary.seng300.platform.constants.Game;
 import ca.ucalgary.seng300.platform.messages.sysMSG;
@@ -27,7 +28,7 @@ public class hostLobbyController {
 
     @FXML
     private void initialize() {
-        String game = CentralController.selectedGame;
+        String game = CentralController.selectedGame != null ? CentralController.selectedGame.toString() : null;
         if (gameLabel != null) {
             gameLabel.setText(game != null ? game : "Game");
         }
@@ -49,16 +50,12 @@ public class hostLobbyController {
     }
 
     private static int serverGameKey() {
-        String g = CentralController.selectedGame;
-        if (g == null) {
-            return Game.TICK_TACK_TOE;
+        if (CentralController.selectedGameId != 0) {
+            return CentralController.selectedGameId;
         }
-        String lower = g.toLowerCase();
-        if (lower.contains("connect") || lower.contains("c4")) {
+        GameType g = CentralController.selectedGame;
+        if (g == GameType.CONNECT4) {
             return Game.CONNECT_FOUR;
-        }
-        if (g.contains("Tic") || g.contains("tac") || g.contains("TAC")) {
-            return Game.TICK_TACK_TOE;
         }
         return Game.TICK_TACK_TOE;
     }

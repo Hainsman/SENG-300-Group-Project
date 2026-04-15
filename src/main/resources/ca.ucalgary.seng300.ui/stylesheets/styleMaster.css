@@ -1,0 +1,156 @@
+/* Core colors from the screenshot */
+.root {
+    -fx-background-color: #23283F; /* Correct dark blue background */
+    -fx-font-family: "Tahoma", "Segoe UI", sans-serif;
+}
+
+/* Sidebar structure */
+.sidebar, .history-sidebar, .game-pane {
+    -fx-background-color: #23283F;
+}
+
+/* Header Box (Bogo Solutions) */
+.header-box {
+    -fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #4255ff, #2acbeb);
+    -fx-text-fill: white;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+}
+
+/* Game Title */
+.ttt-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(from 0px 0px to 50px 50px, #38e5eb, #2acbeb);
+}
+
+/* Stats Card*/
+.card {
+    -fx-background-color: #36a9e3;
+    -fx-border-color: white;
+    -fx-border-width: 4;
+    -fx-border-radius: 5;
+    -fx-background-radius: 8;
+}
+
+.card-title {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.card-value {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+}
+
+/* Buttons*/
+.button {
+    -fx-background-color: linear-gradient(to right, #38bdf8, #818cf8);
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-brightness: 1.2;
+    -fx-scale-x: 1.02;
+}
+
+/* Match History Header */
+.match-history-header {
+    -fx-background-color: linear-gradient(to right, #4255ff, #2acbeb);
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 8;
+}
+
+/* ScrollPane */
+.history-scroll {
+    -fx-background-color: #888e8f;
+    -fx-background-radius: 5;
+}
+
+.history-box {
+    -fx-background-color: #4A90D9;
+}
+
+/* Login Additons */
+/* Text and Password Fields */
+.input-field {
+    -fx-background-color: #0b2239;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #888;
+    -fx-font-size: 16px;
+    -fx-border-color: rgba(255,255,255,0.3);
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.input-field:focused {
+    -fx-border-color: #22d3ee; /* Highlight color when typing */
+}
+
+/* Emoji Icons next to inputs */
+.icon-label {
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+}
+
+/* Checkbox Styling */
+.login-checkbox {
+    -fx-text-fill: #cbd5e1;
+    -fx-font-size: 14px;
+}
+
+/* Secondary Button (Outline style) */
+.secondary-button {
+    -fx-background-color: #23283f;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-border-color: white;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #313754;
+}
+
+/* Transparent Link Button */
+.link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #22d3ee;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.link-button:hover {
+    -fx-underline: true;
+}
+
+/* Error Message */
+.error-text {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 13px;
+}
+
+.mode-title {
+    -fx-text-fill: white;
+    -fx-font-size: 32px; /* Increased from the previous 28px */
+    -fx-font-weight: bold;
+    /* Subtle glow to make it pop against the dark background */
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.3), 10, 0, 0, 0);
+}
+
+/* Add this to ensure the "New User?" text stays small and doesn't compete */
+.card-title {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}

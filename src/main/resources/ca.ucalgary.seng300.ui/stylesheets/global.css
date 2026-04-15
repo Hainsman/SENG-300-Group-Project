@@ -1,0 +1,1342 @@
+.root {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-background-color: #111112;
+}
+
+.app-surface {
+    -fx-background-color: #111112;
+}
+
+.side-panel {
+    -fx-background-color: #141416;
+}
+
+.content-surface {
+    -fx-background-color: #141416;
+}
+
+.brand-card {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 16;
+    -fx-border-color: #2f2f35;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: #27272a;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #34d399;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-effect: null;
+}
+
+.nav-button:pressed {
+    -fx-scale-x: 0.985;
+    -fx-scale-y: 0.985;
+    -fx-translate-y: 0;
+}
+
+.game-chip {
+    -fx-background-color: #18181b;
+    -fx-border-color: #27272a;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-text-fill: #4ade80;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10;
+}
+
+.game-card {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-text-fill: #fafafa;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-padding: 10 12;
+}
+
+.game-card:hover {
+    -fx-background-color: #27272a;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #34d399;
+    -fx-border-width: 1;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-effect: null;
+}
+
+.game-card:pressed {
+    -fx-scale-x: 0.985;
+    -fx-scale-y: 0.985;
+    -fx-translate-y: 0;
+}
+
+.stats-card {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #2f2f35;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.match-history-title {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 22;
+    -fx-font-weight: 700;
+    -fx-background-radius: 6;
+}
+
+/* Shared lobby/mode components */
+.header-box {
+    -fx-padding: 15 24;
+    -fx-background-radius: 18;
+    -fx-background-color: #141416;
+}
+
+.title-label {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 26px;
+    -fx-font-weight: 700;
+}
+
+.subtitle-label {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 13px;
+}
+
+.card {
+    -fx-background-color: #1c1c1f;
+    -fx-background-radius: 14;
+    -fx-padding: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+}
+
+.card:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #3f3f46;
+    -fx-effect: null;
+}
+
+.card-title {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+.card-subtitle {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 12px;
+}
+
+.icon {
+    -fx-font-size: 24px;
+}
+
+.primary-button,
+.start-button,
+.back-button {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+}
+
+.code-label {
+    -fx-text-fill: #4ade80;
+    -fx-font-weight: 600;
+}
+
+.game-name {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+/* Global button enhancement */
+.button {
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #27272a;
+    -fx-text-fill: #e4e4e7;
+    -fx-border-color: #3f3f46;
+    -fx-border-width: 1;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-effect: null;
+}
+
+.primary-button:hover,
+.start-button:hover,
+.back-button:hover {
+    -fx-background-color: #27272a;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #34d399;
+    -fx-effect: null;
+}
+
+.button:pressed {
+    -fx-scale-x: 0.985;
+    -fx-scale-y: 0.985;
+    -fx-translate-y: 0;
+}
+
+/* Mockup-inspired temporary dashboard */
+.mode-badge {
+    -fx-background-color: #10261a;
+    -fx-text-fill: #34d399;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-padding: 8 16;
+}
+
+.mode-title {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 50px;
+    -fx-font-weight: 900;
+}
+
+.mode-subtitle {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+}
+
+.mode-card {
+    -fx-alignment: center;
+    -fx-padding: 16 16;
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-cursor: hand;
+}
+
+.mode-card:hover,
+.mode-card:focused {
+    -fx-background-color: #27272a;
+    -fx-border-color: #34d399;
+    -fx-translate-y: -1;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-effect: null;
+}
+
+.mode-card:pressed {
+    -fx-translate-y: 0;
+    -fx-scale-x: 0.995;
+    -fx-scale-y: 0.995;
+}
+
+.mode-icon {
+    -fx-text-fill: #34d399;
+    -fx-font-size: 42px;
+    -fx-font-weight: 700;
+}
+
+.mode-card-title {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 36px;
+    -fx-font-weight: 900;
+}
+
+.mode-card-subtitle {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+}
+
+.mode-play {
+    -fx-text-fill: #4ade80;
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+}
+
+.mode-back {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-padding: 10 22;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: #2f2f35;
+}
+
+.mode-back:hover {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+}
+
+/* Game rules / Info screen (Info.fxml) */
+.info-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.info-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.info-scroll .scroll-bar:vertical,
+.info-scroll .scroll-bar:horizontal {
+    -fx-background-color: #141416;
+}
+
+.info-body-text {
+    -fx-text-fill: #d4d4d8;
+    -fx-font-size: 15px;
+    -fx-line-spacing: 2;
+}
+
+.avatar-circle {
+    -fx-fill: #1c1c1f;
+    -fx-stroke: #2f2f35;
+    -fx-stroke-width: 1.5;
+}
+
+.avatar-label {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 9px;
+    -fx-font-weight: 700;
+}
+
+.avatar-badge {
+    -fx-cursor: hand;
+}
+
+.avatar-badge:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-effect: null;
+}
+
+.avatar-badge:hover .avatar-circle {
+    -fx-stroke: #34d399;
+}
+
+.avatar-badge:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Avatar opens MenuButton: hide chrome, keep circle graphic */
+.player-avatar-menu {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.player-avatar-menu:hover {
+    -fx-background-color: transparent;
+}
+.player-avatar-menu > .arrow-button {
+    -fx-padding: 0;
+    -fx-min-width: 0;
+    -fx-background-color: transparent;
+}
+.player-avatar-menu > .arrow-button > .arrow {
+    -fx-padding: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+}
+
+/* Tic-Tac-Toe surface styles */
+.ttt-grid {
+    -fx-background-color: transparent;
+}
+
+.ttt-shell {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+}
+
+.ttt-cell {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-pref-height: 104px;
+    -fx-pref-width: 116px;
+    -fx-text-fill: #fafafa;
+}
+
+.ttt-cell:hover {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #34d399;
+}
+
+.ttt-pill {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+}
+
+.c4-cell {
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+}
+
+.c4-cell:hover {
+    -fx-border-color: #34d399;
+}
+
+.chat-shell {
+    -fx-padding: 10 12 12 12;
+    -fx-background-color: #17171b;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.chat-list {
+    -fx-background-color: #1b1b20;
+    -fx-control-inner-background: #1b1b20;
+    -fx-border-color: #30303a;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.c4-grid {
+    -fx-background-color: #1f2d63;
+    -fx-padding: 16;
+    -fx-background-radius: 12;
+    -fx-min-width: 200px;
+    -fx-min-height: 170px;
+}
+
+.c4-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.c4-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.c4-scroll > .corner {
+    -fx-background-color: transparent;
+}
+
+/* Auth screens */
+.auth-form-card {
+    -fx-background-color: #111112;
+    -fx-background-radius: 14;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 26 22 22 22;
+}
+
+.auth-form-card:hover {
+    -fx-background-color: #111112;
+    -fx-effect: none;
+}
+
+.input-field {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+    -fx-prompt-text-fill: #71717a;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.input-field:focused {
+    -fx-border-color: #34d399;
+}
+
+.icon-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #a1a1aa;
+}
+
+.login-checkbox {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 13px;
+}
+
+.auth-outline-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fafafa;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+}
+
+.auth-outline-button:hover {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #52525b;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-effect: none;
+}
+
+.auth-outline-button:pressed {
+    -fx-background-color: transparent;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+}
+
+.link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #34d399;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.link-button:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #34d399;
+    -fx-effect: none;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-underline: true;
+}
+
+.button.link-button:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #34d399;
+    -fx-effect: none;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-underline: true;
+}
+
+.error-text {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 13px;
+}
+
+/* ========== Main window chrome (undecorated stage, Root.fxml) ========== */
+#title-bar {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 0 0 1 0;
+}
+
+#exit-button,
+#minimize-maximize-button {
+    -fx-pref-width: 48;
+    -fx-pref-height: 49;
+    -fx-min-width: 48;
+    -fx-background-color: #141416;
+    -fx-font-size: 16px;
+    -fx-text-fill: #fafafa;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+#exit-button:hover {
+    -fx-background-color: #7f1d1d;
+    -fx-text-fill: #fecaca;
+}
+
+#minimize-maximize-button:hover {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+}
+
+#sub-header {
+    -fx-font-size: 22px;
+    -fx-text-fill: #fafafa;
+    -fx-font-weight: 600;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Title-bar volume control */
+.volume-icon {
+    -fx-font-size: 18px;
+    -fx-text-fill: #fafafa;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+    -fx-content-display: center;
+    -fx-text-alignment: center;
+}
+
+.volume-icon:hover {
+    -fx-text-fill: #22c55e;
+}
+
+.volume-percent {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #fafafa;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.volume-slider {
+    -fx-pref-height: 22px;
+}
+
+.volume-slider .track {
+    -fx-background-color: #2a2a30;
+    -fx-background-radius: 3;
+    -fx-pref-height: 4px;
+}
+
+.volume-slider .thumb {
+    -fx-background-color: #22c55e;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 12px;
+    -fx-pref-height: 12px;
+    -fx-padding: 6px;
+}
+
+.volume-slider .thumb:hover {
+    -fx-background-color: #4ade80;
+}
+
+.volume-slider:focused .thumb {
+    -fx-background-color: #4ade80;
+}
+
+/* Legacy dashboard labels (GameDashboard.fxml) */
+#TTTLabel:hover,
+#C4Label:hover {
+    -fx-background-color: #292524;
+    -fx-text-fill: #fafafa;
+}
+
+/* ========== Settings (Settings.fxml) ========== */
+.settings-page {
+    -fx-background-color: #111112;
+}
+
+.settings-surface {
+    -fx-background-color: #111112;
+}
+
+.settings-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.settings-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.field-label {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 13px;
+}
+
+.active-username-label {
+    -fx-text-fill: #34d399;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+}
+
+.settings-help-card {
+    -fx-padding: 12;
+}
+
+.settings-combo.combo-box-base {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.settings-combo .list-cell {
+    -fx-text-fill: #fafafa;
+    -fx-background-color: #141416;
+}
+
+.settings-combo .arrow-button {
+    -fx-background-color: #1c1c1f;
+}
+
+.settings-accent-button {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #22c55e;
+    -fx-border-width: 1;
+}
+
+.settings-accent-button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #34d399;
+    -fx-effect: null;
+}
+
+.secondary-button {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 15px;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #3f3f46;
+    -fx-effect: null;
+}
+
+/* ========== Connect split game shell (GameGUI.fxml — styleMaster legacy) ========== */
+.game-gui-root {
+    -fx-background-color: #111112;
+    -fx-font-family: "Inter", "Segoe UI", "Tahoma", sans-serif;
+}
+
+.game-gui-root .sidebar,
+.game-gui-root .history-sidebar,
+.game-gui-root .game-pane {
+    -fx-background-color: #111112;
+}
+
+.game-gui-root .main-split-pane > .split-pane-divider {
+    -fx-background-color: #3f3f52;
+    -fx-pref-width: 3;
+    -fx-padding: 0 1 0 1;
+}
+
+.game-gui-root .header-box {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 22px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.game-gui-root .ttt-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #34d399;
+}
+
+.game-gui-root .c4-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #60a5fa;
+}
+
+.game-gui-root .sidebar-username {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+.game-gui-root .sidebar-email {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 12px;
+}
+
+.game-gui-root .card {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #3f3f46;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.game-gui-root .card:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #34d399;
+    -fx-effect: null;
+}
+
+.game-gui-root .card-title {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+}
+
+.game-gui-root .card-value {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 18px;
+}
+
+.game-gui-root .match-history-header {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 8;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+}
+
+.game-gui-root .history-scroll {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-background-radius: 8;
+}
+
+.game-gui-root .history-box {
+    -fx-background-color: #111112;
+}
+
+/* ========== Colorblind-friendly accents (toggle via root styleClass) ========== */
+.root.colorblind-mode .game-chip {
+    -fx-text-fill: #60a5fa;
+    -fx-background-color: #1e3a5f;
+}
+
+.root.colorblind-mode .code-label {
+    -fx-text-fill: #60a5fa;
+}
+
+.root.colorblind-mode .mode-badge {
+    -fx-text-fill: #60a5fa;
+    -fx-background-color: #1e3a5f;
+}
+
+.root.colorblind-mode .mode-icon,
+.root.colorblind-mode .mode-play {
+    -fx-text-fill: #60a5fa;
+}
+
+.root.colorblind-mode .mode-card:hover {
+    -fx-border-color: #60a5fa;
+}
+
+.root.colorblind-mode .link-button,
+.root.colorblind-mode .button.link-button:hover {
+    -fx-text-fill: #60a5fa;
+}
+
+.root.colorblind-mode .input-field:focused,
+.root.colorblind-mode .ttt-cell:hover .c4-cell:hover {
+    -fx-border-color: #60a5fa;
+}
+
+.root.colorblind-mode .nav-button:hover {
+    -fx-border-color: #60a5fa;
+    -fx-effect: null;
+}
+
+.root.colorblind-mode .game-card:hover {
+    -fx-border-color: #60a5fa;
+    -fx-effect: null;
+}
+
+.root.colorblind-mode .active-username-label {
+    -fx-text-fill: #60a5fa;
+}
+
+.root.colorblind-mode .settings-accent-button {
+    -fx-border-color: #60a5fa;
+    -fx-background-color: #27272a;
+}
+
+/* ========== Profile dashboard (ProfileDashboard.fxml) ========== */
+.profile-dashboard {
+    -fx-background-color: #111112;
+}
+
+.profile-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.profile-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.profile-hero {
+    -fx-padding: 20 24;
+    -fx-background-radius: 16;
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-spacing: 8;
+}
+
+.profile-hero .title-label {
+    -fx-font-size: 32px;
+}
+
+.elo-stat-tile {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 14 16;
+    -fx-spacing: 6;
+}
+
+.elo-stat-tile:hover {
+    -fx-border-color: #3f3f46;
+    -fx-background-color: #18181b;
+}
+
+.elo-stat-game {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-letter-spacing: 0.04em;
+}
+
+.elo-stat-value {
+    -fx-text-fill: #34d399;
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+}
+
+.elo-stat-meta {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 12px;
+}
+
+.rank-badge {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+    -fx-padding: 4 8;
+    -fx-background-color: #27272a;
+    -fx-background-radius: 8;
+    -fx-border-color: #34d399;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.profile-list-view {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.profile-list-view .list-cell {
+    -fx-background-color: #141416;
+    -fx-text-fill: #d4d4d8;
+    -fx-padding: 8 12;
+}
+
+.profile-list-view .list-cell:odd {
+    -fx-background-color: #18181b;
+}
+
+.profile-list-view .list-cell:selected {
+    -fx-background-color: #27272a;
+    -fx-text-fill: #fafafa;
+}
+
+.leaderboard-game-card {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+}
+
+.leaderboard-game-title {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.leaderboard-row {
+    -fx-alignment: center-left;
+    -fx-padding: 7 8;
+    -fx-background-color: #1a1a1d;
+    -fx-border-color: #2a2a31;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.leaderboard-row:hover {
+    -fx-background-color: #202027;
+}
+
+.leaderboard-rank {
+    -fx-text-fill: #60a5fa;
+    -fx-font-weight: 700;
+    -fx-min-width: 34;
+}
+
+.leaderboard-name {
+    -fx-text-fill: #fafafa;
+    -fx-font-weight: 600;
+}
+
+.leaderboard-elo {
+    -fx-text-fill: #34d399;
+    -fx-font-weight: 700;
+}
+
+.leaderboard-tier {
+    -fx-text-fill: #d4d4d8;
+    -fx-font-size: 11px;
+    -fx-padding: 2 8;
+    -fx-border-color: #3f3f46;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.leaderboard-empty {
+    -fx-text-fill: #71717a;
+    -fx-padding: 10 0 0 2;
+}
+
+.profile-actions {
+    -fx-spacing: 10;
+}
+
+.profile-save-button {
+    -fx-background-color: #1c1c1f;
+    -fx-text-fill: #fafafa;
+    -fx-border-color: #22c55e;
+    -fx-border-width: 1;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.profile-save-button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #34d399;
+    -fx-effect: null;
+}
+.settings-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.settings-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.settings-scroll > .corner {
+    -fx-background-color: transparent;
+}
+
+.combo-box.input-field {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+    -fx-prompt-text-fill: #71717a;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.combo-box.input-field:focused {
+    -fx-border-color: #34d399;
+}
+
+.combo-box.input-field .list-cell {
+    -fx-text-fill: #fafafa;
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #141416;
+    -fx-text-fill: #fafafa;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #1c1c1f;
+}
+
+.check-box.login-checkbox .box {
+    -fx-background-color: #141416;
+    -fx-border-color: #2f2f35;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.check-box.login-checkbox:selected .box {
+    -fx-background-color: #141416;
+    -fx-border-color: #34d399;
+}
+
+.check-box.login-checkbox:selected .mark {
+    -fx-background-color: #34d399;
+}
+
+.separator .line {
+    -fx-border-color: #2f2f35;
+}
+
+.split-pane {
+    -fx-background-color: transparent;
+}
+
+.game-gui-root .button {
+    -fx-background-color: #1c1c1f;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 15px;
+    -fx-padding: 10 18;
+}
+
+.game-gui-root .button:hover {
+    -fx-background-color: #27272a;
+    -fx-border-color: #34d399;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-translate-y: 0;
+    -fx-effect: null;
+}
+
+.game-gui-root .button:pressed {
+    -fx-background-color: #18181b;
+    -fx-scale-x: 0.99;
+    -fx-scale-y: 0.99;
+    -fx-translate-y: 0;
+}
+.player-avatar-menu .context-menu {
+    -fx-background-color: transparent;
+    -fx-border-color: #00e5a0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 2px;
+    -fx-padding: 8px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 2);
+}
+
+.player-avatar-menu .context-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 14px;
+}
+
+.player-avatar-menu .context-menu .menu-item .label {
+    -fx-text-fill: #e0e0e0;
+    -fx-font-size: 13px;
+}
+
+.player-avatar-menu .context-menu .menu-item:focused .label,
+.player-avatar-menu .context-menu .menu-item:hover .label {
+    -fx-text-fill: #00e5a0;
+}
+
+.player-avatar-menu .context-menu .separator .line {
+    -fx-border-color: #333333;
+}
+
+/* ========== Main lobby (MainLobby.fxml) ========== */
+.lobby-screen {
+    -fx-background-color: #111112;
+}
+
+.lobby-screen.lobby-ttt {
+    -fx-border-color: transparent;
+}
+
+.lobby-screen.lobby-c4 {
+    -fx-border-color: transparent;
+}
+
+.lobby-chip {
+    -fx-background-color: #10261a;
+    -fx-text-fill: #34d399;
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 999;
+    -fx-padding: 8 14;
+}
+
+.lobby-c4 .lobby-chip {
+    -fx-background-color: #1e3a5f;
+    -fx-text-fill: #60a5fa;
+}
+
+.lobby-card {
+    -fx-background-color: #1c1c1f;
+    -fx-border-color: #2f2f35;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 18 20;
+}
+
+.lobby-code-card {
+    -fx-border-width: 1;
+}
+
+.lobby-screen.lobby-ttt .lobby-code-card {
+    -fx-border-color: #14532d;
+}
+
+.lobby-screen.lobby-c4 .lobby-code-card {
+    -fx-border-color: #1e3a8a;
+}
+
+.lobby-card-heading {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-letter-spacing: 0.06em;
+}
+
+.lobby-code-value {
+    -fx-text-fill: #4ade80;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-font-family: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+}
+
+.lobby-c4 .lobby-code-value {
+    -fx-text-fill: #60a5fa;
+}
+
+.lobby-players-card {
+    -fx-min-height: 220;
+}
+
+.lobby-player-list {
+    -fx-padding: 8 0 0 0;
+}
+
+.lobby-player-row {
+    -fx-padding: 14 0;
+}
+
+.lobby-player-divider {
+    -fx-background-color: #2f2f35;
+}
+
+.lobby-avatar-slot {
+    -fx-background-color: #141416;
+    -fx-background-radius: 12;
+    -fx-border-color: #34d399;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-min-height: 48;
+    -fx-pref-height: 48;
+}
+
+.lobby-c4 .lobby-avatar-slot {
+    -fx-border-color: #3b82f6;
+}
+
+.lobby-avatar-slot.lobby-avatar-guest {
+    -fx-border-color: #a855f7;
+}
+
+.lobby-c4 .lobby-avatar-slot.lobby-avatar-guest {
+    -fx-border-color: #818cf8;
+}
+
+.lobby-avatar-letter {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+}
+
+.lobby-player-name {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+.lobby-you-pill {
+    -fx-background-color: #27272a;
+    -fx-text-fill: #34d399;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+    -fx-background-radius: 6;
+    -fx-padding: 2 8;
+}
+
+.lobby-c4 .lobby-you-pill {
+    -fx-text-fill: #60a5fa;
+}
+
+.lobby-slot-tag {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.lobby-elo {
+    -fx-text-fill: #a1a1aa;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.lobby-hint {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 13px;
+    -fx-padding: 14 0 0 0;
+}
+
+.lobby-side-card {
+    -fx-padding: 18 18;
+}
+
+.lobby-kv-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 12;
+}
+
+.lobby-kv-key {
+    -fx-text-fill: #71717a;
+    -fx-font-size: 13px;
+    -fx-min-width: 96;
+}
+
+.lobby-kv-value {
+    -fx-text-fill: #fafafa;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}

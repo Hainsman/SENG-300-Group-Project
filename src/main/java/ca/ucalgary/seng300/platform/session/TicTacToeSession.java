@@ -14,7 +14,7 @@ import java.util.Map;
  * submitMove(row, col) and getBoard/getTurn/getState for the UI. When no
  * playerId mapping is set, uses "P1"/"P2" for local two-player play.
  */
-public class TicTacToeSession {
+public class TicTacToeSession implements Session {
 
     private final TTTGame game = new TTTGame();
     /** Maps playerId (e.g. "P1", "P2") to Player enum for turn enforcement. */

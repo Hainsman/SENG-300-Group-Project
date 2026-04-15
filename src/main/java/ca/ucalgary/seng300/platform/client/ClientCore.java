@@ -29,6 +29,8 @@ public class ClientCore extends Thread{
     private CentralController ioMain;
     public volatile char flg = 'n';
     public String gameType;
+    /** True when a second player has joined the current lobby (guest slot filled). */
+    public volatile boolean otherjoined;
     private volatile String myPlayerId;
     public volatile  boolean upFlag = false;
     public volatile GameState lastUpdate;
@@ -91,6 +93,14 @@ public class ClientCore extends Thread{
     }
 
     public ClientCore(CentralController c){ioMain = c;}
+
+    /** Clears in-memory match/lobby progress before hosting a new lobby. */
+    public void resetMatchState() {
+        lastUpdate = null;
+        myPlayerId = null;
+        upFlag = false;
+        otherjoined = false;
+    }
 
     public GameState getLastUpdate() {
         return lastUpdate;
